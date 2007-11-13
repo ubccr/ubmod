@@ -12,9 +12,18 @@ UBMoD is still under active development and should be considered alpha. To
 report bugs, send feedback or to submit patches email ubmod@ccr.buffalo.edu. 
 
 
------------------------------------------
+-------------------------------------------------------------------------------
+Install
+-------------------------------------------------------------------------------
+
+The easiest way to install UBMoD is to grab a copy of the pre-built release
+from sourceforge: ubmod-x.x.x-bin.tar.gz and follow the directions in the
+INSTALL file.
+
+
+-------------------------------------------------------------------------------
 License
------------------------------------------
+-------------------------------------------------------------------------------
 
 UBMoD is released under the University at Buffalo Public License Version 1.0 (a
 derivative of the Mozilla Public License). See the LICENSE file.
