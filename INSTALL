@@ -6,6 +6,9 @@ This document will attempt to ouline a basic install of UBMoD. As UBMoD is
 still actively being developed these instructions may be incomplete and are
 subject to change in future releases. Any feedback is welcome.
 
+The latest version of this document can be found online at:
+  http://ubmod.sourceforge.net/install.html
+
 This installation document assumes you are running a Linux based system and
 already have MySQL version 5 or greater installed and running. UBMoD requires
 Java version 1.5 or greater.  Download UBMoD
