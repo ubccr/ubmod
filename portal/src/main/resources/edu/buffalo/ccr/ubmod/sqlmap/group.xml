@@ -80,10 +80,10 @@
         <include refid="common.activityDetail" />
     from
         research_group g
-    left join
+    join
         group_activity ga
         on g.group_id = ga.group_id
-    left join
+    join
         activity a
         on ga.activity_id = a.activity_id
     where

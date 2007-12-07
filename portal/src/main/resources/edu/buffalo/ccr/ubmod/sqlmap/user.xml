@@ -51,11 +51,11 @@
         u.display_name,
         <include refid="common.statsGrid"/>
     from user u
-    left join user_activity ua
+    join user_activity ua
         on u.user_id = ua.user_id
+        and ua.cluster_id = #params.clusterId:INTEGER# 
         and ua.interval_id = #params.intervalId:INTEGER# 
-        and ua.cluster_id = #params.clusterId:INTEGER#
-    left join activity a
+    join activity a
       on ua.activity_id = a.activity_id
     
     <dynamic prepend="where">
@@ -76,11 +76,11 @@
   <select id="activityCount" resultClass="java.lang.Integer" parameterClass="java.util.Map">
     select count(*)
     from user u
-    left join user_activity ua
+    join user_activity ua
         on u.user_id = ua.user_id
         and ua.interval_id = #params.intervalId:INTEGER# 
         and ua.cluster_id = #params.clusterId:INTEGER#
-    left join activity a
+    join activity a
       on ua.activity_id = a.activity_id
     <dynamic prepend="where">
     <isNotNull prepend="and" property="userNames">
@@ -99,12 +99,12 @@
         <include refid="common.activityDetail" />
     from
         user u
-    left join
+    join
         user_activity ua
         on u.user_id = ua.user_id
         and ua.cluster_id = #clusterId:INTEGER#
         and ua.interval_id = #intervalId:INTEGER#
-    left join
+    join
         activity a
         on ua.activity_id = a.activity_id
     where

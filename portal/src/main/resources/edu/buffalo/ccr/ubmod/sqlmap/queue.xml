@@ -75,10 +75,10 @@
         <include refid="common.activityDetail"/>
     from
         queue q
-    left join
+    join
         queue_activity qa
         on q.queue_id = qa.queue_id
-    left join
+    join
         activity a
         on qa.activity_id = a.activity_id
     where
