@@ -57,10 +57,10 @@ public class ActivityRecord {
     private BigInteger cput;
     private BigInteger avgCput;
     private BigInteger maxCput;
-    private Integer avgMem;
-    private Integer maxMem;
-    private Integer avgVmem;
-    private Integer maxVmem;
+    private BigInteger avgMem;
+    private BigInteger maxMem;
+    private BigInteger avgVmem;
+    private BigInteger maxVmem;
     private BigInteger avgWait;
     private BigInteger avgExect;
     private Integer avgNodes;
@@ -78,10 +78,10 @@ public class ActivityRecord {
         this.cput = BigInteger.valueOf(0);
         this.avgCput = BigInteger.valueOf(0);
         this.maxCput = BigInteger.valueOf(0);
-        this.avgMem = new Integer(0);
-        this.maxMem = new Integer(0);
-        this.avgVmem = new Integer(0);
-        this.maxVmem = new Integer(0);
+        this.avgMem = BigInteger.valueOf(0);
+        this.maxMem = BigInteger.valueOf(0);
+        this.avgVmem = BigInteger.valueOf(0);
+        this.maxVmem = BigInteger.valueOf(0);
         this.avgWait = BigInteger.valueOf(0);
         this.avgExect = BigInteger.valueOf(0);
         this.avgNodes = new Integer(0);
@@ -132,11 +132,11 @@ public class ActivityRecord {
         this.avgExect = avgExect;
     }
 
-    public Integer getAvgMem() {
+    public BigInteger getAvgMem() {
         return avgMem;
     }
 
-    public void setAvgMem(Integer avgMem) {
+    public void setAvgMem(BigInteger avgMem) {
         this.avgMem = avgMem;
     }
 
@@ -148,11 +148,11 @@ public class ActivityRecord {
         this.avgNodes = avgNodes;
     }
 
-    public Integer getAvgVmem() {
+    public BigInteger getAvgVmem() {
         return avgVmem;
     }
 
-    public void setAvgVmem(Integer avgVmem) {
+    public void setAvgVmem(BigInteger avgVmem) {
         this.avgVmem = avgVmem;
     }
 
@@ -204,11 +204,11 @@ public class ActivityRecord {
         this.maxCput = maxCput;
     }
 
-    public Integer getMaxMem() {
+    public BigInteger getMaxMem() {
         return maxMem;
     }
 
-    public void setMaxMem(Integer maxMem) {
+    public void setMaxMem(BigInteger maxMem) {
         this.maxMem = maxMem;
     }
 
@@ -220,11 +220,11 @@ public class ActivityRecord {
         this.maxNodes = maxNodes;
     }
 
-    public Integer getMaxVmem() {
+    public BigInteger getMaxVmem() {
         return maxVmem;
     }
 
-    public void setMaxVmem(Integer maxVmem) {
+    public void setMaxVmem(BigInteger maxVmem) {
         this.maxVmem = maxVmem;
     }
 
