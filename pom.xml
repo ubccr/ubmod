@@ -4,7 +4,7 @@
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.buffalo.ccr.ubmod</groupId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <artifactId>ubmod</artifactId>
   <name>UBMoD - Metrics on Demand</name>
   <packaging>pom</packaging>

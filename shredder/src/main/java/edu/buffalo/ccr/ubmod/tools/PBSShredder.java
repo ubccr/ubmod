@@ -288,6 +288,10 @@ public class PBSShredder extends SqlMapClientDaoSupport implements Shredder {
             h = Integer.valueOf(parts[0]);
             m = Integer.valueOf(parts[1]);
             s = Integer.valueOf(parts[2]);
+
+            if(h < 0) h = new Integer(0);
+            if(m < 0) m = new Integer(0);
+            if(s < 0) s = new Integer(0);
         } catch(NumberFormatException e) {
             throw new InvalidDataException("Invalid time value: " + val, e);
         }

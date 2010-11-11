@@ -2,5 +2,9 @@
 UBMoD - ChangeLog
 ===============================================================================
 
+* 2010-11-11
+    * Fixed bug in shredder to allow for negative wall times. 
+    * Added jdk15 classifier to pom.xml net.sf.json-lib library
+
 * 2007-11-11
-	* Initial public release
+    * Initial public release

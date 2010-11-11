@@ -28,6 +28,10 @@
     <fileSet>
       <directory>${basedir}/ddl</directory>
       <outputDirectory>/ddl</outputDirectory>
+      <includes>
+        <include>ubmod_schema.pdf</include>
+        <include>ubmod.sql</include>
+      </includes>
     </fileSet>
     <fileSet>
       <directory>${basedir}/portal/target</directory>

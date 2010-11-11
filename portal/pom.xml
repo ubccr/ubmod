@@ -4,7 +4,7 @@
   <groupId>edu.buffalo.ccr.ubmod</groupId>
   <artifactId>ubmod-portal</artifactId>
   <packaging>war</packaging>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <name>UBMoD - Web Portal</name>
   <url>http://ubmod.sf.net/</url>
   <developers>
@@ -24,7 +24,7 @@
   <parent>
     <groupId>edu.buffalo.ccr.ubmod</groupId>
     <artifactId>ubmod</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
   </parent>
   <build>
     <finalName>ubmod-portal</finalName>
@@ -126,6 +126,7 @@
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
       <version>1.1</version>
+      <classifier>jdk15</classifier>
     </dependency>
     <dependency>
       <groupId>org.apache.ibatis</groupId>

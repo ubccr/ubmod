@@ -4,7 +4,7 @@
   <groupId>edu.buffalo.ccr.ubmod</groupId>
   <artifactId>shredder</artifactId>
   <packaging>jar</packaging>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <name>UBMoD - Shredder</name>
   <url>http://ubmod.sf.net/</url>
   <developers>
@@ -24,7 +24,7 @@
   <parent>
     <groupId>edu.buffalo.ccr.ubmod</groupId>
     <artifactId>ubmod</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
   </parent>
   <build>
     <finalName>ubmod-shredder</finalName>
