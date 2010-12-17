@@ -2,9 +2,12 @@
 UBMoD - ChangeLog
 ===============================================================================
 
-* 2010-11-11
-    * Fixed bug in shredder to allow for negative wall times. 
-    * Added jdk15 classifier to pom.xml net.sf.json-lib library
+- 2010-12-17 v0.1.2
+    - Fixed typo in pom.xml to include portal source code in src assembly
 
-* 2007-11-11
-    * Initial public release
+- 2010-11-11 v0.1.1
+    - Fixed bug in shredder to allow for negative wall times. 
+    - Added jdk15 classifier to pom.xml net.sf.json-lib library
+
+- 2007-11-11 v0.1.0
+    - Initial public release

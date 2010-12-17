@@ -2,9 +2,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.buffalo.ccr.ubmod</groupId>
-  <artifactId>ubmod-portal</artifactId>
+  <artifactId>portal</artifactId>
   <packaging>war</packaging>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
   <name>UBMoD - Web Portal</name>
   <url>http://ubmod.sf.net/</url>
   <developers>
@@ -24,7 +24,7 @@
   <parent>
     <groupId>edu.buffalo.ccr.ubmod</groupId>
     <artifactId>ubmod</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
   </parent>
   <build>
     <finalName>ubmod-portal</finalName>
