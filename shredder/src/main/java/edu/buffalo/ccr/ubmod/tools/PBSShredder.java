@@ -80,7 +80,7 @@ public class PBSShredder extends SqlMapClientDaoSupport implements Shredder {
                 new String[] { "beans.xml" });
         PBSShredder shred = (PBSShredder) context.getBean("shredder");
 
-        File dir = new File("/home/aebruno2/projects/pbsusage/newtest/");
+        File dir = new File(args[0]);
         String[] files = dir.list();
         for(int i = 0; i < files.length; i++) {
             logger.info("Processing file: " + files[i]);
