@@ -62,6 +62,7 @@ create table event (
   event_id                   bigint unsigned auto_increment not null,
   date_key                  datetime,
   job_id                    int unsigned not null,
+  job_array_index           int unsigned,
   host                      varchar(255) not null,
   queue                     varchar(255),
   type                      char(1) not null,

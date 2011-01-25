@@ -68,6 +68,7 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 public class PBSShredder extends SqlMapClientDaoSupport implements Shredder {
     private static Log logger = LogFactory.getLog(PBSShredder.class);
     private static Pattern memoryPattern = Pattern.compile("^\\d+(.*)");
+    private static Pattern pbsRecordPattern = Pattern.compile("^(\\d{2,2}/\\d{2,2}/\\d{4,4}\\s\\d{2,2}:\\d{2,2}:\\d{2,2});(\\w);([^;]+);(.*)");
     private static final DateFormat dateFormat = new SimpleDateFormat(
             "MM/dd/yyyy HH:mm:ss");
 
@@ -95,29 +96,38 @@ public class PBSShredder extends SqlMapClientDaoSupport implements Shredder {
         BufferedReader reader = new BufferedReader(new InputStreamReader(input));
         String line = null;
         while((line = reader.readLine()) != null) {
-            String params = null;
-            String[] fields = line.split(";");
-            if(fields.length == 4) {
-                params = fields[3];
-            } else if(fields.length != 3) {
+            Matcher pbsRecordMatcher = pbsRecordPattern.matcher(line);
+            String dateField = null;
+            String eventTypeField = null;
+            String jobIdField = null;
+            String paramsField = null;
+
+            if(pbsRecordMatcher.matches() && pbsRecordMatcher.groupCount() >= 3) {
+                dateField = pbsRecordMatcher.group(1);
+                eventTypeField = pbsRecordMatcher.group(2);
+                jobIdField = pbsRecordMatcher.group(3);
+                if(pbsRecordMatcher.groupCount() == 4) {
+                    paramsField = pbsRecordMatcher.group(4);
+                }
+            } else {
                 logger.fatal("Malformed pbs acct line: " + line);
                 continue;
             }
 
             DefaultEventRecord rec = new DefaultEventRecord();
-            rec.setEventType(EventType.fromString(fields[1]));
+            rec.setEventType(EventType.fromString(eventTypeField));
             try {
-                rec.setDateKey(dateFormat.parse(fields[0]));
+                rec.setDateKey(dateFormat.parse(dateField));
             } catch(ParseException e) {
                 logger
                         .fatal("Failed to parse date from line in pbs acct file: "
-                                + fields[0]);
+                                + dateField);
                 continue;
             }
             try {
-                this.setJobIdAndHost(rec, fields[2]);
-                if(params != null) {
-                    String[] parts = params.split("\\s+");
+                this.setJobIdAndHost(rec, jobIdField);
+                if(paramsField != null) {
+                    String[] parts = paramsField.split("\\s+");
                     for(int i = 0; i < parts.length; i++) {
                         int index = parts[i].indexOf('=');
                         if(index == -1) {
@@ -230,15 +240,29 @@ public class PBSShredder extends SqlMapClientDaoSupport implements Shredder {
     private void setJobIdAndHost(DefaultEventRecord rec, String val)
             throws InvalidDataException {
         int index = val.indexOf('.');
+        String idStr = val.substring(0, index);
+
         Long id = null;
+        Long arrayIndex = null;
         try {
-            id = Long.valueOf(val.substring(0, index));
+            String[] parts = idStr.split("-");
+
+            if(parts == null || parts.length == 0) {
+                throw new NumberFormatException();
+            }
+
+            id = Long.valueOf(parts[0]);
+            if(parts.length == 2) {
+                arrayIndex = Long.valueOf(parts[1]);
+            }
         } catch(NumberFormatException e) {
-            throw new InvalidDataException("Invalid job id: "
-                    + val.substring(0, index), e);
+            throw new InvalidDataException("Invalid job id: " + idStr, e);
         }
-        String host = val.substring(index + 1);
+
         rec.setJobId(id);
+        rec.setJobArrayIndex(arrayIndex);
+
+        String host = val.substring(index + 1);
         if(this.host == null) {
             rec.setHost(host);
         } else {

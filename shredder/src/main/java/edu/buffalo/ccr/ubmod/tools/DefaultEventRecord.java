@@ -50,6 +50,7 @@ import java.util.Date;
 public class DefaultEventRecord {
     private Date dateKey;
     private Long jobId;
+    private Long jobArrayIndex;
     private String host;
     private EventType eventType;
     private String user;
@@ -191,6 +192,17 @@ public class DefaultEventRecord {
 
     public void setJobId(Long jobId) {
         this.jobId = jobId;
+    }
+
+    /**
+     * Job array index - only used in job arrays
+     */
+    public Long getJobArrayIndex() {
+        return jobArrayIndex;
+    }
+
+    public void setJobArrayIndex(Long jobArrayIndex) {
+        this. jobArrayIndex =  jobArrayIndex;
     }
 
     /**

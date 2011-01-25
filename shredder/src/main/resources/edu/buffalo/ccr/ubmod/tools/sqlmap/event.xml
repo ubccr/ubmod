@@ -54,6 +54,7 @@
         insert event set 
             date_key = #dateKey#,
             job_id = #jobId#,
+            job_array_index = #jobArrayIndex#,
             host = lower(#host#),
             type = #eventTypeString#,
             user = lower(#user#),
