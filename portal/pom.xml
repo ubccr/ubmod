@@ -4,7 +4,7 @@
   <groupId>edu.buffalo.ccr.ubmod</groupId>
   <artifactId>portal</artifactId>
   <packaging>war</packaging>
-  <version>0.1.2</version>
+  <version>0.1.3</version>
   <name>UBMoD - Web Portal</name>
   <url>http://ubmod.sf.net/</url>
   <developers>
@@ -24,7 +24,7 @@
   <parent>
     <groupId>edu.buffalo.ccr.ubmod</groupId>
     <artifactId>ubmod</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.3</version>
   </parent>
   <build>
     <finalName>ubmod-portal</finalName>
