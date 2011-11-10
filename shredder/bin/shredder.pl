@@ -17,22 +17,23 @@ my $Logger;
 my $Host;
 
 sub main {
-    my ($stdio,  $file,   $dir,     $host, $shred,
-        $format, $update, $verbose, $help
+    my ($stdio,  $file,     $dir,    $host,    $shred,
+        $format, $end_date, $update, $verbose, $help
     );
 
     Getopt::Long::Configure('no_ignore_case');
 
     my $result = GetOptions(
-        ''           => \$stdio,
-        'in|i=s'     => \$file,
-        'dir|d=s'    => \$dir,
-        'host|H=s'   => \$host,
-        'shred|s'    => \$shred,
-        'format|f=s' => \$format,
-        'update|u'   => \$update,
-        'verbose|v'  => \$verbose,
-        'help|h'     => \$help,
+        ''             => \$stdio,
+        'in|i=s'       => \$file,
+        'dir|d=s'      => \$dir,
+        'host|H=s'     => \$host,
+        'shred|s'      => \$shred,
+        'format|f=s'   => \$format,
+        'end-date|e=s' => \$end_date,
+        'update|u'     => \$update,
+        'verbose|v'    => \$verbose,
+        'help|h'       => \$help,
     );
 
     if ($help) {
@@ -93,8 +94,23 @@ sub main {
     if ($update) {
         $Logger->info("Updating aggregate tables.");
 
-        my $aggregator
-            = Ubmod::Aggregator->new( dbh => $Dbh, logger => $Logger );
+        my %options = ( dbh => $Dbh, logger => $Logger );
+
+        if ( defined $end_date ) {
+            if ( $end_date !~ /^(\d{4})-(\d{1,2})-(\d{1,2})$/ ) {
+                $Logger->fatal("Invalid date format: '$end_date'");
+                exit 1;
+            }
+            my $date
+                = eval { DateTime->new( year => $1, month => $2, day => $3 ) };
+            if ( !$date ) {
+                $Logger->fatal("Invalid date: '$end_date'");
+                exit 1;
+            }
+            $options{end_date} = $date;
+        }
+
+        my $aggregator = Ubmod::Aggregator->new(%options);
         $aggregator->aggregate();
 
         $Logger->info("Done updating aggregate tables!");
@@ -132,6 +148,10 @@ OPTIONS
 
     -H, --host hostname
         explicity set host from which the log file(s) originated from
+
+    -e, --end-date
+        explicitly set the end date used for aggregation time intervals
+        default to yesterday
 
     -v, --verbose
         verbose output

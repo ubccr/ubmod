@@ -5,24 +5,25 @@ use DateTime;
 
 sub new {
     my ( $class, %options ) = @_;
+
     my $self = \%options;
+
+    if ( !defined $self->{end_date} ) {
+        $self->{end_date} = DateTime->now()->subtract( days => 1 );
+    }
+    $self->{end_date}->set( hour => 23, minute => 59, second => 59 );
+
     return bless $self, $class;
 }
 
 sub aggregate {
     my ($self) = @_;
 
-    my $clusters = $self->_update_clusters();
-    my $queues   = $self->_update_queues($clusters);
-    my $groups   = $self->_update_groups($clusters);
-    my $users    = $self->_update_users( $clusters, $groups, $queues );
-
-    # XXX always start intervals from previous day. Probably want to
-    # re-factor this to a configurable parameter
-    my $date = DateTime->now()->subtract( days => 1 );
-    $date->set( hour => 23, minute => 59, second => 59 );
-
-    my $intervals = $self->_update_intervals($date);
+    my $clusters  = $self->_update_clusters();
+    my $queues    = $self->_update_queues($clusters);
+    my $groups    = $self->_update_groups($clusters);
+    my $users     = $self->_update_users( $clusters, $groups, $queues );
+    my $intervals = $self->_update_intervals();
 
     $self->_truncate_activity();
 
@@ -169,7 +170,9 @@ sub _update_users {
 }
 
 sub _update_intervals {
-    my ( $self, $end_date ) = @_;
+    my ($self) = @_;
+
+    my $end_date = $self->{end_date};
 
     $self->_truncate_interval();
 
@@ -1151,8 +1154,9 @@ Version: $Id$
 =head1 SYNOPSIS
 
     my $aggregator = Ubmod::Aggregator->new(
-        dbh    => $dbh,
-        logger => $logger,
+        dbh      => $dbh,
+        logger   => $logger,
+        end_date => $end_date,
     );
     $aggregator->aggregate();
 
@@ -1166,13 +1170,17 @@ which can then be viewed using the UBMoD portal.
 =head2 new( dbh => $dbh, logger => $logger );
 
     my $aggregator = Ubmod::Aggregator->new(
-        dbh    => $dbh,
-        logger => $logger,
+        dbh      => $dbh,
+        logger   => $logger,
+        end_date => $end_date,
     );
 
 Both the $dbh and $logger parameters are requried.  $dbh should be a
 DBI handle to a MySQL database prepared with the UBMoD schema.  $logger
-should be an instance of Ubmod::Logger.
+should be an instance of Ubmod::Logger.  The $end_date option is
+optional.  If supplied, it must be a DateTime instance indicating the
+end date of the time intervals used during aggregation.  By default
+yesterday is used as the $end_date.
 
 =head1 METHODS
 
