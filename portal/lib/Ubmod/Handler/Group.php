@@ -23,8 +23,20 @@ class Ubmod_Handler_Group
 
   public function listHelp()
   {
-    $desc = '';
-    return Ubmod_RestResponse::factory(TRUE, $desc);
+    $desc = 'List group activity.  Results will be an array where individual'
+      . ' records will consist of (group_id, group_name, pi_name, jobs, cput,'
+      . ' wallt, avg_wait, avg_cpus, avg_mem).';
+    $options = array(
+      'interval_id' => 'Return group activity in this interval. (required)',
+      'cluster_id'  => 'Return group activity in this cluster. (required)',
+      'filter'      => 'Filter criteria.  Substring match against group_name.',
+      'sort'        => 'Sort field.  Valid options: group_name, jobs,'
+                     . ' avg_cpus, avg_wait, wallt, avg_mem',
+      'dir'         => 'Sort direction.  Valid options: ASC, DESC',
+      'start'       => 'Limit offset. (requires limit)',
+      'limit'       => 'Maximum number of entities to return. (requires start)',
+    );
+    return Ubmod_RestResponse::factory(TRUE, $desc, $options);
   }
 
   public function listAction(array $arguments, array $postData = NULL)

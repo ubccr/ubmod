@@ -28,7 +28,8 @@ class Ubmod_Handler_Cluster
 
   public function listHelp()
   {
-    $desc = '';
+    $desc = 'List all clusters.  Results will be an array where individual'
+      . ' records will consist of (cluster_id, display_name, host).';
     return Ubmod_RestResponse::factory(TRUE, $desc);
   }
 

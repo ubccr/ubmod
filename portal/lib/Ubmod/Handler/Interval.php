@@ -28,7 +28,9 @@ class Ubmod_Handler_Interval
 
   public function listHelp()
   {
-    $desc = '';
+    $desc = 'List all time intervals.  Results will be an array where'
+      . ' individual records consist of (interval_id, time_interval, start,'
+      . ' end).';
     return Ubmod_RestResponse::factory(TRUE, $desc);
   }
 
