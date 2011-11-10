@@ -636,8 +636,16 @@ class Ubmod_Model_Chart
     // array( user_id => array( wallt, ... ), ... )
     $serieForUserId = array();
 
-    foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
-      if (count($topUsers) < $maxUsers - 1 && count($user) >= $maxUsers) {
+    $users     = Ubmod_Model_Job::getActivityList($params);
+    $userCount = count($users);
+
+    foreach ($users as $user) {
+      if ($user['wallt'] == 0) { continue; }
+
+      // Always include the first ($maxUsers - 1) users. If the number
+      // of users is less than or equal to $maxUsers, include them all
+      // (this is the case were there is no "other" user).
+      if ($userCount <= $maxUsers || count($topUsers) < $maxUsers - 1) {
         $topUsers[] = $user;
         $serieForUserId[$user['user_id']] = array();
       }
@@ -652,6 +660,7 @@ class Ubmod_Model_Chart
 
     foreach ($months as $monthKey => $month) {
       $otherWallt = 0;
+      $userWallt  = array();
 
       $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
       $monthNames[] = date("M 'y", $time);
@@ -663,10 +672,18 @@ class Ubmod_Model_Chart
 
       foreach (Ubmod_Model_Job::getActivityList($monthParams) as $user) {
         if (isset($serieForUserId[$user['user_id']])) {
-          $serieForUserId[$user['user_id']][] = $user['wallt'];
+          $userWallt[$user['user_id']] = $user['wallt'];
         } else {
           $otherWallt += $user['wallt'];
         }
+      }
+
+      // It's possible a top user may not have any activity in a given
+      // month, so zeros must be added when that is the case.
+      foreach ($topUsers as $user) {
+        $userId = $user['user_id'];
+        $serieForUserId[$userId][]
+          = isset($userWallt[$userId]) ? $userWallt[$userId] : 0;
       }
 
       if ($otherWallt > 0) { $haveOther = true; }
@@ -681,7 +698,9 @@ class Ubmod_Model_Chart
       $serieForUser[$name] = $serieForUserId[$user['user_id']];
     }
 
-    $serieForUser[$otherUser] = $otherSerie;
+    if ($haveOther) {
+      $serieForUser[$otherUser] = $otherSerie;
+    }
 
     self::renderStackedAreaChart(array(
       'width'      => 400,
@@ -716,8 +735,16 @@ class Ubmod_Model_Chart
     // array( group_id => array( wallt, ... ), ... )
     $serieForGroupId = array();
 
-    foreach (Ubmod_Model_Job::getActivityList($params) as $group) {
-      if (count($topGroups) < $maxGroups - 1 && count($group) >= $maxGroups) {
+    $groups     = Ubmod_Model_Job::getActivityList($params);
+    $groupCount = count($groups);
+
+    foreach ($groups as $group) {
+      if ($group['wallt'] == 0) { continue; }
+
+      // Always include the first ($maxGroups - 1) groups. If the number
+      // of groups is less than or equal to $maxGroups, include them all
+      // (this is the case were there is no "other" group).
+      if ($groupCount <= $maxGroups || count($topGroups) < $maxGroups - 1) {
         $topGroups[] = $group;
         $serieForGroupId[$group['group_id']] = array();
       }
@@ -731,6 +758,7 @@ class Ubmod_Model_Chart
     $monthNames = array();
 
     foreach ($months as $monthKey => $month) {
+      $groupWallt = array();
       $otherWallt = 0;
 
       $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
@@ -743,10 +771,18 @@ class Ubmod_Model_Chart
 
       foreach (Ubmod_Model_Job::getActivityList($monthParams) as $group) {
         if (isset($serieForGroupId[$group['group_id']])) {
-          $serieForGroupId[$group['group_id']][] = $group['wallt'];
+          $groupWallt[$group['group_id']] = $group['wallt'];
         } else {
           $otherWallt += $group['wallt'];
         }
+      }
+
+      // It's possible a top group may not have any activity in a given
+      // month, so zeros must be added when that is the case.
+      foreach ($topGroups as $group) {
+        $groupId = $group['group_id'];
+        $serieForGroupId[$groupId][]
+          = isset($groupWallt[$groupId]) ? $groupWallt[$groupId] : 0;
       }
 
       if ($otherWallt > 0) { $haveOther = true; }
@@ -761,7 +797,9 @@ class Ubmod_Model_Chart
       $serieForGroup[$name] = $serieForGroupId[$group['group_id']];
     }
 
-    $serieForGroup[$otherGroup] = $otherSerie;
+    if ($haveOther) {
+      $serieForGroup[$otherGroup] = $otherSerie;
+    }
 
     self::renderStackedAreaChart(array(
       'width'      => 400,
@@ -796,8 +834,16 @@ class Ubmod_Model_Chart
     // array( value => array( wallt, ... ), ... )
     $serieForTagValue = array();
 
+    $tags     = Ubmod_Model_Tag::getActivityList($params);
+    $tagCount = count($tags);
+
     foreach (Ubmod_Model_Tag::getActivityList($params) as $tag) {
-      if (count($topTags) < $maxTags - 1 && count($tag) >= $maxTags) {
+      if ($tag['wallt'] == 0) { continue; }
+
+      // Always include the first ($maxTags - 1) tags. If the number
+      // of tags is less than or equal to $maxTags, include them all
+      // (this is the case were there is no "other" tag).
+      if ($tagCount <= $maxTags || count($topTags) < $maxTags - 1) {
         $topTags[] = $tag;
         $serieForTagValue[$tag['tag_value']] = array();
       }
@@ -811,6 +857,7 @@ class Ubmod_Model_Chart
     $monthNames = array();
 
     foreach ($months as $monthKey => $month) {
+      $tagWallt   = array();
       $otherWallt = 0;
 
       $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
@@ -823,11 +870,18 @@ class Ubmod_Model_Chart
 
       foreach (Ubmod_Model_Tag::getActivityList($monthParams) as $tag) {
         if (isset($serieForTagValue[$tag['tag_value']])) {
-          $serieForTagValue[$tag['tag_value']][] = $tag['wallt'];
+          $tagWallt[$tag['tag_value']] = $tag['wallt'];
         } else {
           $otherWallt += $tag['wallt'];
         }
+      }
 
+      // It's possible a top tag may not have any activity in a given
+      // month, so zeros must be added when that is the case.
+      foreach ($topTags as $tag) {
+        $tagValue = $tag['tag_value'];
+        $serieForTagValue[$tagValue][]
+          = isset($tagWallt[$tagValue]) ? $tagWallt[$tagValue] : 0;
       }
 
       if ($otherWallt > 0) { $haveOther = true; }
