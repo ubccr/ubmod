@@ -293,6 +293,8 @@ Ext.Loader.onReady(function () {
                 // considered changed until new dates have been set.
                 this.fireEvent('restparamschanged');
             }
+
+            this.fireEvent('intervalchanged', interval);
         },
 
         /**
