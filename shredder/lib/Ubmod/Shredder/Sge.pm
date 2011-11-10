@@ -51,41 +51,26 @@ my @entry_names = qw(
     ar_submission_time
 );
 
-# Mapping from SGE entry names to database field names
+# Mapping from generic event table to SGE specific event table
 my %map = (
-    job_number      => 'job_id',
-    task_number     => 'job_array_index',
-    qname           => 'queue',
-    owner           => 'user',
-    group           => 'group',
-    submission_time => 'ctime',
-    start_time      => 'start',
-    end_time        => 'end',
-    exit_status     => 'exit_status',
-    job_name        => 'jobname',
+    date_key        => 'FROM_UNIXTIME(MAX(end_time))',
+    job_id          => 'job_number',
+    job_array_index => 'task_number',
+    job_name        => 'job_name',
+    cluster         => 'cluster',
+    queue           => 'qname',
+    user            => 'owner',
+    group           => q{`group`},
     account         => 'account',
-    hostname        => 'exec_host',
-    maxvmem         => 'resources_used_vmem',
-    ru_maxrss       => 'resources_used_mem',
-    ru_wallclock    => 'resources_used_walltime',
-    slots           => 'resources_used_cpus',
-    cpu             => 'resources_used_cput',
-);
-
-# Mapping from SGE resource attributes to PBS resource attributes
-my %resource_map = (
-    s_rt    => 'resource_list_walltime',
-    h_rt    => 'resource_list_walltime',
-    s_cpu   => 'resource_list_cput',
-    h_cpu   => 'resource_list_cput',
-    s_data  => 'resource_list_mem',
-    h_data  => 'resource_list_mem',
-    s_stack => 'resource_list_mem',
-    h_stack => 'resource_list_mem',
-    s_rss   => 'resource_list_mem',
-    h_rss   => 'resource_list_mem',
-    s_vmem  => 'resource_list_mem',
-    h_vmem  => 'resource_list_mem',
+    start_time      => 'FROM_UNIXTIME(MIN(start_time))',
+    end_time        => 'FROM_UNIXTIME(MAX(end_time))',
+    submission_time => 'FROM_UNIXTIME(MIN(submission_time))',
+    wallt           => 'AVG(ru_wallclock)',
+    cput            => 'SUM(cpu)',
+    mem             => 'SUM(mem * 1024 * 1024 / cpu)',
+    vmem            => 'SUM(maxvmem) / 1024',
+    nodes           => 'COUNT(DISTINCT hostname)',
+    cpus            => 'slots',
 );
 
 sub new {
@@ -104,26 +89,47 @@ sub shred {
     return {} if length($line) <= 1;
 
     my @entries = split /:/, $line;
-    my %entries
-        = map { $entry_names[$_] => $entries[$_] } 0 .. scalar @entries - 1;
 
-    my %event = (
-        date_key             => $self->_from_unixtime( $entries{end_time} ),
-        type                 => 'E',
-        resources_used_nodes => 1,
-    );
-
-    $self->_set_resource_lists( \%event, $entries{category} );
-
-    while ( my ( $key, $value ) = each(%entries) ) {
-
-        # Skip entries that aren't included in the field map
-        next unless defined $map{$key};
-
-        $event{ $map{$key} } = $value;
+    if (scalar @entries != scalar @entry_names) {
+        die "Malformed SGE acct line: $line";
     }
 
+    my %event
+        = map { $entry_names[$_] => $entries[$_] } 0 .. scalar @entries - 1;
+
+    $self->_set_resource_lists( \%event, $event{category} );
+
+    $event{cluster} = $self->get_host();
+
     return \%event;
+}
+
+sub get_transform_query {
+    my ($self) = @_;
+
+    my @columns = map {qq[`$_`]} keys %map;
+    my $columns     = join( ',', @columns );
+    my $select_expr = join( ',', values %map );
+
+    my $sql = qq{
+        INSERT INTO event ( $columns )
+        SELECT $select_expr
+        FROM sge_event
+        WHERE start_time != 0
+        GROUP BY job_number, task_number
+    };
+
+    return $sql;
+}
+
+sub set_host {
+    my ($self, $host) = @_;
+    $self->{host} = $host;
+}
+
+sub get_host {
+    my ($self) = @_;
+    return $self->{host};
 }
 
 sub _set_resource_lists {
@@ -163,14 +169,7 @@ sub _parse_resource_list_options {
     foreach my $option (@options) {
         my ( $key, $value ) = split /=/, $option, 2;
 
-        # Skip options that aren't included in the resource map
-        next unless defined $resource_map{$key};
-
-        push @{ $resources{ $resource_map{$key} } }, $option;
-    }
-
-    foreach my $key ( keys %resources ) {
-        $resources{$key} = join ',', @{ $resources{$key} };
+        $resources{"resource_list_$key"} = $value;
     }
 
     return \%resources;
@@ -181,19 +180,7 @@ sub _parse_parallel_environment_options {
 
     my ( $env, $slots ) = split /\s+/, $options;
 
-    return { resource_list_ncpus => $slots };
-}
-
-sub _from_unixtime {
-    my ( $self, $time ) = @_;
-
-    my ( $sec, $min, $hour, $mday, $mon, $year ) = localtime($time);
-
-    return sprintf(
-        '%04d-%02d-%02d %02d:%02d:%02d',
-        $year + 1900,
-        $mon + 1, $mday, $hour, $min, $sec
-    );
+    return { resource_list_slots => $slots };
 }
 
 1;

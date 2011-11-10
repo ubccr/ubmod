@@ -14,7 +14,7 @@ use Ubmod::Logger;
 # Global variables
 my $Dbh;
 my $Logger;
-my $Host;
+my $Format;
 
 sub main {
     my ($stdio,  $file,     $dir,    $host,    $shred,
@@ -57,7 +57,8 @@ sub main {
             exit 1;
         }
 
-        my $shredder_class = 'Ubmod::Shredder::' . ucfirst( lc($format) );
+        $Format = lc $format;
+        my $shredder_class = 'Ubmod::Shredder::' . ucfirst $Format;
 
         if ( !eval("require $shredder_class") ) {
             $Logger->fatal("Unknown input format specified.");
@@ -66,7 +67,7 @@ sub main {
 
         my $shredder = $shredder_class->new();
 
-        $Host = $host if defined $host;
+        $shredder->set_host($host) if defined $host;
 
         $Logger->info("Shredding.");
 
@@ -89,6 +90,8 @@ sub main {
 
         $Logger->info("Total shredded: $count");
         $Logger->info("Done shredding!");
+
+        transform_data($shredder);
     }
 
     if ($update) {
@@ -266,12 +269,7 @@ sub process_fh {
         # Skip empty events
         next unless %$event;
 
-        $event->{host} = $Host if defined $Host;
-
-        my $event_id = insert_event($event);
-        foreach my $host ( @{ $event->{hosts} } ) {
-            insert_host_log( { %$host, event_id => $event_id } );
-        }
+        insert_native_event($event);
         $count++;
     }
 
@@ -286,89 +284,14 @@ sub db_connect {
     $Dbh = DBI->connect( $dsn, $user, $pass );
 }
 
-sub insert_event {
+sub insert_native_event {
     my ($event) = @_;
-    my $sth = $Dbh->prepare(
-        q{
-            INSERT INTO event SET
-                date_key = ?,
-                job_id = ?,
-                job_array_index = ?,
-                host = LOWER(?),
-                type = ?,
-                user = LOWER(?),
-                ugroup = LOWER(?),
-                queue = LOWER(?),
-                ctime = FROM_UNIXTIME(?),
-                qtime = FROM_UNIXTIME(?),
-                start = FROM_UNIXTIME(?),
-                end = FROM_UNIXTIME(?),
-                etime = FROM_UNIXTIME(?),
-                exit_status = ?,
-                session = ?,
-                requestor = ?,
-                jobname = ?,
-                account = ?,
-                exec_host = ?,
-                resources_used_vmem = ?,
-                resources_used_mem = ?,
-                resources_used_walltime = ?,
-                resources_used_nodes = ?,
-                resources_used_cpus = ?,
-                resources_used_cput = ?,
-                resource_list_nodes = ?,
-                resource_list_procs = ?,
-                resource_list_neednodes = ?,
-                resource_list_pcput = ?,
-                resource_list_cput = ?,
-                resource_list_walltime = ?,
-                resource_list_ncpus = ?,
-                resource_list_nodect = ?,
-                resource_list_mem = ?,
-                resource_list_pmem = ?
-        }
-    );
-    $sth->execute(
-        @$event{
-            qw(
-                date_key
-                job_id
-                job_array_index
-                host
-                type
-                user
-                group
-                queue
-                ctime
-                qtime
-                start
-                end
-                etime
-                exit_status
-                session
-                requestor
-                jobname
-                account
-                exec_host
-                resources_used_vmem
-                resources_used_mem
-                resources_used_walltime
-                resources_used_nodes
-                resources_used_cpus
-                resources_used_cput
-                resource_list_nodes
-                resource_list_procs
-                resource_list_neednodes
-                resource_list_pcput
-                resource_list_cput
-                resource_list_walltime
-                resource_list_ncpus
-                resource_list_nodect
-                resource_list_mem
-                resource_list_pmem
-                )
-            }
-    );
+
+    my $sql = qq[ INSERT INTO ${Format}_event SET ];
+    my @pairs = map {qq[ `$_` = ? ]} keys %$event;
+    $sql .= join( ',', @pairs );
+    my $sth = $Dbh->prepare($sql);
+    $sth->execute( values %$event );
 
     return $Dbh->{mysql_insertid};
 }
@@ -423,6 +346,17 @@ sub get_file_names {
     }
 
     return \@files;
+}
+
+sub transform_data {
+    my ($shredder) = @_;
+
+    # XXX move this somewhere else or limit the events that are
+    # transformed by the query below
+    $Dbh->do(q{ DELETE FROM event });
+
+    my $sql = $shredder->get_transform_query();
+    return $Dbh->do($sql);
 }
 
 main(@ARGV) unless caller();

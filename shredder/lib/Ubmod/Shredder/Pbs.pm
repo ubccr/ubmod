@@ -26,6 +26,28 @@ my %formats = (
     resource_list_pmem      => 'memory',
 );
 
+# Mapping from generic event table to PBS specific event table
+my %map = (
+    date_key        => 'date_key',
+    job_id          => 'job_id',
+    job_array_index => 'job_array_index',
+    job_name        => 'jobname',
+    cluster         => 'LOWER(host)',
+    queue           => 'LOWER(queue)',
+    user            => 'LOWER(user)',
+    group           => 'LOWER(`group`)',
+    account         => 'account',
+    start_time      => 'FROM_UNIXTIME(start)',
+    end_time        => 'FROM_UNIXTIME(end)',
+    submission_time => 'FROM_UNIXTIME(ctime)',
+    wallt           => 'resources_used_walltime',
+    cput            => 'resources_used_cput',
+    mem             => 'resources_used_mem',
+    vmem            => 'resources_used_vmem',
+    nodes           => 'resources_used_nodes',
+    cpus            => 'resources_used_cpus',
+);
+
 sub new {
     my ($class) = @_;
     my $self = {};
@@ -50,6 +72,8 @@ sub shred {
 
     $self->_set_job_id_and_host( $event, $job_id );
 
+    $event->{host} = $self->get_host() if $self->has_host();
+
     my @parts = split /\s+/, $params;
 
     foreach my $part (@parts) {
@@ -71,6 +95,38 @@ sub shred {
     }
 
     return $event;
+}
+
+sub get_transform_query {
+    my ($self) = @_;
+
+    my @columns = map {qq[`$_`]} keys %map;
+    my $columns     = join( ',', @columns );
+    my $select_expr = join( ',', values %map );
+
+    my $sql = qq{
+        INSERT INTO event ( $columns )
+        SELECT $select_expr
+        FROM pbs_event
+        WHERE type = 'E'
+    };
+
+    return $sql;
+}
+
+sub set_host {
+    my ($self, $host) = @_;
+    $self->{host} = $host;
+}
+
+sub get_host {
+    my ($self) = @_;
+    return $self->{host};
+}
+
+sub has_host {
+    my ($self) = @_;
+    return exists $self->{host};
 }
 
 sub _parse_time {
@@ -135,7 +191,6 @@ sub _set_exec_host {
 
     $event->{resources_used_nodes} = $nodes;
     $event->{resources_used_cpus}  = $cpus;
-    $event->{hosts}                = $hosts;
 }
 
 sub _parse_hosts {

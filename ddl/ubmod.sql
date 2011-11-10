@@ -36,6 +36,8 @@
  * Contributor(s): -;
  *
  */
+ drop table if exists pbs_event ;
+ drop table if exists sge_event ;
  drop table if exists event ;
  drop table if exists research_group ;
  drop table if exists user ;
@@ -57,9 +59,9 @@
  drop table if exists actual_wait_time ;
 
 
--- event
-create table event (
-  event_id                   bigint unsigned auto_increment not null,
+-- pbs_event
+create table pbs_event (
+  pbs_event_id              bigint unsigned auto_increment not null,
   date_key                  datetime,
   job_id                    int unsigned not null,
   job_array_index           int unsigned,
@@ -67,17 +69,21 @@ create table event (
   queue                     varchar(255),
   type                      char(1) not null,
   user                      varchar(255),
-  ugroup                    varchar(255),
-  ctime                     datetime,
-  qtime                     datetime,
-  start                     datetime,
-  end                       datetime,
-  etime                     datetime,
+  `group`                   varchar(255),
+  ctime                     int,
+  qtime                     int,
+  start                     int,
+  end                       int,
+  etime                     int,
   exit_status               int,
   session                   int unsigned,
   requestor                 varchar(255),
   jobname                   varchar(255),
+  owner                     varchar(255),
   account                   varchar(255),
+  session_id                int,
+  error_path                varchar(255),
+  output_path               varchar(255),
   exec_host                 text,
   resources_used_vmem       bigint unsigned,
   resources_used_mem        bigint unsigned,
@@ -89,13 +95,121 @@ create table event (
   resource_list_procs       text,
   resource_list_neednodes   text,
   resource_list_pcput       bigint unsigned,
-  resource_list_cput        text,
-  resource_list_walltime    text,
-  resource_list_ncpus       text,
+  resource_list_cput        bigint unsigned,
+  resource_list_walltime    bigint unsigned,
+  resource_list_ncpus       tinyint unsigned,
   resource_list_nodect      int unsigned,
-  resource_list_mem         text,
+  resource_list_mem         bigint unsigned,
   resource_list_pmem        bigint unsigned,
+  constraint pk_Pbs_event primary key (pbs_event_id)
+) ;
+
+-- sge_event
+create table sge_event (
+  sge_event_id              bigint unsigned auto_increment not null,
+  cluster                   varchar(255),
+  qname                     varchar(255),
+  hostname                  varchar(255) not null,
+  `group`                   varchar(255),
+  owner                     varchar(255),
+  job_name                  varchar(255),
+  job_number                int unsigned not null,
+  account                   varchar(255),
+  priority                  tinyint,
+  submission_time           int,
+  start_time                int,
+  end_time                  int,
+  failed                    int,
+  exit_status               int,
+  ru_wallclock              int,
+  ru_utime                  DECIMAL(32,6),
+  ru_stime                  DECIMAL(32,6),
+  ru_maxrss                 int,
+  ru_ixrss                  int,
+  ru_ismrss                 int,
+  ru_idrss                  int,
+  ru_isrss                  int,
+  ru_minflt                 int,
+  ru_majflt                 int,
+  ru_nswap                  int,
+  ru_inblock                int,
+  ru_oublock                int,
+  ru_msgsnd                 int,
+  ru_msgrcv                 int,
+  ru_nsignals               int,
+  ru_nvcsw                  int,
+  ru_nivcsw                 int,
+  project                   varchar(255),
+  department                varchar(255),
+  granted_pe                varchar(255),
+  slots                     int,
+  task_number               int,
+  cpu                       DECIMAL(32,6),
+  mem                       DECIMAL(32,6),
+  io                        DECIMAL(32,6),
+  category                  text,
+  iow                       DECIMAL(32,6),
+  pe_taskid                 int,
+  maxvmem                   bigint,
+  arid                      int,
+  ar_submission_time        int,
+  resource_list_qname            varchar(255),
+  resource_list_hostname         varchar(255),
+  resource_list_notify           int,
+  resource_list_calendar         varchar(255),
+  resource_list_min_cpu_interval int,
+  resource_list_tmpdir           varchar(255),
+  resource_list_seq_no           int,
+  resource_list_s_rt             bigint,
+  resource_list_h_rt             bigint,
+  resource_list_s_cpu            bigint,
+  resource_list_h_cpu            bigint,
+  resource_list_s_data           bigint,
+  resource_list_h_data           bigint,
+  resource_list_s_stack          bigint,
+  resource_list_h_stack          bigint,
+  resource_list_s_core           bigint,
+  resource_list_h_core           bigint,
+  resource_list_s_rss            bigint,
+  resource_list_h_rss            bigint,
+  resource_list_slots            varchar(255),
+  resource_list_s_vmem           bigint,
+  resource_list_h_vmem           bigint,
+  resource_list_s_fsize          bigint,
+  resource_list_h_fsize          bigint,
+  constraint pk_Sge_event primary key (sge_event_id)
+) ;
+
+-- event
+create table event (
+  event_id                  bigint unsigned auto_increment not null,
+  date_key                  datetime not null,
+  job_id                    int unsigned not null,
+  job_array_index           int unsigned,
+  job_name                  varchar(255),
+  cluster                   varchar(255) not null,
+  queue                     varchar(255) not null,
+  user                      varchar(255) not null,
+  `group`                   varchar(255) not null,
+  account                   varchar(255),
+  start_time                datetime not null,
+  end_time                  datetime not null,
+  submission_time           datetime not null,
+  wallt                     bigint unsigned not null,
+  cput                      bigint unsigned not null,
+  mem                       bigint unsigned not null,
+  vmem                      bigint unsigned not null,
+  nodes                     int unsigned not null,
+  cpus                      int unsigned not null,
   constraint pk_Event primary key (event_id)
+) ;
+
+-- host_log
+create table host_log (
+  event_id                  bigint unsigned not null,
+  host                      varchar(255) not null,
+  cpu                       tinyint unsigned not null,
+  constraint pk_Host_log primary key (event_id,host,cpu)
 ) ;
 
 -- research_group
@@ -112,14 +226,6 @@ create table user (
   user                      varchar(255) not null,
   display_name              varchar(255),
   constraint pk_User primary key (user_id)
-) ;
-
--- host_log
-create table host_log (
-  event_id                  bigint unsigned not null,
-  host                      varchar(255) not null,
-  cpu                       tinyint unsigned not null,
-  constraint pk_Host_log primary key (event_id,host,cpu)
 ) ;
 
 -- time_interval
@@ -265,10 +371,9 @@ create table actual_wait_time (
 ) ;
 
 create index date_key_x on event  (date_key) ;
-create index type_x on event  (type) ;
 create index job_id_x on event  (job_id) ;
 create index queue_x on event  (queue) ;
 create index user_x on event  (user) ;
-create index group_x on event  (ugroup) ;
-create index host_x on event  (host) ;
+create index group_x on event  (`group`) ;
+create index cluster_x on event  (cluster) ;
 

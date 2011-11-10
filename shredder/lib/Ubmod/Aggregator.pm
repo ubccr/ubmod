@@ -39,20 +39,20 @@ sub aggregate {
 sub _update_clusters {
     my ($self) = @_;
 
-    my %clusters = map { $_->{host} => $_ } @{ $self->_select_clusters() };
+    my %clusters = map { $_->{cluster} => $_ } @{ $self->_select_clusters() };
 
     foreach my $cluster ( @{ $self->_select_event_clusters() } ) {
-        my $host = $cluster->{host};
-        if ( !defined $clusters{$host} ) {
-            $self->{logger}->info("Adding new cluster: $host");
-            my $id = $self->_insert_cluster( { host => $host } );
+        my $name = $cluster->{cluster};
+        if ( !defined $clusters{$name} ) {
+            $self->{logger}->info("Adding new cluster: $name");
+            my $id = $self->_insert_cluster( { cluster => $name } );
             $self->{logger}
                 ->info("Successfully inserted new cluster with id: $id");
             $cluster->{cluster_id} = $id;
-            $clusters{$host} = $cluster;
+            $clusters{$name} = $cluster;
         }
         else {
-            $self->{logger}->info("Cluster '$host' already exists.");
+            $self->{logger}->info("Cluster '$name' already exists.");
         }
     }
 
@@ -79,7 +79,7 @@ sub _update_queues {
             $queue->{queue_id} = $queues{$name}->{queue_id};
         }
 
-        if ( my $cluster = $clusters->{ $queue->{host} } ) {
+        if ( my $cluster = $clusters->{ $queue->{cluster} } ) {
             my $params = {
                 queue_id   => $queue->{queue_id},
                 cluster_id => $cluster->{cluster_id},
@@ -98,7 +98,7 @@ sub _update_groups {
     my %groups = map { $_->{group_name} => $_ } @{ $self->_select_groups() };
 
     foreach my $group ( @{ $self->_select_event_groups() } ) {
-        my $name = $group->{ugroup};
+        my $name = $group->{group};
         if ( !defined $groups{$name} ) {
             $self->{logger}->info("Adding new group: $name");
             my $id = $self->_insert_group( { group_name => $name } );
@@ -112,7 +112,7 @@ sub _update_groups {
             $group->{group_id} = $groups{$name}->{group_id};
         }
 
-        if ( my $cluster = $clusters->{ $group->{host} } ) {
+        if ( my $cluster = $clusters->{ $group->{cluster} } ) {
             my $params = {
                 group_id   => $group->{group_id},
                 cluster_id => $cluster->{cluster_id},
@@ -147,13 +147,13 @@ sub _update_users {
 
         my $params = { user_id => $user->{user_id} };
 
-        if ( my $cluster = $clusters->{ $user->{host} } ) {
+        if ( my $cluster = $clusters->{ $user->{cluster} } ) {
             $params->{cluster_id} = $cluster->{cluster_id};
             $self->_delete_user_cluster($params);
             $self->_insert_user_cluster($params);
         }
 
-        if ( my $group = $groups->{ $user->{ugroup} } ) {
+        if ( my $group = $groups->{ $user->{group} } ) {
             $params->{group_id} = $group->{group_id};
             $self->_delete_user_group($params);
             $self->_insert_user_group($params);
@@ -213,7 +213,7 @@ sub _update_cluster_activity {
 
         foreach my $activity (@$activities) {
             my $id      = $self->_insert_activity($activity);
-            my $cluster = $clusters->{ $activity->{host} };
+            my $cluster = $clusters->{ $activity->{cluster} };
             if ( !defined $cluster ) {
                 $self->{logger}->info("Skipping cluster activity.");
                 next;
@@ -241,7 +241,7 @@ sub _update_queue_activity {
 
         foreach my $activity (@$activities) {
             my $id      = $self->_insert_activity($activity);
-            my $cluster = $clusters->{ $activity->{host} };
+            my $cluster = $clusters->{ $activity->{cluster} };
             my $queue   = $queues->{ $activity->{queue} };
             if ( !defined $cluster || !defined $queue ) {
                 $self->{logger}->info("Skipping queue activity.");
@@ -271,8 +271,8 @@ sub _update_group_activity {
 
         foreach my $activity (@$activities) {
             my $id      = $self->_insert_activity($activity);
-            my $cluster = $clusters->{ $activity->{host} };
-            my $group   = $groups->{ $activity->{ugroup} };
+            my $cluster = $clusters->{ $activity->{cluster} };
+            my $group   = $groups->{ $activity->{group} };
             if ( !defined $cluster || !defined $group ) {
                 $self->{logger}->info("Skipping group activity.");
                 next;
@@ -300,7 +300,7 @@ sub _update_user_activity {
 
         foreach my $activity (@$activities) {
             my $id      = $self->_insert_activity($activity);
-            my $cluster = $clusters->{ $activity->{host} };
+            my $cluster = $clusters->{ $activity->{cluster} };
             my $user    = $users->{ $activity->{user} };
             if ( !defined $cluster || !defined $user ) {
                 $self->{logger}->info("Skipping user activity.");
@@ -331,7 +331,7 @@ sub _update_cpu_consumption {
             foreach my $min_max (@$cpus) {
                 my ( $min, $max ) = @$min_max;
                 my $consumption = $self->_select_cpu_consumption(
-                    {   host  => $cluster->{host},
+                    {   cluster  => $cluster->{cluster},
                         start => $interval->{start},
                         end   => $interval->{end},
                         min   => $min,
@@ -344,7 +344,8 @@ sub _update_cpu_consumption {
                 if ( !defined $consumption->{cput} ) {
                     $self->{logger}->warn( "No cput found for cpus $label"
                             . " for time period $interval->{start}"
-                            . " - $interval->{end} for cluster $cluster->{host}"
+                            . " - $interval->{end}"
+                            . " for cluster $cluster->{cluster}"
                     );
                     $consumption->{cput} = 0;
                 }
@@ -377,7 +378,7 @@ sub _update_actual_wait_time {
             foreach my $min_max (@$cpus) {
                 my ( $min, $max ) = @$min_max;
                 my $wait_time = $self->_select_actual_wait_time(
-                    {   host  => $cluster->{host},
+                    {   cluster  => $cluster->{cluster},
                         start => $interval->{start},
                         end   => $interval->{end},
                         min   => $min,
@@ -390,7 +391,8 @@ sub _update_actual_wait_time {
                 if ( !defined $wait_time->{avg_wait} ) {
                     $self->{logger}->warn( "No avg_wait found for cpus $label"
                             . " for time period $interval->{start}"
-                            . " - $interval->{end} for cluster $cluster->{host}"
+                            . " - $interval->{end}"
+                            . " for cluster $cluster->{cluster}"
                     );
                     $wait_time->{avg_wait} = 0;
                 }
@@ -445,8 +447,11 @@ sub _get_cpu_min_max_label {
 sub _select_clusters {
     my ($self) = @_;
 
-    return $self->{dbh}
-        ->selectall_arrayref( q{ SELECT * FROM cluster }, { Slice => {} } );
+    my $sql = q{
+        SELECT cluster_id, host AS cluster, display_name
+        FROM cluster
+    };
+    return $self->{dbh}->selectall_arrayref( $sql, { Slice => {} } );
 }
 
 sub _select_queues {
@@ -475,7 +480,7 @@ sub _select_event_clusters {
     my ($self) = @_;
 
     return $self->{dbh}->selectall_arrayref(
-        q{ SELECT DISTINCT host FROM event WHERE host IS NOT NULL },
+        q{ SELECT DISTINCT cluster FROM event WHERE cluster IS NOT NULL },
         { Slice => {} } );
 }
 
@@ -484,10 +489,10 @@ sub _select_event_queues {
 
     return $self->{dbh}->selectall_arrayref(
         q{
-            SELECT host, queue
+            SELECT cluster, queue
             FROM event
-            WHERE host IS NOT NULL AND queue IS NOT NULL
-            GROUP BY host, queue
+            WHERE cluster IS NOT NULL AND queue IS NOT NULL
+            GROUP BY cluster, queue
         },
         { Slice => {} }
     );
@@ -498,10 +503,10 @@ sub _select_event_groups {
 
     return $self->{dbh}->selectall_arrayref(
         q{
-            SELECT host, ugroup
+            SELECT cluster, `group`
             FROM event
-            WHERE host IS NOT NULL AND ugroup IS NOT NULL
-            GROUP BY host, ugroup
+            WHERE cluster IS NOT NULL AND `group` IS NOT NULL
+            GROUP BY cluster, `group`
         },
         { Slice => {} }
     );
@@ -512,10 +517,10 @@ sub _select_event_users {
 
     return $self->{dbh}->selectall_arrayref(
         q{
-            SELECT host, user, queue, ugroup
+            SELECT cluster, user, queue, `group`
             FROM event
-            WHERE host IS NOT NULL AND user IS NOT NULL
-            GROUP BY host, user, queue, ugroup
+            WHERE cluster IS NOT NULL AND user IS NOT NULL
+            GROUP BY cluster, user, queue, `group`
         },
         { Slice => {} }
     );
@@ -527,41 +532,41 @@ sub _select_cluster_activity {
     return $self->{dbh}->selectall_arrayref(
         q{
             SELECT
-                host,
+                cluster,
                 queue,
                 user,
-                ugroup,
+                `group`,
                 COUNT(DISTINCT(user)) AS user_count,
-                COUNT(DISTINCT(ugroup)) AS group_count,
+                COUNT(DISTINCT(`group`)) AS group_count,
                 COUNT(*) as jobs,
-                SUM(resources_used_walltime * resources_used_cpus) AS wallt,
-                ROUND(AVG(resources_used_walltime * resources_used_cpus)) AS avg_wallt,
-                MAX(resources_used_walltime * resources_used_cpus) AS max_wallt,
-                SUM(resources_used_cput) AS cput,
-                ROUND(AVG(resources_used_cput)) AS avg_cput,
-                MAX(resources_used_cput) AS max_cput,
-                ROUND(AVG(resources_used_mem)) AS avg_mem,
-                MAX(resources_used_mem) AS max_mem,
-                ROUND(AVG(resources_used_vmem)) AS avg_vmem,
-                MAX(resources_used_vmem) AS max_vmem,
+                SUM(wallt * cpus) AS wallt,
+                ROUND(AVG(wallt * cpus)) AS avg_wallt,
+                MAX(wallt * cpus) AS max_wallt,
+                SUM(cput) AS cput,
+                ROUND(AVG(cput)) AS avg_cput,
+                MAX(cput) AS max_cput,
+                ROUND(AVG(mem)) AS avg_mem,
+                MAX(mem) AS max_mem,
+                ROUND(AVG(vmem)) AS avg_vmem,
+                MAX(vmem) AS max_vmem,
                 ROUND(AVG(
-                    CASE WHEN UNIX_TIMESTAMP(start) - UNIX_TIMESTAMP(ctime) > 0 
-                         THEN UNIX_TIMESTAMP(start) - UNIX_TIMESTAMP(ctime)
+                    CASE WHEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time) > 0 
+                         THEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time)
                          ELSE 0 END
                 )) AS avg_wait,
                 ROUND(AVG(
-                    CASE WHEN UNIX_TIMESTAMP(end) - UNIX_TIMESTAMP(start) > 0
-                         THEN UNIX_TIMESTAMP(end) - UNIX_TIMESTAMP(start)
+                    CASE WHEN UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time) > 0
+                         THEN UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time)
                          ELSE 0 END
                 )) AS avg_exect,
-                ROUND(AVG(resources_used_nodes)) AS avg_nodes,
-                MAX(resources_used_nodes) AS max_nodes,
-                ROUND(AVG(resources_used_cpus)) AS avg_cpus,
-                MAX(resources_used_cpus) AS max_cpus
+                ROUND(AVG(nodes)) AS avg_nodes,
+                MAX(nodes) AS max_nodes,
+                ROUND(AVG(cpus)) AS avg_cpus,
+                MAX(cpus) AS max_cpus
             FROM event e
             WHERE
-                type = 'E' AND date_key BETWEEN ? AND ?
-            GROUP BY host
+                date_key BETWEEN ? AND ?
+            GROUP BY cluster
         },
         { Slice => {} },
         @$interval{qw( start end )}
@@ -574,41 +579,41 @@ sub _select_queue_activity {
     return $self->{dbh}->selectall_arrayref(
         q{
             SELECT
-                host,
+                cluster,
                 queue,
                 user,
-                ugroup,
+                `group`,
                 COUNT(DISTINCT(user)) AS user_count,
-                COUNT(DISTINCT(ugroup)) AS group_count,
+                COUNT(DISTINCT(`group`)) AS group_count,
                 COUNT(*) as jobs,
-                SUM(resources_used_walltime * resources_used_cpus) AS wallt,
-                ROUND(AVG(resources_used_walltime * resources_used_cpus)) AS avg_wallt,
-                MAX(resources_used_walltime * resources_used_cpus) AS max_wallt,
-                SUM(resources_used_cput) AS cput,
-                ROUND(AVG(resources_used_cput)) AS avg_cput,
-                MAX(resources_used_cput) AS max_cput,
-                ROUND(AVG(resources_used_mem)) AS avg_mem,
-                MAX(resources_used_mem) AS max_mem,
-                ROUND(AVG(resources_used_vmem)) AS avg_vmem,
-                MAX(resources_used_vmem) AS max_vmem,
+                SUM(wallt * cpus) AS wallt,
+                ROUND(AVG(wallt * cpus)) AS avg_wallt,
+                MAX(wallt * cpus) AS max_wallt,
+                SUM(cput) AS cput,
+                ROUND(AVG(cput)) AS avg_cput,
+                MAX(cput) AS max_cput,
+                ROUND(AVG(mem)) AS avg_mem,
+                MAX(mem) AS max_mem,
+                ROUND(AVG(vmem)) AS avg_vmem,
+                MAX(vmem) AS max_vmem,
                 ROUND(AVG(
-                    CASE WHEN UNIX_TIMESTAMP(start) - UNIX_TIMESTAMP(ctime) > 0 
-                         THEN UNIX_TIMESTAMP(start) - UNIX_TIMESTAMP(ctime)
+                    CASE WHEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time) > 0 
+                         THEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time)
                          ELSE 0 END
                 )) AS avg_wait,
                 ROUND(AVG(
-                    CASE WHEN UNIX_TIMESTAMP(end) - UNIX_TIMESTAMP(start) > 0
-                         THEN UNIX_TIMESTAMP(end) - UNIX_TIMESTAMP(start)
+                    CASE WHEN UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time) > 0
+                         THEN UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time)
                          ELSE 0 END
                 )) AS avg_exect,
-                ROUND(AVG(resources_used_nodes)) AS avg_nodes,
-                MAX(resources_used_nodes) AS max_nodes,
-                ROUND(AVG(resources_used_cpus)) AS avg_cpus,
-                MAX(resources_used_cpus) AS max_cpus
+                ROUND(AVG(nodes)) AS avg_nodes,
+                MAX(nodes) AS max_nodes,
+                ROUND(AVG(cpus)) AS avg_cpus,
+                MAX(cpus) AS max_cpus
             FROM event e
-            WHERE type = 'E' AND date_key BETWEEN ? AND ?
-            AND host IS NOT NULL AND queue IS NOT NULL
-            GROUP BY host, queue
+            WHERE date_key BETWEEN ? AND ?
+            AND cluster IS NOT NULL AND queue IS NOT NULL
+            GROUP BY cluster, queue
         },
         { Slice => {} },
         @$interval{qw( start end )}
@@ -621,41 +626,40 @@ sub _select_group_activity {
     return $self->{dbh}->selectall_arrayref(
         q{
             SELECT
-                host,
+                cluster,
                 queue,
                 user,
-                ugroup,
+                `group`,
                 COUNT(DISTINCT(user)) AS user_count,
-                COUNT(DISTINCT(ugroup)) AS group_count,
+                COUNT(DISTINCT(`group`)) AS group_count,
                 COUNT(*) as jobs,
-                SUM(resources_used_walltime * resources_used_cpus) AS wallt,
-                ROUND(AVG(resources_used_walltime * resources_used_cpus)) AS avg_wallt,
-                MAX(resources_used_walltime * resources_used_cpus) AS max_wallt,
-                SUM(resources_used_cput) AS cput,
-                ROUND(AVG(resources_used_cput)) AS avg_cput,
-                MAX(resources_used_cput) AS max_cput,
-                ROUND(AVG(resources_used_mem)) AS avg_mem,
-                MAX(resources_used_mem) AS max_mem,
-                ROUND(AVG(resources_used_vmem)) AS avg_vmem,
-                MAX(resources_used_vmem) AS max_vmem,
+                SUM(wallt * cpus) AS wallt,
+                ROUND(AVG(wallt * cpus)) AS avg_wallt,
+                MAX(wallt * cpus) AS max_wallt,
+                SUM(cput) AS cput,
+                ROUND(AVG(cput)) AS avg_cput,
+                MAX(cput) AS max_cput,
+                ROUND(AVG(mem)) AS avg_mem,
+                MAX(mem) AS max_mem,
+                ROUND(AVG(vmem)) AS avg_vmem,
+                MAX(vmem) AS max_vmem,
                 ROUND(AVG(
-                    CASE WHEN UNIX_TIMESTAMP(start) - UNIX_TIMESTAMP(ctime) > 0 
-                         THEN UNIX_TIMESTAMP(start) - UNIX_TIMESTAMP(ctime)
+                    CASE WHEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time) > 0 
+                         THEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time)
                          ELSE 0 END
                 )) AS avg_wait,
                 ROUND(AVG(
-                    CASE WHEN UNIX_TIMESTAMP(end) - UNIX_TIMESTAMP(start) > 0
-                         THEN UNIX_TIMESTAMP(end) - UNIX_TIMESTAMP(start)
+                    CASE WHEN UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time) > 0
+                         THEN UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time)
                          ELSE 0 END
                 )) AS avg_exect,
-                ROUND(AVG(resources_used_nodes)) AS avg_nodes,
-                MAX(resources_used_nodes) AS max_nodes,
-                ROUND(AVG(resources_used_cpus)) AS avg_cpus,
-                MAX(resources_used_cpus) AS max_cpus
+                ROUND(AVG(nodes)) AS avg_nodes,
+                MAX(nodes) AS max_nodes,
+                ROUND(AVG(cpus)) AS avg_cpus,
+                MAX(cpus) AS max_cpus
             FROM event e
-            WHERE type = 'E'
-            AND date_key BETWEEN ? AND ?
-            GROUP BY host, ugroup
+            WHERE date_key BETWEEN ? AND ?
+            GROUP BY cluster, `group`
         },
         { Slice => {} },
         @$interval{qw( start end )}
@@ -668,41 +672,40 @@ sub _select_user_activity {
     return $self->{dbh}->selectall_arrayref(
         q{
             SELECT
-                host,
+                cluster,
                 queue,
                 user,
-                ugroup,
+                `group`,
                 COUNT(DISTINCT(user)) AS user_count,
-                COUNT(DISTINCT(ugroup)) AS group_count,
+                COUNT(DISTINCT(`group`)) AS group_count,
                 COUNT(*) as jobs,
-                SUM(resources_used_walltime * resources_used_cpus) AS wallt,
-                ROUND(AVG(resources_used_walltime * resources_used_cpus)) AS avg_wallt,
-                MAX(resources_used_walltime * resources_used_cpus) AS max_wallt,
-                SUM(resources_used_cput) AS cput,
-                ROUND(AVG(resources_used_cput)) AS avg_cput,
-                MAX(resources_used_cput) AS max_cput,
-                ROUND(AVG(resources_used_mem)) AS avg_mem,
-                MAX(resources_used_mem) AS max_mem,
-                ROUND(AVG(resources_used_vmem)) AS avg_vmem,
-                MAX(resources_used_vmem) AS max_vmem,
+                SUM(wallt * cpus) AS wallt,
+                ROUND(AVG(wallt * cpus)) AS avg_wallt,
+                MAX(wallt * cpus) AS max_wallt,
+                SUM(cput) AS cput,
+                ROUND(AVG(cput)) AS avg_cput,
+                MAX(cput) AS max_cput,
+                ROUND(AVG(mem)) AS avg_mem,
+                MAX(mem) AS max_mem,
+                ROUND(AVG(vmem)) AS avg_vmem,
+                MAX(vmem) AS max_vmem,
                 ROUND(AVG(
-                    CASE WHEN UNIX_TIMESTAMP(start) - UNIX_TIMESTAMP(ctime) > 0 
-                         THEN UNIX_TIMESTAMP(start) - UNIX_TIMESTAMP(ctime)
+                    CASE WHEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time) > 0 
+                         THEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time)
                          ELSE 0 END
                 )) AS avg_wait,
                 ROUND(AVG(
-                    CASE WHEN UNIX_TIMESTAMP(end) - UNIX_TIMESTAMP(start) > 0
-                         THEN UNIX_TIMESTAMP(end) - UNIX_TIMESTAMP(start)
+                    CASE WHEN UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time) > 0
+                         THEN UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time)
                          ELSE 0 END
                 )) AS avg_exect,
-                ROUND(AVG(resources_used_nodes)) AS avg_nodes,
-                MAX(resources_used_nodes) AS max_nodes,
-                ROUND(AVG(resources_used_cpus)) AS avg_cpus,
-                MAX(resources_used_cpus) AS max_cpus
+                ROUND(AVG(nodes)) AS avg_nodes,
+                MAX(nodes) AS max_nodes,
+                ROUND(AVG(cpus)) AS avg_cpus,
+                MAX(cpus) AS max_cpus
             FROM event e
-            WHERE type = 'E'
-            AND date_key BETWEEN ? AND ?
-            GROUP BY host, user
+            WHERE date_key BETWEEN ? AND ?
+            GROUP BY cluster, user
         },
         { Slice => {} },
         @$interval{qw( start end )}
@@ -713,17 +716,16 @@ sub _select_cpu_consumption {
     my ( $self, $params ) = @_;
 
     my $sql = q{
-        SELECT SUM(resources_used_cput) AS cput
+        SELECT SUM(cput) AS cput
         FROM event
-        WHERE type = 'E'
-        AND host = ?
+        WHERE cluster = ?
         AND date_key BETWEEN ? AND ?
-        AND resources_used_cpus >= ?
+        AND cpus >= ?
     };
-    my @params = @$params{qw( host start end min )};
+    my @params = @$params{qw( cluster start end min )};
 
     if ( defined $params->{max} ) {
-        $sql .= q{ AND resources_used_cpus <= ? };
+        $sql .= q{ AND cpus <= ? };
         push @params, $params->{max};
     }
 
@@ -736,20 +738,19 @@ sub _select_actual_wait_time {
     my $sql = q{
         SELECT
             ROUND(AVG(
-                CASE WHEN UNIX_TIMESTAMP(start) - UNIX_TIMESTAMP(ctime) > 0
-                     THEN UNIX_TIMESTAMP(start) - UNIX_TIMESTAMP(ctime)
+                CASE WHEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time) > 0
+                     THEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time)
                      ELSE 0 END
             )) AS avg_wait
         FROM event
-        WHERE type = 'E'
-        AND host = ?
+        WHERE cluster = ?
         AND date_key BETWEEN ? AND ?
-        AND resources_used_cpus >= ?
+        AND cpus >= ?
     };
-    my @params = @$params{qw( host start end min )};
+    my @params = @$params{qw( cluster start end min )};
 
     if ( defined $params->{max} ) {
-        $sql .= q{ AND resources_used_cpus <= ? };
+        $sql .= q{ AND cpus <= ? };
         push @params, $params->{max};
     }
 
@@ -760,7 +761,7 @@ sub _insert_cluster {
     my ( $self, $cluster ) = @_;
 
     my $sth = $self->{dbh}->prepare(q{ INSERT INTO cluster SET host = ? });
-    $sth->execute( $cluster->{host} );
+    $sth->execute( $cluster->{cluster} );
 
     return $self->{dbh}->{mysql_insertid};
 }
