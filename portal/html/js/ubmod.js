@@ -650,6 +650,8 @@ Ext.Loader.onReady(function () {
         },
 
         initComponent: function () {
+            var pagingToolbar;
+
             this.columns = [{
                 header: this.label,
                 dataIndex: this.labelKey,
@@ -697,16 +699,33 @@ Ext.Loader.onReady(function () {
                 align: 'right'
             }];
 
-            var pagingToolbar, filter;
+            pagingToolbar = Ext.create('Ubmod.widget.PagingToolbar', {
+                dock: 'bottom',
+                store: this.store,
+                displayInfo: true
+            });
 
-            filter = Ext.create('Ext.form.field.Text', {
+            this.dockedItems = [pagingToolbar];
+
+            Ubmod.widget.Grid.superclass.initComponent.call(this);
+        }
+    });
+
+    /**
+     * Paging toolbar with a search box
+     */
+    Ext.define('Ubmod.widget.PagingToolbar', {
+        extend: 'Ext.toolbar.Paging',
+
+        initComponent: function () {
+            var filter = Ext.create('Ext.form.field.Text', {
                 enableKeyEvents: true
             });
 
             filter.on('keypress', function (text, e) {
                 if (e.getKey() === e.ENTER) {
-                    pagingToolbar.moveFirst();
-                    Ext.merge(this.store.proxy.extraParams, {
+                    this.moveFirst();
+                    Ext.apply(this.store.proxy.extraParams, {
                         filter: text.getValue()
                     });
                     this.store.load();
@@ -716,22 +735,15 @@ Ext.Loader.onReady(function () {
             filter.on('keyup', function (text, e) {
                 if (e.getKey() === e.BACKSPACE &&
                         text.getValue().length === 0) {
-                    pagingToolbar.moveFirst();
-                    Ext.merge(this.store.proxy.extraParams, { filter: '' });
+                    this.moveFirst();
+                    Ext.apply(this.store.proxy.extraParams, { filter: '' });
                     this.store.load();
                 }
             }, this);
 
-            pagingToolbar = Ext.create('Ext.toolbar.Paging', {
-                dock: 'bottom',
-                store: this.store,
-                displayInfo: true,
-                items: [ '-', 'Search:', filter ]
-            });
+            this.items = [ '-', 'Search:', filter ];
 
-            this.dockedItems = [pagingToolbar];
-
-            Ubmod.widget.Grid.superclass.initComponent.call(this);
+            Ubmod.widget.PagingToolbar.superclass.initComponent.call(this);
         }
     });
 
