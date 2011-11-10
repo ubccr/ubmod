@@ -327,6 +327,7 @@ Ext.Loader.onReady(function () {
             this.model = config.model;
             this.store = config.store;
             this.recordFormat = config.recordFormat;
+            this.detailTabs = [];
 
             this.grid = Ext.create('Ubmod.widget.Grid', {
                 title: config.gridTitle,
@@ -360,19 +361,22 @@ Ext.Loader.onReady(function () {
             this.grid.on('itemdblclick', function (grid, record) {
                 var interval = this.model.get('interval'),
                     cluster = this.model.get('cluster');
-                this.add({
-                    title: record.get(this.recordFormat.key),
-                    closable: true,
-                    loader: {
-                        url: this.recordFormat.detailsUrl,
-                        autoLoad: true,
-                        params: {
-                            id: record.get(this.recordFormat.id),
-                            interval_id: interval.get('interval_id'),
-                            cluster_id: cluster.get('cluster_id')
+                this.detailTabs.push({
+                    id: record.get(this.recordFormat.id),
+                    tab: this.add({
+                        title: record.get(this.recordFormat.key),
+                        closable: true,
+                        loader: {
+                            url: this.recordFormat.detailsUrl,
+                            autoLoad: true,
+                            params: {
+                                id: record.get(this.recordFormat.id),
+                                interval_id: interval.get('interval_id'),
+                                cluster_id: cluster.get('cluster_id')
+                            }
                         }
-                    }
-                }).show();
+                    }).show()
+                });
             }, this);
 
             this.reload();
@@ -387,6 +391,17 @@ Ext.Loader.onReady(function () {
                     cluster_id: cluster.get('cluster_id')
                 });
                 this.store.load();
+
+                Ext.each(this.detailTabs, function (detail) {
+                    detail.tab.loader.load({
+                        url: this.detailsUrl,
+                        params: {
+                            id: detail.id,
+                            interval_id: interval.get('interval_id'),
+                            cluster_id: cluster.get('cluster_id')
+                        }
+                    });
+                }, this);
             }
         }
     });
