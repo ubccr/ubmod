@@ -63,7 +63,7 @@ class Ubmod_Model_User
   {
     $users = self::getTagsUnlimited($params);
 
-    $sortFields = array('name', 'group', 'tags');
+    $sortFields = array('name', 'display_name', 'group', 'tags');
 
     if ($params->hasOrderByColumn()) {
       $column = $params->getOrderByColumn();
