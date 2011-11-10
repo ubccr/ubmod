@@ -16,3 +16,6 @@ Ext.onReady(function () {
   displayed with the total CPU days consumed for each month that is included
   in the time period.
 </div>
+<div class="chart-desc">
+  Note: these charts ignore any tag that is selected in the toolbar.
+</div>

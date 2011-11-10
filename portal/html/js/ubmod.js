@@ -1468,7 +1468,14 @@ Ext.Loader.onReady(function () {
         },
 
         reload: function () {
-            this.report.params = { tag_key: this.tagKeyInput.getValue() };
+            this.report.params = {
+                tag_key: this.tagKeyInput.getValue(),
+
+                // Set the tag parameter to an empty string to override
+                // any tag that may be set elsewhere.
+                tag: ''
+            };
+
             this.report.reload();
         }
     });
