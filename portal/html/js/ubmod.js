@@ -851,8 +851,9 @@ Ext.Loader.onReady(function () {
         initComponent: function () {
             var listener = function () { this.reload(); };
             this.model.on('restparamschanged', listener, this);
-            this.on('destroy', function () {
+            this.on('beforedestroy', function () {
                 this.model.removeListener('restparamschanged', listener, this);
+                this.removeAll();
             }, this);
 
             this.callParent(arguments);
@@ -1121,11 +1122,12 @@ Ext.Loader.onReady(function () {
 
             reload = function () { this.reload(); };
             this.model.on('restparamschanged', reload, this);
-            this.on('destroy', function () {
+            this.on('beforedestroy', function () {
                 this.model.removeListener('restparamschanged', reload, this);
+                this.removeAll();
             }, this);
 
-            this.reload();
+            tagStatsGrid.on('afterrender', reload, this);
 
             this.items = [userTagGrid, tagStatsGrid];
 
@@ -1511,7 +1513,7 @@ Ext.Loader.onReady(function () {
             // destroyed.
             this.model.on('restparamschanged', reload, this);
 
-            this.on('destroy', function () {
+            this.on('beforedestroy', function () {
                 this.model.removeListener('restparamschanged', reload, this);
             }, this);
 
@@ -1566,18 +1568,14 @@ Ext.Loader.onReady(function () {
                     var href = this.getAttribute('href');
                     this.on('click', function (evt, el) {
 
+                        Ext.each(widgets, function () { this.destroy(); });
+                        widgets = [];
+
                         // Load the new content.
                         Ext.get('content').load({
                             loadMask: 'Loading...',
                             url: href,
-                            scripts: true,
-                            success: function () {
-                                // Destroy any existing widgets.
-                                Ext.each(widgets, function () {
-                                    this.destroy();
-                                });
-                                widgets = [];
-                            }
+                            scripts: true
                         });
 
                         // Update menu CSS classes.
