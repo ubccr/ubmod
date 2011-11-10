@@ -25,11 +25,9 @@ function chartswap(type) {
 }
 
 Ext.onReady(function () {
-    Ubmod.app.setUpdateCallback(function (params) {
-        Ext.get('dash-chart').load({
-            url: '/dashboard/utilization',
-            params: params
-        });
+    Ubmod.app.addPartial({
+        element: 'dash-chart',
+        url: '/dashboard/utilization'
     });
 });
 </script>

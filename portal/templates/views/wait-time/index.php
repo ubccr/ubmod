@@ -1,10 +1,8 @@
 <script type="text/javascript">
 Ext.onReady(function() {
-    Ubmod.app.setUpdateCallback(function (params) {
-        Ext.get('dash-chart').load({
-            url: '/wait-time/chart',
-            params: params
-        });
+    Ubmod.app.addPartial({
+        element: 'dash-chart',
+        url: '/wait-time/chart'
     });
 });
 </script>

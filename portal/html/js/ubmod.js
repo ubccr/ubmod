@@ -410,25 +410,57 @@ Ext.Loader.onReady(function () {
         }
     });
 
-    Ubmod.app = function () {
-        var toolbar, updateCallback, updateContent, model;
+    Ext.define('Ubmod.widget.Partial', {
+        extend: 'Ext.Component',
 
-        updateContent = function () {
-            var interval, cluster;
-            interval = model.get('interval');
-            cluster = model.get('cluster');
+        constructor: function (config) {
+            config = config || {};
+            this.model = config.model;
+            this.url = config.url;
+            this.element = config.element;
+            Ubmod.widget.Partial.superclass.constructor.call(this, config);
+        },
+
+        initComponent: function () {
+            var listener = function (field) {
+                if (field == 'interval' || field == 'cluster') {
+                    this.reload();
+                }
+            };
+            this.model.on('fieldchanged', listener, this);
+
+            this.on('destroy', function () {
+                this.model.removeListener('fieldchanged', listener, this);
+            }, this);
+
+            Ubmod.widget.Partial.superclass.initComponent.call(this);
+
+            this.reload();
+        },
+
+        reload: function () {
+            var interval = this.model.get('interval'),
+                cluster = this.model.get('cluster');
             if (interval != null && cluster != null) {
-                updateCallback({
-                    interval_id: interval.get('interval_id'),
-                    cluster_id: cluster.get('cluster_id')
+                Ext.get(this.element).load({
+                    url: this.url,
+                    params: {
+                        interval_id: interval.get('interval_id'),
+                        cluster_id: cluster.get('cluster_id')
+                    }
                 });
             }
-        };
+        }
+    });
+
+    Ubmod.app = function () {
+        var model, widgets;
 
         return {
             init: function () {
 
                 model = Ext.create('Ubmod.model.App');
+                widgets = [];
 
                 model.on('fieldchanged', function (field, value) {
                     if (field == 'interval') {
@@ -436,16 +468,18 @@ Ext.Loader.onReady(function () {
                             value.get('start') + ' thru ' + value.get('end')
                         );
                     }
-
-                    if (field == 'interval' || field == 'cluster') {
-                        updateContent();
-                    }
                 });
 
                 // Listen for clicks on menu links.
                 Ext.select('#menu-list a').each(function (el) {
                     var href = this.getAttribute('href');
                     this.on('click', function (evt, el) {
+
+                        // Destroy any existing widgets.
+                        Ext.each(widgets, function () { this.destroy(); });
+                        widgets = [];
+
+                        // Load the new content.
                         Ext.get('content').load({ url: href, scripts: true });
 
                         // Update menu CSS classes.
@@ -457,12 +491,12 @@ Ext.Loader.onReady(function () {
                     }, this, { stopEvent: true });
                 });
 
-                toolbar = Ext.create('Ubmod.widget.Toolbar', { model: model });
+                Ext.create('Ubmod.widget.Toolbar', { model: model });
             },
 
-            setUpdateCallback: function (cb) {
-                updateCallback = cb;
-                updateContent();
+            addPartial: function (config) {
+                config.model = model;
+                widgets.push(Ext.create('Ubmod.widget.Partial', config));
             }
         };
     }();

@@ -1,10 +1,8 @@
 <script type="text/javascript">
 Ext.onReady(function() {
-    Ubmod.app.setUpdateCallback(function (params) {
-        Ext.get('dash-chart').load({
-            url: '/cpu-consumption/chart',
-            params: params
-        });
+    Ubmod.app.addPartial({
+        element: 'dash-chart',
+        url: '/cpu-consumption/chart'
     });
 });
 </script>
