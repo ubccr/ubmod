@@ -65,12 +65,12 @@ class Ubmod_Controller_Dashboard extends Ubmod_BaseController
    */
   public function executeUtilization()
   {
-    $post = $this->getPostData();
+    $params = Ubmod_Model_QueryParams::factory($this->getPostData());
 
-    $this->interval = Ubmod_Model_Interval::getByParams($post);
-    $this->cluster  = Ubmod_Model_Cluster::getActivity($post);
+    $this->interval = Ubmod_Model_Interval::getByParams($params);
+    $this->cluster  = Ubmod_Model_Cluster::getActivity($params);
 
-    $queryString = Ubmod_Model_Chart::getQueryString($post);
+    $queryString = Ubmod_Model_Chart::getQueryString($params);
 
     $this->userPieChart   = '/chart/user-pie?'   . $queryString;
     $this->userBarChart   = '/chart/user-bar?'   . $queryString;

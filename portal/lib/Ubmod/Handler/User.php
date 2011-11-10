@@ -91,9 +91,11 @@ class Ubmod_Handler_User
    */
   public function activityAction(array $arguments, array $postData = NULL)
   {
+    $params = Ubmod_Model_QueryParams::factory($arguments);
+
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'total' => Ubmod_Model_User::getActivityCount($arguments),
-      'users' => Ubmod_Model_User::getActivity($arguments),
+      'total' => Ubmod_Model_User::getActivityCount($params),
+      'users' => Ubmod_Model_User::getActivity($params),
     ));
   }
 
@@ -126,9 +128,11 @@ class Ubmod_Handler_User
    */
   public function tagsAction(array $arguments, array $postData = NULL)
   {
+    $params = Ubmod_Model_QueryParams::factory($arguments);
+
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'total' => Ubmod_Model_User::getTagsCount($arguments),
-      'users' => Ubmod_Model_User::getTags($arguments),
+      'total' => Ubmod_Model_User::getTagsCount($params),
+      'users' => Ubmod_Model_User::getTags($params),
     ));
   }
 

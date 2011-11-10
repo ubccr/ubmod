@@ -129,9 +129,11 @@ class Ubmod_Handler_Tag
    */
   public function activityAction(array $arguments, array $postData = NULL)
   {
+    $params = Ubmod_Model_QueryParams::factory($arguments);
+
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'total' => Ubmod_Model_Tag::getActivityCount($arguments),
-      'tags'  => Ubmod_Model_Tag::getActivity($arguments),
+      'total' => Ubmod_Model_Tag::getActivityCount($params),
+      'tags'  => Ubmod_Model_Tag::getActivity($params),
     ));
   }
 }

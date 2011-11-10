@@ -91,9 +91,11 @@ class Ubmod_Handler_Queue
    */
   public function activityAction(array $arguments, array $postData = NULL)
   {
+    $params = Ubmod_Model_QueryParams::factory($arguments);
+
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'total'  => Ubmod_Model_Queue::getActivityCount($arguments),
-      'queues' => Ubmod_Model_Queue::getActivity($arguments),
+      'total'  => Ubmod_Model_Queue::getActivityCount($params),
+      'queues' => Ubmod_Model_Queue::getActivity($params),
     ));
   }
 }

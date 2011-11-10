@@ -792,7 +792,9 @@ Ext.Loader.onReady(function () {
                     return;
                 }
 
-                params = Ext.merge(this.model.getRestParams(), { id: id });
+                params = {};
+                params[this.recordFormat.id] = id;
+                params = Ext.merge(params, this.model.getRestParams());
 
                 tab = this.add({
                     title: record.get(this.recordFormat.key),
@@ -831,7 +833,9 @@ Ext.Loader.onReady(function () {
             this.store.load();
 
             Ext.Object.each(this.detailTabs, function (id, tab) {
-                var detailParams = Ext.merge({ id: id }, params);
+                var detailParams =  {}
+                detailParams[this.recordFormat.id] = id;
+                detailParams = Ext.merge(detailParams, params);
                 tab.loader.load({
                     url: this.detailsUrl,
                     params: detailParams

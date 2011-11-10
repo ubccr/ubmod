@@ -115,13 +115,13 @@ class Ubmod_Model_Tag
    * Returns the number of tags that have activity for the given
    * parameters.
    *
-   * @param array $params The query parameters.
+   * @param Ubmod_Model_QueryParams $params The query parameters.
    *
    * @return int
    */
-  public static function getActivityCount($params)
+  public static function getActivityCount(Ubmod_Model_QueryParams $params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params);
+    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
 
     $sql = "SELECT tags
       FROM fact_job
@@ -137,7 +137,7 @@ class Ubmod_Model_Tag
     $dbh = Ubmod_DbService::dbh();
     $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute(array(':cluster_id' => $params['cluster_id']));
+    $r = $stmt->execute(array(':cluster_id' => $params->getClusterId()));
     if (!$r) {
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
@@ -153,9 +153,11 @@ class Ubmod_Model_Tag
 
     $filtered = array();
 
-    if (isset($params['filter']) && $params['filter'] !== '') {
+    if ($params->hasFilter()) {
+      $filter = $params->getFilter();
+
       foreach ($tags as $tag) {
-        if (stripos($tag, $params['filter']) !== false) {
+        if (stripos($tag, $filter) !== false) {
           $filtered[] = $tag;
         }
       }
@@ -170,13 +172,13 @@ class Ubmod_Model_Tag
    * Returns activity data for all tags that have activity for the given
    * parameters.
    *
-   * @param array $params The query parameters.
+   * @param Ubmod_Model_QueryParams $params The query parameters.
    *
    * @return array
    */
-  public static function getActivity($params)
+  public static function getActivity(Ubmod_Model_QueryParams $params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params);
+    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
 
     $sql = "
       SELECT
@@ -211,19 +213,22 @@ class Ubmod_Model_Tag
     $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
 
+    if ($params->hasFilter()) {
+      $filter = $params->getFilter();
+    }
+
     $activity = array();
     foreach (self::getAll() as $tag) {
 
-      if (isset($params['filter']) && $params['filter'] !== '') {
-
+      if (isset($filter)) {
         // Skip tags that don't match
-        if (stripos($tag, $params['filter']) === false) {
+        if (stripos($tag, $filter) === false) {
           continue;
         }
       }
 
       $r = $stmt->execute(array(
-        ':cluster_id' => $params['cluster_id'],
+        ':cluster_id' => $params->getClusterId(),
         ':tag'        => '%' . json_encode($tag) . '%',
       ));
       if (!$r) {
@@ -240,33 +245,34 @@ class Ubmod_Model_Tag
     $sortFields
       = array('tag', 'jobs', 'avg_cpus', 'avg_wait', 'wallt', 'avg_mem');
 
-    if (isset($params['sort']) && in_array($params['sort'], $sortFields)) {
-      if (!in_array($params['dir'], array('ASC', 'DESC'))) {
-        $params['dir'] = 'ASC';
+    if ($params->hasOrderByColumn()) {
+      $column = $params->getOrderByColumn();
+
+      if (!in_array($column, $columnFields)) {
+        $column  = 'wallt';
       }
+      $dir = $params->isOrderByDescending() ? 'DESC' : 'ASC';
 
-      $sort = $params['sort'];
-      $dir  = $params['dir'];
-
-      usort($activity, function($a, $b) use($sort, $dir) {
-        if ($sort === 'tag') {
+      usort($activity, function($a, $b) use($column, $dir) {
+        if ($column === 'tag') {
           if ($dir === 'ASC') {
-            return strcasecmp($a[$sort], $b[$sort]);
+            return strcasecmp($a[$column], $b[$column]);
           } else {
-            return strcasecmp($b[$sort], $a[$sort]);
+            return strcasecmp($b[$column], $a[$column]);
           }
         } else {
           if ($dir === 'ASC') {
-            return $a[$sort] > $b[$sort];
+            return $a[$column] > $b[$column];
           } else {
-            return $b[$sort] > $a[$sort];
+            return $b[$column] > $a[$column];
           }
         }
       });
     }
 
-    if (isset($params['start']) && isset($params['limit'])) {
-      $activity = array_slice($activity, $params['start'], $params['limit']);
+    if ($params->hasLimitRowCount() && $params->hasLimitOffset()) {
+      $activity = array_slice($activity, $params->getLimitOffset(),
+        $params->getLimitRowCount());
     }
 
     return $activity;
@@ -275,13 +281,13 @@ class Ubmod_Model_Tag
   /**
    * Returns activity data for a given tag.
    *
-   * @param array $params The query parameters.
+   * @param Ubmod_Model_QueryParams $params The query parameters.
    *
    * @return array
    */
-  public static function getActivityByName($params)
+  public static function getActivityByName(Ubmod_Model_QueryParams $params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params);
+    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
 
     $sql = "
       SELECT
@@ -316,8 +322,8 @@ class Ubmod_Model_Tag
     $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
     $r = $stmt->execute(array(
-      ':cluster_id' => $params['cluster_id'],
-      ':tag'        => '%' . json_encode($params['tag']) . '%',
+      ':cluster_id' => $params->getClusterId(),
+      ':tag'        => '%' . json_encode($params->getTag()) . '%',
     ));
     if (!$r) {
       $err = $stmt->errorInfo();
@@ -325,7 +331,7 @@ class Ubmod_Model_Tag
     }
     $tag = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $tag['name'] = $params['tag'];
+    $tag['name'] = $params->getTag();
 
     return $tag;
   }

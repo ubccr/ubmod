@@ -49,16 +49,13 @@ class Ubmod_Model_Interval
 {
 
   /**
-   * Returns time interval data
+   * Returns time interval data.
    *
-   * @param array $params An array with these keys:
-   *   - interval_id
-   *   - start_date (only required for custom intervals)
-   *   - end_date (only requried for custom intervals)
+   * @param Ubmod_Model_QueryParams $params The query parameters.
    *
    * @return array
    */
-  public static function getByParams($params)
+  public static function getByParams(Ubmod_Model_QueryParams $params)
   {
     $sql = '
       SELECT
@@ -72,7 +69,7 @@ class Ubmod_Model_Interval
     ';
     $dbh = Ubmod_DbService::dbh();
     $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute(array($params['interval_id']));
+    $r = $stmt->execute(array($params->getTimeIntervalId()));
     if (!$r) {
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
@@ -80,8 +77,8 @@ class Ubmod_Model_Interval
     $timeInterval = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($timeInterval['custom']) {
-      $timeInterval['start'] = $params['start_date'];
-      $timeInterval['end']   = $params['end_date'];
+      $timeInterval['start'] = $params->getStartDate();
+      $timeInterval['end']   = $params->getEndDate();
     }
 
     // Check if the interval contains data for multiple months
@@ -112,6 +109,7 @@ class Ubmod_Model_Interval
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
     }
+
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
@@ -125,12 +123,13 @@ class Ubmod_Model_Interval
    *
    * @return string
    */
-  public static function whereClause($params)
+  public static function getWhereClause(Ubmod_Model_QueryParams $params)
   {
-    if (!isset($params['interval_id'])) {
-      if (isset($params['year']) && isset($params['month'])) {
-        return "year = {$params['year']} AND month = {$params['month']}";
-      }
+
+    // If the given parameters don't include a interval ID, it is
+    // assumed that a specific month is being queried.
+    if (!$params->hasTimeIntervalId()) {
+      return "year = {$params->getYear()} AND month = {$params->getMonth()}";
     }
 
     $sql = '
@@ -140,7 +139,9 @@ class Ubmod_Model_Interval
     ';
     $dbh = Ubmod_DbService::dbh();
     $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute(array(':time_interval_id' => $params['interval_id']));
+    $r = $stmt->execute(array(
+      ':time_interval_id' => $params->getTimeIntervalId()
+    ));
     if (!$r) {
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
@@ -149,8 +150,8 @@ class Ubmod_Model_Interval
 
     // Custom date range
     if ($row['start'] === null || $row['end'] === null) {
-      $start = self::convertDate($params['start_date']);
-      $end   = self::convertDate($params['end_date']);
+      $start = self::convertDate($params->getStartDate());
+      $end   = self::convertDate($params->getEndDate());
       return sprintf($row['where_clause'], $start, $end);
     } else {
       return $row['where_clause'];
@@ -158,18 +159,19 @@ class Ubmod_Model_Interval
   }
 
   /**
-   * Return an array of months
+   * Return an array of months that are included in the query parameter
+   * date range.
    *
-   * @param array $params An array with these keys:
-   *   - interval_id
-   *   - start_date (only required for custom intervals)
-   *   - end_date (only requried for custom intervals)
+   * Months that are only partially included in the date range are
+   * included in the returned list of months.
+   *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
    *
    * @return array
    */
-  public static function getMonths($params)
+  public static function getMonths(Ubmod_Model_QueryParams $params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params);
+    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
 
     $sql = "
       SELECT DISTINCT month, year
@@ -185,6 +187,7 @@ class Ubmod_Model_Interval
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
     }
+
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 

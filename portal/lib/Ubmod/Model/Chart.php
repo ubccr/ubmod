@@ -54,14 +54,16 @@ class Ubmod_Model_Chart
 {
 
   /**
-   * Returns a query string for use with a chart URL
+   * Returns a query string for use with a chart URL.
    *
-   * @return array $params The necessary parameters
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
+   * @return string
    */
   public static function getQueryString($params)
   {
     $interval = Ubmod_Model_Interval::getByParams($params);
-    $cluster  = Ubmod_Model_Cluster::getById($params['cluster_id']);
+    $cluster  = Ubmod_Model_Cluster::getById($params->getClusterId());
 
     $query['interval_id'] = $interval['interval_id'];
     $query['cluster_id']  = $cluster['cluster_id'];
@@ -83,14 +85,15 @@ class Ubmod_Model_Chart
   }
 
   /**
-   * Returns the subtitle used on various charts
+   * Returns the subtitle used on various charts.
    *
-   * @param params array The needed parameters
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
    * @return string
    */
   private static function getSubTitle($params)
   {
-    $cluster  = Ubmod_Model_Cluster::getById($params['cluster_id']);
+    $cluster  = Ubmod_Model_Cluster::getById($params->getClusterId());
     $interval = Ubmod_Model_Interval::getByParams($params);
 
     $host  = $cluster['host'];
@@ -106,12 +109,13 @@ class Ubmod_Model_Chart
    * Note: if no data is found for a given cpu interval, that interval
    * is ommitted from the returned array.
    *
-   * @param params array The needed parameters
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
    * @return array
    */
   public static function getCpuConsumption($params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params);
+    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
 
     $sql = "
       SELECT
@@ -130,7 +134,7 @@ class Ubmod_Model_Chart
     $dbh = Ubmod_DbService::dbh();
     $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute(array(':cluster_id' => $params['cluster_id']));
+    $r = $stmt->execute(array(':cluster_id' => $params->getClusterId()));
     if (!$r) {
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
@@ -144,12 +148,13 @@ class Ubmod_Model_Chart
    * Note: if no data is found for a given cpu interval, that interval
    * is ommitted from the returned array.
    *
-   * @param params array The needed parameters
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
    * @return array
    */
   public static function getWaitTime($params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params);
+    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
 
     $sql = "
       SELECT
@@ -168,7 +173,7 @@ class Ubmod_Model_Chart
     $dbh = Ubmod_DbService::dbh();
     $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute(array(':cluster_id' => $params['cluster_id']));
+    $r = $stmt->execute(array(':cluster_id' => $params->getClusterId()));
     if (!$r) {
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
@@ -177,9 +182,9 @@ class Ubmod_Model_Chart
   }
 
   /**
-   * Returns the CPU interval labels
+   * Returns the CPU interval labels.
    *
-   * These are used as labels on the x-axis of some charts
+   * These are used as labels on the x-axis of some charts.
    *
    * @return array
    */
@@ -206,6 +211,8 @@ class Ubmod_Model_Chart
 
   /**
    * Create a CPU consumption chart period and send it to the browser.
+   *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
    *
    * @return void
    */
@@ -239,6 +246,8 @@ class Ubmod_Model_Chart
   /**
    * Create a CPU consumption chart monthly and send it to the browser.
    *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
    * @return void
    */
   public static function renderCpuConsumptionMonthly($params)
@@ -258,8 +267,10 @@ class Ubmod_Model_Chart
       $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
       $monthNames[] = date("M 'y", $time);
 
-      $monthParams = array_merge($params, $month);
-      unset($monthParams['interval_id']);
+      $monthParams = clone $params;
+      $monthParams->clearTimeIntervalId();
+      $monthParams->setYear($month['year']);
+      $monthParams->setMonth($month['month']);
 
       foreach (self::getCpuConsumption($monthParams) as $cpu) {
         $cputForLabel[$cpu['label']] = $cpu['cput'];
@@ -320,6 +331,8 @@ class Ubmod_Model_Chart
   /**
    * Create a wait time monthly chart and send it to the browser.
    *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
    * @return void
    */
   public static function renderWaitTimeMonthly($params)
@@ -339,8 +352,10 @@ class Ubmod_Model_Chart
       $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
       $monthNames[] = date("M 'y", $time);
 
-      $monthParams = array_merge($params, $month);
-      unset($monthParams['interval_id']);
+      $monthParams = clone $params;
+      $monthParams->clearTimeIntervalId();
+      $monthParams->setYear($month['year']);
+      $monthParams->setMonth($month['month']);
 
       foreach (self::getWaitTime($monthParams) as $cpu) {
         $waitForLabel[$cpu['label']] = $cpu['avg_wait'];
@@ -369,12 +384,14 @@ class Ubmod_Model_Chart
   /**
    * Create a user utilization pie chart and send it to the browser.
    *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
    * @return void
    */
   public static function renderUserPie($params)
   {
-    $params['sort'] = 'wallt';
-    $params['dir']  = 'DESC';
+    $params->setOrderByColumn('wallt');
+    $params->setOrderByDescending(1);
 
     $total = 0;
     $other = 0;
@@ -420,10 +437,9 @@ class Ubmod_Model_Chart
    */
   public static function renderUserBar($params)
   {
-    $params['start'] = 0;
-    $params['limit'] = 21;
-    $params['sort']  = 'wallt';
-    $params['dir']   = 'DESC';
+    $params->setLimitRowCount(21);
+    $params->setOrderByColumn('wallt');
+    $params->setOrderByDescending(1);
 
     $users = array();
     $time  = array();
@@ -450,8 +466,8 @@ class Ubmod_Model_Chart
    */
   public static function renderGroupPie($params)
   {
-    $params['sort'] = 'wallt';
-    $params['dir']  = 'DESC';
+    $params->setOrderByColumn('wallt');
+    $params->setOrderByDescending(1);
 
     $total = 0;
     $other = 0;
@@ -497,10 +513,9 @@ class Ubmod_Model_Chart
    */
   public static function renderGroupBar($params)
   {
-    $params['start'] = 0;
-    $params['limit'] = 21;
-    $params['sort']  = 'wallt';
-    $params['dir']   = 'DESC';
+    $params->setLimitRowCount(21);
+    $params->setOrderByColumn('wallt');
+    $params->setOrderByDescending(1);
 
     $groups = array();
     $time   = array();
@@ -527,8 +542,8 @@ class Ubmod_Model_Chart
    */
   public static function renderGroupStackedArea($params)
   {
-    $params['sort'] = 'wallt';
-    $params['dir']  = 'DESC';
+    $params->setOrderByColumn('wallt');
+    $params->setOrderByDescending(1);
 
     $months = Ubmod_Model_Interval::getMonths($params);
 
@@ -549,8 +564,10 @@ class Ubmod_Model_Chart
       $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
       $monthNames[] = date("M 'y", $time);
 
-      $monthParams = array_merge($params, $month);
-      unset($monthParams['interval_id']);
+      $monthParams = clone $params;
+      $monthParams->clearTimeIntervalId();
+      $monthParams->setYear($month['year']);
+      $monthParams->setMonth($month['month']);
 
       foreach (Ubmod_Model_Group::getActivity($monthParams) as $group) {
         if ($groupCount < $maxGroups) {
@@ -611,8 +628,8 @@ class Ubmod_Model_Chart
    */
   public static function renderUserStackedArea($params)
   {
-    $params['sort'] = 'wallt';
-    $params['dir']  = 'DESC';
+    $params->setOrderByColumn('wallt');
+    $params->setOrderByDescending(1);
 
     $months = Ubmod_Model_Interval::getMonths($params);
 
@@ -633,8 +650,10 @@ class Ubmod_Model_Chart
       $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
       $monthNames[] = date("M 'y", $time);
 
-      $monthParams = array_merge($params, $month);
-      unset($monthParams['interval_id']);
+      $monthParams = clone $params;
+      $monthParams->clearTimeIntervalId();
+      $monthParams->setYear($month['year']);
+      $monthParams->setMonth($month['month']);
 
       foreach (Ubmod_Model_User::getActivity($monthParams) as $user) {
         if ($userCount < $maxUsers) {

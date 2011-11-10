@@ -51,13 +51,13 @@ class Ubmod_Model_Group
   /**
    * Return the number of groups with activity for the given parameters.
    *
-   * @param array $params The parameters for the query.
+   * @param Ubmod_Model_QueryParams $params The query parameters.
    *
    * @return int
    */
-  public static function getActivityCount($params)
+  public static function getActivityCount(Ubmod_Model_QueryParams $params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params);
+    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
 
     $sql = "
       SELECT COUNT(DISTINCT dim_group_id)
@@ -69,11 +69,11 @@ class Ubmod_Model_Group
         AND $timeClause
     ";
 
-    $dbParams = array(':cluster_id' => $params['cluster_id']);
+    $dbParams = array(':cluster_id' => $params->getClusterId());
 
-    if (isset($params['filter']) && $params['filter'] != '') {
+    if ($params->hasFilter()) {
       $sql .= ' AND name LIKE :filter';
-      $dbParams[':filter'] = '%' . $params['filter'] . '%';
+      $dbParams[':filter'] = '%' . $params->getFilter() . '%';
     }
 
     $dbh = Ubmod_DbService::dbh();
@@ -85,19 +85,20 @@ class Ubmod_Model_Group
       throw new Exception($err[2]);
     }
     $result = $stmt->fetch();
+
     return $result[0];
   }
 
   /**
    * Retuns an array of groups joined with their activiy.
    *
-   * @param array $params The parameters for the query.
+   * @param Ubmod_Model_QueryParams $params The query parameters.
    *
    * @return array
    */
-  public static function getActivity($params)
+  public static function getActivity(Ubmod_Model_QueryParams $params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params);
+    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
 
     $sql = "
       SELECT
@@ -117,11 +118,11 @@ class Ubmod_Model_Group
         AND $timeClause
     ";
 
-    $dbParams = array(':cluster_id' => $params['cluster_id']);
+    $dbParams = array(':cluster_id' => $params->getClusterId());
 
-    if (isset($params['filter']) && $params['filter'] != '') {
+    if ($params->hasFilter()) {
       $sql .= ' AND name LIKE :filter';
-      $dbParams[':filter'] = '%' . $params['filter'] . '%';
+      $dbParams[':filter'] = '%' . $params->getFilter() . '%';
     }
 
     $sql .= ' GROUP BY group_id';
@@ -129,15 +130,20 @@ class Ubmod_Model_Group
     $sortFields = array('group_name', 'jobs', 'avg_cpus', 'avg_wait', 'wallt',
       'avg_mem');
 
-    if (isset($params['sort']) && in_array($params['sort'], $sortFields)) {
-      if (!in_array($params['dir'], array('ASC', 'DESC'))) {
-        $params['dir'] = 'ASC';
-      }
-      $sql .= sprintf(' ORDER BY %s %s', $params['sort'], $params['dir']);
+
+    if ($params->hasOrderByColumn()) {
+      $column = $params->getOrderByColumn();
+      if (!in_array($column, $sortFields)) { $column = 'wallt'; }
+      $dir = $params->isOrderByDescending() ? 'DESC' : 'ASC';
+      $sql .= sprintf(' ORDER BY %s %s', $column, $dir);
     }
 
-    if (isset($params['start']) && isset($params['limit'])) {
-      $sql .= sprintf(' LIMIT %d, %d', $params['start'], $params['limit']);
+
+    if ($params->hasLimitRowCount()) {
+      $sql .= sprintf(' LIMIT %d', $params->getLimitRowCount());
+      if ($params->hasLimitOffset()) {
+        $sql .= sprintf(' OFFSET %d', $params->getLimitOffset());
+      }
     }
 
     $dbh = Ubmod_DbService::dbh();
@@ -148,19 +154,20 @@ class Ubmod_Model_Group
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
     }
+
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
   /**
    * Returns the research_group for a given id and parameters.
    *
-   * @param array $params The parameters for the query.
+   * @param Ubmod_Model_QueryParams $params The query parameters.
    *
    * @return array
    */
-  public static function getActivityById($params)
+  public static function getActivityById(Ubmod_Model_QueryParams $params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params);
+    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
 
     $sql = "
       SELECT
@@ -199,8 +206,8 @@ class Ubmod_Model_Group
     ";
 
     $dbParams = array(
-      ':cluster_id' => $params['cluster_id'],
-      ':group_id'   => $params['id'],
+      ':cluster_id' => $params->getClusterId(),
+      ':group_id'   => $params->getGroupId(),
     );
 
     $dbh = Ubmod_DbService::dbh();
@@ -211,6 +218,7 @@ class Ubmod_Model_Group
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
     }
+
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 }

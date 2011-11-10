@@ -49,9 +49,10 @@ class Ubmod_Model_Cluster
 {
 
   /**
-   * Return cluster data given a cluster id.
+   * Return cluster data given a cluster ID.
    *
-   * @param int id The cluster id
+   * @param int id The cluster ID.
+   *
    * @return array
    */
   public static function getById($id)
@@ -75,7 +76,7 @@ class Ubmod_Model_Cluster
   }
 
   /**
-   * Returns an array of all clusters.
+   * Returns an array of all the clusters.
    *
    * @return array
    */
@@ -102,12 +103,13 @@ class Ubmod_Model_Cluster
   /**
    * Returns activity data for a given cluster and interval.
    *
-   * @param array params The necessary parameters
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
    * @return array
    */
   public static function getActivity($params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params);
+    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
 
     $sql = "
       SELECT
@@ -149,7 +151,7 @@ class Ubmod_Model_Cluster
     $dbh = Ubmod_DbService::dbh();
     $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute(array(':cluster_id' => $params['cluster_id']));
+    $r = $stmt->execute(array(':cluster_id' => $params->getClusterId()));
     if (!$r) {
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);

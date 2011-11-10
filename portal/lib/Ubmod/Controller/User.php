@@ -65,6 +65,7 @@ class Ubmod_Controller_User extends Ubmod_BaseController
    */
   public function executeDetails()
   {
-    $this->user = Ubmod_Model_User::getActivityById($this->getPostData());
+    $params = Ubmod_Model_QueryParams::factory($this->getPostData());
+    $this->user = Ubmod_Model_User::getActivityById($params);
   }
 }

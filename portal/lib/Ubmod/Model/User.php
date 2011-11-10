@@ -51,13 +51,13 @@ class Ubmod_Model_User
   /**
    * Return the number of users with activity for the given parameters.
    *
-   * @param array $params The parameters for the query.
+   * @param Ubmod_Model_QueryParams $params The parameters for the query.
    *
    * @return int
    */
-  public static function getActivityCount(array $params)
+  public static function getActivityCount(Ubmod_Model_QueryParams $params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params);
+    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
 
     $sql = "
       SELECT COUNT(DISTINCT dim_user_id)
@@ -69,11 +69,11 @@ class Ubmod_Model_User
         AND $timeClause
     ";
 
-    $dbParams = array(':cluster_id' => $params['cluster_id']);
+    $dbParams = array(':cluster_id' => $params->getClusterId());
 
-    if (isset($params['filter']) && $params['filter'] != '') {
+    if ($params->hasFilter()) {
       $sql .= ' AND name LIKE :filter';
-      $dbParams[':filter'] = '%' . $params['filter'] . '%';
+      $dbParams[':filter'] = '%' . $params->getFilter() . '%';
     }
 
     $dbh = Ubmod_DbService::dbh();
@@ -91,13 +91,13 @@ class Ubmod_Model_User
   /**
    * Returns an array of users joined with their activity.
    *
-   * @param array $params The parameters for the query.
+   * @param Ubmod_Model_QueryParams $params The parameters for the query.
    *
    * @return array
    */
-  public static function getActivity(array $params)
+  public static function getActivity(Ubmod_Model_QueryParams $params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params);
+    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
 
     $sql = "
       SELECT
@@ -118,11 +118,11 @@ class Ubmod_Model_User
         AND $timeClause
     ";
 
-    $dbParams = array(':cluster_id' => $params['cluster_id']);
+    $dbParams = array(':cluster_id' => $params->getClusterId());
 
-    if (isset($params['filter']) && $params['filter'] != '') {
+    if ($params->hasFilter()) {
       $sql .= ' AND name LIKE :filter';
-      $dbParams[':filter'] = '%' . $params['filter'] . '%';
+      $dbParams[':filter'] = '%' . $params->getFilter() . '%';
     }
 
     $sql .= ' GROUP BY user_id';
@@ -130,15 +130,18 @@ class Ubmod_Model_User
     $sortFields
       = array('user', 'jobs', 'avg_cpus', 'avg_wait', 'wallt', 'avg_mem');
 
-    if (isset($params['sort']) && in_array($params['sort'], $sortFields)) {
-      if (!in_array($params['dir'], array('ASC', 'DESC'))) {
-        $params['dir'] = 'ASC';
-      }
-      $sql .= sprintf(' ORDER BY %s %s', $params['sort'], $params['dir']);
+    if ($params->hasOrderByColumn()) {
+      $column = $params->getOrderByColumn();
+      if (!in_array($column, $sortFields)) { $column = 'wallt'; }
+      $dir = $params->isOrderByDescending() ? 'DESC' : 'ASC';
+      $sql .= sprintf(' ORDER BY %s %s', $column, $dir);
     }
 
-    if (isset($params['start']) && isset($params['limit'])) {
-      $sql .= sprintf(' LIMIT %d, %d', $params['start'], $params['limit']);
+    if ($params->hasLimitRowCount()) {
+      $sql .= sprintf(' LIMIT %d', $params->getLimitRowCount());
+      if ($params->hasLimitOffset()) {
+        $sql .= sprintf(' OFFSET %d', $params->getLimitOffset());
+      }
     }
 
     $dbh = Ubmod_DbService::dbh();
@@ -155,13 +158,13 @@ class Ubmod_Model_User
   /**
    * Returns the user for a given id and parameters.
    *
-   * @param array $params The parameters for the query.
+   * @param Ubmod_Model_QueryParams $params The parameters for the query.
    *
    * @return array
    */
-  public static function getActivityById(array $params)
+  public static function getActivityById(Ubmod_Model_QueryParams $params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params);
+    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
 
     $sql = "
       SELECT
@@ -196,8 +199,8 @@ class Ubmod_Model_User
     ";
 
     $dbParams = array(
-      ':cluster_id' => $params['cluster_id'],
-      ':user_id'    => $params['id'],
+      ':cluster_id' => $params->getClusterId(),
+      ':user_id'    => $params->getUserId(),
     );
 
     $dbh = Ubmod_DbService::dbh();
@@ -208,24 +211,25 @@ class Ubmod_Model_User
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
     }
+
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
   /**
    * Returns the number of users for the given parameters.
    *
-   * @param array $params The parameters for the query.
+   * @param Ubmod_Model_QueryParams $params The parameters for the query.
    *
    * @return array
    */
-  public static function getTagsCount(array $params)
+  public static function getTagsCount(Ubmod_Model_QueryParams $params)
   {
     $sql = 'SELECT COUNT(*) FROM dim_user';
 
     $dbParams = array();
-    if (isset($params['filter']) && $params['filter'] != '') {
-      $sql .= ' WHERE name LIKE :filter';
-      $dbParams[':filter'] = '%' . $params['filter'] . '%';
+    if ($params->hasFilter()) {
+      $sql .= ' AND name LIKE :filter';
+      $dbParams[':filter'] = '%' . $params->getFilter() . '%';
     }
 
     $dbh = Ubmod_DbService::dbh();
@@ -242,11 +246,11 @@ class Ubmod_Model_User
   /**
    * Returns an array of users and their tags.
    *
-   * @param array $params The parameters for the query.
+   * @param Ubmod_Model_QueryParams $params The parameters for the query.
    *
    * @return array
    */
-  public static function getTags(array $params)
+  public static function getTags(Ubmod_Model_QueryParams $params)
   {
     $sql = "
       SELECT
@@ -257,22 +261,25 @@ class Ubmod_Model_User
     ";
 
     $dbParams = array();
-    if (isset($params['filter']) && $params['filter'] != '') {
-      $sql .= ' WHERE name LIKE :filter';
-      $dbParams[':filter'] = '%' . $params['filter'] . '%';
+    if ($params->hasFilter()) {
+      $sql .= ' AND name LIKE :filter';
+      $dbParams[':filter'] = '%' . $params->getFilter() . '%';
     }
 
     $sortFields = array('user', 'tags');
 
-    if (isset($params['sort']) && in_array($params['sort'], $sortFields)) {
-      if (!in_array($params['dir'], array('ASC', 'DESC'))) {
-        $params['dir'] = 'ASC';
-      }
-      $sql .= sprintf(' ORDER BY %s %s', $params['sort'], $params['dir']);
+    if ($params->hasOrderByColumn()) {
+      $column = $params->getOrderByColumn();
+      if (!in_array($column, $sortFields)) { $column = 'user'; }
+      $dir = $params->isOrderByDescending() ? 'DESC' : 'ASC';
+      $sql .= sprintf(' ORDER BY %s %s', $column, $dir);
     }
 
-    if (isset($params['start']) && isset($params['limit'])) {
-      $sql .= sprintf(' LIMIT %d, %d', $params['start'], $params['limit']);
+    if ($params->hasLimitRowCount()) {
+      $sql .= sprintf(' LIMIT %d', $params->getLimitRowCount());
+      if ($params->hasLimitOffset()) {
+        $sql .= sprintf(' OFFSET %d', $params->getLimitOffset());
+      }
     }
 
     $dbh = Ubmod_DbService::dbh();
@@ -287,6 +294,7 @@ class Ubmod_Model_User
       $row['tags'] = json_decode($row['tags']);
       $users[] = $row;
     }
+
     return $users;
   }
 

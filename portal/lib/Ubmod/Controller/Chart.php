@@ -55,7 +55,8 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
    */
   public function executeCpuConsumptionPeriod()
   {
-    Ubmod_Model_Chart::renderCpuConsumptionPeriod($this->getGetData());
+    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
+    Ubmod_Model_Chart::renderCpuConsumptionPeriod($params);
   }
 
   /**
@@ -65,7 +66,8 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
    */
   public function executeCpuConsumptionMonthly()
   {
-    Ubmod_Model_Chart::renderCpuConsumptionMonthly($this->getGetData());
+    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
+    Ubmod_Model_Chart::renderCpuConsumptionMonthly($params);
   }
 
   /**
@@ -75,7 +77,8 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
    */
   public function executeWaitTimePeriod()
   {
-    Ubmod_Model_Chart::renderWaitTimePeriod($this->getGetData());
+    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
+    Ubmod_Model_Chart::renderWaitTimePeriod($params);
   }
 
   /**
@@ -85,7 +88,8 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
    */
   public function executeWaitTimeMonthly()
   {
-    Ubmod_Model_Chart::renderWaitTimeMonthly($this->getGetData());
+    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
+    Ubmod_Model_Chart::renderWaitTimeMonthly($params);
   }
 
   /**
@@ -95,7 +99,8 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
    */
   public function executeUserPie()
   {
-    Ubmod_Model_Chart::renderUserPie($this->getGetData());
+    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
+    Ubmod_Model_Chart::renderUserPie($params);
   }
 
   /**
@@ -105,7 +110,8 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
    */
   public function executeUserBar()
   {
-    Ubmod_Model_Chart::renderUserBar($this->getGetData());
+    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
+    Ubmod_Model_Chart::renderUserBar($params);
   }
 
   /**
@@ -115,7 +121,8 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
    */
   public function executeUserArea()
   {
-    Ubmod_Model_Chart::renderUserStackedArea($this->getGetData());
+    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
+    Ubmod_Model_Chart::renderUserStackedArea($params);
   }
 
   /**
@@ -125,7 +132,8 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
    */
   public function executeGroupPie()
   {
-    Ubmod_Model_Chart::renderGroupPie($this->getGetData());
+    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
+    Ubmod_Model_Chart::renderGroupPie($params);
   }
 
   /**
@@ -135,7 +143,8 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
    */
   public function executeGroupBar()
   {
-    Ubmod_Model_Chart::renderGroupBar($this->getGetData());
+    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
+    Ubmod_Model_Chart::renderGroupBar($params);
   }
 
   /**
@@ -145,6 +154,7 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
    */
   public function executeGroupArea()
   {
-    Ubmod_Model_Chart::renderGroupStackedArea($this->getGetData());
+    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
+    Ubmod_Model_Chart::renderGroupStackedArea($params);
   }
 }
