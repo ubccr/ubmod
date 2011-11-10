@@ -212,8 +212,10 @@ class Ubmod_Model_Chart
   private static function getCpuIntervalLabels()
   {
     $sql = '
-      SELECT display_name AS label
-      FROM dim_cpus_interval
+      SELECT DISTINCT
+        display_name AS label,
+        view_order
+      FROM dim_cpus
       ORDER BY view_order
     ';
     $dbh = Ubmod_DbService::dbh();
@@ -291,7 +293,7 @@ class Ubmod_Model_Chart
       $monthNames[] = date("M 'y", $time);
 
       $monthParams = clone $params;
-      $monthParams->clearTimeIntervalId();
+      $monthParams->clearTimeInterval();
       $monthParams->setYear($month['year']);
       $monthParams->setMonth($month['month']);
 
@@ -379,7 +381,7 @@ class Ubmod_Model_Chart
       $monthNames[] = date("M 'y", $time);
 
       $monthParams = clone $params;
-      $monthParams->clearTimeIntervalId();
+      $monthParams->clearTimeInterval();
       $monthParams->setYear($month['year']);
       $monthParams->setMonth($month['month']);
 
@@ -648,7 +650,7 @@ class Ubmod_Model_Chart
       $monthNames[] = date("M 'y", $time);
 
       $monthParams = clone $params;
-      $monthParams->clearTimeIntervalId();
+      $monthParams->clearTimeInterval();
       $monthParams->setYear($month['year']);
       $monthParams->setMonth($month['month']);
 
@@ -744,7 +746,7 @@ class Ubmod_Model_Chart
       $monthNames[] = date("M 'y", $time);
 
       $monthParams = clone $params;
-      $monthParams->clearTimeIntervalId();
+      $monthParams->clearTimeInterval();
       $monthParams->setYear($month['year']);
       $monthParams->setMonth($month['month']);
 

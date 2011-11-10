@@ -408,6 +408,29 @@ class Ubmod_Model_QueryParams
   }
 
   /**
+   * Clear all time interval data.
+   *
+   * @return void
+   */
+  public function clearTimeInterval()
+  {
+    $this->_timeIntervalId = null;
+
+    $this->_isCustomDateRange = false;
+
+    $this->_startDate = null;
+    $this->_endDate   = null;
+
+    $this->_month = null;
+    $this->_year  = null;
+
+    $this->_isLast365Days = false;
+    $this->_isLast90Days  = false;
+    $this->_isLast30Days  = false;
+    $this->_isLast7Days   = false;
+  }
+
+  /**
    * Set the cluster ID.
    *
    * @param int $clusterId The cluster dimension primary key.
