@@ -832,7 +832,7 @@ Ext.Loader.onReady(function () {
             this.store.load();
 
             Ext.Object.each(this.detailTabs, function (id, tab) {
-                var detailParams =  {}
+                var detailParams = {};
                 detailParams[this.recordFormat.id] = id;
                 detailParams = Ext.merge(detailParams, params);
                 tab.loader.load({
