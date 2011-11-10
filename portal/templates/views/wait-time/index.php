@@ -6,8 +6,7 @@ Ext.onReady(function() {
     });
 });
 </script>
-<div id="dash-chart">
-</div>
+<div id="dash-chart"></div>
 <div class="chart-desc">
 Plot of the average wait time for a job to begin running versus the job size
 (number of processors). Note, this data is skewed by the users fairshare utilization, 

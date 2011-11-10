@@ -556,6 +556,7 @@ Ext.Loader.onReady(function () {
         reload: function () {
             if (!this.model.isReady()) { return; }
             Ext.get(this.element).load({
+                loadMask: 'Loading...',
                 url: this.url,
                 params: {
                     interval_id: this.model.getIntervalId(),
@@ -589,6 +590,7 @@ Ext.Loader.onReady(function () {
 
                         // Load the new content.
                         Ext.get('content').load({
+                            loadMask: 'Loading...',
                             url: href,
                             scripts: true,
                             success: function () {

@@ -233,3 +233,6 @@ ul#nav li.activelink a,ul#nav li.activelink a:hover {
     color: #000;
 }
 
+.dash-chart, #stats {
+    min-height: 100px;
+}

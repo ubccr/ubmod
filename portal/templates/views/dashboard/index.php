@@ -31,5 +31,4 @@ Ext.onReady(function () {
     });
 });
 </script>
-<div id="dash-chart">
-</div>
+<div id="dash-chart"></div>
