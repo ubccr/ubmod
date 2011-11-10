@@ -199,7 +199,9 @@ var StatsGrid = function(config){
         dataStore.baseParams = {
             filter: filter.getValue(),
             cluster_id: toolbar.clusterCombo.getValue(),
-            interval_id: toolbar.intervalCombo.getValue()
+            interval_id: toolbar.intervalCombo.getValue(),
+            sort: 'wallt',
+            dir: 'DESC'
         };
     });
 };
