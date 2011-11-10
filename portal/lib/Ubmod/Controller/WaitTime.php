@@ -13,7 +13,7 @@
  *
  * @package Ubmod
  */
-class Ubmod_Controller_WaitTime extends Ubmod_Controller_Base
+class Ubmod_Controller_WaitTime extends Ubmod_BaseController
 {
 
   /**

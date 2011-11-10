@@ -11,7 +11,7 @@
  *
  * @package Ubmod
  */
-class Ubmod_Controller_Front
+class Ubmod_FrontController
 {
 
   /**
@@ -28,7 +28,7 @@ class Ubmod_Controller_Front
    */
   public static function factory()
   {
-    return new Ubmod_Controller_Front();
+    return new Ubmod_FrontController();
   }
 
   /**
@@ -72,7 +72,7 @@ class Ubmod_Controller_Front
    * Render a view template.
    *
    * @param view str The path to the view to render
-   * @param controller Ubmod_Controller_Base The controller for the view
+   * @param controller Ubmod_BaseController The controller for the view
    * @return string
    */
   private function renderView($view, $controller)

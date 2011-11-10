@@ -13,7 +13,7 @@
  *
  * @package Ubmod
  */
-class Ubmod_Controller_About extends Ubmod_Controller_Base
+class Ubmod_Controller_About extends Ubmod_BaseController
 {
 
   /**
