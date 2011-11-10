@@ -54,6 +54,35 @@ class Ubmod_Model_Chart
 {
 
   /**
+   * Returns a query string for use with a chart URL
+   *
+   * @return array $params The necessary parameters
+   */
+  public static function getQueryString($params)
+  {
+    $interval = Ubmod_Model_Interval::getById($params['interval_id']);
+    $cluster  = Ubmod_Model_Cluster::getActivity($params);
+
+    $query['interval_id'] = $interval['interval_id'];
+    $query['cluster_id']  = $cluster['cluster_id'];
+
+    if ($interval['custom']) {
+      $query['start_date'] = $params['start_date'];
+      $query['end_date']   = $params['end_date'];
+    }
+
+    // Append time to prevent browser caching
+    $query['t'] = time();
+
+    $querySegments = array();
+    foreach ($query as $key => $value) {
+      $querySegments[] = $key . '=' . urlencode($value);
+    }
+
+    return implode('&amp;', $querySegments);
+  }
+
+  /**
    * Returns the subtitle used on various charts
    *
    * @param params array The needed parameters

@@ -65,20 +65,7 @@ class Ubmod_Controller_CpuConsumption extends Ubmod_BaseController
    */
   public function executeChart()
   {
-    $post = $this->getPostData();
-
-    $interval = Ubmod_Model_Interval::getById($post['interval_id']);
-
-    $queryString = 'interval_id=' . $interval['interval_id']
-      . '&amp;cluster_id=' . $post['cluster_id'] . '&amp;t=' . time();
-
-    if ($interval['custom']) {
-      $queryString .= '&amp;start_date=' . urlencode($post['start_date']);
-      $queryString .= '&amp;end_date=' . urlencode($post['end_date']);
-    }
-
-    // Append time to prevent browser caching
-    $queryString .= '&amp;t=' . time();
+    $queryString = Ubmod_Model_Chart::getQueryString($this->getPostData());
 
     $this->chart = '/chart/cpu-consumption?' . $queryString;
   }

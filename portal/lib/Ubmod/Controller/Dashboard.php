@@ -70,16 +70,7 @@ class Ubmod_Controller_Dashboard extends Ubmod_BaseController
     $this->interval = Ubmod_Model_Interval::getById($post['interval_id']);
     $this->cluster  = Ubmod_Model_Cluster::getActivity($post);
 
-    $queryString = 'interval_id=' . $this->interval['interval_id']
-      . '&amp;cluster_id=' . $this->cluster['cluster_id'];
-
-    if ($this->interval['custom']) {
-      $queryString .= '&amp;start_date=' . urlencode($post['start_date']);
-      $queryString .= '&amp;end_date=' . urlencode($post['end_date']);
-    }
-
-    // Append time to prevent browser caching
-    $queryString .= '&amp;t=' . time();
+    $queryString = Ubmod_Model_Chart::getQueryString($post);
 
     $this->userPieChart  = '/chart/user-pie?'  . $queryString;
     $this->userBarChart  = '/chart/user-bar?'  . $queryString;
