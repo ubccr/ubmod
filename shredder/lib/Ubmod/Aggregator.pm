@@ -561,7 +561,7 @@ sub select_cluster_activity {
             GROUP BY host
         },
         { Slice => {} },
-        @$interval{qw{ start end }}
+        @$interval{qw( start end )}
     );
 }
 
@@ -608,7 +608,7 @@ sub select_queue_activity {
             GROUP BY host, queue
         },
         { Slice => {} },
-        @$interval{qw{ start end }}
+        @$interval{qw( start end )}
     );
 }
 
@@ -655,7 +655,7 @@ sub select_group_activity {
             GROUP BY host, ugroup
         },
         { Slice => {} },
-        @$interval{qw{ start end }}
+        @$interval{qw( start end )}
     );
 }
 
@@ -702,7 +702,7 @@ sub select_user_activity {
             GROUP BY host, user
         },
         { Slice => {} },
-        @$interval{qw{ start end }}
+        @$interval{qw( start end )}
     );
 }
 
@@ -717,7 +717,7 @@ sub select_cpu_consumption {
         AND date_key BETWEEN ? AND ?
         AND resources_used_cpus >= ?
     };
-    my @params = @$params{qw{ host start end min }};
+    my @params = @$params{qw( host start end min )};
 
     if ( defined $params->{max} ) {
         $sql .= q{ AND resources_used_cpus <= ? };
@@ -743,7 +743,7 @@ sub select_actual_wait_time {
         AND date_key BETWEEN ? AND ?
         AND resources_used_cpus >= ?
     };
-    my @params = @$params{qw{ host start end min }};
+    my @params = @$params{qw( host start end min )};
 
     if ( defined $params->{max} ) {
         $sql .= q{ AND resources_used_cpus <= ? };
@@ -801,7 +801,7 @@ sub insert_interval {
                 end = ?
         }
     );
-    $sth->execute( @$interval{qw{ label start end }} );
+    $sth->execute( @$interval{qw( label start end )} );
 
     return $self->{dbh}->{mysql_insertid};
 }
@@ -1019,7 +1019,7 @@ sub insert_queue_cluster {
 
     $self->{dbh}
         ->do( q{ INSERT INTO queue_cluster SET queue_id = ?, cluster_id = ? },
-        undef, @$keys{qw{ queue_id cluster_id }} );
+        undef, @$keys{qw( queue_id cluster_id )} );
 }
 
 sub insert_group_cluster {
@@ -1027,7 +1027,7 @@ sub insert_group_cluster {
 
     $self->{dbh}
         ->do( q{ INSERT INTO group_cluster SET group_id = ?, cluster_id = ? },
-        undef, @$keys{qw{ group_id cluster_id }} );
+        undef, @$keys{qw( group_id cluster_id )} );
 }
 
 sub insert_user_cluster {
@@ -1035,7 +1035,7 @@ sub insert_user_cluster {
 
     $self->{dbh}
         ->do( q{ INSERT INTO user_cluster SET user_id = ?, cluster_id = ? },
-        undef, @$keys{qw{ user_id cluster_id }} );
+        undef, @$keys{qw( user_id cluster_id )} );
 }
 
 sub insert_user_group {
@@ -1043,7 +1043,7 @@ sub insert_user_group {
 
     $self->{dbh}
         ->do( q{ INSERT INTO user_group SET user_id = ?, group_id = ? },
-        undef, @$keys{qw{ user_id group_id }} );
+        undef, @$keys{qw( user_id group_id )} );
 }
 
 sub insert_user_queue {
@@ -1051,7 +1051,7 @@ sub insert_user_queue {
 
     $self->{dbh}
         ->do( q{ INSERT INTO user_queue SET user_id = ?, queue_id = ? },
-        undef, @$keys{qw{ user_id queue_id }} );
+        undef, @$keys{qw( user_id queue_id )} );
 }
 
 sub delete_queue_cluster {
@@ -1059,7 +1059,7 @@ sub delete_queue_cluster {
 
     $self->{dbh}->do(
         q{ DELETE FROM queue_cluster WHERE queue_id = ? AND cluster_id = ? },
-        undef, @$keys{qw{ queue_id cluster_id }}
+        undef, @$keys{qw( queue_id cluster_id )}
     );
 }
 
@@ -1068,7 +1068,7 @@ sub delete_group_cluster {
 
     $self->{dbh}->do(
         q{ DELETE FROM group_cluster WHERE group_id = ? AND cluster_id = ? },
-        undef, @$keys{qw{ group_id cluster_id }}
+        undef, @$keys{qw( group_id cluster_id )}
     );
 }
 
@@ -1077,7 +1077,7 @@ sub delete_user_cluster {
 
     $self->{dbh}->do(
         q{ DELETE FROM user_cluster WHERE user_id = ? AND cluster_id = ? },
-        undef, @$keys{qw{ user_id cluster_id }} );
+        undef, @$keys{qw( user_id cluster_id )} );
 }
 
 sub delete_user_group {
@@ -1085,7 +1085,7 @@ sub delete_user_group {
 
     $self->{dbh}
         ->do( q{ DELETE FROM user_group WHERE user_id = ? AND group_id = ? },
-        undef, @$keys{qw{ user_id group_id }} );
+        undef, @$keys{qw( user_id group_id )} );
 }
 
 sub delete_user_queue {
@@ -1093,7 +1093,7 @@ sub delete_user_queue {
 
     $self->{dbh}
         ->do( q{ DELETE FROM user_queue WHERE user_id = ? AND queue_id = ? },
-        undef, @$keys{qw{ user_id queue_id }} );
+        undef, @$keys{qw( user_id queue_id )} );
 }
 
 sub truncate_activity {
