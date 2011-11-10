@@ -162,6 +162,12 @@ Ext.Loader.onReady(function () {
      */
     Ext.define('Ubmod.widget.Interval', {
         extend: 'Ext.form.field.ComboBox',
+        constructor: function (config) {
+            config = config || {}
+            config.editable = false;
+            this.addEvents({ load: true });
+            Ubmod.widget.Interval.superclass.constructor.call(this, config);
+        },
         initComponent: function () {
             var store = Ext.create('Ubmod.store.Interval');
 
@@ -177,6 +183,7 @@ Ext.Loader.onReady(function () {
                 scope: this,
                 callback: function (records) {
                     this.setValue(records[0].get(this.valueField));
+                    this.fireEvent('load');
                 }
             });
         }
@@ -184,6 +191,12 @@ Ext.Loader.onReady(function () {
 
     Ext.define('Ubmod.widget.Cluster', {
         extend: 'Ext.form.field.ComboBox',
+        constructor: function (config) {
+            config = config || {}
+            config.editable = false;
+            this.addEvents({ load: true });
+            Ubmod.widget.Cluster.superclass.constructor.call(this, config);
+        },
         initComponent: function () {
             var store = Ext.create('Ubmod.store.Cluster');
 
@@ -199,6 +212,7 @@ Ext.Loader.onReady(function () {
                 scope: this,
                 callback: function (records) {
                     this.setValue(records[0].get(this.valueField));
+                    this.fireEvent('load');
                 }
             });
         }
@@ -207,15 +221,46 @@ Ext.Loader.onReady(function () {
 
     Ext.define('Ubmod.widget.Toolbar', {
         extend: 'Ext.toolbar.Toolbar',
+        constructor: function (config) {
+            config = config || {}
+            this.addEvents({ load: true, select: true });
+            Ubmod.widget.Cluster.superclass.constructor.call(this, config);
+        },
         initComponent: function () {
+
+            var cb = Ext.bind(function () {
+                var count = 0;
+                return Ext.bind(function () {
+                    count = count + 1;
+                    console.log(count);
+                    if (count == 2) { this.fireEvent('load'); }
+                }, this);
+            }, this)();
+
+            var listeners = {
+                load: {
+                    fn: function () {
+                        console.log('load');
+                        cb();
+                    },
+                    scope: this
+                },
+                select: {
+                    fn: function () {
+                        console.log('select');
+                        this.fireEvent('select');
+                    },
+                    scope: this
+                }
+            };
 
             this.renderTo = Ext.get('toolbar');
             this.items = [
                 'Period:',
-                Ext.create('Ubmod.widget.Interval'),
+                Ext.create('Ubmod.widget.Interval', { listeners: listeners }),
                 { xtype: 'tbspacer', width: 20 },
                 'Cluster:',
-                Ext.create('Ubmod.widget.Cluster')
+                Ext.create('Ubmod.widget.Cluster', { listeners: listeners })
             ];
 
             Ubmod.widget.Toolbar.superclass.initComponent.call(this);
@@ -223,22 +268,19 @@ Ext.Loader.onReady(function () {
     });
 
     Ubmod.app = function () {
-        var toolbar, clusterId, intervalId, currentPage;
+        var toolbar, currentPage;
 
         var updateContent = function () {
         };
 
         return {
             init: function () {
-                toolbar = Ext.create('Ubmod.widget.Toolbar');
-            },
-            setClusterId: function (id) {
-                clusterId = id;
-                updateContent();
-            },
-            setIntervalId: function (id) {
-                intervalId = id;
-                updateContent();
+                toolbar = Ext.create('Ubmod.widget.Toolbar', {
+                    listeners: {
+                        load: function () { console.log('toolbar load'); },
+                        select: function () { console.log('toolbar select'); }
+                    }
+                });
             }
         };
     }();
