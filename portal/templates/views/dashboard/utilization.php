@@ -42,11 +42,15 @@ Ext.onReady(function () {
     </tr>
     <tr>
       <td style="vertical-align:top;"><img class="pie" src="<?php echo $userPieChart ?>" /><img class="bar" style="display:none;" src="<?php echo $userBarChart ?>" /></td>
+    </tr>
+    <tr>
       <td style="vertical-align:top;"><img class="pie" src="<?php echo $groupPieChart ?>" /><img class="bar" style="display:none;" src="<?php echo $groupBarChart ?>" /></td>
     </tr>
     <?php if ($interval['multi_month']): ?>
       <tr>
         <td style="vertical-align:top;"><img src="<?php echo $userAreaChart ?>" /></td>
+      </tr>
+      <tr>
         <td style="vertical-align:top;"><img src="<?php echo $groupAreaChart ?>" /></td>
       </tr>
     <?php endif; ?>

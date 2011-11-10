@@ -33,12 +33,14 @@
           <img class="pie" src="<?php echo $pieChart ?>" />
           <img class="bar" src="<?php echo $barChart ?>" style="display:none;" />
         </td>
-        <?php if ($interval['multi_month']): ?>
+      </tr>
+      <?php if ($interval['multi_month']): ?>
+        <tr>
           <td style="vertical-align:top;">
             <img src="<?php echo $areaChart ?>" />
           </td>
-        <?php endif; ?>
-      </tr>
+        </tr>
+      <?php endif; ?>
     </table>
   </div>
 <?php else: ?>

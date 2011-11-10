@@ -117,7 +117,7 @@ class Ubmod_Model_Chart
     if ($params->hasGroupId()) {
       $group = Ubmod_Model_Job::getEntity('group', $params);
       $parts[] = 'Group: '
-        . self::formatNameShort($group['name'], $group['display_name']);
+        . self::formatNameLong($group['name'], $group['display_name']);
     }
 
     if ($params->hasTag()) {
@@ -428,19 +428,19 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
       if ($user['wallt'] == 0) { continue; }
 
-      $users[] = self::formatNameShort($user['name'], $user['display_name']);
+      $users[] = self::formatNameLong($user['name'], $user['display_name']);
       $time[]  = $user['wallt'];
     }
 
     self::renderPieChart(array(
-      'width'      => 400,
+      'width'      => 700,
       'height'     => 350,
       'title'      => 'User Utilization',
       'subtitle'   => self::getSubtitle($params),
       'labels'     => $users,
       'series'     => $time,
       'maxSlices'  => 10,
-      'otherLabel' => "Remaining\nUsers",
+      'otherLabel' => "Remaining Users",
     ));
   }
 
@@ -463,19 +463,19 @@ class Ubmod_Model_Chart
       if ($group['wallt'] == 0) { continue; }
 
       $groups[]
-        = self::formatNameShort($group['name'], $group['display_name']);
+        = self::formatNameLong($group['name'], $group['display_name']);
       $time[] = $group['wallt'];
     }
 
     self::renderPieChart(array(
-      'width'      => 400,
+      'width'      => 700,
       'height'     => 350,
       'title'      => 'Group Utilization',
       'subtitle'   => self::getSubtitle($params),
       'labels'     => $groups,
       'series'     => $time,
       'maxSlices'  => 10,
-      'otherLabel' => "Remaining\nGroups",
+      'otherLabel' => "Remaining Groups",
     ));
   }
 
@@ -496,19 +496,19 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Tag::getActivityList($params) as $tag) {
       if ($tag['wallt'] == 0) { continue; }
 
-      $tags[] = self::formatNameShort($tag['tag_value']);
+      $tags[] = $tag['tag_value'];
       $time[] = $tag['wallt'];
     }
 
     self::renderPieChart(array(
-      'width'      => 400,
+      'width'      => 700,
       'height'     => 350,
       'title'      => 'Tag Utilization',
       'subtitle'   => self::getSubtitle($params),
       'labels'     => $tags,
       'series'     => $time,
       'maxSlices'  => 10,
-      'otherLabel' => "Remaining\nTags",
+      'otherLabel' => "Remaining Tags",
     ));
   }
 
@@ -537,7 +537,7 @@ class Ubmod_Model_Chart
     }
 
     self::renderBarChart(array(
-      'width'    => 400,
+      'width'    => 700,
       'height'   => 350,
       'title'    => 'User Utilization',
       'subtitle' => self::getSubtitle($params),
@@ -572,7 +572,7 @@ class Ubmod_Model_Chart
     }
 
     self::renderBarChart(array(
-      'width'    => 400,
+      'width'    => 700,
       'height'   => 350,
       'title'    => 'Group Utilization',
       'subtitle' => self::getSubtitle($params),
@@ -606,7 +606,7 @@ class Ubmod_Model_Chart
     }
 
     self::renderBarChart(array(
-      'width'    => 400,
+      'width'    => 700,
       'height'   => 350,
       'title'    => 'Tag Utilization',
       'subtitle' => self::getSubtitle($params),
@@ -703,7 +703,7 @@ class Ubmod_Model_Chart
     }
 
     self::renderStackedAreaChart(array(
-      'width'      => 400,
+      'width'      => 700,
       'height'     => 350,
       'title'      => 'Monthly User Utilization',
       'subtitle'   => self::getSubtitle($params),
@@ -802,7 +802,7 @@ class Ubmod_Model_Chart
     }
 
     self::renderStackedAreaChart(array(
-      'width'      => 400,
+      'width'      => 700,
       'height'     => 350,
       'title'      => 'Monthly Group Utilization',
       'subtitle'   => self::getSubtitle($params),
@@ -893,7 +893,7 @@ class Ubmod_Model_Chart
     }
 
     self::renderStackedAreaChart(array(
-      'width'      => 400,
+      'width'      => 700,
       'height'     => 350,
       'title'      => 'Monthly Tag Utilization',
       'subtitle'   => self::getSubtitle($params),
