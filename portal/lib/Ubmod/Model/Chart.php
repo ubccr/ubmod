@@ -496,7 +496,7 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Tag::getActivityList($params) as $tag) {
       if ($tag['wallt'] == 0) { continue; }
 
-      $tags[] = $tag['tag_value'];
+      $tags[] = self::formatNameShort($tag['tag_value']);
       $time[] = $tag['wallt'];
     }
 
@@ -600,7 +600,7 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Tag::getActivityList($params) as $tag) {
       if ($tag['wallt'] == 0) { continue; }
 
-      $tags[] = $tag['tag_value'];
+      $tags[] = self::formatNameShort($tag['tag_value']);
       $time[] = $tag['wallt'];
     }
 
