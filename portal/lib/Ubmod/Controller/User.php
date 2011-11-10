@@ -76,12 +76,13 @@ class Ubmod_Controller_User extends Ubmod_BaseController
     header('Content-disposition: attachment; filename=users.csv');
 
     $columns = array(
-      'name'     => 'User',
-      'jobs'     => '# Jobs',
-      'avg_cpus' => 'Avg. Job Size (cpus)',
-      'avg_wait' => 'Avg. Wait Time (h)',
-      'wallt'    => 'Wall Time (d)',
-      'avg_mem'  => 'Avg. Mem (MB)',
+      'name'         => 'User',
+      'display_name' => 'Name',
+      'jobs'         => '# Jobs',
+      'avg_cpus'     => 'Avg. Job Size (cpus)',
+      'avg_wait'     => 'Avg. Wait Time (h)',
+      'wallt'        => 'Wall Time (d)',
+      'avg_mem'      => 'Avg. Mem (MB)',
     );
 
     echo implode("\t", array_values($columns)), "\n";
