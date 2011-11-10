@@ -181,10 +181,10 @@ sub parse_hosts {
     foreach my $part (@parts) {
         my ( $host, $cpu ) = split /\//, $part;
         push @hosts,
-          {
+            {
             host => $host,
             cpu  => $cpu,
-          };
+            };
     }
 
     return \@hosts;
