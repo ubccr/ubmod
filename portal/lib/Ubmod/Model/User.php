@@ -212,7 +212,7 @@ class Ubmod_Model_User
   }
 
   /**
-   * Retuns the number of users for the given parameters.
+   * Returns the number of users for the given parameters.
    *
    * @param array $params The parameters for the query.
    *
@@ -240,7 +240,7 @@ class Ubmod_Model_User
   }
 
   /**
-   * Retuns an array of users and their tags.
+   * Returns an array of users and their tags.
    *
    * @param array $params The parameters for the query.
    *
@@ -262,7 +262,7 @@ class Ubmod_Model_User
       $dbParams[':filter'] = '%' . $params['filter'] . '%';
     }
 
-    $sortFields = array('user');
+    $sortFields = array('user', 'tags');
 
     if (isset($params['sort']) && in_array($params['sort'], $sortFields)) {
       if (!in_array($params['dir'], array('ASC', 'DESC'))) {

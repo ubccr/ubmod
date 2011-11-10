@@ -472,7 +472,7 @@ Ext.Loader.onReady(function () {
                     simpleSortMode: true,
                     url: '/api/rest/json/user/tags',
                     reader: { type: 'json', root: 'users' },
-                    extraParams: { sort: 'wallt', dir: 'DESC' }
+                    extraParams: { sort: 'user', dir: 'ASC' }
                 }
             });
             Ubmod.store.UserTags.superclass.constructor.call(this, config);
