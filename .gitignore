@@ -4,13 +4,8 @@ CVS
 /default.ini
 /portal/config/settings.ini
 /portal/html/js/ext-all.js
-/portal/html/js/ext-yui-adapter.js
-/portal/html/js/yui-utilities.js
-/portal/html/css/ext-all.css
-/portal/html/images/aero
-/portal/html/images/default
-/portal/html/images/gray
-/portal/html/images/vista
+/portal/html/js/ext-all-debug.js
+/portal/html/resources
 /portal/lib/Zend
 /portal/lib/pChart
 /shredder/config/settings.ini
