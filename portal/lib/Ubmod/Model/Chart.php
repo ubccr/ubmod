@@ -630,21 +630,27 @@ class Ubmod_Model_Chart
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(TRUE);
 
-    $months = Ubmod_Model_TimeInterval::getMonths($params);
+    $maxUsers = 10;
+    $topUsers = array();
 
-    $maxUsers   = 10;
+    // array( user_id => array( wallt, ... ), ... )
+    $serieForUserId = array();
+
+    foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
+      if (count($topUsers) < $maxUsers - 1 && count($user) >= $maxUsers) {
+        $topUsers[] = $user;
+        $serieForUserId[$user['user_id']] = array();
+      }
+    }
+
     $otherUser  = 'Remaining Users';
-    $users      = array();
-    $monthNames = array();
+    $otherSerie = array();
     $haveOther  = false;
 
-    // array( monthKey => array( user => wallt, ... ), ... )
-    $serieForMonth = array();
+    $months = Ubmod_Model_TimeInterval::getMonths($params);
+    $monthNames = array();
 
     foreach ($months as $monthKey => $month) {
-
-      $userCount = 0;
-      $userWallt  = array();
       $otherWallt = 0;
 
       $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
@@ -656,49 +662,26 @@ class Ubmod_Model_Chart
       $monthParams->setMonth($month['month']);
 
       foreach (Ubmod_Model_Job::getActivityList($monthParams) as $user) {
-        if ($user['wallt'] == 0) { continue; }
-
-        if ($userCount < $maxUsers - 1) {
-          $name = self::formatNameLong($user['name'], $user['display_name']);
-          $userWallt[$name] = $user['wallt'];
+        if (isset($serieForUserId[$user['user_id']])) {
+          $serieForUserId[$user['user_id']][] = $user['wallt'];
         } else {
           $otherWallt += $user['wallt'];
         }
-        $userCount++;
       }
 
-      // Don't include "other users" here
-      $users = array_merge($users, array_keys($userWallt));
-
-      if ($otherWallt > 0) {
-        $haveOther = true;
-        $userWallt[$otherUser] = $otherWallt;
-      }
-
-      $serieForMonth[$monthKey] = $userWallt;
+      if ($otherWallt > 0) { $haveOther = true; }
+      $otherSerie[] = $otherWallt;
     }
 
-    $users = array_unique($users);
-
-    // The "other users" should be listed last
-    if ($haveOther) {
-      $users[] = $otherUser;
-    }
-
-    // array( user => array( wallt, ... ), ... )
+    // array( name => array( wallt, ... ), ... )
     $serieForUser = array();
 
-    foreach ($users as $user) {
-      $serie = array();
-      foreach ($months as $monthKey => $month) {
-        if (isset($serieForMonth[$monthKey][$user])) {
-          $serie[] = $serieForMonth[$monthKey][$user];
-        } else {
-          $serie[] = 0;
-        }
-      }
-      $serieForUser[$user] = $serie;
+    foreach ($topUsers as $user) {
+      $name = self::formatNameLong($user['name'], $user['display_name']);
+      $serieForUser[$name] = $serieForUserId[$user['user_id']];
     }
+
+    $serieForUser[$otherUser] = $otherSerie;
 
     self::renderStackedAreaChart(array(
       'width'      => 400,
@@ -727,21 +710,27 @@ class Ubmod_Model_Chart
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(TRUE);
 
-    $months = Ubmod_Model_TimeInterval::getMonths($params);
+    $maxGroups = 10;
+    $topGroups = array();
 
-    $maxGroups  = 10;
+    // array( group_id => array( wallt, ... ), ... )
+    $serieForGroupId = array();
+
+    foreach (Ubmod_Model_Job::getActivityList($params) as $group) {
+      if (count($topGroups) < $maxGroups - 1 && count($group) >= $maxGroups) {
+        $topGroups[] = $group;
+        $serieForGroupId[$group['group_id']] = array();
+      }
+    }
+
     $otherGroup = 'Remaining Groups';
-    $groups     = array();
-    $monthNames = array();
+    $otherSerie = array();
     $haveOther  = false;
 
-    // array( monthKey => array( group => wallt, ... ), ... )
-    $serieForMonth = array();
+    $months = Ubmod_Model_TimeInterval::getMonths($params);
+    $monthNames = array();
 
     foreach ($months as $monthKey => $month) {
-
-      $groupCount = 0;
-      $groupWallt = array();
       $otherWallt = 0;
 
       $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
@@ -753,50 +742,26 @@ class Ubmod_Model_Chart
       $monthParams->setMonth($month['month']);
 
       foreach (Ubmod_Model_Job::getActivityList($monthParams) as $group) {
-        if ($group['wallt'] == 0) { continue; }
-
-        if ($groupCount < $maxGroups - 1) {
-          $name
-            = self::formatNameLong($group['name'], $group['display_name']);
-          $groupWallt[$name] = $group['wallt'];
+        if (isset($serieForGroupId[$group['group_id']])) {
+          $serieForGroupId[$group['group_id']][] = $group['wallt'];
         } else {
           $otherWallt += $group['wallt'];
         }
-        $groupCount++;
       }
 
-      // Don't include "other groups" here
-      $groups = array_merge($groups, array_keys($groupWallt));
-
-      if ($otherWallt > 0) {
-        $haveOther = true;
-        $groupWallt[$otherGroup] = $otherWallt;
-      }
-
-      $serieForMonth[$monthKey] = $groupWallt;
+      if ($otherWallt > 0) { $haveOther = true; }
+      $otherSerie[] = $otherWallt;
     }
 
-    $groups = array_unique($groups);
-
-    // The "other groups" should be listed last
-    if ($haveOther) {
-      $groups[] = $otherGroup;
-    }
-
-    // array( group => array( wallt, ... ), ... )
+    // array( name => array( wallt, ... ), ... )
     $serieForGroup = array();
 
-    foreach ($groups as $group) {
-      $serie = array();
-      foreach ($months as $monthKey => $month) {
-        if (isset($serieForMonth[$monthKey][$group])) {
-          $serie[] = $serieForMonth[$monthKey][$group];
-        } else {
-          $serie[] = 0;
-        }
-      }
-      $serieForGroup[$group] = $serie;
+    foreach ($topGroups as $group) {
+      $name = self::formatNameLong($group['name'], $group['display_name']);
+      $serieForGroup[$name] = $serieForGroupId[$group['group_id']];
     }
+
+    $serieForGroup[$otherGroup] = $otherSerie;
 
     self::renderStackedAreaChart(array(
       'width'      => 400,
@@ -825,21 +790,27 @@ class Ubmod_Model_Chart
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(TRUE);
 
-    $months = Ubmod_Model_TimeInterval::getMonths($params);
+    $maxTags = 10;
+    $topTags = array();
 
-    $maxTags    = 10;
+    // array( value => array( wallt, ... ), ... )
+    $serieForTagValue = array();
+
+    foreach (Ubmod_Model_Tag::getActivityList($params) as $tag) {
+      if (count($topTags) < $maxTags - 1 && count($tag) >= $maxTags) {
+        $topTags[] = $tag;
+        $serieForTagValue[$tag['tag_value']] = array();
+      }
+    }
+
     $otherTag   = 'Remaining Tags';
-    $tags       = array();
-    $monthNames = array();
+    $otherSerie = array();
     $haveOther  = false;
 
-    // array( monthKey => array( tag => wallt, ... ), ... )
-    $serieForMonth = array();
+    $months = Ubmod_Model_TimeInterval::getMonths($params);
+    $monthNames = array();
 
     foreach ($months as $monthKey => $month) {
-
-      $tagCount = 0;
-      $tagWallt = array();
       $otherWallt = 0;
 
       $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
@@ -851,47 +822,20 @@ class Ubmod_Model_Chart
       $monthParams->setMonth($month['month']);
 
       foreach (Ubmod_Model_Tag::getActivityList($monthParams) as $tag) {
-        if ($tag['wallt'] == 0) { continue; }
-
-        if ($tagCount < $maxTags - 1) {
-          $tagWallt[$tag['tag_value']] = $tag['wallt'];
+        if (isset($serieForTagValue[$tag['tag_value']])) {
+          $serieForTagValue[$tag['tag_value']][] = $tag['wallt'];
         } else {
           $otherWallt += $tag['wallt'];
         }
-        $tagCount++;
+
       }
 
-      // Don't include "other tags" here
-      $tags = array_merge($tags, array_keys($tagWallt));
-
-      if ($otherWallt > 0) {
-        $haveOther = true;
-        $tagWallt[$otherTag] = $otherWallt;
-      }
-
-      $serieForMonth[$monthKey] = $tagWallt;
+      if ($otherWallt > 0) { $haveOther = true; }
+      $otherSerie[] = $otherWallt;
     }
 
-    $tags = array_unique($tags);
-
-    // The "other tags" should be listed last
     if ($haveOther) {
-      $tags[] = $otherTag;
-    }
-
-    // array( tag => array( wallt, ... ), ... )
-    $serieForTag = array();
-
-    foreach ($tags as $tag) {
-      $serie = array();
-      foreach ($months as $monthKey => $month) {
-        if (isset($serieForMonth[$monthKey][$tag])) {
-          $serie[] = $serieForMonth[$monthKey][$tag];
-        } else {
-          $serie[] = 0;
-        }
-      }
-      $serieForTag[$tag] = $serie;
+      $serieForTagValue[$otherTag] = $otherSerie;
     }
 
     self::renderStackedAreaChart(array(
@@ -902,7 +846,7 @@ class Ubmod_Model_Chart
       'yLabel'     => 'Wall Time (Days)',
       'xLabel'     => 'Month',
       'labels'     => $monthNames,
-      'series'     => $serieForTag,
+      'series'     => $serieForTagValue,
       'legendMode' => LEGEND_VERTICAL,
     ));
   }
