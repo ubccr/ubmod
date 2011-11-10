@@ -12,15 +12,3 @@ UBMoD - TODO
 - RFE: Add cluster name for data in Dashboard view.  The "Utilization for
   period...." title bar within the Dashboard view does not include the name of
   the cluster for which the data is presented.
-
-- RFE:  Any data presented to the user should be for the system name shown in
-  the "Cluster" drop-down.  When selecting a new option from the Menu box, the
-  initial data shown is always for the default cluster (presumably the first
-  one data was loaded for), even though a different cluster name is shown in
-  the drop-down box.  Re-selecting a value either for the Period or Cluster
-  drop-down boxes updates the data presented to what is expected. For example,
-  if one selects "System #2" in the Cluster drop-down for the Wait Time page,
-  and then click on CPU Consumption link, the data presented is for "System
-  #1", even though the name shown in the Cluster drop-down is "System #2".
-  This is confirmed by the subtitle name above the graph.  This happens for all
-  links within the Menu box.
