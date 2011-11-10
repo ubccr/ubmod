@@ -4,10 +4,13 @@ Ext.onReady(function () {
     Ubmod.app.addStatsPanel({
         store: Ext.create('Ubmod.store.User'),
         renderTo: 'stats',
-        label: 'Users',
-        labelKey: 'user',
-        id: 'user_id',
-        detailsUrl: '/user/details'
+        gridTitle: 'All Users',
+        recordFormat: {
+            label: 'User',
+            key: 'user',
+            id: 'user_id',
+            detailsUrl: '/user/details'
+        }
     });
 });
 </script>

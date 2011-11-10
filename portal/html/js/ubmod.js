@@ -326,11 +326,13 @@ Ext.Loader.onReady(function () {
 
             this.model = config.model;
             this.store = config.store;
+            this.recordFormat = config.recordFormat;
+
             this.grid = Ext.create('Ubmod.widget.Grid', {
-                title: 'All ' + config.label,
+                title: config.gridTitle,
                 store: this.store,
-                label: config.label,
-                labelKey: config.labelKey
+                label: this.recordFormat.label,
+                labelKey: this.recordFormat.key
             });
 
             Ext.apply(config, {
@@ -356,8 +358,22 @@ Ext.Loader.onReady(function () {
             Ubmod.widget.StatsPanel.superclass.initComponent.call(this);
 
             this.grid.on('itemdblclick', function (grid, record) {
-                // TODO
-            });
+                var interval = this.model.get('interval'),
+                    cluster = this.model.get('cluster');
+                this.add({
+                    title: record.get(this.recordFormat.key),
+                    closable: true,
+                    loader: {
+                        url: this.recordFormat.detailsUrl,
+                        autoLoad: true,
+                        params: {
+                            id: record.get(this.recordFormat.id),
+                            interval_id: interval.get('interval_id'),
+                            cluster_id: cluster.get('cluster_id')
+                        }
+                    }
+                }).show();
+            }, this);
 
             this.reload();
         },

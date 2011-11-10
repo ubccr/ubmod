@@ -4,10 +4,13 @@ Ext.onReady(function(){
     Ubmod.app.addStatsPanel({
         store: Ext.create('Ubmod.store.Queue'),
         renderTo: 'stats',
-        label: 'Queues',
-        labelKey: 'queue',
-        id: 'queue_id',
-        detailsUrl: '/queue/details'
+        gridTitle: 'All Queues',
+        recordFormat: {
+            label: 'Queues',
+            key: 'queue',
+            id: 'queue_id',
+            detailsUrl: '/queue/details'
+        }
     });
 });
 </script>
