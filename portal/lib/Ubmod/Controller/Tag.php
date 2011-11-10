@@ -70,8 +70,8 @@ class Ubmod_Controller_Tag extends Ubmod_BaseController
     $this->tag   = Ubmod_Model_Tag::getActivityByName($params);
     $queryString = Ubmod_Model_Chart::getQueryString($params);
 
-    $this->tagPieChart  = '/chart/user-pie?'  . $queryString;
-    $this->tagBarChart  = '/chart/user-bar?'  . $queryString;
-    $this->tagAreaChart = '/chart/user-area?' . $queryString;
+    $this->pieChart  = '/chart/user-pie?'  . $queryString;
+    $this->barChart  = '/chart/user-bar?'  . $queryString;
+    $this->areaChart = '/chart/user-area?' . $queryString;
   }
 }
