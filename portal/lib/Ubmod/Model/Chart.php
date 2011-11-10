@@ -426,13 +426,24 @@ class Ubmod_Model_Chart
       $count++;
     }
 
-    if ($other > 0) {
-      $users[] = "Remaining\nUsers";
-      $time[]  = $other;
+    while (list($i, $t) = each($time)) {
+      $percentage = round($t / $total * 100);
+      if ($percentage > 2) {
+        $users[$i] .= sprintf(' (%d%%)', $percentage);
+      } else {
+
+        // Don't include users with a small percentage.
+        $other += $t;
+        unset($users[$i]);
+        unset($time[$i]);
+      }
     }
 
-    while (list($i, $t) = each($time)) {
-      $users[$i] .= sprintf(' (%d%%)', round($t / $total * 100));
+    if ($other > 0) {
+      $percentage = round($other / $total * 100);
+      if ($percentage < 1) { $percentage = '>1'; }
+      $users[] = sprintf("Remaining\nUsers (%s%%)", $percentage);
+      $time[]  = $other;
     }
 
     self::renderPieChart(array(
@@ -508,13 +519,24 @@ class Ubmod_Model_Chart
       $count++;
     }
 
-    if ($other > 0) {
-      $groups[] = "Remaining\nGroups";
-      $time[]   = $other;
+    while (list($i, $t) = each($time)) {
+      $percentage = round($t / $total * 100);
+      if ($percentage > 2) {
+        $groups[$i] .= sprintf(' (%d%%)', $percentage);
+      } else {
+
+        // Don't include groups with a small percentage.
+        $other += $t;
+        unset($groups[$i]);
+        unset($time[$i]);
+      }
     }
 
-    while (list($i, $t) = each($time)) {
-      $groups[$i] .= sprintf(' (%d%%)', round($t / $total * 100));
+    if ($other > 0) {
+      $percentage = round($other / $total * 100);
+      if ($percentage < 1) { $percentage = '>1'; }
+      $groups[] = sprintf("Remaining\nGroups (%s%%)", $percentage);
+      $time[]   = $other;
     }
 
     self::renderPieChart(array(
