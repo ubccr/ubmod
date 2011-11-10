@@ -150,4 +150,3 @@ class Ubmod_FrontController
     return TEMPLATE_DIR . '/views/' . $controller . '/' . $action . '.php';
   }
 }
-152:	hit EOF seeking end of quote/pattern starting at line 1 ending in ?
