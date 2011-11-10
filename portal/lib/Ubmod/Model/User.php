@@ -41,7 +41,7 @@
  */
 
 /**
- * User Model
+ * User Model.
  *
  * @package Ubmod
  **/
@@ -49,12 +49,13 @@ class Ubmod_Model_User
 {
 
   /**
-   * Return the number of users with activities.
+   * Return the number of users with activity for the given parameters.
    *
-   * @param array params The parameters for the query
+   * @param array $params The parameters for the query.
+   *
    * @return int
    */
-  public static function getActivityCount($params)
+  public static function getActivityCount(array $params)
   {
     $timeClause = Ubmod_Model_Interval::whereClause($params);
 
@@ -88,12 +89,13 @@ class Ubmod_Model_User
   }
 
   /**
-   * Retuns an array of users joined with their activities.
+   * Returns an array of users joined with their activity.
    *
-   * @param array params The parameters for the query
+   * @param array $params The parameters for the query.
+   *
    * @return array
    */
-  public static function getActivities($params)
+  public static function getActivity(array $params)
   {
     $timeClause = Ubmod_Model_Interval::whereClause($params);
 
@@ -151,12 +153,13 @@ class Ubmod_Model_User
   }
 
   /**
-   * Returns the user for a given id and parameters
+   * Returns the user for a given id and parameters.
    *
-   * @param array params The parameters for the query
+   * @param array $params The parameters for the query.
+   *
    * @return array
    */
-  public static function getActivityById($params)
+  public static function getActivityById(array $params)
   {
     $timeClause = Ubmod_Model_Interval::whereClause($params);
 
@@ -206,5 +209,170 @@ class Ubmod_Model_User
       throw new Exception($err[2]);
     }
     return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+  /**
+   * Retuns the number of users for the given parameters.
+   *
+   * @param array $params The parameters for the query.
+   *
+   * @return array
+   */
+  public static function getTagsCount(array $params)
+  {
+    $sql = 'SELECT COUNT(*) FROM dim_user';
+
+    $dbParams = array();
+    if (isset($params['filter']) && $params['filter'] != '') {
+      $sql .= ' WHERE name LIKE :filter';
+      $dbParams[':filter'] = '%' . $params['filter'] . '%';
+    }
+
+    $dbh = Ubmod_DbService::dbh();
+    $stmt = $dbh->prepare($sql);
+    $r = $stmt->execute($dbParams);
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
+    $result = $stmt->fetch();
+    return $result[0];
+  }
+
+  /**
+   * Retuns an array of users and their tags.
+   *
+   * @param array $params The parameters for the query.
+   *
+   * @return array
+   */
+  public static function getTags(array $params)
+  {
+    $sql = "
+      SELECT
+        dim_user_id          AS user_id,
+        name                 AS user,
+        COALESCE(tags, '[]') AS tags
+      FROM dim_user
+    ";
+
+    $dbParams = array();
+    if (isset($params['filter']) && $params['filter'] != '') {
+      $sql .= ' WHERE name LIKE :filter';
+      $dbParams[':filter'] = '%' . $params['filter'] . '%';
+    }
+
+    $sortFields = array('user');
+
+    if (isset($params['sort']) && in_array($params['sort'], $sortFields)) {
+      if (!in_array($params['dir'], array('ASC', 'DESC'))) {
+        $params['dir'] = 'ASC';
+      }
+      $sql .= sprintf(' ORDER BY %s %s', $params['sort'], $params['dir']);
+    }
+
+    if (isset($params['start']) && isset($params['limit'])) {
+      $sql .= sprintf(' LIMIT %d, %d', $params['start'], $params['limit']);
+    }
+
+    $dbh = Ubmod_DbService::dbh();
+    $stmt = $dbh->prepare($sql);
+    $r = $stmt->execute($dbParams);
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
+    $users = array();
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      $row['tags'] = json_decode($row['tags']);
+      $users[] = $row;
+    }
+    return $users;
+  }
+
+  /**
+   * Add a tag to a list of users.
+   *
+   * @param string $tag     The tag to add to the users.
+   * @param array  $userIds An array for user keys (dim_user_id).
+   *
+   * @return bool
+   */
+  public static function addTag($tag, array $userIds)
+  {
+    $selectSql = "
+      SELECT COALESCE(tags, '[]') AS tags
+      FROM dim_user
+      WHERE dim_user_id = :dim_user_id
+    ";
+
+    $updateSql = "
+      UPDATE dim_user
+      SET tags = :tags
+      WHERE dim_user_id = :dim_user_id
+    ";
+
+    $dbh = Ubmod_DbService::dbh();
+
+    $selectStmt = $dbh->prepare($selectSql);
+    $updateStmt = $dbh->prepare($updateSql);
+
+    foreach ($userIds as $userId) {
+      $r = $selectStmt->execute(array(':dim_user_id' => $userId));
+      if (!$r) {
+        $err = $selectStmt->errorInfo();
+        throw new Exception($err[2]);
+      }
+      $user = $selectStmt->fetch();
+
+      $tags = json_decode($user['tags']);
+
+      if (!in_array($tag, $tags)) {
+        $tags[] = $tag;
+      } else {
+        continue;
+      }
+
+      $r = $updateStmt->execute(array(
+        ':tags'        => json_encode($tags),
+        ':dim_user_id' => $userId,
+      ));
+      if (!$r) {
+        $err = $updateStmt->errorInfo();
+        throw new Exception($err[2]);
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Update the tags for a single user.
+   *
+   * @param int   $userId The id of the user to update.
+   * @param array $tags   The user's tags.
+   *
+   * @return bool
+   */
+  public static function updateTags($userId, array $tags)
+  {
+    $sql = "
+      UPDATE dim_user
+      SET tags = :tags
+      WHERE dim_user_id = :dim_user_id
+    ";
+
+    $dbh = Ubmod_DbService::dbh();
+    $stmt = $dbh->prepare($sql);
+    $r = $stmt->execute(array(
+      ':tags'        => json_encode($tags),
+      ':dim_user_id' => $userId,
+    ));
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
+
+    return true;
   }
 }

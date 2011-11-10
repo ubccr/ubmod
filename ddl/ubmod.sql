@@ -259,6 +259,7 @@ CREATE TABLE `dim_user` (
   `dim_user_id`  int unsigned NOT NULL AUTO_INCREMENT,
   `name`         varchar(255) NOT NULL,
   `display_name` varchar(255),
+  `tags`         varchar(255),
   PRIMARY KEY (`dim_user_id`),
   KEY (`name`)
 ) ENGINE=MyISAM;

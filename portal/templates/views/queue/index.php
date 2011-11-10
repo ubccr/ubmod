@@ -1,7 +1,7 @@
 <script type="text/javascript">
 Ext.onReady(function(){
     Ubmod.app.addStatsPanel({
-        store: Ext.create('Ubmod.store.Queue'),
+        store: Ext.create('Ubmod.store.QueueActivity'),
         renderTo: 'stats',
         gridTitle: 'All Queues',
         recordFormat: {

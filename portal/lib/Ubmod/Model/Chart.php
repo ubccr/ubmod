@@ -383,7 +383,7 @@ class Ubmod_Model_Chart
 
     $users = array();
     $time  = array();
-    foreach (Ubmod_Model_User::getActivities($params) as $user) {
+    foreach (Ubmod_Model_User::getActivity($params) as $user) {
       if ($count < $max) {
         $users[] = $user['user'];
         $time[]  = $user['wallt'];
@@ -427,7 +427,7 @@ class Ubmod_Model_Chart
 
     $users = array();
     $time  = array();
-    foreach (Ubmod_Model_User::getActivities($params) as $user) {
+    foreach (Ubmod_Model_User::getActivity($params) as $user) {
       $users[] = $user['user'];
       $time[]  = $user['wallt'];
     }
@@ -460,7 +460,7 @@ class Ubmod_Model_Chart
 
     $groups = array();
     $time   = array();
-    foreach (Ubmod_Model_Group::getActivities($params) as $group) {
+    foreach (Ubmod_Model_Group::getActivity($params) as $group) {
       if ($count < $max) {
         $groups[] = $group['group_name'];
         $time[]   = $group['wallt'];
@@ -504,7 +504,7 @@ class Ubmod_Model_Chart
 
     $groups = array();
     $time   = array();
-    foreach (Ubmod_Model_Group::getActivities($params) as $group) {
+    foreach (Ubmod_Model_Group::getActivity($params) as $group) {
       $groups[] = $group['group_name'];
       $time[]   = $group['wallt'];
     }
@@ -552,7 +552,7 @@ class Ubmod_Model_Chart
       $monthParams = array_merge($params, $month);
       unset($monthParams['interval_id']);
 
-      foreach (Ubmod_Model_Group::getActivities($monthParams) as $group) {
+      foreach (Ubmod_Model_Group::getActivity($monthParams) as $group) {
         if ($groupCount < $maxGroups) {
           $groupWallt[$group['group_name']] = $group['wallt'];
         } else {
@@ -636,7 +636,7 @@ class Ubmod_Model_Chart
       $monthParams = array_merge($params, $month);
       unset($monthParams['interval_id']);
 
-      foreach (Ubmod_Model_User::getActivities($monthParams) as $user) {
+      foreach (Ubmod_Model_User::getActivity($monthParams) as $user) {
         if ($userCount < $maxUsers) {
           $userWallt[$user['user']] = $user['wallt'];
         } else {

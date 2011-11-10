@@ -73,8 +73,9 @@ class Ubmod_Handler_Cluster
   /**
    * List clusters.
    *
-   * @param array arguments Request GET data
-   * @param array postData Request POST data
+   * @param array $arguments Request GET data
+   * @param array $postData  Request POST data
+   *
    * @return Ubmod_RestResponse
    */
   public function listAction(array $arguments, array $postData = NULL)

@@ -1,7 +1,7 @@
 <script type="text/javascript">
 Ext.onReady(function () {
     Ubmod.app.addStatsPanel({
-        store: Ext.create('Ubmod.store.User'),
+        store: Ext.create('Ubmod.store.UserActivity'),
         renderTo: 'stats',
         gridTitle: 'All Users',
         recordFormat: {

@@ -74,7 +74,7 @@ Ext.Loader.onReady(function () {
     /**
      * User activity model
      */
-    Ext.define('Ubmod.model.User', {
+    Ext.define('Ubmod.model.UserActivity', {
         extend: 'Ext.data.Model',
         fields: [
             'user_id',
@@ -88,9 +88,21 @@ Ext.Loader.onReady(function () {
     });
 
     /**
+     * User tags model
+     */
+    Ext.define('Ubmod.model.UserTags', {
+        extend: 'Ext.data.Model',
+        fields: [
+            'user_id',
+            'user',
+            'tags'
+        ]
+    });
+
+    /**
      * Group activity model
      */
-    Ext.define('Ubmod.model.Group', {
+    Ext.define('Ubmod.model.GroupActivity', {
         extend: 'Ext.data.Model',
         fields: [
             'group_id',
@@ -106,7 +118,7 @@ Ext.Loader.onReady(function () {
     /**
      * Queue activity model
      */
-    Ext.define('Ubmod.model.Queue', {
+    Ext.define('Ubmod.model.QueueActivity', {
         extend: 'Ext.data.Model',
         fields: [
             'queue_id',
@@ -340,72 +352,96 @@ Ext.Loader.onReady(function () {
     /**
      * User activity data store
      */
-    Ext.define('Ubmod.store.User', {
+    Ext.define('Ubmod.store.UserActivity', {
         extend: 'Ubmod.data.ReverseSortStore',
 
         constructor: function (config) {
             config = config || {};
             Ext.apply(config, {
-                model: 'Ubmod.model.User',
+                model: 'Ubmod.model.UserActivity',
                 remoteSort: true,
                 pageSize: 25,
                 proxy: {
                     type: 'ajax',
                     simpleSortMode: true,
-                    url: '/api/rest/json/user/list',
+                    url: '/api/rest/json/user/activity',
                     reader: { type: 'json', root: 'users' },
                     extraParams: { sort: 'wallt', dir: 'DESC' }
                 }
             });
-            Ubmod.store.User.superclass.constructor.call(this, config);
+            Ubmod.store.UserActivity.superclass.constructor.call(this, config);
+        }
+    });
+
+    /**
+     * User tag data store
+     */
+    Ext.define('Ubmod.store.UserTags', {
+        extend: 'Ubmod.data.ReverseSortStore',
+
+        constructor: function (config) {
+            config = config || {};
+            Ext.apply(config, {
+                model: 'Ubmod.model.UserTags',
+                remoteSort: true,
+                pageSize: 25,
+                proxy: {
+                    type: 'ajax',
+                    simpleSortMode: true,
+                    url: '/api/rest/json/user/tags',
+                    reader: { type: 'json', root: 'users' },
+                    extraParams: { sort: 'wallt', dir: 'DESC' }
+                }
+            });
+            Ubmod.store.UserTags.superclass.constructor.call(this, config);
         }
     });
 
     /**
      * Group activity data store
      */
-    Ext.define('Ubmod.store.Group', {
+    Ext.define('Ubmod.store.GroupActivity', {
         extend: 'Ubmod.data.ReverseSortStore',
 
         constructor: function (config) {
             config = config || {};
             Ext.apply(config, {
-                model: 'Ubmod.model.Group',
+                model: 'Ubmod.model.GroupActivity',
                 remoteSort: true,
                 pageSize: 25,
                 proxy: {
                     type: 'ajax',
                     simpleSortMode: true,
-                    url: '/api/rest/json/group/list',
+                    url: '/api/rest/json/group/activity',
                     reader: { type: 'json', root: 'groups' },
                     extraParams: { sort: 'wallt', dir: 'DESC' }
                 }
             });
-            Ubmod.store.Group.superclass.constructor.call(this, config);
+            Ubmod.store.GroupActivity.superclass.constructor.call(this, config);
         }
     });
 
     /**
      * Queue activity data store
      */
-    Ext.define('Ubmod.store.Queue', {
+    Ext.define('Ubmod.store.QueueActivity', {
         extend: 'Ubmod.data.ReverseSortStore',
 
         constructor: function (config) {
             config = config || {};
             Ext.apply(config, {
-                model: 'Ubmod.model.Queue',
+                model: 'Ubmod.model.QueueActivity',
                 remoteSort: true,
                 pageSize: 25,
                 proxy: {
                     type: 'ajax',
                     simpleSortMode: true,
-                    url: '/api/rest/json/queue/list',
+                    url: '/api/rest/json/queue/activity',
                     reader: { type: 'json', root: 'queues' },
                     extraParams: { sort: 'wallt', dir: 'DESC' }
                 }
             });
-            Ubmod.store.Queue.superclass.constructor.call(this, config);
+            Ubmod.store.QueueActivity.superclass.constructor.call(this, config);
         }
     });
 
@@ -559,9 +595,9 @@ Ext.Loader.onReady(function () {
             this.model = config.model;
             this.store = config.store;
             this.recordFormat = config.recordFormat;
-            this.detailTabs = [];
+            this.detailTabs = {};
 
-            this.grid = Ext.create('Ubmod.widget.Grid', {
+            this.grid = Ext.create('Ubmod.widget.StatsGrid', {
                 height: 400,
                 forceFit: true,
                 padding: '0 0 6 0',
@@ -591,21 +627,34 @@ Ext.Loader.onReady(function () {
             Ubmod.widget.StatsPanel.superclass.initComponent.call(this);
 
             this.grid.on('itemdblclick', function (grid, record) {
-                var params = Ext.merge(this.model.getRestParams(), {
-                    id: record.get(this.recordFormat.id)
+                var id, params, tab;
+
+                id = record.get(this.recordFormat.id);
+
+                if (this.detailTabs[id] !== undefined) {
+                    this.setActiveTab(this.detailTabs[id]);
+                    return;
+                }
+
+                params = Ext.merge(this.model.getRestParams(), { id: id });
+
+                tab = this.add({
+                    title: record.get(this.recordFormat.key),
+                    closable: true,
+                    loader: {
+                        url: this.recordFormat.detailsUrl,
+                        autoLoad: true,
+                        params: params
+                    }
                 });
-                this.detailTabs.push({
-                    id: record.get(this.recordFormat.id),
-                    tab: this.add({
-                        title: record.get(this.recordFormat.key),
-                        closable: true,
-                        loader: {
-                            url: this.recordFormat.detailsUrl,
-                            autoLoad: true,
-                            params: params
-                        }
-                    }).show()
-                });
+
+                tab.on('beforeclose', function () {
+                    delete this.detailTabs[id];
+                }, this);
+
+                tab.show();
+
+                this.detailTabs[id] = tab;
             }, this);
 
             // XXX Force the tab panel to recalculate it's layout when
@@ -625,9 +674,9 @@ Ext.Loader.onReady(function () {
             Ext.merge(this.store.proxy.extraParams, params);
             this.store.load();
 
-            Ext.each(this.detailTabs, function (detail) {
-                var detailParams = Ext.merge({ id: detail.id }, params);
-                detail.tab.loader.load({
+            Ext.Object.each(this.detailTabs, function (id, tab) {
+                var detailParams = Ext.merge({ id: id }, params);
+                tab.loader.load({
                     url: this.detailsUrl,
                     params: detailParams
                 });
@@ -638,7 +687,7 @@ Ext.Loader.onReady(function () {
     /**
      * Stats grid
      */
-    Ext.define('Ubmod.widget.Grid', {
+    Ext.define('Ubmod.widget.StatsGrid', {
         extend: 'Ext.grid.Panel',
 
         constructor: function (config) {
@@ -647,7 +696,7 @@ Ext.Loader.onReady(function () {
             this.label = config.label;
             this.labelKey = config.labelKey;
 
-            Ubmod.widget.Grid.superclass.constructor.call(this, config);
+            Ubmod.widget.StatsGrid.superclass.constructor.call(this, config);
         },
 
         initComponent: function () {
@@ -708,7 +757,104 @@ Ext.Loader.onReady(function () {
 
             this.dockedItems = [pagingToolbar];
 
-            Ubmod.widget.Grid.superclass.initComponent.call(this);
+            Ubmod.widget.StatsGrid.superclass.initComponent.call(this);
+        }
+    });
+
+    /**
+     * Panel for adding tags
+     */
+    Ext.define('Ubmod.widget.TagPanel', {
+        extend: 'Ext.panel.Panel',
+        constructor: function (config) {
+            config = config || {};
+            Ext.apply(config, {
+
+            });
+            Ubmod.widget.TagPanel.superclass.constructor.call(this, config);
+        },
+
+        initComponent: function () {
+
+            Ubmod.widget.TagPanel.superclass.initComponent.call(this);
+        }
+    });
+
+    /**
+     * Tag grid
+     */
+    Ext.define('Ubmod.widget.TagGrid', {
+        extend: 'Ext.grid.Panel',
+
+        constructor: function (config) {
+            config = config || {};
+            Ext.apply(config, {
+                width: 745,
+                height: 400,
+                store: Ext.create('Ubmod.store.UserTags'),
+                selModel: Ext.create('Ext.selection.CheckboxModel')
+            });
+            Ubmod.widget.TagGrid.superclass.constructor.call(this, config);
+        },
+
+        initComponent: function () {
+            var pagingToolbar, tagToolbar;
+
+            this.columns = [{
+                header: 'User',
+                dataIndex: 'user',
+                menuDisabled: true,
+                width: 128
+            }, {
+                header: 'Tags',
+                dataIndex: 'tags',
+                menuDisabled: true,
+                width: 575
+            }];
+
+            pagingToolbar = Ext.create('Ubmod.widget.PagingToolbar', {
+                dock: 'bottom',
+                store: this.store,
+                displayInfo: true
+            });
+
+            tagToolbar = Ext.create('Ubmod.widget.TaggingToolbar', {
+                dock: 'top'
+            });
+
+            tagToolbar.on('addtag', function (tag) {
+                var selection = this.getSelectionModel().getSelection(),
+                    userIds = [];
+
+                if (tag === '') {
+                    Ext.Msg.alert('No tag entered');
+                    return;
+                }
+
+                Ext.each(selection, function (user) {
+                    userIds.push(user.get('user_id'));
+                });
+
+                if (userIds.length === 0) {
+                    Ext.Msg.alert('No users selected');
+                    return;
+                }
+
+                Ext.Ajax.request({
+                    url: '/api/rest/json/user/addTag',
+                    params: { tag: tag, 'userIds[]': userIds },
+                    success: function (response) {
+                        this.store.load();
+                    },
+                    scope: this
+                });
+            }, this);
+
+            this.dockedItems = [pagingToolbar, tagToolbar];
+
+            Ubmod.widget.TagGrid.superclass.initComponent.call(this);
+
+            this.store.load();
         }
     });
 
@@ -745,6 +891,40 @@ Ext.Loader.onReady(function () {
             this.items = [ '-', 'Search:', filter ];
 
             Ubmod.widget.PagingToolbar.superclass.initComponent.call(this);
+        }
+    });
+
+    /**
+     * Toolbar with a tag input
+     */
+    Ext.define('Ubmod.widget.TaggingToolbar', {
+        extend: 'Ext.toolbar.Toolbar',
+
+        constructor: function (config) {
+            config = config || {};
+
+            this.addEvents({ addtag: true });
+
+            Ubmod.widget.TaggingToolbar.superclass.constructor.call(this,
+                config);
+        },
+
+        initComponent: function () {
+            var tagInput, addButton;
+
+            tagInput = Ext.create('Ext.form.field.Text');
+
+            addButton = Ext.create('Ext.Button', {
+                text: 'Add Tag to Selected Users'
+            });
+
+            addButton.on('click', function () {
+                this.fireEvent('addtag', tagInput.getValue());
+            }, this);
+
+            this.items = [ 'Tag:', tagInput, addButton ];
+
+            Ubmod.widget.TaggingToolbar.superclass.initComponent.call(this);
         }
     });
 
@@ -850,6 +1030,15 @@ Ext.Loader.onReady(function () {
             addStatsPanel: function (config) {
                 config.model = model;
                 widgets.push(Ext.create('Ubmod.widget.StatsPanel', config));
+            },
+
+
+            /**
+             * Add a tag management panel
+             */
+            addTagPanel: function (config) {
+                //widgets.push(Ext.create('Ubmod.widget.TagPanel', config));
+                widgets.push(Ext.create('Ubmod.widget.TagGrid', config));
             }
         };
     }());

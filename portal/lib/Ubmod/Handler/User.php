@@ -59,13 +59,13 @@ class Ubmod_Handler_User
   }
 
   /**
-   * List help for the "list" action.
+   * Help for the "activity" action.
    *
    * @return void
    */
-  public function listHelp()
+  public function activityHelp()
   {
-    $desc = 'List user activity.  Results will be an array where individual'
+    $desc = 'Returns user activity. Results will be an array where individual'
       . ' records will consist of (user_id, user, display_name, jobs, cput,'
       . ' wallt, avg_wait, avg_cpus, avg_mem).';
     $options = array(
@@ -82,17 +82,86 @@ class Ubmod_Handler_User
   }
 
   /**
-   * List user activity.
+   * Returns user activity.
    *
-   * @param array arguments
-   * @param array postData
+   * @param array $arguments
+   * @param array $postData
+   *
    * @return Ubmod_RestResponse
    */
-  public function listAction(array $arguments, array $postData = NULL)
+  public function activityAction(array $arguments, array $postData = NULL)
   {
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
       'total' => Ubmod_Model_User::getActivityCount($arguments),
-      'users' => Ubmod_Model_User::getActivities($arguments),
+      'users' => Ubmod_Model_User::getActivity($arguments),
+    ));
+  }
+
+  /**
+   * Help for the "tags" action.
+   *
+   * @return void
+   */
+  public function tagsHelp()
+  {
+    $desc = 'Returns users and their tags.';
+    $options = array(
+      'filter' => 'Filter criteria.  Substring match against user field.',
+      'sort'   => 'Sort field.  Valid options: user, jobs, avg_cpus,'
+               . ' avg_wait, wallt, avg_mem',
+      'dir'    => 'Sort direction.  Valid options: ASC, DESC',
+      'start'  => 'Limit offset. (requires limit)',
+      'limit'  => 'Maximum number of entities to return. (requires start)',
+    );
+    return Ubmod_RestResponse::factory(TRUE, $desc, $options);
+  }
+
+  /**
+   * Returns users and their tags.
+   *
+   * @param array $arguments
+   * @param array $postData
+   *
+   * @return Ubmod_RestResponse
+   */
+  public function tagsAction(array $arguments, array $postData = NULL)
+  {
+    return Ubmod_RestResponse::factory(TRUE, NULL, array(
+      'total' => Ubmod_Model_User::getTagsCount($arguments),
+      'users' => Ubmod_Model_User::getTags($arguments),
+    ));
+  }
+
+  /**
+   * Help for the "addTag" action.
+   *
+   * @return void
+   */
+  public function addTagHelp()
+  {
+    $desc = 'Adds a tag to one or more users.';
+    $options = array(
+      'tag'     => 'The tag to add.',
+      'userIds' => 'An array of user ids.',
+    );
+    return Ubmod_RestResponse::factory(TRUE, $desc, $options);
+  }
+
+  /**
+   * Add a tag to one or more users.
+   *
+   * @param array $arguments
+   * @param array $postData
+   *
+   * @return Ubmod_RestResponse
+   */
+  public function addTagAction(array $arguments, array $postData = NULL)
+  {
+    $tag     = $postData['tag'];
+    $userIds = $postData['userIds'];
+
+    return Ubmod_RestResponse::factory(TRUE, NULL, array(
+      'success' => Ubmod_Model_User::addTag($tag, $userIds),
     ));
   }
 }

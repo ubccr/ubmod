@@ -59,13 +59,13 @@ class Ubmod_Handler_Queue
   }
 
   /**
-   * Return help for the "list" action.
+   * Return help for the "activity" action.
    *
    * @return void
    */
-  public function listHelp()
+  public function activityHelp()
   {
-    $desc = 'List queue activity.  Results will be an array where individual'
+    $desc = 'Returns queue activity. Results will be an array where individual'
       . ' records will consist of (queue_id, queue, jobs, cput, wallt,'
       . ' avg_wait, avg_cpus, avg_mem).';
     $options = array(
@@ -82,17 +82,18 @@ class Ubmod_Handler_Queue
   }
 
   /**
-   * List queue activity.
+   * Returns queue activity.
    *
-   * @param array arguments Request GET data
-   * @param array postData Request POST data
+   * @param array $arguments Request GET data
+   * @param array $postData  Request POST data
+   *
    * @return Ubmod_RestResponse
    */
-  public function listAction(array $arguments, array $postData = NULL)
+  public function activityAction(array $arguments, array $postData = NULL)
   {
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
       'total'  => Ubmod_Model_Queue::getActivityCount($arguments),
-      'queues' => Ubmod_Model_Queue::getActivities($arguments),
+      'queues' => Ubmod_Model_Queue::getActivity($arguments),
     ));
   }
 }

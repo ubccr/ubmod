@@ -32,7 +32,7 @@
  */
 
 /**
- * Time interval REST handler.
+ * Tag controller.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
@@ -41,51 +41,20 @@
  */
 
 /**
- * Time interval REST Handler.
+ * Tag controller.
  *
  * @package Ubmod
  */
-class Ubmod_Handler_Interval
+class Ubmod_Controller_Tag extends Ubmod_BaseController
 {
 
   /**
-   * Factory method.
+   * Execute the index action.
    *
-   * @return Ubmod_Handler_Interval
+   * @return void
    */
-  public static function factory()
+  public function executeIndex()
   {
-    return new Ubmod_Handler_Interval();
-  }
 
-  /**
-   * Return help for the "list" action.
-   *
-   * @return Ubmod_RestResponse
-   */
-  public function listHelp()
-  {
-    $desc = 'List all time intervals.  Results will be an array where'
-      . ' individual records consist of (interval_id, time_interval, start,'
-      . ' end).';
-    return Ubmod_RestResponse::factory(TRUE, $desc);
-  }
-
-  /**
-   * List time intervals.
-   *
-   * @param array $arguments Request GET data
-   * @param array $postData  Request POST data
-   *
-   * @return Ubmod_RestResponse
-   */
-  public function listAction(array $arguments, array $postData = NULL)
-  {
-    $intervals = Ubmod_Model_Interval::getAll();
-
-    return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'data'  => $intervals,
-      'total' => count($intervals),
-    ));
   }
 }

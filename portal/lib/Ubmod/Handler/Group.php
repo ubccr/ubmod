@@ -59,13 +59,13 @@ class Ubmod_Handler_Group
   }
 
   /**
-   * Return help for the "list" action.
+   * Return help for the "activity" action.
    *
    * @return void
    */
-  public function listHelp()
+  public function activityHelp()
   {
-    $desc = 'List group activity.  Results will be an array where individual'
+    $desc = 'Returns group activity. Results will be an array where individual'
       . ' records will consist of (group_id, group_name, pi_name, jobs, cput,'
       . ' wallt, avg_wait, avg_cpus, avg_mem).';
     $options = array(
@@ -82,17 +82,18 @@ class Ubmod_Handler_Group
   }
 
   /**
-   * List group activity.
+   * Return group activity.
    *
-   * @param array arguments Request GET data
-   * @param array postData Request POST data
+   * @param array $arguments Request GET data
+   * @param array $postData  Request POST data
+   *
    * @return Ubmod_RestResponse
    */
-  public function listAction(array $arguments, array $postData = NULL)
+  public function activityAction(array $arguments, array $postData = NULL)
   {
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
       'total'  => Ubmod_Model_Group::getActivityCount($arguments),
-      'groups' => Ubmod_Model_Group::getActivities($arguments),
+      'groups' => Ubmod_Model_Group::getActivity($arguments),
     ));
   }
 }

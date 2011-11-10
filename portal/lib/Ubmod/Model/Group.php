@@ -41,7 +41,7 @@
  */
 
 /**
- * Group Model
+ * Group Model.
  *
  * @package Ubmod
  **/
@@ -49,9 +49,10 @@ class Ubmod_Model_Group
 {
 
   /**
-   * Return the number of groups with activities.
+   * Return the number of groups with activity for the given parameters.
    *
-   * @param array params The parameters for the query
+   * @param array $params The parameters for the query.
+   *
    * @return int
    */
   public static function getActivityCount($params)
@@ -88,12 +89,13 @@ class Ubmod_Model_Group
   }
 
   /**
-   * Retuns an array of groups joined with their activities.
+   * Retuns an array of groups joined with their activiy.
    *
-   * @param array params The parameters for the query
+   * @param array $params The parameters for the query.
+   *
    * @return array
    */
-  public static function getActivities($params)
+  public static function getActivity($params)
   {
     $timeClause = Ubmod_Model_Interval::whereClause($params);
 
@@ -150,9 +152,10 @@ class Ubmod_Model_Group
   }
 
   /**
-   * Returns the research_group for a given id and parameters
+   * Returns the research_group for a given id and parameters.
    *
-   * @param array params The parameters for the query
+   * @param array $params The parameters for the query.
+   *
    * @return array
    */
   public static function getActivityById($params)

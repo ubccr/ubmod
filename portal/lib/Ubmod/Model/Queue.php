@@ -41,7 +41,7 @@
  */
 
 /**
- * Queue Model
+ * Queue Model.
  *
  * @package Ubmod
  **/
@@ -49,9 +49,10 @@ class Ubmod_Model_Queue
 {
 
   /**
-   * Return the number of queues with activities.
+   * Return the number of queues with activity for the given parameters.
    *
-   * @param array params The parameters for the query
+   * @param array $params The parameters for the query.
+   *
    * @return int
    */
   public static function getActivityCount($params)
@@ -88,12 +89,13 @@ class Ubmod_Model_Queue
   }
 
   /**
-   * Retuns an array of queues joined with their activities.
+   * Retuns an array of queues joined with their activiy.
    *
-   * @param array params The parameters for the query
+   * @param array params The parameters for the query.
+   *
    * @return array
    */
-  public static function getActivities($params)
+  public static function getActivity($params)
   {
     $timeClause = Ubmod_Model_Interval::whereClause($params);
 
@@ -150,9 +152,10 @@ class Ubmod_Model_Queue
   }
 
   /**
-   * Returns the queue for a given id and parameters
+   * Returns the queue for a given id and parameters.
    *
-   * @param array params The parameters for the query
+   * @param array $params The parameters for the query.
+   *
    * @return array
    */
   public static function getActivityById($params)
