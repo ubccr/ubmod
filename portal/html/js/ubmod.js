@@ -566,12 +566,15 @@ Ext.Loader.onReady(function () {
                 align: 'right'
             }];
 
-            var filter = Ext.create('Ext.form.field.Text', {
+            var pagingToolbar, filter;
+
+            filter = Ext.create('Ext.form.field.Text', {
                 enableKeyEvents: true
             });
 
             filter.on('keypress', function (text, e) {
                 if (e.getKey() === e.ENTER) {
+                    pagingToolbar.moveFirst();
                     Ext.merge(this.store.proxy.extraParams, {
                         filter: text.getValue()
                     });
@@ -582,18 +585,20 @@ Ext.Loader.onReady(function () {
             filter.on('keyup', function (text, e) {
                 if (e.getKey() === e.BACKSPACE &&
                         text.getValue().length === 0) {
+                    pagingToolbar.moveFirst();
                     Ext.merge(this.store.proxy.extraParams, { filter: '' });
                     this.store.load();
                 }
             }, this);
 
-            this.dockedItems = [{
+            pagingToolbar = Ext.create('Ext.toolbar.Paging', {
                 dock: 'bottom',
-                xtype: 'pagingtoolbar',
                 store: this.store,
                 displayInfo: true,
                 items: [ '-', 'Search:', filter ]
-            }];
+            });
+
+            this.dockedItems = [pagingToolbar];
 
             Ubmod.widget.Grid.superclass.initComponent.call(this);
         }
