@@ -66,6 +66,12 @@ class Ubmod_Controller_Group extends Ubmod_BaseController
   public function executeDetails()
   {
     $params = Ubmod_Model_QueryParams::factory($this->getPostData());
+
     $this->group = Ubmod_Model_Job::getEntity('group', $params);
+    $queryString = Ubmod_Model_Chart::getQueryString($params);
+
+    $this->pieChart  = '/chart/user-pie?'  . $queryString;
+    $this->barChart  = '/chart/user-bar?'  . $queryString;
+    $this->areaChart = '/chart/user-area?' . $queryString;
   }
 }

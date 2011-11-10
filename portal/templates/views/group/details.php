@@ -26,6 +26,9 @@
           <td style="font-weight:bold;"><?php echo $group['avg_exect'] ?></td>
         </tr>
       </table>
+      <div style="margin-top:10px;"><img src="<?php echo $pieChart ?>" /></div>
+      <div style="margin-top:10px;"><img src="<?php echo $barChart ?>" /></div>
+      <div style="margin-top:10px;"><img src="<?php echo $areaChart ?>" /></div>
     </div>
   <?php else: ?>
     No job data found for group in given time period.

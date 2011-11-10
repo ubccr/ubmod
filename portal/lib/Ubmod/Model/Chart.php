@@ -73,6 +73,10 @@ class Ubmod_Model_Chart
       $query['end_date']   = $interval['end'];
     }
 
+    if ($params->hasGroupId()) {
+      $query['group_id'] = $params->getGroupId();
+    }
+
     if ($params->hasTag()) {
       $query['tag'] = $params->getTag();
     }

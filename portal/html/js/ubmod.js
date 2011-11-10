@@ -818,6 +818,8 @@ Ext.Loader.onReady(function () {
                 tab = this.add({
                     title: record.get(this.recordFormat.key),
                     closable: true,
+                    height: 400,
+                    autoScroll: true,
                     loader: {
                         url: this.recordFormat.detailsUrl,
                         autoLoad: true,
