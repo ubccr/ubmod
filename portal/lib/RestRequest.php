@@ -254,7 +254,6 @@ class RestRequest
   {
     $handlerClassName = 'Ubmod_Handler_' . ucfirst($this->_entity);
     $handlerClassFile = $handlerClassName . ".php";
-    include($handlerClassFile);
 
     if ( ! class_exists($handlerClassName) )
     {
