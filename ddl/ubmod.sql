@@ -311,16 +311,6 @@ CREATE TABLE `dim_timespan` (
   KEY (`last_365_days`)
 ) ENGINE=MyISAM;
 
-DROP TABLE IF EXISTS `dim_cpus_interval`;
-CREATE TABLE `dim_cpus_interval` (
-  `dim_cpus_interval_id` int unsigned NOT NULL AUTO_INCREMENT,
-  `display_name`         varchar(255),
-  `view_order`           int unsigned,
-  PRIMARY KEY (`dim_cpus_interval_id`),
-  KEY (`display_name`),
-  KEY (`view_order`)
-) ENGINE=MyISAM;
-
 --
 -- Facts
 --
@@ -386,6 +376,7 @@ CREATE TABLE `agg_job_by_timespan` (
   `dim_queue_id`           int    unsigned NOT NULL,
   `dim_user_id`            int    unsigned NOT NULL,
   `dim_group_id`           int    unsigned NOT NULL,
+  `dim_cpus_id`            int    unsigned NOT NULL,
   `fact_job_count`         int    unsigned NOT NULL,
   `wallt_sum`              bigint unsigned NOT NULL,
   `wallt_max`              bigint unsigned NOT NULL,
@@ -402,33 +393,7 @@ CREATE TABLE `agg_job_by_timespan` (
   `cpus_sum`               bigint unsigned NOT NULL,
   `cpus_max`               int    unsigned NOT NULL,
   PRIMARY KEY (`agg_job_by_timespan_id`),
-  KEY (`dim_timespan_id`,`dim_cluster_id`,`dim_queue_id`,`dim_user_id`,`dim_group_id`)
-) ENGINE=MyISAM;
-
-DROP TABLE IF EXISTS `agg_job_by_date_by_cpus`;
-CREATE TABLE `agg_job_by_date_by_cpus` (
-  `agg_job_by_date_by_cpus_id` int    unsigned NOT NULL AUTO_INCREMENT,
-  `dim_date_id`                int    unsigned NOT NULL,
-  `dim_cluster_id`             int    unsigned NOT NULL,
-  `dim_cpus_interval_id`       int    unsigned NOT NULL,
-  `fact_job_count`             int    unsigned NOT NULL,
-  `cput_sum`                   bigint unsigned NOT NULL,
-  `wait_sum`                   bigint unsigned NOT NULL,
-  PRIMARY KEY (`agg_job_by_date_by_cpus_id`),
-  KEY (`dim_date_id`,`dim_cluster_id`,`dim_cpus_interval_id`)
-) ENGINE=MyISAM;
-
-DROP TABLE IF EXISTS `agg_job_by_timespan_by_cpus`;
-CREATE TABLE `agg_job_by_timespan_by_cpus` (
-  `agg_job_by_timespan_by_cpus_id` int    unsigned NOT NULL AUTO_INCREMENT,
-  `dim_timespan_id`                int    unsigned NOT NULL,
-  `dim_cluster_id`                 int    unsigned NOT NULL,
-  `dim_cpus_interval_id`           int    unsigned NOT NULL,
-  `fact_job_count`                 int    unsigned NOT NULL,
-  `cput_sum`                       bigint unsigned NOT NULL,
-  `wait_sum`                       bigint unsigned NOT NULL,
-  PRIMARY KEY (`agg_job_by_timespan_by_cpus_id`),
-  KEY (`dim_timespan_id`,`dim_cluster_id`,`dim_cpus_interval_id`)
+  KEY (`dim_timespan_id`,`dim_cluster_id`,`dim_queue_id`,`dim_user_id`,`dim_group_id`,`dim_cpus_id`)
 ) ENGINE=MyISAM;
 
 --
@@ -445,7 +410,6 @@ DROP PROCEDURE IF EXISTS UpdateRollUpDimensions//
 CREATE PROCEDURE UpdateRollUpDimensions()
 BEGIN
   CALL UpdateTimespanDimension();
-  CALL UpdateCpusIntervalDimension();
 END//
 
 DROP PROCEDURE IF EXISTS UpdateTimespanDimension//
@@ -471,21 +435,6 @@ BEGIN
     `last_90_days`,
     `last_365_days`
   FROM `dim_date`;
-END//
-
-DROP PROCEDURE IF EXISTS UpdateCpusIntervalDimension//
-CREATE PROCEDURE UpdateCpusIntervalDimension()
-BEGIN
-  TRUNCATE `dim_cpus_interval`;
-
-  INSERT INTO `dim_cpus_interval` (
-    `display_name`,
-    `view_order`
-  )
-  SELECT DISTINCT
-    `display_name`,
-    `view_order`
-  FROM `dim_cpus`;
 END//
 
 --
@@ -546,8 +495,6 @@ CREATE PROCEDURE UpdateJobAggregates()
 BEGIN
   CALL UpdateJobAggregateByAll();
   CALL UpdateJobAggregateByTimespan();
-  CALL UpdateJobAggregateByDateByCpus();
-  CALL UpdateJobAggregateByTimespanByCpus();
 END//
 
 DROP PROCEDURE IF EXISTS UpdateJobAggregateByAll//
@@ -621,6 +568,7 @@ BEGIN
     `dim_queue_id`,
     `dim_user_id`,
     `dim_group_id`,
+    `dim_cpus_id`,
     `fact_job_count`,
     `wallt_sum`,
     `wallt_max`,
@@ -643,6 +591,7 @@ BEGIN
     `fact_job`.`dim_queue_id`,
     `fact_job`.`dim_user_id`,
     `fact_job`.`dim_group_id`,
+    `fact_job`.`dim_cpus_id`,
     COUNT(*),
     SUM(`wallt`),
     MAX(`wallt`),
@@ -678,81 +627,8 @@ BEGIN
     `dim_timespan`.`last_365_days`,
     `fact_job`.`dim_cluster_id`,
     `fact_job`.`dim_queue_id`,
-    `fact_job`.`dim_user_id`,
-    `fact_job`.`dim_group_id`;
-END//
-
-DROP PROCEDURE IF EXISTS UpdateJobAggregateByDateByCpus//
-CREATE PROCEDURE UpdateJobAggregateByDateByCpus()
-BEGIN
-  TRUNCATE agg_job_by_date_by_cpus;
-
-  INSERT INTO `agg_job_by_date_by_cpus` (
-    `dim_date_id`,
-    `dim_cluster_id`,
-    `dim_cpus_interval_id`,
-    `fact_job_count`,
-    `cput_sum`,
-    `wait_sum`
-  )
-  SELECT
-    `fact_job`.`dim_date_id`,
-    `fact_job`.`dim_cluster_id`,
-    `dim_cpus_interval`.`dim_cpus_interval_id`,
-    COUNT(*),
-    SUM(`cput`),
-    SUM(`wait`)
-  FROM `fact_job`
-  JOIN `dim_cpus`          ON `fact_job`.`dim_cpus_id`  = `dim_cpus`.`dim_cpus_id`
-  JOIN `dim_cpus_interval` ON `dim_cpus`.`display_name` = `dim_cpus_interval`.`display_name`
-  GROUP BY
-    `fact_job`.`dim_date_id`,
-    `fact_job`.`dim_cluster_id`,
-    `dim_cpus_interval`.`display_name`;
-END//
-
-DROP PROCEDURE IF EXISTS UpdateJobAggregateByTimespanByCpus//
-CREATE PROCEDURE UpdateJobAggregateByTimespanByCpus()
-BEGIN
-  TRUNCATE agg_job_by_timespan_by_cpus;
-
-  INSERT INTO `agg_job_by_timespan_by_cpus` (
-    `dim_timespan_id`,
-    `dim_cluster_id`,
-    `dim_cpus_interval_id`,
-    `fact_job_count`,
-    `cput_sum`,
-    `wait_sum`
-  )
-  SELECT
-    `dim_timespan`.`dim_timespan_id`,
-    `fact_job`.`dim_cluster_id`,
-    `dim_cpus_interval`.`dim_cpus_interval_id`,
-    COUNT(*),
-    SUM(`cput`),
-    SUM(`wait`)
-  FROM `fact_job`
-  JOIN `dim_date` ON `fact_job`.`dim_date_id` = `dim_date`.`dim_date_id`
-  JOIN `dim_timespan` ON
-        `dim_date`.`month`         = `dim_timespan`.`month`
-    AND `dim_date`.`quarter`       = `dim_timespan`.`quarter`
-    AND `dim_date`.`year`          = `dim_timespan`.`year`
-    AND `dim_date`.`last_7_days`   = `dim_timespan`.`last_7_days`
-    AND `dim_date`.`last_30_days`  = `dim_timespan`.`last_30_days`
-    AND `dim_date`.`last_90_days`  = `dim_timespan`.`last_90_days`
-    AND `dim_date`.`last_365_days` = `dim_timespan`.`last_365_days`
-  JOIN `dim_cpus`          ON `fact_job`.`dim_cpus_id`  = `dim_cpus`.`dim_cpus_id`
-  JOIN `dim_cpus_interval` ON `dim_cpus`.`display_name` = `dim_cpus_interval`.`display_name`
-  GROUP BY
-    `dim_timespan`.`month`,
-    `dim_timespan`.`quarter`,
-    `dim_timespan`.`year`,
-    `dim_timespan`.`last_7_days`,
-    `dim_timespan`.`last_30_days`,
-    `dim_timespan`.`last_90_days`,
-    `dim_timespan`.`last_365_days`,
-    `fact_job`.`dim_cluster_id`,
-    `dim_cpus_interval`.`display_name`;
+    `fact_job`.`dim_group_id`,
+    `fact_job`.`dim_cpus_id`;
 END//
 
 DELIMITER ;
