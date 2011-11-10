@@ -236,8 +236,17 @@ sub process_fh {
 
 sub db_connect {
     my ( $host, $dbname, $user, $pass ) = @_;
+
     my $dsn = "DBI:mysql:host=$host;database=$dbname";
-    $Dbh = DBI->connect( $dsn, $user, $pass );
+
+    $Dbh = eval {
+        DBI->connect( $dsn, $user, $pass,
+            { PrintError => 0, RaiseError => 1, AutoCommit => 1 } );
+    };
+    if ($@) {
+        $Logger->fatal("Failed to connect to database: $@");
+        exit 1;
+    }
 }
 
 sub insert_native_event {
