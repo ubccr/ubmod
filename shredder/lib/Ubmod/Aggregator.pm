@@ -165,8 +165,6 @@ sub _update_time_intervals {
     );
 
     my $end_date = $self->{end_date};
-    my $min_date = $self->_get_min_date();
-    my $max_date = $self->_get_max_date();
 
     my @labels = (
         [ 'Last 7 days',   7,   'last_7_days = 1' ],
@@ -196,14 +194,6 @@ sub _update_time_intervals {
             end          => "$year-12-31",
             where_clause => "year = $year",
         };
-
-        if ( $min_date->year() == $year ) {
-            $interval->{start} = $min_date->iso8601();
-        }
-
-        if ( $max_date->year() == $year ) {
-            $interval->{end} = $max_date->iso8601();
-        }
 
         $self->_insert_time_interval($interval);
     }
