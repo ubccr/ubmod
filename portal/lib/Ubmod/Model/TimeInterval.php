@@ -208,7 +208,7 @@ class Ubmod_Model_TimeInterval
 
     $months = array();
 
-    while ($year < $maxYear || $month <= $maxMonth) {
+    while ($year < $maxYear || ($year == $maxYear && $month <= $maxMonth)) {
       $months[] = array(
         'year'  => $year,
         'month' => $month,
