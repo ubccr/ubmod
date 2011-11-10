@@ -486,7 +486,7 @@ class Ubmod_Model_QueryParams
    */
   public function setStartDate($startDate)
   {
-    $this->_startDate = self::_convertDate($startDate);
+    $this->_startDate = self::convertDate($startDate);
   }
 
   /**
@@ -518,7 +518,7 @@ class Ubmod_Model_QueryParams
    */
   public function setEndDate($endDate)
   {
-    $this->_endDate = self::_convertDate($endDate);
+    $this->_endDate = self::convertDate($endDate);
   }
 
   /**
@@ -1126,7 +1126,7 @@ class Ubmod_Model_QueryParams
    *
    * @return string A date in YYYY-MM-DD format.
    */
-  private static function _convertDate($date)
+  private static function convertDate($date)
   {
     if (preg_match('# ^ \d{4} - \d\d - \d\d $ #x', $date)) {
       return $date;

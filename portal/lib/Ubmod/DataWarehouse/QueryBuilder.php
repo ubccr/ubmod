@@ -464,9 +464,9 @@ class Ubmod_DataWarehouse_QueryBuilder
 
     $sql = 'SELECT ' . implode(', ', $selectExpressions);
 
-    $sql .= ' FROM ' . $this->_getTableReferences();
+    $sql .= ' FROM ' . $this->getTableReferences();
 
-    list($where, $params) = $this->_getWhereClause();
+    list($where, $params) = $this->getWhereClause();
 
     $sql .= $where;
 
@@ -513,9 +513,9 @@ class Ubmod_DataWarehouse_QueryBuilder
     }
     $sql .= ' AS count ';
 
-    $sql .= ' FROM ' . $this->_getTableReferences();
+    $sql .= ' FROM ' . $this->getTableReferences();
 
-    list($where, $params) = $this->_getWhereClause();
+    list($where, $params) = $this->getWhereClause();
 
     $sql .= $where;
 
@@ -530,7 +530,7 @@ class Ubmod_DataWarehouse_QueryBuilder
    *
    * @return string
    */
-  private function _getTableReferences()
+  private function getTableReferences()
   {
     $sql = $this->_factTable;
 
@@ -548,7 +548,7 @@ class Ubmod_DataWarehouse_QueryBuilder
    * @return array The first element is a SQL string, the second element
    *   is an array of bind parameters.
    */
-  private function _getWhereClause()
+  private function getWhereClause()
   {
     if (count($this->_whereClauses) === 0) {
       return array('', array());

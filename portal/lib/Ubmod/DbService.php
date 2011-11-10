@@ -44,7 +44,7 @@ class Ubmod_DbService
    *
    * @var Ubmod_DbService
    */
-  private static $instance;
+  private static $_instance;
 
   /**
    * Database handle.
@@ -75,7 +75,7 @@ class Ubmod_DbService
    */
   public static function factory()
   {
-    if (self::$instance === NULL) {
+    if (self::$_instance === NULL) {
       $section = 'database';
       $options = $GLOBALS['options'];
 
@@ -84,13 +84,13 @@ class Ubmod_DbService
         throw new Exception($msg);
       }
 
-      self::$instance = new Ubmod_DbService($options->$section->host,
+      self::$_instance = new Ubmod_DbService($options->$section->host,
                                       $options->$section->dbname,
                                       $options->$section->user,
                                       $options->$section->password);
     }
 
-    return self::$instance;
+    return self::$_instance;
   }
 
   public function getHandle()

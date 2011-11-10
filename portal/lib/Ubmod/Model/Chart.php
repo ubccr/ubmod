@@ -117,7 +117,7 @@ class Ubmod_Model_Chart
     if ($params->hasGroupId()) {
       $group = Ubmod_Model_Job::getEntity('group', $params);
       $parts[] = 'Group: '
-        . self::_formatNameShort($group['name'], $group['display_name']);
+        . self::formatNameShort($group['name'], $group['display_name']);
     }
 
     if ($params->hasTag()) {
@@ -141,7 +141,7 @@ class Ubmod_Model_Chart
    *
    * @return array
    */
-  public static function getCpuConsumption(Ubmod_Model_QueryParams $params)
+  private static function getCpuConsumption(Ubmod_Model_QueryParams $params)
   {
     $qb = new Ubmod_DataWarehouse_QueryBuilder();
     $qb->setFactTable('fact_job');
@@ -177,7 +177,7 @@ class Ubmod_Model_Chart
    *
    * @return array
    */
-  public static function getWaitTime(Ubmod_Model_QueryParams $params)
+  private static function getWaitTime(Ubmod_Model_QueryParams $params)
   {
     $qb = new Ubmod_DataWarehouse_QueryBuilder();
     $qb->setFactTable('fact_job');
@@ -428,7 +428,7 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
       if ($user['wallt'] == 0) { continue; }
 
-      $users[] = self::_formatNameShort($user['name'], $user['display_name']);
+      $users[] = self::formatNameShort($user['name'], $user['display_name']);
       $time[]  = $user['wallt'];
     }
 
@@ -463,7 +463,7 @@ class Ubmod_Model_Chart
       if ($group['wallt'] == 0) { continue; }
 
       $groups[]
-        = self::_formatNameShort($group['name'], $group['display_name']);
+        = self::formatNameShort($group['name'], $group['display_name']);
       $time[] = $group['wallt'];
     }
 
@@ -531,7 +531,7 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
       if ($user['wallt'] == 0) { continue; }
 
-      $users[] = self::_formatNameShort($user['name'], $user['display_name']);
+      $users[] = self::formatNameShort($user['name'], $user['display_name']);
       $time[]  = $user['wallt'];
     }
 
@@ -566,7 +566,7 @@ class Ubmod_Model_Chart
       if ($group['wallt'] == 0) { continue; }
 
       $groups[]
-        = self::_formatNameShort($group['name'], $group['display_name']);
+        = self::formatNameShort($group['name'], $group['display_name']);
       $time[]   = $group['wallt'];
     }
 
@@ -658,7 +658,7 @@ class Ubmod_Model_Chart
         if ($user['wallt'] == 0) { continue; }
 
         if ($userCount < $maxUsers - 1) {
-          $name = self::_formatNameLong($user['name'], $user['display_name']);
+          $name = self::formatNameLong($user['name'], $user['display_name']);
           $userWallt[$name] = $user['wallt'];
         } else {
           $otherWallt += $user['wallt'];
@@ -756,7 +756,7 @@ class Ubmod_Model_Chart
 
         if ($groupCount < $maxGroups - 1) {
           $name
-            = self::_formatNameLong($group['name'], $group['display_name']);
+            = self::formatNameLong($group['name'], $group['display_name']);
           $groupWallt[$name] = $group['wallt'];
         } else {
           $otherWallt += $group['wallt'];
@@ -1287,7 +1287,7 @@ class Ubmod_Model_Chart
    *
    * @return string
    */
-  private static function _formatNameShort($name, $displayName = null,
+  private static function formatNameShort($name, $displayName = null,
     $maxLength = 8)
   {
     if ($displayName) {
@@ -1307,7 +1307,7 @@ class Ubmod_Model_Chart
    *
    * @return string
    */
-  private static function _formatNameLong($name, $displayName = null)
+  private static function formatNameLong($name, $displayName = null)
   {
     if ($displayName) {
       $name .= " ($displayName)";

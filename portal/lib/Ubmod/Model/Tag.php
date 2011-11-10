@@ -45,7 +45,7 @@ class Ubmod_Model_Tag
    *
    * @return array
    */
-  private static function _getAllUserTags()
+  private static function getAllUserTags()
   {
     $sql = "
       SELECT DISTINCT tags
@@ -75,7 +75,7 @@ class Ubmod_Model_Tag
    *
    * @return array
    */
-  private static function _getAllDimTags()
+  private static function getAllDimTags()
   {
     $sql = "
       SELECT DISTINCT event_tags
@@ -107,7 +107,7 @@ class Ubmod_Model_Tag
    */
   public static function getAll()
   {
-    $tags = array_merge(self::_getAllUserTags(), self::_getAllDimTags());
+    $tags = array_merge(self::getAllUserTags(), self::getAllDimTags());
     $tags = array_unique($tags);
 
     natcasesort($tags);
