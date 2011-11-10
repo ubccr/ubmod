@@ -304,6 +304,9 @@ class Ubmod_DataWarehouse
       }
 
       if ($aggregate = $this->findAggregateWith($optimalDimensions)) {
+        if (self::$_debug) {
+          error_log('Using aggregate: ' . $aggregate->getName());
+        }
 
         // Substitute fact table
         $factName = $fact->getName();
@@ -324,7 +327,6 @@ class Ubmod_DataWarehouse
         }
 
         // Replace fact aggregations with aggregate facts
-        #foreach ($aggregate->getAggregates($columns) as $key => $value) {
         foreach ($aggregate->getAggregates() as $key => $value) {
           $sql = str_replace($key, $value, $sql);
         }
