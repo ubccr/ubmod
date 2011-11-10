@@ -1,7 +1,7 @@
 <div style="padding:10px;">
   <?php if ($group): ?>
     <div style="padding-top:5px;" class="labelHeading">
-      Group: <span class="labelHeader"><?php echo $group['group_name'] ?></span>
+      Group: <span class="labelHeader"><?php echo $group['name'] ?></span>
     </div>
     <div style="padding:5px; margin-bottom:20px; margin-top:10px;">
       <table class="dtable">
