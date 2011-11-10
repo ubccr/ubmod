@@ -41,4 +41,6 @@
       </tr>
     </table>
   </div>
+<?php else: ?>
+  <div style="margin:100px; font-weight:bold;">Select a Tag Key</div>
 <?php endif; ?>
