@@ -16,21 +16,20 @@ sub log {
 
 sub info {
     my ( $self, $message ) = @_;
-    $self->log($message, 'info') if $self->{verbose};
+    $self->log( $message, 'info' ) if $self->{verbose};
 }
 
 sub warn {
     my ( $self, $message ) = @_;
-    $self->log($message, 'warn');
+    $self->log( $message, 'warn' );
 }
 
 sub fatal {
     my ( $self, $message ) = @_;
-    $self->log($message, 'fatal');
+    $self->log( $message, 'fatal' );
 }
 
 1;
-
 
 __END__
 
