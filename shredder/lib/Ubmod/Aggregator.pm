@@ -174,10 +174,10 @@ sub update_intervals {
     $self->truncate_interval();
 
     my @labels = (
-        [ 'Week',    7 ],
-        [ 'Month',   30 ],
-        [ 'Quarter', 91 ],
-        [ 'Year',    365 ],
+        [ 'Last 7 days',   7 ],
+        [ 'Last 30 days',  30 ],
+        [ 'Last 90 days',  90 ],
+        [ 'Last 365 days', 365 ],
     );
 
     my %intervals;
