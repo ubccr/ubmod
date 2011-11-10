@@ -1,29 +1,14 @@
 <script type="text/javascript" src="/js/stats-grid.js"></script>
 <script type="text/javascript">
 Ext.onReady(function () {
-    Ubmod.app.setUpdateCallback(function (params) {
-        var tabs = Ext.create('Ubmod.widget.TabPanel', {
-            renderTo: 'stats',
-            items: [
-                Ext.create('Ubmod.widget.Grid', {
-                    title: 'All Users',
-                    store: Ext.create('Ubmod.store.User'),
-                    params: params
-                })
-            ]
-        });
-    });
-
-    /*
-    var statsGrid = new StatsGrid({
-        dataUrl: '/api/rest/json/user/list',
-        root: 'users',
+    Ubmod.app.addStatsPanel({
+        store: Ext.create('Ubmod.store.User'),
+        renderTo: 'stats',
+        label: 'Users',
+        labelKey: 'user',
         id: 'user_id',
-        display: 'user',
-        label: 'User',
-        displayUrl: '/user/details'
+        detailsUrl: '/user/details'
     });
-     */
 });
 </script>
 <div id="stats" style="width: 735px; height: 400px;"></div>

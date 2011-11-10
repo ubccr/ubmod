@@ -211,7 +211,7 @@ Ext.Loader.onReady(function () {
             config.proxy = {
                 type: 'ajax',
                 url: '/api/rest/json/queue/list',
-                reader: { type: 'json', root: 'queue' }
+                reader: { type: 'json', root: 'queues' }
             };
             config.remoteSort = true;
             config.pageSize = 25;
@@ -321,18 +321,56 @@ Ext.Loader.onReady(function () {
         }
     });
 
-    Ext.define('Ubmod.widget.TabPanel', {
+    Ext.define('Ubmod.widget.StatsPanel', {
         extend: 'Ext.tab.Panel',
 
         constructor: function (config) {
             config = config || {};
 
-            Ext.apply(config, {
-                plain: true,
-                height: 400
+            this.model = config.model;
+            this.store = config.store;
+            this.grid = Ext.create('Ubmod.widget.Grid', {
+                title: 'All ' + config.label,
+                store: this.store,
+                label: config.label,
+                labelKey: config.labelKey
             });
 
-            Ubmod.widget.TabPanel.superclass.constructor.call(this, config);
+            Ext.apply(config, {
+                plain: true,
+                height: 400,
+                items: [ this.grid ]
+            });
+
+            Ubmod.widget.StatsPanel.superclass.constructor.call(this, config);
+        },
+
+        initComponent: function () {
+            var listener = function (field) {
+                if (field == 'interval' || field == 'cluster') {
+                    //this.reload();
+                }
+            };
+            this.model.on('fieldchanged', listener, this);
+            this.on('destroy', function () {
+                this.model.removeListener('fieldchanged', listener, this);
+            }, this);
+
+            Ubmod.widget.StatsPanel.superclass.initComponent.call(this);
+
+            //this.store.load({ params: this.params });
+            this.store.load({
+                params: {
+                    interval_id: this.model.get('interval').get('interval_id'),
+                    cluster_id: this.model.get('cluster').get('cluster_id')
+                }
+            });
+
+            this.grid.on('itemdblclick', function (grid, record) {
+            });
+
+            //this.reload();
+
         }
     });
 
@@ -342,15 +380,16 @@ Ext.Loader.onReady(function () {
         constructor: function (config) {
             config = config || {};
 
-            this.params = config.params;
+            this.label = config.label;
+            this.labelKey = config.labelKey;
 
             Ubmod.widget.Grid.superclass.constructor.call(this, config);
         },
 
         initComponent: function () {
             this.columns = [{
-                header: 'User',
-                dataIndex: 'user',
+                header: this.label,
+                dataIndex: this.labelKey,
                 width: 128
             }, {
                 header: '# Jobs',
@@ -402,11 +441,6 @@ Ext.Loader.onReady(function () {
             }];
 
             Ubmod.widget.Grid.superclass.initComponent.call(this);
-
-            this.store.load({ params: this.params });
-
-            this.on('itemdblclick', function (grid, record) {
-            });
         }
     });
 
@@ -428,7 +462,6 @@ Ext.Loader.onReady(function () {
                 }
             };
             this.model.on('fieldchanged', listener, this);
-
             this.on('destroy', function () {
                 this.model.removeListener('fieldchanged', listener, this);
             }, this);
@@ -503,6 +536,11 @@ Ext.Loader.onReady(function () {
             addPartial: function (config) {
                 config.model = model;
                 widgets.push(Ext.create('Ubmod.widget.Partial', config));
+            },
+
+            addStatsPanel: function (config) {
+                config.model = model;
+                widgets.push(Ext.create('Ubmod.widget.StatsPanel', config));
             }
         };
     }();
