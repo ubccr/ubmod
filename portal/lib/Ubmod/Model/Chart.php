@@ -268,7 +268,41 @@ class Ubmod_Model_Chart
   }
 
   /**
-   * Create a CPU consumption chart monthly and send it to the browser.
+   * Create a wait time period chart and send it to the browser.
+   *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
+   * @return void
+   */
+  public static function renderWaitTimePeriod(Ubmod_Model_QueryParams $params)
+  {
+    $waitForLabel = array();
+    foreach (self::getWaitTime($params) as $cpu) {
+      $waitForLabel[$cpu['label']] = $cpu['avg_wait'];
+    }
+
+    $cpus = array();
+    $time = array();
+    foreach (self::getCpuIntervalLabels() as $label) {
+      $cpus[] = $label;
+      $time[] = isset($waitForLabel[$label]) ? $waitForLabel[$label] : 0;
+    }
+
+    self::renderBarChart(array(
+      'width'         => 700,
+      'height'        => 400,
+      'title'         => 'Job Wait vs. Job Size',
+      'subtitle'      => self::getSubtitle($params),
+      'yLabel'        => 'Average Wait Time (Hours)',
+      'xLabel'        => 'Number of CPUs/Job',
+      'labels'        => $cpus,
+      'series'        => $time,
+      'displayValues' => TRUE,
+    ));
+  }
+
+  /**
+   * Create a CPU consumption monthly chart and send it to the browser.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
@@ -318,40 +352,6 @@ class Ubmod_Model_Chart
       'labels'     => $monthNames,
       'series'     => $serieForCpus,
       'legendMode' => LEGEND_VERTICAL,
-    ));
-  }
-
-  /**
-   * Create a wait time period chart and send it to the browser.
-   *
-   * @param Ubmod_Model_QueryParams $params The query parameters.
-   *
-   * @return void
-   */
-  public static function renderWaitTimePeriod(Ubmod_Model_QueryParams $params)
-  {
-    $waitForLabel = array();
-    foreach (self::getWaitTime($params) as $cpu) {
-      $waitForLabel[$cpu['label']] = $cpu['avg_wait'];
-    }
-
-    $cpus = array();
-    $time = array();
-    foreach (self::getCpuIntervalLabels() as $label) {
-      $cpus[] = $label;
-      $time[] = isset($waitForLabel[$label]) ? $waitForLabel[$label] : 0;
-    }
-
-    self::renderBarChart(array(
-      'width'         => 700,
-      'height'        => 400,
-      'title'         => 'Job Wait vs. Job Size',
-      'subtitle'      => self::getSubtitle($params),
-      'yLabel'        => 'Average Wait Time (Hours)',
-      'xLabel'        => 'Number of CPUs/Job',
-      'labels'        => $cpus,
-      'series'        => $time,
-      'displayValues' => TRUE,
     ));
   }
 
@@ -479,40 +479,6 @@ class Ubmod_Model_Chart
   }
 
   /**
-   * Create a user utilization bar chart and send it to the browser.
-   *
-   * @param Ubmod_Model_QueryParams $params The query parameters.
-   *
-   * @return void
-   */
-  public static function renderUserBar(Ubmod_Model_QueryParams $params)
-  {
-    $params->setModel('user');
-    $params->setLimitRowCount(21);
-    $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(TRUE);
-
-    $users = array();
-    $time  = array();
-    foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
-      if ($user['wallt'] == 0) { continue; }
-
-      $users[] = $user['user'];
-      $time[]  = $user['wallt'];
-    }
-
-    self::renderBarChart(array(
-      'width'    => 400,
-      'height'   => 350,
-      'title'    => 'User Utilization',
-      'subtitle' => self::getSubtitle($params),
-      'yLabel'   => 'Wall Time (Days)',
-      'labels'   => $users,
-      'series'   => $time,
-    ));
-  }
-
-  /**
    * Create a group utilization pie chart and send it to the browser.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
@@ -582,6 +548,40 @@ class Ubmod_Model_Chart
   }
 
   /**
+   * Create a user utilization bar chart and send it to the browser.
+   *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
+   * @return void
+   */
+  public static function renderUserBar(Ubmod_Model_QueryParams $params)
+  {
+    $params->setModel('user');
+    $params->setLimitRowCount(21);
+    $params->setOrderByColumn('wallt');
+    $params->setOrderByDescending(TRUE);
+
+    $users = array();
+    $time  = array();
+    foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
+      if ($user['wallt'] == 0) { continue; }
+
+      $users[] = $user['user'];
+      $time[]  = $user['wallt'];
+    }
+
+    self::renderBarChart(array(
+      'width'    => 400,
+      'height'   => 350,
+      'title'    => 'User Utilization',
+      'subtitle' => self::getSubtitle($params),
+      'yLabel'   => 'Wall Time (Days)',
+      'labels'   => $users,
+      'series'   => $time,
+    ));
+  }
+
+  /**
    * Create a group utilization bar chart and send it to the browser.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
@@ -612,102 +612,6 @@ class Ubmod_Model_Chart
       'yLabel'   => 'Wall Time (Days)',
       'labels'   => $groups,
       'series'   => $time,
-    ));
-  }
-
-  /**
-   * Create a group utilization stacked area chart and send it to the browser.
-   *
-   * @param Ubmod_Model_QueryParams $params The query parameters.
-   *
-   * @return void
-   */
-  public static function renderGroupStackedArea(
-    Ubmod_Model_QueryParams $params)
-  {
-    $params->setModel('group');
-    $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(TRUE);
-
-    $months = Ubmod_Model_TimeInterval::getMonths($params);
-
-    $maxGroups  = 11;
-    $otherGroup = 'Remaining Groups';
-    $groups     = array();
-    $monthNames = array();
-    $haveOther  = false;
-
-    // array( monthKey => array( group => wallt, ... ), ... )
-    $serieForMonth = array();
-
-    foreach ($months as $monthKey => $month) {
-
-      $groupCount = 0;
-      $groupWallt = array();
-      $otherWallt = 0;
-
-      $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
-      $monthNames[] = date("M 'y", $time);
-
-      $monthParams = clone $params;
-      $monthParams->clearTimeInterval();
-      $monthParams->setYear($month['year']);
-      $monthParams->setMonth($month['month']);
-
-      foreach (Ubmod_Model_Job::getActivityList($monthParams) as $group) {
-        if ($group['wallt'] == 0) { continue; }
-
-        if ($groupCount < $maxGroups) {
-          $groupWallt[$group['group_name']] = $group['wallt'];
-        } else {
-          $otherWallt += $group['wallt'];
-        }
-        $groupCount++;
-      }
-
-      // Don't include "other groups" here
-      $groups = array_merge($groups, array_keys($groupWallt));
-
-      if ($otherWallt > 0) {
-        $haveOther = true;
-        $groupWallt[$otherGroup] = $otherWallt;
-      }
-
-      $serieForMonth[$monthKey] = $groupWallt;
-    }
-
-    $groups = array_unique($groups);
-
-    // The "other groups" should be listed last
-    if ($haveOther) {
-      $groups[] = $otherGroup;
-    }
-
-    // array( group => array( wallt, ... ), ... )
-    $serieForGroup = array();
-
-    foreach ($groups as $group) {
-      $serie = array();
-      foreach ($months as $monthKey => $month) {
-        if (isset($serieForMonth[$monthKey][$group])) {
-          $serie[] = $serieForMonth[$monthKey][$group];
-        } else {
-          $serie[] = 0;
-        }
-      }
-      $serieForGroup[$group] = $serie;
-    }
-
-    self::renderStackedAreaChart(array(
-      'width'      => 400,
-      'height'     => 350,
-      'title'      => 'Monthly Group Utilization',
-      'subtitle'   => self::getSubtitle($params),
-      'yLabel'     => 'Wall Time (Days)',
-      'xLabel'     => 'Month',
-      'labels'     => $monthNames,
-      'series'     => $serieForGroup,
-      'legendMode' => LEGEND_VERTICAL,
     ));
   }
 
@@ -808,6 +712,176 @@ class Ubmod_Model_Chart
   }
 
   /**
+   * Create a group utilization stacked area chart and send it to the browser.
+   *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
+   * @return void
+   */
+  public static function renderGroupStackedArea(
+    Ubmod_Model_QueryParams $params)
+  {
+    $params->setModel('group');
+    $params->setOrderByColumn('wallt');
+    $params->setOrderByDescending(TRUE);
+
+    $months = Ubmod_Model_TimeInterval::getMonths($params);
+
+    $maxGroups  = 11;
+    $otherGroup = 'Remaining Groups';
+    $groups     = array();
+    $monthNames = array();
+    $haveOther  = false;
+
+    // array( monthKey => array( group => wallt, ... ), ... )
+    $serieForMonth = array();
+
+    foreach ($months as $monthKey => $month) {
+
+      $groupCount = 0;
+      $groupWallt = array();
+      $otherWallt = 0;
+
+      $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
+      $monthNames[] = date("M 'y", $time);
+
+      $monthParams = clone $params;
+      $monthParams->clearTimeInterval();
+      $monthParams->setYear($month['year']);
+      $monthParams->setMonth($month['month']);
+
+      foreach (Ubmod_Model_Job::getActivityList($monthParams) as $group) {
+        if ($group['wallt'] == 0) { continue; }
+
+        if ($groupCount < $maxGroups) {
+          $groupWallt[$group['group_name']] = $group['wallt'];
+        } else {
+          $otherWallt += $group['wallt'];
+        }
+        $groupCount++;
+      }
+
+      // Don't include "other groups" here
+      $groups = array_merge($groups, array_keys($groupWallt));
+
+      if ($otherWallt > 0) {
+        $haveOther = true;
+        $groupWallt[$otherGroup] = $otherWallt;
+      }
+
+      $serieForMonth[$monthKey] = $groupWallt;
+    }
+
+    $groups = array_unique($groups);
+
+    // The "other groups" should be listed last
+    if ($haveOther) {
+      $groups[] = $otherGroup;
+    }
+
+    // array( group => array( wallt, ... ), ... )
+    $serieForGroup = array();
+
+    foreach ($groups as $group) {
+      $serie = array();
+      foreach ($months as $monthKey => $month) {
+        if (isset($serieForMonth[$monthKey][$group])) {
+          $serie[] = $serieForMonth[$monthKey][$group];
+        } else {
+          $serie[] = 0;
+        }
+      }
+      $serieForGroup[$group] = $serie;
+    }
+
+    self::renderStackedAreaChart(array(
+      'width'      => 400,
+      'height'     => 350,
+      'title'      => 'Monthly Group Utilization',
+      'subtitle'   => self::getSubtitle($params),
+      'yLabel'     => 'Wall Time (Days)',
+      'xLabel'     => 'Month',
+      'labels'     => $monthNames,
+      'series'     => $serieForGroup,
+      'legendMode' => LEGEND_VERTICAL,
+    ));
+  }
+
+  /**
+   * Render a pie chart.
+   *
+   * @param array $params
+   *
+   * @return void
+   */
+  private static function renderPieChart(array $params)
+  {
+    if (count($params['series']) == 0) {
+      self::renderNoDataImage($params);
+    }
+
+    $center = $params['width'] / 2;
+    $middle = $params['height'] / 2;
+    $radius = 85;
+
+    $data = new pData();
+
+    $data->addPoints($params['series'], 'series');
+    $data->addPoints($params['labels'], 'labels');
+    $data->setAbscissa('labels');
+
+    $chart = new pImage($params['width'], $params['height'], $data);
+
+    $chart->setFontProperties(array(
+      'FontName' => FONT_DIR . '/verdana.ttf',
+      'FontSize' => 8,
+    ));
+
+    $chart->setShadow(TRUE, array(
+      'X'     => 5,
+      'Y'     => 5,
+      'R'     => 0,
+      'G'     => 0,
+      'B'     => 0,
+      'Alpha' => 50,
+    ));
+
+    $pie = new pPie($chart, $data);
+
+    $pie->draw2DPie($center, $middle, array(
+      'Radius'        => 80,
+      'DrawLabels'    => TRUE,
+      'LabelStacked'  => TRUE,
+      'Border'        => TRUE,
+      'SecondPass'    => TRUE,
+    ));
+
+    $chart->setShadow(TRUE, array(
+      'X'     => 1,
+      'Y'     => 1,
+      'R'     => 0,
+      'G'     => 0,
+      'B'     => 0,
+      'Alpha' => 20,
+    ));
+
+    $chart->drawText($center, 0, $params['title'], array(
+      'FontSize' => 12,
+      'Align'    => TEXT_ALIGN_TOPMIDDLE,
+    ));
+
+    if (isset($params['subtitle'])) {
+      $chart->drawText($center, 16, $params['subtitle'], array(
+        'Align'    => TEXT_ALIGN_TOPMIDDLE,
+        'FontSize' => 8,
+      ));
+    }
+
+    $chart->stroke();
+    exit(0);
+  }
+
+  /**
    * Render a bar chart.
    *
    * @param array $params
@@ -892,80 +966,6 @@ class Ubmod_Model_Chart
       'DisplayB'      => 0,
       'DisplayShadow' => TRUE,
     ));
-
-    $chart->stroke();
-    exit(0);
-  }
-
-  /**
-   * Render a pie chart.
-   *
-   * @param array $params
-   *
-   * @return void
-   */
-  private static function renderPieChart(array $params)
-  {
-    if (count($params['series']) == 0) {
-      self::renderNoDataImage($params);
-    }
-
-    $center = $params['width'] / 2;
-    $middle = $params['height'] / 2;
-    $radius = 85;
-
-    $data = new pData();
-
-    $data->addPoints($params['series'], 'series');
-    $data->addPoints($params['labels'], 'labels');
-    $data->setAbscissa('labels');
-
-    $chart = new pImage($params['width'], $params['height'], $data);
-
-    $chart->setFontProperties(array(
-      'FontName' => FONT_DIR . '/verdana.ttf',
-      'FontSize' => 8,
-    ));
-
-    $chart->setShadow(TRUE, array(
-      'X'     => 5,
-      'Y'     => 5,
-      'R'     => 0,
-      'G'     => 0,
-      'B'     => 0,
-      'Alpha' => 50,
-    ));
-
-    $pie = new pPie($chart, $data);
-
-    $pie->draw2DPie($center, $middle, array(
-      'Radius'        => 80,
-      'DrawLabels'    => TRUE,
-      'LabelStacked'  => TRUE,
-      'Border'        => TRUE,
-      'SecondPass'    => TRUE,
-    ));
-
-    $chart->setShadow(TRUE, array(
-      'X'     => 1,
-      'Y'     => 1,
-      'R'     => 0,
-      'G'     => 0,
-      'B'     => 0,
-      'Alpha' => 20,
-    ));
-
-    $chart->drawText($center, 0, $params['title'], array(
-      'FontSize' => 12,
-      'Align'    => TEXT_ALIGN_TOPMIDDLE,
-    ));
-
-    if (isset($params['subtitle'])) {
-      $chart->drawText($center, 16, $params['subtitle'], array(
-        'Align'    => TEXT_ALIGN_TOPMIDDLE,
-        'FontSize' => 8,
-      ));
-    }
 
     $chart->stroke();
     exit(0);
