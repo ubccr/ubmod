@@ -43,7 +43,7 @@ Ext.Loader.onReady(function () {
     Ext.namespace('Ubmod');
 
     /**
-     * Models
+     * Time interval model
      */
     Ext.define('Ubmod.model.Interval', {
         extend: 'Ext.data.Model',
@@ -55,6 +55,9 @@ Ext.Loader.onReady(function () {
         ]
     });
 
+    /**
+     * Cluster model
+     */
     Ext.define('Ubmod.model.Cluster', {
         extend: 'Ext.data.Model',
         fields: [
@@ -64,6 +67,9 @@ Ext.Loader.onReady(function () {
         ]
     });
 
+    /**
+     * User activity model
+     */
     Ext.define('Ubmod.model.User', {
         extend: 'Ext.data.Model',
         fields: [
@@ -77,6 +83,9 @@ Ext.Loader.onReady(function () {
         ]
     });
 
+    /**
+     * Group activity model
+     */
     Ext.define('Ubmod.model.Group', {
         extend: 'Ext.data.Model',
         fields: [
@@ -90,6 +99,9 @@ Ext.Loader.onReady(function () {
         ]
     });
 
+    /**
+     * Queue activity model
+     */
     Ext.define('Ubmod.model.Queue', {
         extend: 'Ext.data.Model',
         fields: [
@@ -103,6 +115,12 @@ Ext.Loader.onReady(function () {
         ]
     });
 
+    /**
+     * Application model
+     *
+     * Stores the state of the application and provides an event to
+     * signal a change in state.
+     */
     Ext.define('Ubmod.model.App', {
         extend: 'Ext.data.Model',
         fields: [
@@ -116,6 +134,10 @@ Ext.Loader.onReady(function () {
             Ubmod.model.App.superclass.constructor.call(this, config);
         },
 
+        /**
+         * Fires the 'fieldchanged' event when a field is set
+         * @see Ext.data.Model
+         */
         set: function (field, value) {
             Ubmod.model.App.superclass.set.call(this, field, value);
             if (!Ext.isObject(field)) {
@@ -123,22 +145,31 @@ Ext.Loader.onReady(function () {
             }
         },
 
+        /**
+         * @return {boolean} True if both fields are defined
+         */
         isReady: function () {
             return this.get('interval') !== undefined &&
                 this.get('cluster') !== undefined;
         },
 
+        /**
+         * @return {integer} The currently selected interval ID
+         */
         getIntervalId: function () {
             return this.get('interval').get('interval_id');
         },
 
+        /**
+         * @return {integer} The currently selected cluster ID
+         */
         getClusterId: function () {
             return this.get('cluster').get('cluster_id');
         }
     });
 
     /**
-     * Data stores
+     * Time interval data store
      */
     Ext.define('Ubmod.store.Interval', {
         extend: 'Ext.data.Store',
@@ -158,6 +189,9 @@ Ext.Loader.onReady(function () {
         }
     });
 
+    /**
+     * Cluster data store
+     */
     Ext.define('Ubmod.store.Cluster', {
         extend: 'Ext.data.Store',
 
@@ -176,6 +210,9 @@ Ext.Loader.onReady(function () {
         }
     });
 
+    /**
+     * User activity data store
+     */
     Ext.define('Ubmod.store.User', {
         extend: 'Ext.data.Store',
 
@@ -197,6 +234,9 @@ Ext.Loader.onReady(function () {
         }
     });
 
+    /**
+     * Group activity data store
+     */
     Ext.define('Ubmod.store.Group', {
         extend: 'Ext.data.Store',
 
@@ -218,6 +258,9 @@ Ext.Loader.onReady(function () {
         }
     });
 
+    /**
+     * Queue activity data store
+     */
     Ext.define('Ubmod.store.Queue', {
         extend: 'Ext.data.Store',
 
@@ -240,7 +283,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Widgets
+     * Time interval combo box
      */
     Ext.define('Ubmod.widget.Interval', {
         extend: 'Ext.form.field.ComboBox',
@@ -270,6 +313,9 @@ Ext.Loader.onReady(function () {
         }
     });
 
+    /**
+     * Cluster combo box
+     */
     Ext.define('Ubmod.widget.Cluster', {
         extend: 'Ext.form.field.ComboBox',
 
@@ -298,6 +344,9 @@ Ext.Loader.onReady(function () {
         }
     });
 
+    /**
+     * Toolbar for time period and cluster
+     */
     Ext.define('Ubmod.widget.Toolbar', {
         extend: 'Ext.toolbar.Toolbar',
 
@@ -331,6 +380,9 @@ Ext.Loader.onReady(function () {
         }
     });
 
+    /**
+     * Tab panel for stats grid and detail pages
+     */
     Ext.define('Ubmod.widget.StatsPanel', {
         extend: 'Ext.tab.Panel',
 
@@ -415,6 +467,9 @@ Ext.Loader.onReady(function () {
             this.reload();
         },
 
+        /**
+         * Reloads all tabs
+         */
         reload: function () {
             if (!this.model.isReady()) { return; }
 
@@ -437,6 +492,9 @@ Ext.Loader.onReady(function () {
         }
     });
 
+    /**
+     * Stats grid
+     */
     Ext.define('Ubmod.widget.Grid', {
         extend: 'Ext.grid.Panel',
 
@@ -526,6 +584,9 @@ Ext.Loader.onReady(function () {
         }
     });
 
+    /**
+     * Component used for loading pages using AJAX
+     */
     Ext.define('Ubmod.widget.Partial', {
         extend: 'Ext.Component',
 
@@ -553,6 +614,9 @@ Ext.Loader.onReady(function () {
             this.reload();
         },
 
+        /**
+         * Reloads the element
+         */
         reload: function () {
             if (!this.model.isReady()) { return; }
             Ext.get(this.element).load({
@@ -566,6 +630,9 @@ Ext.Loader.onReady(function () {
         }
     });
 
+    /**
+     * Application object
+     */
     Ubmod.app = (function () {
         var model, widgets;
 
@@ -614,11 +681,19 @@ Ext.Loader.onReady(function () {
                 Ext.create('Ubmod.widget.Toolbar', { model: model });
             },
 
+            /**
+             * Add an element that should be updated whenever the time
+             * interval or cluster is changed
+             */
             addPartial: function (config) {
                 config.model = model;
                 widgets.push(Ext.create('Ubmod.widget.Partial', config));
             },
 
+            /**
+             * Add a stats panel that should be updated whenever the time
+             * interval or cluster is changed
+             */
             addStatsPanel: function (config) {
                 config.model = model;
                 widgets.push(Ext.create('Ubmod.widget.StatsPanel', config));
