@@ -873,6 +873,16 @@ class Ubmod_Model_QueryParams
   }
 
   /**
+   * Clear the GROUP BY column.
+   *
+   * @return void
+   */
+  public function clearGroupByColumn()
+  {
+    $this->_groupByColumn = null;
+  }
+
+  /**
    * Check if the GROUP BY column is set.
    *
    * @return bool True if the the GROUP BY column is set.
@@ -1062,6 +1072,16 @@ class Ubmod_Model_QueryParams
   public function hasModel()
   {
     return $this->_model !== null;
+  }
+
+  /**
+   * Clear the model.
+   *
+   * @return void
+   */
+  public function clearModel()
+  {
+    $this->_model = null;
   }
 
   /**

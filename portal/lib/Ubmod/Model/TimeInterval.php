@@ -182,7 +182,10 @@ class Ubmod_Model_TimeInterval
       'min_date' => "DATE_FORMAT(MIN(date), '%Y-%m')",
       'max_date' => "DATE_FORMAT(MAX(date), '%Y-%m')",
     ));
-    $qb->setQueryParams($params);
+    $monthParams = clone $params;
+    $monthParams->clearGroupByColumn();
+    $monthParams->clearModel();
+    $qb->setQueryParams($monthParams);
     $qb->clearLimit();
     list($sql, $dbParams) = $qb->buildQuery();
 
