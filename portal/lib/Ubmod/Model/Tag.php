@@ -112,6 +112,61 @@ class Ubmod_Model_Tag
   }
 
   /**
+   * Returns the number of tags that have activity for the given
+   * parameters.
+   *
+   * @param array $params The query parameters.
+   *
+   * @return int
+   */
+  public static function getActivityCount($params)
+  {
+    $timeClause = Ubmod_Model_Interval::whereClause($params);
+
+    $sql = "SELECT tags
+      FROM fact_job
+      JOIN dim_cluster USING (dim_cluster_id)
+      JOIN dim_date    USING (dim_date_id)
+      JOIN dim_user    USING (dim_user_id)
+      WHERE
+            dim_cluster_id = :cluster_id
+        AND $timeClause
+        AND tags IS NOT NULL
+    ";
+
+    $dbh = Ubmod_DbService::dbh();
+    $sql = Ubmod_DataWarehouse::optimize($sql);
+    $stmt = $dbh->prepare($sql);
+    $r = $stmt->execute(array(':cluster_id' => $params['cluster_id']));
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
+
+    $tags = array();
+
+    while ($row = $stmt->fetch()) {
+      $tags = array_merge($tags, json_decode($row['tags']));
+    }
+
+    $tags = array_unique($tags);
+
+    $filtered = array();
+
+    if (isset($params['filter']) && $params['filter'] !== '') {
+      foreach ($tags as $tag) {
+        if (stripos($tag, $params['filter']) !== false) {
+          $filtered[] = $tag;
+        }
+      }
+    } else {
+      $filtered = $tags;
+    }
+
+    return count($filtered);
+  }
+
+  /**
    * Returns activity data for all tags that have activity for the given
    * parameters.
    *

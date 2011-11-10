@@ -109,6 +109,12 @@ class Ubmod_Handler_Tag
     $options = array(
       'interval_id' => 'Return user activity in this interval. (required)',
       'cluster_id'  => 'Return user activity in this cluster. (required)',
+      'filter'      => 'Filter criteria.  Substring match against user field.',
+      'sort'        => 'Sort field.  Valid options: user, jobs, avg_cpus,'
+                     . ' avg_wait, wallt, avg_mem',
+      'dir'         => 'Sort direction.  Valid options: ASC, DESC',
+      'start'       => 'Limit offset. (requires limit)',
+      'limit'       => 'Maximum number of entities to return. (requires start)',
     );
     return Ubmod_RestResponse::factory(TRUE, $desc, $options);
   }
@@ -124,6 +130,7 @@ class Ubmod_Handler_Tag
   public function activityAction(array $arguments, array $postData = NULL)
   {
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
+      'total' => Ubmod_Model_Tag::getActivityCount($arguments),
       'tags'  => Ubmod_Model_Tag::getActivity($arguments),
     ));
   }
