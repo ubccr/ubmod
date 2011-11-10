@@ -290,6 +290,7 @@ sub get_file_names {
             month => $2,
             day   => $3,
         );
+        $current->add( days => 1 );
     }
     else {
         $Logger->fatal("Invalid date format: '$date'");
@@ -299,8 +300,8 @@ sub get_file_names {
     my @files;
 
     while ( DateTime->compare( $current, $today ) < 0 ) {
-        $current->add( days => 1 );
         push @files, $current->strftime('%Y%m%d');
+        $current->add( days => 1 );
     }
 
     return \@files;
