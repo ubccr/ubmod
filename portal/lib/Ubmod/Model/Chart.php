@@ -83,8 +83,8 @@ class Ubmod_Model_Chart
 
     $sql = "
       SELECT
-        ROUND(COALESCE(SUM(cput), 0) / 86400) AS cput,
-        dim_cpus.display_name                 AS label
+        ROUND(COALESCE(SUM(cput), 0) / 86400, 1) AS cput,
+        dim_cpus.display_name                    AS label
       FROM fact_job
       JOIN dim_date USING (dim_date_id)
       JOIN dim_cpus USING (dim_cpus_id)
@@ -121,8 +121,8 @@ class Ubmod_Model_Chart
 
     $sql = "
       SELECT
-        ROUND(COALESCE(AVG(wait), 0) / 3600) AS avg_wait,
-        dim_cpus.display_name                AS label
+        ROUND(COALESCE(AVG(wait), 0) / 3600, 1) AS avg_wait,
+        dim_cpus.display_name                   AS label
       FROM fact_job
       JOIN dim_date USING (dim_date_id)
       JOIN dim_cpus USING (dim_cpus_id)
