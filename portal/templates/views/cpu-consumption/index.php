@@ -1,6 +1,11 @@
 <script type="text/javascript">
 Ext.onReady(function() {
-    Ubmod.app.setPage({el: 'dash-chart', url: '/cpu-consumption/chart' });
+    Ubmod.app.setUpdateCallback(function (params) {
+        Ext.get('dash-chart').load({
+            url: '/cpu-consumption/chart',
+            params: params
+        });
+    });
 });
 </script>
 <div id="dash-chart">

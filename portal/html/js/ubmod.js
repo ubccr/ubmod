@@ -318,13 +318,10 @@ Ext.Loader.onReady(function () {
     });
 
     Ubmod.app = function () {
-        var toolbar, currentPage, loaded, updateContent;
+        var toolbar, loaded, updateCallback, updateContent;
 
         updateContent = function () {
-            Ext.get(currentPage.el).load({
-                url: currentPage.url,
-                params: toolbar.getParams()
-            });
+            updateCallback(toolbar.getParams());
         };
 
         return {
@@ -356,8 +353,8 @@ Ext.Loader.onReady(function () {
                 });
             },
 
-            setPage: function (page) {
-                currentPage = page;
+            setUpdateCallback: function (cb) {
+                updateCallback = cb;
                 if (loaded) { updateContent(); }
             }
         };
