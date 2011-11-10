@@ -13,11 +13,12 @@ use Ubmod::Aggregator;
 my $Dbh;
 
 sub main {
-    my ( $file, $dir, $host, $shred, $update, $verbose, $help );
+    my ( $stdio, $file, $dir, $host, $shred, $update, $verbose, $help );
 
-    Getopt::Long::Configure( 'bundling', 'ignorecase_always' );
+    Getopt::Long::Configure('no_ignore_case');
 
     my $result = GetOptions(
+        ''          => \$stdio,
         'in|i=s'    => \$file,
         'dir|d=s'   => \$dir,
         'host|H=s'  => \$host,
@@ -47,6 +48,10 @@ sub main {
         }
         elsif ($file) {
             process_file( $shredder, $file );
+        }
+        elsif ($stdio) {
+            log_msg("Processing standard input");
+            process_fh( $shredder, *STDIN );
         }
 
         log_msg("Done shredding!");
@@ -125,6 +130,12 @@ sub process_file {
     -f $file or die "Cannot access '$file': No such file\n";
 
     open my ($fh), '<', $file or die "Could not open file '$file': $!";
+
+    return process_fh( $shredder, $fh );
+}
+
+sub process_fh {
+    my ( $shredder, $fh ) = @_;
 
     $shredder->set_fh($fh);
 
