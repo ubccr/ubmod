@@ -232,7 +232,6 @@ Ext.Loader.onReady(function () {
                 var count = 0;
                 return Ext.bind(function () {
                     count = count + 1;
-                    console.log(count);
                     if (count == 2) { this.fireEvent('load'); }
                 }, this);
             }, this)();
@@ -240,37 +239,48 @@ Ext.Loader.onReady(function () {
             var listeners = {
                 load: {
                     fn: function () {
-                        console.log('load');
                         cb();
                     },
                     scope: this
                 },
                 select: {
                     fn: function () {
-                        console.log('select');
                         this.fireEvent('change');
                     },
                     scope: this
                 }
             };
 
+            this.intervalCombo = Ext.create('Ubmod.widget.Interval', { listeners: listeners });
+            this.clusterCombo = Ext.create('Ubmod.widget.Cluster', { listeners: listeners });
+
             this.renderTo = Ext.get('toolbar');
             this.items = [
                 'Period:',
-                Ext.create('Ubmod.widget.Interval', { listeners: listeners }),
+                this.intervalCombo,
                 { xtype: 'tbspacer', width: 20 },
                 'Cluster:',
-                Ext.create('Ubmod.widget.Cluster', { listeners: listeners })
+                this.clusterCombo,
             ];
 
             Ubmod.widget.Toolbar.superclass.initComponent.call(this);
+        },
+        getParams: function () {
+            return {
+                interval_id: this.intervalCombo.getValue(),
+                cluster_id: this.clusterCombo.getValue()
+            };
         }
     });
 
     Ubmod.app = function () {
-        var toolbar, currentPage;
+        var toolbar, currentPage, loaded;
 
         var updateContent = function () {
+            Ext.get(currentPage.el).load({
+                url: currentPage.url,
+                params: toolbar.getParams()
+            });
         };
 
         return {
@@ -278,7 +288,10 @@ Ext.Loader.onReady(function () {
                 Ext.select('#menu-list a').each(function (el) {
                     var url = this.getAttribute('href');
                     this.on('click', function (evt, el) {
-                        Ext.get('content').load({ url: url });
+                        Ext.get('content').load({
+                            url: url,
+                            scripts: true
+                        });
                         Ext.select('#menu-list li').each(function () {
                             this.removeCls('menu-active');
                         });
@@ -289,17 +302,14 @@ Ext.Loader.onReady(function () {
 
                 toolbar = Ext.create('Ubmod.widget.Toolbar', {
                     listeners: {
-                        load: function () {
-                            console.log('toolbar load: ' + currentPage);
-                        },
-                        change: function () {
-                            console.log('toolbar change: ' + currentPage);
-                        }
+                        load: function () { loaded = true; updateContent(); },
+                        change: function () { updateContent(); }
                     }
                 });
             },
             setPage: function (page) {
                 currentPage = page;
+                if (loaded) { updateContent(); }
             }
         };
     }();

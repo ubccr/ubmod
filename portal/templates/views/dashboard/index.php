@@ -23,21 +23,9 @@ function chartswap(type) {
         index = 1;
     }
 }
+
 Ext.onReady(function () {
-    /*
-    var url = "/dashboard/utilization";
-    var toolbar = new PBSToolbar({el: 'dash-chart', displayUrl: url});
-    Ext.get('dash-chart').load({
-        url: '/dashboard/utilization',
-            params: {
-                cluster_id: 1,
-                interval_id: 3
-            }
-    });
-     */
-    Ext.onReady(function () {
-        Ubmod.app.setPage('dashboard');
-    });
+    Ubmod.app.setPage({ el: 'dash-chart', url: '/dashboard/utilization'});
 });
 </script>
 <div id="dash-chart">

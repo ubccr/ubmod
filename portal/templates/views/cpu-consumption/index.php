@@ -1,6 +1,6 @@
 <script type="text/javascript">
 Ext.onReady(function() {
-    var toolbar = new PBSToolbar({el: 'dash-chart', displayUrl: '/cpu-consumption/chart'});
+    Ubmod.app.setPage({el: 'dash-chart', url: '/cpu-consumption/chart' });
 });
 </script>
 <div id="dash-chart">

@@ -1,6 +1,6 @@
 <script type="text/javascript">
 Ext.onReady(function() {
-    var toolbar = new PBSToolbar({el: 'dash-chart', displayUrl: '/wait-time/chart'});
+    Ubmod.app.setPage({ el: 'dash-chart', url: '/wait-time/chart'});
 });
 </script>
 <div id="dash-chart">
