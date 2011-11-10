@@ -116,6 +116,8 @@ my %map = (
     cput            => 'SUM(cpu)',
     mem             => 'SUM(mem * 1024 * 1024 / cpu)',
     vmem            => 'SUM(maxvmem) / 1024',
+    wait            => 'GREATEST(start_time - submission_time, 0)',
+    exect           => 'GREATEST(end_time - start_time, 0)',
     nodes           => 'COUNT(DISTINCT hostname)',
     cpus            => 'slots',
 );

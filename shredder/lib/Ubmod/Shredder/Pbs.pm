@@ -44,6 +44,8 @@ my %map = (
     cput            => 'resources_used_cput',
     mem             => 'resources_used_mem',
     vmem            => 'resources_used_vmem',
+    wait            => 'GREATEST(start - ctime, 0)',
+    exect           => 'GREATEST(end - start, 0)',
     nodes           => 'resources_used_nodes',
     cpus            => 'resources_used_cpus',
 );

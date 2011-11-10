@@ -549,16 +549,8 @@ sub _select_cluster_activity {
                 MAX(mem) AS max_mem,
                 ROUND(AVG(vmem)) AS avg_vmem,
                 MAX(vmem) AS max_vmem,
-                ROUND(AVG(
-                    CASE WHEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time) > 0 
-                         THEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time)
-                         ELSE 0 END
-                )) AS avg_wait,
-                ROUND(AVG(
-                    CASE WHEN UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time) > 0
-                         THEN UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time)
-                         ELSE 0 END
-                )) AS avg_exect,
+                ROUND(AVG(wait)) AS avg_wait,
+                ROUND(AVG(exect)) AS avg_exect,
                 ROUND(AVG(nodes)) AS avg_nodes,
                 MAX(nodes) AS max_nodes,
                 ROUND(AVG(cpus)) AS avg_cpus,
@@ -596,16 +588,8 @@ sub _select_queue_activity {
                 MAX(mem) AS max_mem,
                 ROUND(AVG(vmem)) AS avg_vmem,
                 MAX(vmem) AS max_vmem,
-                ROUND(AVG(
-                    CASE WHEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time) > 0 
-                         THEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time)
-                         ELSE 0 END
-                )) AS avg_wait,
-                ROUND(AVG(
-                    CASE WHEN UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time) > 0
-                         THEN UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time)
-                         ELSE 0 END
-                )) AS avg_exect,
+                ROUND(AVG(wait)) AS avg_wait,
+                ROUND(AVG(exect)) AS avg_exect,
                 ROUND(AVG(nodes)) AS avg_nodes,
                 MAX(nodes) AS max_nodes,
                 ROUND(AVG(cpus)) AS avg_cpus,
@@ -643,16 +627,8 @@ sub _select_group_activity {
                 MAX(mem) AS max_mem,
                 ROUND(AVG(vmem)) AS avg_vmem,
                 MAX(vmem) AS max_vmem,
-                ROUND(AVG(
-                    CASE WHEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time) > 0 
-                         THEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time)
-                         ELSE 0 END
-                )) AS avg_wait,
-                ROUND(AVG(
-                    CASE WHEN UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time) > 0
-                         THEN UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time)
-                         ELSE 0 END
-                )) AS avg_exect,
+                ROUND(AVG(wait)) AS avg_wait,
+                ROUND(AVG(exect)) AS avg_exect,
                 ROUND(AVG(nodes)) AS avg_nodes,
                 MAX(nodes) AS max_nodes,
                 ROUND(AVG(cpus)) AS avg_cpus,
@@ -689,16 +665,8 @@ sub _select_user_activity {
                 MAX(mem) AS max_mem,
                 ROUND(AVG(vmem)) AS avg_vmem,
                 MAX(vmem) AS max_vmem,
-                ROUND(AVG(
-                    CASE WHEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time) > 0 
-                         THEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time)
-                         ELSE 0 END
-                )) AS avg_wait,
-                ROUND(AVG(
-                    CASE WHEN UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time) > 0
-                         THEN UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time)
-                         ELSE 0 END
-                )) AS avg_exect,
+                ROUND(AVG(wait)) AS avg_wait,
+                ROUND(AVG(exect)) AS avg_exect,
                 ROUND(AVG(nodes)) AS avg_nodes,
                 MAX(nodes) AS max_nodes,
                 ROUND(AVG(cpus)) AS avg_cpus,
@@ -736,12 +704,7 @@ sub _select_actual_wait_time {
     my ( $self, $params ) = @_;
 
     my $sql = q{
-        SELECT
-            ROUND(AVG(
-                CASE WHEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time) > 0
-                     THEN UNIX_TIMESTAMP(start_time) - UNIX_TIMESTAMP(submission_time)
-                     ELSE 0 END
-            )) AS avg_wait
+        SELECT ROUND(AVG(wait)) AS avg_wait
         FROM event
         WHERE cluster = ?
         AND date_key BETWEEN ? AND ?

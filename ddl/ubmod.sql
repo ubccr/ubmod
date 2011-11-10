@@ -200,6 +200,8 @@ create table `event` (
   `cput`                      bigint unsigned not null,
   `mem`                       bigint unsigned not null,
   `vmem`                      bigint unsigned not null,
+  `wait`                      bigint unsigned not null,
+  `exect`                     bigint unsigned not null,
   `nodes`                     int unsigned not null,
   `cpus`                      int unsigned not null,
   constraint `pk_Event` primary key (`event_id`)
