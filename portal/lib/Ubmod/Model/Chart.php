@@ -55,7 +55,7 @@ class Ubmod_Model_Chart
   {
     $dbh = Ubmod_DbService::dbh();
     $sql = 'SELECT
-        round(avg_wait/3600) as avg_wait,
+        avg_wait/3600 as avg_wait,
         label,
         view_order
       FROM actual_wait_time
