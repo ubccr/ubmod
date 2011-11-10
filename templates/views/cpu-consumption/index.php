@@ -3,7 +3,7 @@ Ext.onReady(function() {
 	var toolbar = new PBSToolbar({el: 'dash-chart', displayUrl: '/cpu-consumption/chart'});
     var e = Ext.get("dash-chart");
     var updater = e.getUpdateManager();
-    updater.update("/partial/cpu-consumption", {});
+    updater.update("/cpu-consumption/chart", {});
 });
 </script> 
 <div id="dash-chart">

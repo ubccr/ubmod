@@ -3,7 +3,7 @@ Ext.onReady(function() {
 	var toolbar = new PBSToolbar({el: 'dash-chart', displayUrl: '/wait-time/chart'});
     var e = Ext.get("dash-chart");
     var updater = e.getUpdateManager();
-    updater.update("/partial/wait-time", {});
+    updater.update("/wait-time/chart", {});
 });
 </script> 
 <div id="dash-chart">
