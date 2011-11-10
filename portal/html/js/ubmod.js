@@ -351,7 +351,8 @@ Ext.Loader.onReady(function () {
 
             Ext.apply(config, {
                 plain: true,
-                items: [ this.grid ]
+                items: [ this.grid ],
+                resizable: { pinned: true, handles: 's' }
             });
 
             Ubmod.widget.StatsPanel.superclass.constructor.call(this, config);
