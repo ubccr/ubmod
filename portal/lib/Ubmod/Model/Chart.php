@@ -117,7 +117,7 @@ class Ubmod_Model_Chart
     if ($params->hasGroupId()) {
       $group = Ubmod_Model_Job::getEntity('group', $params);
       $parts[] = 'Group: '
-        . self::formatNameLong($group['name'], $group['display_name']);
+        . self::formatName($group['name'], $group['display_name']);
     }
 
     if ($params->hasTag()) {
@@ -428,7 +428,7 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
       if ($user['wallt'] == 0) { continue; }
 
-      $users[] = self::formatNameLong($user['name'], $user['display_name']);
+      $users[] = self::formatName($user['name'], $user['display_name']);
       $time[]  = $user['wallt'];
     }
 
@@ -462,9 +462,8 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Job::getActivityList($params) as $group) {
       if ($group['wallt'] == 0) { continue; }
 
-      $groups[]
-        = self::formatNameLong($group['name'], $group['display_name']);
-      $time[] = $group['wallt'];
+      $groups[] = self::formatName($group['name'], $group['display_name']);
+      $time[]   = $group['wallt'];
     }
 
     self::renderPieChart(array(
@@ -698,7 +697,7 @@ class Ubmod_Model_Chart
     $serieForUser = array();
 
     foreach ($topUsers as $user) {
-      $name = self::formatNameLong($user['name'], $user['display_name']);
+      $name = self::formatName($user['name'], $user['display_name']);
       $serieForUser[$name] = $serieForUserId[$user['user_id']];
     }
 
@@ -797,7 +796,7 @@ class Ubmod_Model_Chart
     $serieForGroup = array();
 
     foreach ($topGroups as $group) {
-      $name = self::formatNameLong($group['name'], $group['display_name']);
+      $name = self::formatName($group['name'], $group['display_name']);
       $serieForGroup[$name] = $serieForGroupId[$group['group_id']];
     }
 
@@ -1306,28 +1305,6 @@ class Ubmod_Model_Chart
   }
 
   /**
-   * Format a name, shortening it when necessary.
-   *
-   * @param string $name The name to use when no display name is given.
-   * @param string $displayName The display name.
-   * @param int $maxLength Maximum number of characters to allow before
-   *   truncating the name.
-   *
-   * @return string
-   */
-  private static function formatNameShort($name, $displayName = null,
-    $maxLength = 8)
-  {
-    if ($displayName) {
-      $name = $displayName;
-    }
-    if (strlen($name) > $maxLength) {
-      $name = substr($name, 0, $maxLength - 2) . '...';
-    }
-    return $name;
-  }
-
-  /**
    * Format a name, combining the display name when available.
    *
    * @param string $name The name to use when no display name is given.
@@ -1335,7 +1312,7 @@ class Ubmod_Model_Chart
    *
    * @return string
    */
-  private static function formatNameLong($name, $displayName = null)
+  private static function formatName($name, $displayName = null)
   {
     if ($displayName) {
       $name .= " ($displayName)";
