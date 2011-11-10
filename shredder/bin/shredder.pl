@@ -65,7 +65,7 @@ sub main {
             exit 1;
         }
 
-        my $shredder = $shredder_class->new();
+        my $shredder = $shredder_class->new( logger => $Logger );
 
         $shredder->set_host($host) if defined $host;
 

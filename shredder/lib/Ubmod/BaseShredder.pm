@@ -3,8 +3,12 @@ use strict;
 use warnings;
 
 sub new {
-    my ($class) = @_;
-    my $self = {};
+    my ( $class, %options ) = @_;
+
+    die "logger required" unless defined $options{logger};
+
+    my $self = {%options};
+
     return bless $self, $class;
 }
 
@@ -21,6 +25,11 @@ sub set_host {
 sub has_host {
     my ($self) = @_;
     return defined $self->{host};
+}
+
+sub logger {
+    my ($self) = @_;
+    return $self->{logger};
 }
 
 sub shred {
@@ -48,12 +57,6 @@ Version: $Id$
   package Ubmod::Shredder::Myformat;
 
   use base qw(Ubmod::BaseShredder);
-
-  sub new {
-      my ($class) = @_;
-      my $self = $class->SUPER::new();
-      return bless $self, $class;
-  }
 
   sub shred {
       my ( $self, $line ) = @_;
@@ -87,9 +90,12 @@ class.
 
 =head1 METHODS
 
-=head2 new()
+=head2 new( logger => $logger )
 
 Default constructor.
+
+The C<$logger> parameter is required and should be an instance of
+C<Ubmod::Logger>.
 
 =head2 host()
 
@@ -105,6 +111,10 @@ frontend script.
 
 Check if the hostname has been set. This should be used in the shred
 implementation to check if the cluster name should be replaced.
+
+=head2 logger()
+
+Returns the logger object. This should be used to log any messages.
 
 =head2 shred($line)
 

@@ -124,12 +124,6 @@ my %map = (
     cpus            => 'slots',
 );
 
-sub new {
-    my ($class) = @_;
-    my $self = $class->SUPER::new();
-    return bless $self, $class;
-}
-
 sub shred {
     my ( $self, $line ) = @_;
 
