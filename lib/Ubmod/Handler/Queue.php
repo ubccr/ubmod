@@ -1,6 +1,6 @@
 <?php
 /**
- * User REST handler.
+ * Queue REST handler.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
@@ -9,16 +9,16 @@
  */
 
 /**
- * User REST Handler.
+ * Queue REST Handler.
  *
  * @package Ubmod
  */
-class UserHandler
+class Ubmod_Handler_Queue
 {
 
   public static function factory()
   {
-    return new UserHandler();
+    return new Ubmod_Handler_Queue();
   }
 
   public function listHelp()
@@ -30,8 +30,8 @@ class UserHandler
   public function listAction(array $arguments, array $postData = NULL)
   {
     return RestResponse::factory(TRUE, NULL, array(
-      'total' => Ubmod_Model_User::getActivityCount($postData),
-      'users' => Ubmod_Model_User::getActivities($postData),
+      'total'  => Ubmod_Model_Queue::getActivityCount($postData),
+      'queues' => Ubmod_Model_Queue::getActivities($postData),
     ));
   }
 }

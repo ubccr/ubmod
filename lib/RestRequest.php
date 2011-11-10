@@ -22,15 +22,16 @@
 // [?tag=value] are optional arguments to the action
 //
 // In order for an entity to be valid, a class must be defined to serve as a
-// handler for that entity (e.g., "ChromosomeHandler" will handle a "chromosome"
-// entity).  The controller will instantiate RestRequest to process an API
-// request.  RestRequest will perform validation on the request URL, parse it,
-// and attempt to load a handler for the entity.  If a handler is not found, an
-// "invalid url" message is returned.  This allows the API to be extended simply
-// by the addition of a handler class.
+// handler for that entity (e.g., "Ubmod_Handler_Chromosome" will handle a
+// "chromosome" entity).  The controller will instantiate RestRequest to process
+// an API request.  RestRequest will perform validation on the request URL,
+// parse it, and attempt to load a handler for the entity.  If a handler is not
+// found, an "invalid url" message is returned.  This allows the API to be
+// extended simply by the addition of a handler class.
 //
 // Handlers are named for the entity (with the first letter capitalized)
-// followed by "Handler" and (e.g., chromosome is handled by ChromosomeHandler).
+// prepended with "Ubmod_Handler_" (e.g., chromosome is handled by
+// Ubmod_Handler_Chromosome).
 // Handlers contain two types of methods: "help" and "action".  If the handler
 // class contains an action method (e.g., "listAction" or "searchAction")
 // matching the requested action then it will be called with any arguments and
@@ -251,7 +252,7 @@ class RestRequest
 
   private function loadHandler()
   {
-    $handlerClassName = ucfirst($this->_entity) . "Handler";
+    $handlerClassName = 'Ubmod_Handler_' . ucfirst($this->_entity);
     $handlerClassFile = $handlerClassName . ".php";
     include($handlerClassFile);
 

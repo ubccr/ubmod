@@ -1,6 +1,6 @@
 <?php
 /**
- * Group REST handler.
+ * User REST handler.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
@@ -9,16 +9,16 @@
  */
 
 /**
- * Group REST Handler.
+ * User REST Handler.
  *
  * @package Ubmod
  */
-class GroupHandler
+class Ubmod_Handler_User
 {
 
   public static function factory()
   {
-    return new GroupHandler();
+    return new Ubmod_Handler_User();
   }
 
   public function listHelp()
@@ -30,8 +30,8 @@ class GroupHandler
   public function listAction(array $arguments, array $postData = NULL)
   {
     return RestResponse::factory(TRUE, NULL, array(
-      'total'  => Ubmod_Model_Group::getActivityCount($postData),
-      'groups' => Ubmod_Model_Group::getActivities($postData),
+      'total' => Ubmod_Model_User::getActivityCount($postData),
+      'users' => Ubmod_Model_User::getActivities($postData),
     ));
   }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Queue REST handler.
+ * Time interval REST handler.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
@@ -9,16 +9,21 @@
  */
 
 /**
- * Queue REST Handler.
+ * Time interval REST Handler.
  *
  * @package Ubmod
  */
-class QueueHandler
+class Ubmod_Handler_Interval
 {
 
+  /**
+   * Factory method.
+   *
+   * @return Ubmod_Handler_Interval
+   */
   public static function factory()
   {
-    return new QueueHandler();
+    return new Ubmod_Handler_Interval();
   }
 
   public function listHelp()
@@ -29,9 +34,10 @@ class QueueHandler
 
   public function listAction(array $arguments, array $postData = NULL)
   {
+    $intervals = Ubmod_Model_Interval::getAll();
     return RestResponse::factory(TRUE, NULL, array(
-      'total'  => Ubmod_Model_Queue::getActivityCount($postData),
-      'queues' => Ubmod_Model_Queue::getActivities($postData),
+      'data'  => $intervals,
+      'total' => count($intervals),
     ));
   }
 }
