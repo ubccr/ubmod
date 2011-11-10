@@ -358,7 +358,7 @@ sub transform_data {
 
     # XXX move this somewhere else or limit the events that are
     # transformed by the query below
-    $Dbh->do(q{ DELETE FROM event });
+    $Dbh->do(q{ TRUNCATE event });
 
     my $sql = $shredder->get_transform_query();
     return $Dbh->do($sql);
