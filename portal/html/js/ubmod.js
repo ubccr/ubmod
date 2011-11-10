@@ -163,26 +163,44 @@ Ext.Loader.onReady(function () {
     Ext.define('Ubmod.widget.Interval', {
         extend: 'Ext.form.field.ComboBox',
         initComponent: function () {
-            this.store = Ext.create('Ubmod.store.Interval');
+            var store = Ext.create('Ubmod.store.Interval');
+
+            this.store = store;
             this.displayField = 'time_interval';
             this.valueField = 'interval_id';
-            this.mode = 'local';
+            this.queryMode = 'local';
             this.emptyText = 'Interval...';
 
             Ubmod.widget.Interval.superclass.initComponent.call(this);
+
+            store.load({
+                scope: this,
+                callback: function (records) {
+                    this.setValue(records[0].get(this.valueField));
+                }
+            });
         }
     });
 
     Ext.define('Ubmod.widget.Cluster', {
         extend: 'Ext.form.field.ComboBox',
         initComponent: function () {
-            this.store = Ext.create('Ubmod.store.Cluster');
+            var store = Ext.create('Ubmod.store.Cluster');
+
+            this.store = store;
             this.displayField = 'display_name';
             this.valueField = 'cluster_id';
-            this.mode = 'local';
+            this.queryMode = 'local';
             this.emptyText = 'Cluster...';
 
             Ubmod.widget.Cluster.superclass.initComponent.call(this);
+
+            store.load({
+                scope: this,
+                callback: function (records) {
+                    this.setValue(records[0].get(this.valueField));
+                }
+            });
         }
     });
 
