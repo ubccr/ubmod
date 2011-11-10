@@ -264,6 +264,10 @@ class Ubmod_DataWarehouse
     try {
       $data = $this->parseSql($sql);
 
+      if (self::$_debug) {
+        error_log('Query has tables: ' . print_r($data['tables'], 1));
+      }
+
       $fact       = $this->findFact($data['tables']);
       $dimensions = $this->findDimensions($data['tables']);
 
@@ -303,44 +307,60 @@ class Ubmod_DataWarehouse
         }
       }
 
-      if ($aggregate = $this->findAggregateWith($optimalDimensions)) {
-        if (self::$_debug) {
-          error_log('Using aggregate: ' . $aggregate->getName());
+      $haveRollUps = true;
+
+      // Check for aggregates using the optimal dimensions. If there is
+      // no aggregate with the optimal dimensions, remove one roll-up
+      // at a time and check for an aggregate with those dimensions. If
+      // there are no roll-up dimensions, it is possible that there is
+      // an aggregate, so check at least once for that.
+      do {
+        $aggregate = $this->findAggregateWith($optimalDimensions);
+
+        if ($aggregate) {
+          if (self::$_debug) {
+            error_log('Using aggregate: ' . $aggregate->getName());
+          }
+
+          $sql = $this->substituteAggregate($sql, $aggregate, $dimensionMaps);
+
+          if (self::$_debug) {
+            error_log("Optimized SQL: $sql");
+          }
+
+          return $sql;
+
+        } else {
+
+          // Remove a roll-up dimension to check for weaker aggregates
+          if (count($dimensionMaps) > 0) {
+            $map = array_pop($dimensionMaps);
+            list($orig, $rollUp) = $map;
+
+            if (self::$_debug) {
+              error_log("Couldn't find optimal dimensions, trying without "
+                . $rollUp->getName());
+            }
+
+            // Replace roll-up with original
+            $optimalDimensions = array_map(
+              function ($dim) use($orig, $rollUp) {
+                if ($dim->getName() === $rollUp->getName()) {
+                  return $orig;
+                } else {
+                  return $dim;
+                }
+              }, $optimalDimensions);
+
+          } else {
+            $haveRollUps = false;
+          }
         }
 
-        // Substitute fact table
-        $factName = $fact->getName();
-        $aggName  = $aggregate->getName();
-        $sql = preg_replace("/ \\b $factName \\b /x", $aggName, $sql);
+      } while ($haveRollUps);
 
-        // Substitute dimension tables
-        foreach ($dimensionMaps as $map) {
-          list($orig, $rollUp) = $map;
-
-          $origName   = $orig->GetName();
-          $rollUpName = $rollUp->GetName();
-          $sql = preg_replace("/ \\b $origName \\b /x", $rollUpName, $sql);
-
-          $origPK   = $orig->GetPrimaryKey();
-          $rollUpPK = $rollUp->GetPrimaryKey();
-          $sql = preg_replace("/ \\b $origPK \\b /x", $rollUpPK, $sql);
-        }
-
-        // Replace fact aggregations with aggregate facts
-        foreach ($aggregate->getAggregates() as $key => $value) {
-          $sql = str_replace($key, $value, $sql);
-        }
-
-        if (self::$_debug) {
-          error_log("Optimized SQL: $sql");
-        }
-
-      } else {
-        if (self::$_debug) {
-          error_log("No appropriate aggregate found");
-        }
-
-        return $sql;
+      if (self::$_debug) {
+        error_log("No appropriate aggregate found");
       }
 
     } catch (Exception $e) {
@@ -448,5 +468,48 @@ class Ubmod_DataWarehouse
     }
 
     return null;
+  }
+
+  /**
+   * Substitute a fact table with an aggregate table in a SQL query.
+   *
+   * @param string $sql The SQL query.
+   * @param Ubmod_DataWarehouse_Aggregate $aggregate The aggregate that
+   *   will be substituted.
+   * @param array $dimensionMaps An array of arrays containing fact
+   *   dimensions and roll-up dimensions used by the aggregate. e.g.:
+   *     array(
+   *       array( dimension, roll-up dimension ),
+   *       ...
+   *     )
+   *
+   * @return void
+   */
+  private function substituteAggregate($sql, $aggregate, $dimensionMaps)
+  {
+    // Substitute fact table
+    $factName = $aggregate->getBaseName();
+    $aggName  = $aggregate->getName();
+    $sql = preg_replace("/ \\b $factName \\b /x", $aggName, $sql);
+
+    // Substitute dimension tables
+    foreach ($dimensionMaps as $map) {
+      list($orig, $rollUp) = $map;
+
+      $origName   = $orig->GetName();
+      $rollUpName = $rollUp->GetName();
+      $sql = preg_replace("/ \\b $origName \\b /x", $rollUpName, $sql);
+
+      $origPK   = $orig->GetPrimaryKey();
+      $rollUpPK = $rollUp->GetPrimaryKey();
+      $sql = preg_replace("/ \\b $origPK \\b /x", $rollUpPK, $sql);
+    }
+
+    // Replace fact aggregations with aggregate facts
+    foreach ($aggregate->getAggregates() as $key => $value) {
+      $sql = str_replace($key, $value, $sql);
+    }
+
+    return $sql;
   }
 }

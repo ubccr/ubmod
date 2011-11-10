@@ -104,6 +104,15 @@ class Ubmod_DataWarehouse_Aggregate extends Ubmod_DataWarehouse_Fact
   }
 
   /**
+   * Return the name of the fact that this is an aggregate of.
+   *
+   * @return string The Name of the fact table.
+   */
+  public function getBaseName()
+  {
+    return $this->_base;
+  }
+  /**
    * Add an aggregate fact.
    *
    * Note: 'sum' implies 'avg'
