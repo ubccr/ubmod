@@ -987,20 +987,18 @@ Ext.Loader.onReady(function () {
 
             filter.on('keypress', function (text, e) {
                 if (e.getKey() === e.ENTER) {
-                    this.moveFirst();
                     Ext.apply(this.store.proxy.extraParams, {
                         filter: text.getValue()
                     });
-                    this.store.load();
+                    this.moveFirst();
                 }
             }, this);
 
             filter.on('keyup', function (text, e) {
                 if (e.getKey() === e.BACKSPACE &&
                         text.getValue().length === 0) {
-                    this.moveFirst();
                     Ext.apply(this.store.proxy.extraParams, { filter: '' });
-                    this.store.load();
+                    this.moveFirst();
                 }
             }, this);
 
