@@ -152,7 +152,7 @@ Ext.Loader.onReady(function () {
             config.proxy = {
                 type: 'ajax',
                 url: '/api/rest/json/user/list',
-                reader: { type: 'json', root: 'data' }
+                reader: { type: 'json', root: 'users' }
             };
             config.remoteSort = true;
             config.pageSize = 25;
@@ -171,7 +171,7 @@ Ext.Loader.onReady(function () {
             config.proxy = {
                 type: 'ajax',
                 url: '/api/rest/json/group/list',
-                reader: { type: 'json', root: 'data' }
+                reader: { type: 'json', root: 'groups' }
             };
             config.remoteSort = true;
             config.pageSize = 25;
@@ -190,7 +190,7 @@ Ext.Loader.onReady(function () {
             config.proxy = {
                 type: 'ajax',
                 url: '/api/rest/json/queue/list',
-                reader: { type: 'json', root: 'data' }
+                reader: { type: 'json', root: 'queue' }
             };
             config.remoteSort = true;
             config.pageSize = 25;
