@@ -264,8 +264,10 @@ Ext.Loader.onReady(function () {
             Ubmod.widget.Cluster.superclass.constructor.call(this, config);
         },
         initComponent: function () {
+            var onComboLoad, comboArgs;
 
-            var cb = Ext.bind(function () {
+            // Fire the toolbar load event after both combos have loaded.
+            onComboLoad = Ext.bind(function () {
                 var count = 0;
                 return Ext.bind(function () {
                     count = count + 1;
@@ -273,23 +275,21 @@ Ext.Loader.onReady(function () {
                 }, this);
             }, this)();
 
-            var listeners = {
-                load: {
-                    fn: function () {
-                        cb();
+            comboArgs = {
+                listeners: {
+                    load: {
+                        fn: onComboLoad,
+                        scope: this
                     },
-                    scope: this
-                },
-                select: {
-                    fn: function () {
-                        this.fireEvent('change');
-                    },
-                    scope: this
+                    select: {
+                        fn: function () { this.fireEvent('change'); },
+                        scope: this
+                    }
                 }
             };
 
-            this.intervalCombo = Ext.create('Ubmod.widget.Interval', { listeners: listeners });
-            this.clusterCombo = Ext.create('Ubmod.widget.Cluster', { listeners: listeners });
+            this.intervalCombo = Ext.create('Ubmod.widget.Interval', comboArgs);
+            this.clusterCombo = Ext.create('Ubmod.widget.Cluster', comboArgs);
 
             this.renderTo = Ext.get('toolbar');
             this.items = [
@@ -297,7 +297,7 @@ Ext.Loader.onReady(function () {
                 this.intervalCombo,
                 { xtype: 'tbspacer', width: 20 },
                 'Cluster:',
-                this.clusterCombo,
+                this.clusterCombo
             ];
 
             Ubmod.widget.Toolbar.superclass.initComponent.call(this);
@@ -311,9 +311,9 @@ Ext.Loader.onReady(function () {
     });
 
     Ubmod.app = function () {
-        var toolbar, currentPage, loaded;
+        var toolbar, currentPage, loaded, updateContent;
 
-        var updateContent = function () {
+        updateContent = function () {
             Ext.get(currentPage.el).load({
                 url: currentPage.url,
                 params: toolbar.getParams()
@@ -322,6 +322,8 @@ Ext.Loader.onReady(function () {
 
         return {
             init: function () {
+
+                // Listen for clicks on menu links.
                 Ext.select('#menu-list a').each(function (el) {
                     var url = this.getAttribute('href');
                     this.on('click', function (evt, el) {
