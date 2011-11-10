@@ -9,6 +9,11 @@
  */
 
 /**
+ * UBMoD version string.
+ */
+define("UBMOD_VERSION", "0.2.0");
+
+/**
  * UBMoD application base directory.
  */
 define("BASE_DIR", dirname(dirname(__FILE__)));
@@ -34,6 +39,6 @@ define("CONFIG_DIR", BASE_DIR . "/config");
 define("CONFIG_FILE", CONFIG_DIR . "/settings.ini");
 
 /**
- * UBMoD version string.
+ * Directory containing fonts.
  */
-define("UBMOD_VERSION", "0.2.0");
+define("FONT_DIR", LIB_DIR . "/pChart/fonts");

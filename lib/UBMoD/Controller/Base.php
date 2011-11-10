@@ -78,6 +78,16 @@ class UBMoD_Controller_Base
   }
 
   /**
+   * Returns the GET data for this controller.
+   *
+   * @return array
+   */
+  public function getGetData()
+  {
+    return $this->_request->getGetData();
+  }
+
+  /**
    * Returns the property data for this controller.
    *
    * @return array

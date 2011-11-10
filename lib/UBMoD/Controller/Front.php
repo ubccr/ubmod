@@ -78,7 +78,6 @@ class UBMoD_Controller_Front
   private function renderView($view, $controller)
   {
     foreach ($controller->getData() as $key => $value) {
-      error_log('VIEW ' . $key . ' => ' . print_r($value, 1));
       $$key = $value;
     }
     ob_start();
