@@ -25,4 +25,14 @@ class UBMoD_Controller_Group extends UBMoD_Controller_Base
   {
 
   }
+
+  /**
+   * Execute the details action.
+   *
+   * @return void
+   */
+  public function executeDetails()
+  {
+    $this->group = UBMoD_Model_Group::getActivityById($this->getPostData());
+  }
 }

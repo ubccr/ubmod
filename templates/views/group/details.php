@@ -13,7 +13,7 @@ Group: <span class="labelHeader"><?php echo $group['group_name'] ?></span> &nbsp
 	<th>Users: </th>
         <td style="font-weight: bold"><?php echo $group['user_count'] ?></td>
 	<th>Total Jobs: </th>
-        <td style="font-weight: bold"><?php echo $group['jobs'] ?></td>
+        <td style="font-weight: bold"><?php echo number_format($group['jobs']) ?></td>
 	<th>Avg. Wall (d): </th>
         <td style="font-weight: bold"><?php echo $group['avg_wallt'] ?></td>
 	<th>Avg. Wait (h): </th>
@@ -21,7 +21,7 @@ Group: <span class="labelHeader"><?php echo $group['group_name'] ?></span> &nbsp
 </tr>
 <tr>
 	<th>Avg. MEM: </th>
-        <td style="font-weight: bold"><?php echo $group['avg_mem'] ?></td>
+        <td style="font-weight: bold"><?php echo number_format($group['avg_mem'], 1) ?></td>
 	<th>Avg. Job Size (CPUs): </th>
         <td style="font-weight: bold"><?php echo $group['avg_cpus'] ?></td>
 	<th>Avg. Job Size (Nodes): </th>
