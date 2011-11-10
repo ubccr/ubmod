@@ -153,6 +153,9 @@ Ext.Loader.onReady(function () {
                 success: function (response) {
                     var tags = Ext.JSON.decode(response.responseText).tags;
                     this.set('tags', tags);
+
+                    Ext.StoreManager.lookup('tagStore').load();
+
                     success.call(scope);
                 },
                 scope: this
@@ -555,6 +558,9 @@ Ext.Loader.onReady(function () {
                 params: { tag: tag, 'userIds[]': userIds },
                 success: function () {
                     this.load();
+
+                    Ext.StoreManager.lookup('tagStore').load();
+
                     success.call(scope);
                 },
                 scope: this
@@ -651,6 +657,7 @@ Ext.Loader.onReady(function () {
             config = config || {};
             Ext.apply(config, {
                 model: 'Ubmod.model.Tag',
+                storeId: 'tagStore',
                 proxy: {
                     type: 'ajax',
                     simpleSortMode: true,
@@ -1381,7 +1388,7 @@ Ext.Loader.onReady(function () {
             config = config || {};
 
             Ext.apply(config, {
-                store: Ext.create('Ubmod.store.Tag'),
+                store: 'tagStore',
                 displayField: 'name',
                 hideLabel: true,
                 minChars: 1
@@ -1557,6 +1564,9 @@ Ext.Loader.onReady(function () {
              * the menu links. Also creates the toolbar.
              */
             init: function () {
+
+                // Register tag store with StoreManager.
+                Ext.create('Ubmod.store.Tag');
 
                 model = Ext.create('Ubmod.model.App');
                 widgets = [];
