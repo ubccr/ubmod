@@ -331,11 +331,11 @@ sub _update_cpu_consumption {
             foreach my $min_max (@$cpus) {
                 my ( $min, $max ) = @$min_max;
                 my $consumption = $self->_select_cpu_consumption(
-                    {   cluster  => $cluster->{cluster},
-                        start => $interval->{start},
-                        end   => $interval->{end},
-                        min   => $min,
-                        max   => $max,
+                    {   cluster => $cluster->{cluster},
+                        start   => $interval->{start},
+                        end     => $interval->{end},
+                        min     => $min,
+                        max     => $max,
                     }
                 );
 
@@ -345,8 +345,7 @@ sub _update_cpu_consumption {
                     $self->{logger}->warn( "No cput found for cpus $label"
                             . " for time period $interval->{start}"
                             . " - $interval->{end}"
-                            . " for cluster $cluster->{cluster}"
-                    );
+                            . " for cluster $cluster->{cluster}" );
                     $consumption->{cput} = 0;
                 }
 
@@ -378,11 +377,11 @@ sub _update_actual_wait_time {
             foreach my $min_max (@$cpus) {
                 my ( $min, $max ) = @$min_max;
                 my $wait_time = $self->_select_actual_wait_time(
-                    {   cluster  => $cluster->{cluster},
-                        start => $interval->{start},
-                        end   => $interval->{end},
-                        min   => $min,
-                        max   => $max,
+                    {   cluster => $cluster->{cluster},
+                        start   => $interval->{start},
+                        end     => $interval->{end},
+                        min     => $min,
+                        max     => $max,
                     }
                 );
 
@@ -392,8 +391,7 @@ sub _update_actual_wait_time {
                     $self->{logger}->warn( "No avg_wait found for cpus $label"
                             . " for time period $interval->{start}"
                             . " - $interval->{end}"
-                            . " for cluster $cluster->{cluster}"
-                    );
+                            . " for cluster $cluster->{cluster}" );
                     $wait_time->{avg_wait} = 0;
                 }
 
