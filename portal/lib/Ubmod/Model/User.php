@@ -113,7 +113,7 @@ class Ubmod_Model_User
       $sql .= sprintf(' ORDER BY %s %s', $params['sort'], $params['dir']);
     }
 
-    if (isset($params['start'])) {
+    if (isset($params['start']) && isset($params['limit'])) {
       $sql .= sprintf(' LIMIT %d, %d', $params['start'], $params['limit']);
     }
 

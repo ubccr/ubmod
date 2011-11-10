@@ -112,7 +112,9 @@ class Ubmod_Model_Queue
       $sql .= sprintf(' ORDER BY %s %s', $params['sort'], $params['dir']);
     }
 
-    $sql .= sprintf(' LIMIT %d, %d', $params['start'], $params['limit']);
+    if (isset($params['start']) && isset($params['limit'])) {
+      $sql .= sprintf(' LIMIT %d, %d', $params['start'], $params['limit']);
+    }
 
     $stmt = $dbh->prepare($sql);
     $stmt->execute($dbParams);
