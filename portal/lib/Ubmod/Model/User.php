@@ -74,6 +74,8 @@ class Ubmod_Model_User
         $dir    = 'ASC';
       }
 
+      if ($column === 'tags') { $column = 'tags_json'; }
+
       usort($users, function($a, $b) use($column, $dir) {
         if ($dir === 'ASC') {
           return strcasecmp($a[$column], $b[$column]);
@@ -86,6 +88,11 @@ class Ubmod_Model_User
     if ($params->hasLimitRowCount()) {
       $users = array_slice($users, $params->getLimitOffset(),
         $params->getLimitRowCount());
+    }
+
+    foreach ($users as &$user) {
+      $user['tags'] = json_decode($user['tags_json'], 1);
+      unset($user['tags_json']);
     }
 
     return $users;
@@ -106,7 +113,7 @@ class Ubmod_Model_User
     $sql = "
       SELECT
         dim_user_id           AS user_id,
-        COALESCE(tags, '[]')  AS tags,
+        COALESCE(tags, '[]')  AS tags_json,
         dim_user.name         AS name,
         dim_user.display_name AS display_name,
         SUBSTRING_INDEX(
@@ -129,11 +136,7 @@ class Ubmod_Model_User
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
     }
-    $users = array();
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-      $row['tags'] = json_decode($row['tags'], 1);
-      $users[] = $row;
-    }
+    $users = $stmt->fetchAll();
 
     if ($params->hasFilter()) {
       $filter   = $params->getFilter();
