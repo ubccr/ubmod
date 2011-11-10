@@ -54,16 +54,36 @@ class UBMoD_Controller_Front
     try {
       $controller->$action();
 
-      ob_start();
-      require $view;
-      $content = ob_get_clean();
+      $content = $this->renderView($view, $controller);
 
-      $segments = $request->getPathSegments();
-      $page     = $segments[0];
-      require TEMPLATE_DIR . '/layouts/default.php';
+      if ($request->isXmlHttpRequest()) {
+        echo $content;
+      } else {
+        $segments = $request->getPathSegments();
+        $page     = $segments[0];
+        require TEMPLATE_DIR . '/layouts/default.php';
+      }
     } catch (Exception $e) {
       echo '<pre>' . $e->getMessage() . '</pre>';
     }
+  }
+
+  /**
+   * Render a view template.
+   *
+   * @param view str The path to the view to render
+   * @param controller UBMoD_Controller_Base The controller for the view
+   * @return string
+   */
+  private function renderView($view, $controller)
+  {
+    foreach ($controller->getData() as $key => $value) {
+      error_log('VIEW ' . $key . ' => ' . print_r($value, 1));
+      $$key = $value;
+    }
+    ob_start();
+    require $view;
+    return ob_get_clean();
   }
 
   /**
@@ -79,7 +99,7 @@ class UBMoD_Controller_Front
     } else {
       $class = 'UBMoD_Controller_Dashboard';
     }
-    return $class::factory();
+    return $class::factory($request);
   }
 
   /**

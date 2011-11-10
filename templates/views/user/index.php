@@ -7,7 +7,7 @@ Ext.onReady(function(){
         id: 'user_id',
         display: 'user',
         label: 'User',
-        displayUrl: '/user/detail'
+        displayUrl: '/user/details'
     });
 });
 </script> 

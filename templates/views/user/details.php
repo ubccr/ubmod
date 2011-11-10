@@ -32,7 +32,7 @@ User: <span class="labelHeader"><?php echo $user['user'] ?></span> &nbsp;&nbsp;
 </table>
 <input type="hidden" id="uid" value="<?php echo $user['user_id'] ?>"/>
 </div>
-#else
+<?php else: ?>
 No job data found for user in given time period.
-#end
+<?php endif; ?>
 </div>

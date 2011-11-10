@@ -104,4 +104,57 @@ class UBMoD_Model_User
     $stmt->execute($dbParams);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
+
+  /**
+   * Returns the user for a given id and parameters
+   *
+   * @param array params The parameters for the query
+   * @return array
+   */
+  public static function getActivityById($params)
+  {
+    $dbh = UBMoD_DBService::dbh();
+
+    $sql = 'SELECT
+        u.user_id,
+        u.user,
+        u.display_name,
+        ifnull(a.jobs, 0) jobs,
+        ifnull(a.wallt, 0) wallt,
+        ifnull(round(a.avg_wallt/86400, 1), 0) avg_wallt,
+        ifnull(round(a.max_wallt/86400, 1), 0) max_wallt,
+        ifnull(a.cput, 0) cput,
+        ifnull(round(a.avg_cput/3600, 1),0) avg_cput,
+        ifnull(a.max_cput, 0) max_cput,
+        ifnull(round(a.avg_mem/1024, 1), 0) avg_mem ,
+        ifnull(a.max_mem, 0) max_mem,
+        ifnull(a.avg_vmem, 0) avg_mem,
+        ifnull(a.max_vmem, 0) max_vmem,
+        ifnull(round(a.avg_wait/3600, 1), 0) avg_wait,
+        ifnull(round(a.avg_exect/3600, 1), 0) avg_exect,
+        ifnull(a.avg_nodes, 0) avg_nodes,
+        ifnull(a.max_nodes, 0) max_nodes,
+        ifnull(a.avg_cpus, 0) avg_cpus,
+        ifnull(a.max_cpus, 0) max_cpus
+      FROM user u
+      JOIN
+        user_activity ua
+        ON u.user_id = ua.user_id
+        AND ua.cluster_id = :cluster_id
+        AND ua.interval_id = :interval_id
+      JOIN
+        activity a
+        ON ua.activity_id = a.activity_id
+      WHERE u.user_id = :user_id';
+
+    $dbParams = array(
+      ':interval_id' => $params['interval_id'],
+      ':cluster_id'  => $params['cluster_id'],
+      ':user_id'     => $params['id'],
+    );
+
+    $stmt = $dbh->prepare($sql);
+    $stmt->execute($dbParams);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
 }

@@ -42,9 +42,9 @@ class UBMoD_Controller_Base
    *
    * @return void
    */
-  protected function __constructor()
+  protected function __construct($request)
   {
-
+    $this->_request = $request;
   }
 
   /**
@@ -52,10 +52,40 @@ class UBMoD_Controller_Base
    *
    * @return BaseController
    */
-  public static function factory()
+  public static function factory($request)
   {
-    return new static();
+    return new static($request);
   }
+
+  /**
+   * Returns the request for this controller.
+   *
+   * @return UBMoD_Request
+   */
+  public function getRequest()
+  {
+    return $this->_request;
+  }
+
+  /**
+   * Returns the POST data for this controller.
+   *
+   * @return array
+   */
+  public function getPostData()
+  {
+    return $this->_request->getPostData();
+  }
+
+  /**
+   * Returns the property data for this controller.
+   *
+   * @return array
+   */
+  public function getData()
+  {
+    return $this->_data;
+   }
 
   /**
    * Overload reading properties.

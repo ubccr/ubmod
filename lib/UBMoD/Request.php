@@ -70,6 +70,26 @@ class UBMoD_Request
   }
 
   /**
+   * Returns POST data.
+   *
+   * @return array
+   */
+  public function getPostData()
+  {
+    return $this->_postData;
+  }
+
+  /**
+   * Returns GET data.
+   *
+   * @return array
+   */
+  public function getGetData()
+  {
+    return $this->_getData;
+  }
+
+  /**
    * Returns the request path.
    *
    * @return string
@@ -91,5 +111,15 @@ class UBMoD_Request
       return array();
     }
     return explode('/', $path);
+  }
+
+  /**
+   * Returns true if this is an AJAX request
+   *
+   * @return bool
+   */
+  public function isXmlHttpRequest()
+  {
+    return $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
   }
 }

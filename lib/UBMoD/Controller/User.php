@@ -25,4 +25,14 @@ class UBMoD_Controller_User extends UBMoD_Controller_Base
   {
 
   }
+
+  /**
+   * Execute the details action.
+   *
+   * @return void
+   */
+  public function executeDetails()
+  {
+    $this->user = UBMoD_Model_User::getActivityById($this->getPostData());
+  }
 }
