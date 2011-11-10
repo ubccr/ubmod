@@ -364,7 +364,7 @@ sub transform_data {
     return $Dbh->do($sql);
 }
 
-main(@ARGV) unless caller();
+main(@ARGV);
 
 __END__
 
