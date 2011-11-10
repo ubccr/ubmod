@@ -1,4 +1,3 @@
-<script type="text/javascript" src="/js/stats-grid.js"></script>
 <script type="text/javascript">
 Ext.onReady(function () {
     Ubmod.app.addStatsPanel({
