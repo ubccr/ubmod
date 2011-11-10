@@ -8,11 +8,14 @@ use Getopt::Long;
 use File::Spec;
 use Config::Tiny;
 use Ubmod::Shredder::Pbs;
+use Ubmod::Aggregator;
 
 my $Dbh;
 
 sub main {
     my ( $file, $dir, $host, $shred, $update, $verbose, $help );
+
+    Getopt::Long::Configure('bundling', 'ignorecase_always');
 
     my $result = GetOptions(
         'in|i=s'    => \$file,
@@ -49,8 +52,8 @@ sub main {
         log_msg("Done shredding!");
     }
     elsif ($update) {
-
-        # TODO
+        my $aggregator = Ubmod::Aggregator->new($Dbh);
+        $aggregator->aggregate();
     }
     else {
         die usage();
