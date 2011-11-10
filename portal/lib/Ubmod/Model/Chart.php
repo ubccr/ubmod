@@ -1231,7 +1231,7 @@ class Ubmod_Model_Chart
       'GridG'         => 0,
       'GridB'         => 0,
       'GridAlpha'     => 20,
-      'LabelRotation' => 45,
+      'LabelRotation' => 30,
     ));
 
     $displayValues
