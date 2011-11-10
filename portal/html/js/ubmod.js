@@ -884,7 +884,9 @@ Ext.Loader.onReady(function () {
 
         initComponent: function () {
             var dockedItems = [],
-                downloadButton;
+                downloadButton,
+                sortColumn,
+                sortDirection;
 
             this.columns = [{
                 header: this.label,
@@ -936,11 +938,27 @@ Ext.Loader.onReady(function () {
             // If a download URL is supplied add a toolbar with a
             // download button.
             if (this.downloadUrl) {
+
+                // There is no way to determine how the store is sorted,
+                // so record the current sorting state separately.
+                this.on('sortchange', function (ct, column, direction) {
+                    sortColumn = column.getSortParam();
+
+                    // XXX The store is sorted in the reverse direction
+                    // compared to the column direction.
+                    sortDirection = direction === 'ASC' ? 'DESC' : 'ASC';
+                });
+
                 downloadButton = Ext.create('Ext.Button', {
                     text: 'Export Data',
                     handler: function () {
                         var params = this.store.proxy.extraParams,
                             querySegments = [];
+
+                        if (sortColumn !== undefined) {
+                            params.sort = sortColumn;
+                            params.dir  = sortDirection;
+                        }
 
                         Ext.Object.each(params, function (key, value) {
                             var encodedValue = encodeURIComponent(value);
