@@ -348,7 +348,7 @@ Ext.Loader.onReady(function () {
         initComponent: function () {
             var listener = function (field) {
                 if (field == 'interval' || field == 'cluster') {
-                    //this.reload();
+                    this.reload();
                 }
             };
             this.model.on('fieldchanged', listener, this);
@@ -358,19 +358,23 @@ Ext.Loader.onReady(function () {
 
             Ubmod.widget.StatsPanel.superclass.initComponent.call(this);
 
-            //this.store.load({ params: this.params });
-            this.store.load({
-                params: {
-                    interval_id: this.model.get('interval').get('interval_id'),
-                    cluster_id: this.model.get('cluster').get('cluster_id')
-                }
-            });
-
             this.grid.on('itemdblclick', function (grid, record) {
+                // TODO
             });
 
-            //this.reload();
+            this.reload();
+        },
 
+        reload: function () {
+            var interval = this.model.get('interval'),
+                cluster = this.model.get('cluster');
+            if (interval != null && cluster != null) {
+                this.store.proxy.extraParams = {
+                    interval_id: interval.get('interval_id'),
+                    cluster_id: cluster.get('cluster_id')
+                };
+                this.store.load();
+            }
         }
     });
 
