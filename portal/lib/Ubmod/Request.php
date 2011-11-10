@@ -113,6 +113,39 @@ class Ubmod_Request
     return explode('/', $path);
   }
 
+
+  /**
+   * Returns the portion of the path segment that is used to determine
+   * which controller should process this request
+   *
+   * @return string
+   */
+  public function getControllerSegment()
+  {
+    $segments = $this->getPathSegments();
+    if (count($segments) > 0) {
+      return $segments[0];
+    } else {
+      return 'dashboard';
+    }
+  }
+
+  /**
+   * Returns the portion of the path segment that is used to determine
+   * which action should process this request
+   *
+   * @return string
+   */
+  public function getActionSegment()
+  {
+    $segments = $this->getPathSegments();
+    if (count($segments) > 1) {
+      return $segments[1];
+    } else {
+      return 'index';
+    }
+  }
+
   /**
    * Returns true if this is an AJAX request
    *

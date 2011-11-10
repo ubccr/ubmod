@@ -59,9 +59,9 @@ class Ubmod_FrontController
       if ($request->isXmlHttpRequest()) {
         echo $content;
       } else {
-        $segments = $request->getPathSegments();
-        $page     = $segments[0];
-        require TEMPLATE_DIR . '/layouts/default.php';
+        $controller = $request->getControllerSegment();
+        $action     = $request->getActionSegment();
+        $this->renderLayout($content, $controller, $action);
       }
     } catch (Exception $e) {
       error_log($e->getMessage());
@@ -71,7 +71,7 @@ class Ubmod_FrontController
   /**
    * Render a view template.
    *
-   * @param view str The path to the view to render
+   * @param view string The path to the view to render
    * @param controller Ubmod_BaseController The controller for the view
    * @return string
    */
@@ -86,18 +86,27 @@ class Ubmod_FrontController
   }
 
   /**
+   * Render the layout template.
+   *
+   * @param content string The page content
+   * @param controller string The name of the controller segment
+   * @param action string The name of the action
+   * @return void
+   */
+  private function renderLayout($content, $controller, $action)
+  {
+    require TEMPLATE_DIR . '/layouts/default.php';
+  }
+
+  /**
    * Create a controller for a given request.
    *
    * @return Ubmod_Controller
    */
   private function getController($request)
   {
-    $segments = $request->getPathSegments();
-    if (count($segments) > 0) {
-      $class = 'Ubmod_Controller_' . $this->convertPathSegment($segments[0]);
-    } else {
-      $class = 'Ubmod_Controller_Dashboard';
-    }
+    $segment = $request->getControllerSegment();
+    $class = 'Ubmod_Controller_' . $this->convertPathSegment($segment);
     return $class::factory($request);
   }
 
@@ -108,13 +117,8 @@ class Ubmod_FrontController
    */
   private function getAction($request)
   {
-    $segments = $request->getPathSegments();
-    if (count($segments) > 1) {
-      $action = 'execute' . $this->convertPathSegment($segments[1]);
-    } else {
-      $action = 'executeIndex';
-    }
-    return $action;
+    $segment = $request->getActionSegment();
+    return 'execute' . $this->convertPathSegment($segment);
   }
 
   /**
@@ -141,9 +145,9 @@ class Ubmod_FrontController
    */
   private function getView($request)
   {
-    $segments   = $request->getPathSegments();
-    $controller = count($segments) > 0 ? $segments[0] : 'dashboard';
-    $action     = count($segments) > 1 ? $segments[1] : 'index';
+    $controller = $request->getControllerSegment();
+    $action     = $request->getActionSegment();
     return TEMPLATE_DIR . '/views/' . $controller . '/' . $action . '.php';
   }
 }
+152:	hit EOF seeking end of quote/pattern starting at line 1 ending in ?
