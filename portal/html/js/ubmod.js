@@ -397,6 +397,7 @@ Ext.Loader.onReady(function () {
             this.detailTabs = [];
 
             this.grid = Ext.create('Ubmod.widget.Grid', {
+                height: 400,
                 padding: '0 0 6 0',
                 resizable: { pinned: true, handles: 's' },
                 title: config.gridTitle,
@@ -406,6 +407,7 @@ Ext.Loader.onReady(function () {
             });
 
             Ext.apply(config, {
+                width: 745,
                 plain: true,
                 items: this.grid
             });
@@ -445,27 +447,9 @@ Ext.Loader.onReady(function () {
                 });
             }, this);
 
-            // XXX Force the grid to resize. This prevents the bottom
-            // two rows of data from being hidden after viewing a
-            // different tab and returning to the grid tab.
-            this.grid.on('show', function () {
-                this.setSize(this.getWidth(), this.getHeight());
-            });
-
             // XXX Force the tab panel to recalculate it's layout when
-            // the grid is resized.  Also, set the grid size if it has
-            // changed.  See the comment above for an explanation.
-            this.gridWidth = 0;
-            this.gridHeight = 0;
-            this.grid.on('resize', function() {
-                this.doLayout();
-                if (this.gridWidth !== this.grid.getWidth() &&
-                        this.gridHeight !== this.grid.getHeight()) {
-                    this.gridWidth = this.grid.getWidth();
-                    this.gridHeight = this.grid.getHeight();
-                    this.grid.setSize(this.getWidth(), this.getHeight());
-                }
-            }, this);
+            // the grid is resized.
+            this.grid.on('resize', this.doLayout, this);
 
             // XXX Reverse sort direction so that the first click on a
             // grid header results in sorting in the descending order.
@@ -516,8 +500,6 @@ Ext.Loader.onReady(function () {
 
             this.label = config.label;
             this.labelKey = config.labelKey;
-
-            Ext.apply(config, { height: 400 });
 
             Ubmod.widget.Grid.superclass.constructor.call(this, config);
         },
