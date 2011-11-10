@@ -15,7 +15,7 @@ my $Dbh;
 sub main {
     my ( $file, $dir, $host, $shred, $update, $verbose, $help );
 
-    Getopt::Long::Configure('bundling', 'ignorecase_always');
+    Getopt::Long::Configure( 'bundling', 'ignorecase_always' );
 
     my $result = GetOptions(
         'in|i=s'    => \$file,
