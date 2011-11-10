@@ -23,9 +23,8 @@
   <a href="http://www.ccr.buffalo.edu">Center for Computational Research</a>
   at the <a href="http://www.buffalo.edu">University at Buffalo</a>, SUNY and
   is distributed under the
-  <a href="http://www.ccr.buffalo.edu/licenses/ubpl.txt">University at Buffalo
-  Public License ("UBPL") Version 1.0</a>. Further details as well as the
-  source code can be found at
-  <a href="http://ubmod.sf.net">http://ubmod.sf.net</a>
+  <a href="http://www.gnu.org/licenses/gpl-3.0.txt">GNU General Public License
+  ("GPL") Version 3.0</a>. Further details as well as the source code can be
+  found at <a href="http://ubmod.sf.net">http://ubmod.sf.net</a>
   </p>
 </div>
