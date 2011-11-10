@@ -80,9 +80,9 @@ class UBMoD_Model_Chart
   {
     $cpus = array();
     $time = array();
-    foreach (self::getCpuConsumption($params) as $point) {
-      $cpus[] = $point['label'];
-      $time[] = (int) $point['cput'];
+    foreach (self::getCpuConsumption($params) as $cpu) {
+      $cpus[] = $cpu['label'];
+      $time[] = (int) $cpu['cput'];
     }
 
     $cluster  = UBMoD_Model_Cluster::getById($params['cluster_id']);
@@ -112,9 +112,9 @@ class UBMoD_Model_Chart
   {
     $cpus = array();
     $time = array();
-    foreach (self::getWaitTime($params) as $point) {
-      $cpus[] = $point['label'];
-      $time[] = $point['avg_wait'];
+    foreach (self::getWaitTime($params) as $cpu) {
+      $cpus[] = $cpu['label'];
+      $time[] = $cpu['avg_wait'];
     }
 
     $cluster  = UBMoD_Model_Cluster::getById($params['cluster_id']);
@@ -155,14 +155,14 @@ class UBMoD_Model_Chart
     $max = 11;
     $users = array();
     $time  = array();
-    foreach (UBMoD_Model_User::getActivities($dbParams) as $point) {
+    foreach (UBMoD_Model_User::getActivities($dbParams) as $user) {
       if ($count < $max) {
-        $users[] = $point['user'];
-        $time[]  = $point['wallt'];
+        $users[] = $user['user'];
+        $time[]  = $user['wallt'];
       } else {
-        $other += $point['wallt'];
+        $other += $user['wallt'];
       }
-      $total += $point['wallt'];
+      $total += $user['wallt'];
       $count++;
     }
 
@@ -201,9 +201,9 @@ class UBMoD_Model_Chart
     );
     $users = array();
     $time  = array();
-    foreach (UBMoD_Model_User::getActivities($dbParams) as $point) {
-      $users[] = $point['user'];
-      $time[]  = $point['wallt'];
+    foreach (UBMoD_Model_User::getActivities($dbParams) as $user) {
+      $users[] = $user['user'];
+      $time[]  = $user['wallt'];
     }
 
     self::renderBarChart(array(
@@ -236,14 +236,14 @@ class UBMoD_Model_Chart
     $max = 11;
     $groups = array();
     $time  = array();
-    foreach (UBMoD_Model_Group::getActivities($dbParams) as $point) {
+    foreach (UBMoD_Model_Group::getActivities($dbParams) as $group) {
       if ($count < $max) {
-        $groups[] = $point['group_name'];
-        $time[]  = $point['wallt'];
+        $groups[] = $group['group_name'];
+        $time[]  = $group['wallt'];
       } else {
-        $other += $point['wallt'];
+        $other += $group['wallt'];
       }
-      $total += $point['wallt'];
+      $total += $group['wallt'];
       $count++;
     }
 
@@ -282,9 +282,9 @@ class UBMoD_Model_Chart
     );
     $groups = array();
     $time   = array();
-    foreach (UBMoD_Model_Group::getActivities($dbParams) as $point) {
-      $groups[] = $point['group_name'];
-      $time[]   = $point['wallt'];
+    foreach (UBMoD_Model_Group::getActivities($dbParams) as $group) {
+      $groups[] = $group['group_name'];
+      $time[]   = $group['wallt'];
     }
 
     self::renderBarChart(array(
