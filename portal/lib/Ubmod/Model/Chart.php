@@ -429,7 +429,7 @@ class Ubmod_Model_Chart
     while (list($i, $t) = each($time)) {
       $percentage = round($t / $total * 100);
       if ($percentage > 2) {
-        $users[$i] .= sprintf(' (%d%%)', $percentage);
+        $users[$i] .= " ($percentage%)";
       } else {
 
         // Don't include users with a small percentage.
@@ -442,7 +442,7 @@ class Ubmod_Model_Chart
     if ($other > 0) {
       $percentage = round($other / $total * 100);
       if ($percentage < 1) { $percentage = '>1'; }
-      $users[] = sprintf("Remaining\nUsers (%s%%)", $percentage);
+      $users[] = "Remaining\nUsers ($percentage%)";
       $time[]  = $other;
     }
 
@@ -522,7 +522,7 @@ class Ubmod_Model_Chart
     while (list($i, $t) = each($time)) {
       $percentage = round($t / $total * 100);
       if ($percentage > 2) {
-        $groups[$i] .= sprintf(' (%d%%)', $percentage);
+        $groups[$i] .= " ($percentage%)";
       } else {
 
         // Don't include groups with a small percentage.
@@ -535,7 +535,7 @@ class Ubmod_Model_Chart
     if ($other > 0) {
       $percentage = round($other / $total * 100);
       if ($percentage < 1) { $percentage = '>1'; }
-      $groups[] = sprintf("Remaining\nGroups (%s%%)", $percentage);
+      $groups[] = "Remaining\nGroups ($percentage%)";
       $time[]   = $other;
     }
 
