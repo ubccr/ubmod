@@ -103,6 +103,27 @@ Ext.Loader.onReady(function () {
         ]
     });
 
+    Ext.define('Ubmod.model.App', {
+        extend: 'Ext.data.Model',
+        fields: [
+            { name: 'interval', type: 'Ubmod.model.Interval' },
+            { name: 'cluster', type: 'Ubmod.model.Cluster' }
+        ],
+
+        constructor: function (config) {
+            config = config || {};
+            this.addEvents({ fieldchanged: true });
+            Ubmod.model.App.superclass.constructor.call(this, config);
+        },
+
+        set: function (field, value) {
+            Ubmod.model.App.superclass.set.call(this, field, value);
+            if (!Ext.isObject(field)) {
+                this.fireEvent('fieldchanged', field, value);
+            }
+        }
+    });
+
     /**
      * Data stores
      */
@@ -208,7 +229,6 @@ Ext.Loader.onReady(function () {
         constructor: function (config) {
             config = config || {};
             config.editable = false;
-            this.addEvents({ load: true });
             Ubmod.widget.Interval.superclass.constructor.call(this, config);
         },
 
@@ -225,7 +245,7 @@ Ext.Loader.onReady(function () {
                 scope: this,
                 callback: function (records) {
                     this.setValue(records[3].get(this.valueField));
-                    this.fireEvent('load');
+                    this.fireEvent('select', this, [records[3]]);
                 }
             });
         }
@@ -237,7 +257,6 @@ Ext.Loader.onReady(function () {
         constructor: function (config) {
             config = config || {};
             config.editable = false;
-            this.addEvents({ load: true });
             Ubmod.widget.Cluster.superclass.constructor.call(this, config);
         },
 
@@ -254,7 +273,7 @@ Ext.Loader.onReady(function () {
                 scope: this,
                 callback: function (records) {
                     this.setValue(records[0].get(this.valueField));
-                    this.fireEvent('load');
+                    this.fireEvent('select', this, [records[0]]);
                 }
             });
         }
@@ -265,37 +284,22 @@ Ext.Loader.onReady(function () {
 
         constructor: function (config) {
             config = config || {};
-            this.addEvents({ load: true, change: true });
+            this.model = config.model;
             Ubmod.widget.Cluster.superclass.constructor.call(this, config);
         },
 
         initComponent: function () {
             var onComboLoad, comboArgs;
 
-            // Fire the toolbar load event after both combos have loaded.
-            onComboLoad = Ext.bind(function () {
-                var count = 0;
-                return Ext.bind(function () {
-                    count = count + 1;
-                    if (count == 2) { this.fireEvent('load'); }
-                }, this);
-            }, this)();
+            this.intervalCombo = Ext.create('Ubmod.widget.Interval');
+            this.intervalCombo.on('select', function (combo, records) {
+                this.model.set('interval', records[0]);
+            }, this);
 
-            comboArgs = {
-                listeners: {
-                    load: {
-                        fn: onComboLoad,
-                        scope: this
-                    },
-                    select: {
-                        fn: function () { this.fireEvent('change'); },
-                        scope: this
-                    }
-                }
-            };
-
-            this.intervalCombo = Ext.create('Ubmod.widget.Interval', comboArgs);
-            this.clusterCombo = Ext.create('Ubmod.widget.Cluster', comboArgs);
+            this.clusterCombo = Ext.create('Ubmod.widget.Cluster');
+            this.clusterCombo.on('select', function (combo, records) {
+                this.model.set('cluster', records[0]);
+            }, this);
 
             this.renderTo = Ext.get('toolbar');
             this.items = [
@@ -407,14 +411,36 @@ Ext.Loader.onReady(function () {
     });
 
     Ubmod.app = function () {
-        var toolbar, loaded, updateCallback, updateContent;
+        var toolbar, updateCallback, updateContent, model;
 
         updateContent = function () {
-            updateCallback(toolbar.getParams());
+            var interval, cluster;
+            interval = model.get('interval');
+            cluster = model.get('cluster');
+            if (interval != null && cluster != null) {
+                updateCallback({
+                    interval_id: interval.get('interval_id'),
+                    cluster_id: cluster.get('cluster_id')
+                });
+            }
         };
 
         return {
             init: function () {
+
+                model = Ext.create('Ubmod.model.App');
+
+                model.on('fieldchanged', function (field, value) {
+                    if (field == 'interval') {
+                        Ext.get('date-display').update(
+                            value.get('start') + ' thru ' + value.get('end')
+                        );
+                    }
+
+                    if (field == 'interval' || field == 'cluster') {
+                        updateContent();
+                    }
+                });
 
                 // Listen for clicks on menu links.
                 Ext.select('#menu-list a').each(function (el) {
@@ -431,20 +457,12 @@ Ext.Loader.onReady(function () {
                     }, this, { stopEvent: true });
                 });
 
-                toolbar = Ext.create('Ubmod.widget.Toolbar', {
-                    listeners: {
-                        load: function () {
-                            loaded = true;
-                            updateContent();
-                        },
-                        change: updateContent
-                    }
-                });
+                toolbar = Ext.create('Ubmod.widget.Toolbar', { model: model });
             },
 
             setUpdateCallback: function (cb) {
                 updateCallback = cb;
-                if (loaded) { updateContent(); }
+                updateContent();
             }
         };
     }();
