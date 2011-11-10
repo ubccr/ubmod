@@ -1052,7 +1052,7 @@ Ext.Loader.onReady(function () {
         },
 
         initComponent: function () {
-            var userTagGrid, tagStatsGrid;
+            var userTagGrid, tagStatsGrid, reload;
 
             userTagGrid = Ext.create('Ubmod.widget.TagGrid', {
                 title: 'User Tags'
@@ -1123,6 +1123,12 @@ Ext.Loader.onReady(function () {
                 tagPanel.on('reportloaded', this.doComponentLayout, this);
 
                 this.add(tagPanel).show();
+            }, this);
+
+            reload = function () { this.reload(); };
+            this.model.on('restparamschanged', reload, this);
+            this.on('destroy', function () {
+                this.model.removeListener('restparamschanged', reload, this);
             }, this);
 
             this.reload();
