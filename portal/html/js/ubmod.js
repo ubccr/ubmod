@@ -351,7 +351,6 @@ Ext.Loader.onReady(function () {
 
             Ext.apply(config, {
                 plain: true,
-                height: 400,
                 items: [ this.grid ]
             });
 
@@ -423,6 +422,7 @@ Ext.Loader.onReady(function () {
 
             this.label = config.label;
             this.labelKey = config.labelKey;
+            config.height = 400;
 
             Ubmod.widget.Grid.superclass.constructor.call(this, config);
         },
