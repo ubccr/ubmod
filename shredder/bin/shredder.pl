@@ -41,7 +41,7 @@ sub main {
     $Logger = Ubmod::Logger->new($verbose);
 
     my $config = Config::Tiny->read("$FindBin::Bin/../config/settings.ini");
-    db_connect( @{ $config->{database} }{qw{ dsn user password }} );
+    db_connect( @{ $config->{database} }{qw{ host dbname user password }} );
 
     if ($shred) {
         my $shredder = Ubmod::Shredder::Pbs->new();
@@ -231,7 +231,8 @@ sub process_fh {
 }
 
 sub db_connect {
-    my ( $dsn, $user, $pass ) = @_;
+    my ( $host, $dbname, $user, $pass ) = @_;
+    my $dsn = "DBI:mysql:host=$host;database=$dbname";
     $Dbh = DBI->connect( $dsn, $user, $pass );
 }
 

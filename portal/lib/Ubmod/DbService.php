@@ -62,12 +62,17 @@ class Ubmod_DbService
   private $_dbh;
 
   /**
-   * undocumented function
+   * Private constructor
    *
+   * @param string host The database host
+   * @param string dbname The database name
+   * @param string username The database username
+   * @param string password The database password
    * @return void
    */
-  private function __construct($dsn, $username, $password)
+  private function __construct($host, $dbname, $username, $password)
   {
+    $dsn = "mysql:host=$host;dbname=$dbname";
     $this->_dbh = new PDO($dsn, $username, $password);
   }
 
@@ -87,7 +92,8 @@ class Ubmod_DbService
         throw new Exception($msg);
       }
 
-      self::$instance = new Ubmod_DbService($options->$section->dsn,
+      self::$instance = new Ubmod_DbService($options->$section->host,
+                                      $options->$section->dbname,
                                       $options->$section->user,
                                       $options->$section->password);
     }
