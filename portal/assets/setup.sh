@@ -1,7 +1,7 @@
 #!/bin/sh
 ASSET_DIR=$(dirname $0)
 
-EXT_VERSION="4.0.2"
+EXT_VERSION="4.0.2a"
 EXT_ARCHIVE="ext-$EXT_VERSION-gpl.zip"
 EXT_DIR="ext-$EXT_VERSION"
 
