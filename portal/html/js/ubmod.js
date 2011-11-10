@@ -832,6 +832,10 @@ Ext.Loader.onReady(function () {
                 var value = input.getRawValue();
                 if (e.getKey() === e.BACKSPACE && value.length === 0) {
                     this.model.setTag('');
+
+                    // Set the input value, otherwise the previously
+                    // selected value cannot be selected again.
+                    this.tagInput.setValue('');
                 }
             }, this);
 
