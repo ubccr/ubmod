@@ -210,13 +210,35 @@ sub _scale_memory {
 }
 
 sub _set_job_id_and_host {
-    my ( $self, $event, $job_id ) = @_;
+    my ( $self, $event, $id_string ) = @_;
 
-    my ( $job, $host ) = split /\./, $job_id, 2;
-    my ( $id, $index ) = split /-/, $job;
+    # id_string is formatted as "sequence_number.hostname".
+    my ( $sequence, $host ) = split /\./, $id_string, 2;
+
+    my ( $job_id, $index );
+
+    # If the job is part of a job array the sequence number may be
+    # formatted as "job_id[array_index]" or "job_id-array_index". If the
+    # sequence number represents the entire job array it may be
+    # formatted as "job_id[]".
+    if ( $sequence =~ / ^ (\d+) \[ (\d+)? \] $ /x ) {
+        $job_id = $1;
+        $index  = $2;
+    }
+    elsif ( $sequence =~ / ^ (\d+) - (\d+) $ /x ) {
+        $job_id = $1;
+        $index  = $2;
+    }
+    elsif ( $sequence =~ / ^ \d+ $ /x ) {
+        $job_id = $sequence;
+    }
+    else {
+        $self->logger->warn("Unkown id_string format: '$id_string'");
+        $job_id = $sequence;
+    }
 
     $event->{host}            = $host;
-    $event->{job_id}          = $id;
+    $event->{job_id}          = $job_id;
     $event->{job_array_index} = $index;
 }
 
