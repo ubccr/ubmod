@@ -333,7 +333,7 @@ CREATE TABLE `fact_job` (
   `nodes`          int    unsigned NOT NULL,
   `cpus`           int    unsigned NOT NULL,
   PRIMARY KEY (`fact_job_id`),
-  KEY (`dim_date_id`,`dim_cluster_id`,`dim_queue_id`,`dim_user_id`,`dim_group_id`,`dim_cpus_id`)
+  KEY (`dim_date_id`,`dim_cluster_id`,`dim_queue_id`,`dim_user_id`,`dim_group_id`,`dim_tags_id`,`dim_cpus_id`)
 ) ENGINE=MyISAM;
 
 --
@@ -366,7 +366,7 @@ CREATE TABLE `agg_job_by_all` (
   `cpus_sum`           bigint unsigned NOT NULL,
   `cpus_max`           int    unsigned NOT NULL,
   PRIMARY KEY (`agg_job_by_all_id`),
-  KEY (`dim_date_id`,`dim_cluster_id`,`dim_queue_id`,`dim_user_id`,`dim_group_id`,`dim_cpus_id`)
+  KEY (`dim_date_id`,`dim_cluster_id`,`dim_queue_id`,`dim_user_id`,`dim_group_id`,`dim_tags_id`,`dim_cpus_id`)
 ) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `agg_job_by_timespan`;
@@ -395,7 +395,7 @@ CREATE TABLE `agg_job_by_timespan` (
   `cpus_sum`               bigint unsigned NOT NULL,
   `cpus_max`               int    unsigned NOT NULL,
   PRIMARY KEY (`agg_job_by_timespan_id`),
-  KEY (`dim_timespan_id`,`dim_cluster_id`,`dim_queue_id`,`dim_user_id`,`dim_group_id`,`dim_cpus_id`)
+  KEY (`dim_timespan_id`,`dim_cluster_id`,`dim_queue_id`,`dim_user_id`,`dim_group_id`,`dim_tags_id`,`dim_cpus_id`)
 ) ENGINE=MyISAM;
 
 --
