@@ -48,7 +48,6 @@ class Ubmod_Handler_Interval
    */
   public function listAction(array $arguments, array $postData = NULL)
   {
-    error_log(print_r($arguments, 1));
     $intervals = Ubmod_Model_Interval::getAll();
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
       'data'  => $intervals,
