@@ -51,9 +51,6 @@ my @entry_names = qw(
     ar_submission_time
 );
 
-# These entries need to be parsed and formatted
-my %formats = ( ru_maxrss => 'bytes' );
-
 # Mapping from SGE entry names to database field names
 my %map = (
     job_number      => 'job_id',
@@ -122,11 +119,6 @@ sub shred {
 
         # Skip entries that aren't included in the field map
         next unless defined $map{$key};
-
-        if ( defined( $formats{$key} ) ) {
-            my $parser = '_parse_' . $formats{$key};
-            $value = $self->$parser($value);
-        }
 
         $event{ $map{$key} } = $value;
     }
@@ -202,12 +194,6 @@ sub _from_unixtime {
         $year + 1900,
         $mon + 1, $mday, $hour, $min, $sec
     );
-}
-
-# Scale from bytes to kilobytes
-sub _parse_bytes {
-    my ( $self, $bytes ) = @_;
-    return $bytes / 1024;
 }
 
 1;
