@@ -13,21 +13,8 @@ my $pattern = qr|
     (.*)                                      # Params
 |x;
 
-my %params = (
-    user                    => '',
-    group                   => '',
-    queue                   => '',
-    ctime                   => '',
-    qtime                   => '',
-    start                   => '',
-    end                     => '',
-    etime                   => '',
-    exit_status             => '',
-    session                 => '',
-    requestor               => '',
-    jobname                 => '',
-    account                 => '',
-    exec_host               => '',
+# These entries need to be parsed and formatted
+my %formats = (
     resources_used_vmem     => 'memory',
     resources_used_mem      => 'memory',
     resources_used_walltime => 'time',
@@ -35,11 +22,6 @@ my %params = (
     resource_list_pcput     => 'time',
     resource_list_cput      => 'time',
     resource_list_walltime  => 'time',
-    resource_list_nodes     => '',
-    resource_list_procs     => '',
-    resource_list_neednodes => '',
-    resource_list_ncpus     => '',
-    resource_list_nodect    => '',
     resource_list_mem       => 'memory',
     resource_list_pmem      => 'memory',
 );
@@ -79,12 +61,11 @@ sub shred {
         if ( $key eq 'exec_host' ) {
             $self->_set_exec_host( $event, $value );
         }
-
-        if ( defined( my $type = $params{$key} ) ) {
-            if ( $type ne '' ) {
-                my $parser = "_parse_$type";
-                $value = $self->$parser($value);
-            }
+        elsif ( defined( $formats{$key} ) ) {
+            my $parser = '_parse_' . $formats{$key};
+            $event->{$key} = $self->$parser($value);
+        }
+        else {
             $event->{$key} = $value;
         }
     }
@@ -113,12 +94,11 @@ sub _parse_memory {
     return $self->_scale_memory( $unit, $memory );
 }
 
+# Scale from the given unit to KiB
 sub _scale_memory {
     my ( $self, $unit, $value ) = @_;
 
-    # XXX because our default unit is KB just return 1
-    return 1 if $unit eq 'b';
-
+    return $value / 1024        if $unit eq 'b';
     return $value               if $unit eq 'kb';
     return $value * 1024        if $unit eq 'mb';
     return $value * 1024 * 1024 if $unit eq 'gb';
