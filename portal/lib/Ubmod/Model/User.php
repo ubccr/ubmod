@@ -81,8 +81,8 @@ class Ubmod_Model_User
     $sql = "
       SELECT
         dim_user_id          AS user_id,
-        name                 AS user,
-        COALESCE(tags, '[]') AS tags
+        COALESCE(tags, '[]') AS tags,
+        name
       FROM dim_user
     ";
 
@@ -92,11 +92,11 @@ class Ubmod_Model_User
       $dbParams[':filter'] = '%' . $params->getFilter() . '%';
     }
 
-    $sortFields = array('user', 'tags');
+    $sortFields = array('name', 'tags');
 
     if ($params->hasOrderByColumn()) {
       $column = $params->getOrderByColumn();
-      if (!in_array($column, $sortFields)) { $column = 'user'; }
+      if (!in_array($column, $sortFields)) { $column = 'name'; }
       $dir = $params->isOrderByDescending() ? 'DESC' : 'ASC';
       $sql .= sprintf(' ORDER BY %s %s', $column, $dir);
     }

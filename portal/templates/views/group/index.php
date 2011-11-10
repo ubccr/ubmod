@@ -6,7 +6,7 @@ Ext.onReady(function(){
         gridTitle: 'All Groups',
         recordFormat: {
             label: 'Group',
-            key: 'group_name',
+            key: 'name',
             id: 'group_id',
             detailsUrl: '/group/details'
         },

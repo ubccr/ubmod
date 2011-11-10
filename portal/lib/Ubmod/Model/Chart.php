@@ -116,7 +116,7 @@ class Ubmod_Model_Chart
 
     if ($params->hasGroupId()) {
       $group = Ubmod_Model_Job::getEntity('group', $params);
-      $parts[] = 'Group: ' . $group['group_name'];
+      $parts[] = 'Group: ' . $group['name'];
     }
 
     if ($params->hasTag()) {
@@ -427,7 +427,7 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
       if ($user['wallt'] == 0) { continue; }
 
-      $users[] = $user['user'];
+      $users[] = $user['name'];
       $time[]  = $user['wallt'];
     }
 
@@ -461,7 +461,7 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Job::getActivityList($params) as $group) {
       if ($group['wallt'] == 0) { continue; }
 
-      $groups[] = $group['group_name'];
+      $groups[] = $group['name'];
       $time[]   = $group['wallt'];
     }
 
@@ -529,7 +529,7 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
       if ($user['wallt'] == 0) { continue; }
 
-      $users[] = $user['user'];
+      $users[] = $user['name'];
       $time[]  = $user['wallt'];
     }
 
@@ -563,7 +563,7 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Job::getActivityList($params) as $group) {
       if ($group['wallt'] == 0) { continue; }
 
-      $groups[] = $group['group_name'];
+      $groups[] = $group['name'];
       $time[]   = $group['wallt'];
     }
 
@@ -655,7 +655,7 @@ class Ubmod_Model_Chart
         if ($user['wallt'] == 0) { continue; }
 
         if ($userCount < $maxUsers) {
-          $userWallt[$user['user']] = $user['wallt'];
+          $userWallt[$user['name']] = $user['wallt'];
         } else {
           $otherWallt += $user['wallt'];
         }
@@ -751,7 +751,7 @@ class Ubmod_Model_Chart
         if ($group['wallt'] == 0) { continue; }
 
         if ($groupCount < $maxGroups) {
-          $groupWallt[$group['group_name']] = $group['wallt'];
+          $groupWallt[$group['name']] = $group['wallt'];
         } else {
           $otherWallt += $group['wallt'];
         }

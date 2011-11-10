@@ -6,7 +6,7 @@ Ext.onReady(function(){
         gridTitle: 'All Queues',
         recordFormat: {
             label: 'Queues',
-            key: 'queue',
+            key: 'name',
             id: 'queue_id',
             detailsUrl: '/queue/details'
         }

@@ -366,9 +366,9 @@ class Ubmod_DataWarehouse_QueryBuilder
         $this->setGroupBy('dim_user_id');
         $this->setFilterExpression('dim_user.name');
         $this->addSelectExpressions(array(
-          'user_id'      => 'dim_user_id',
-          'user'         => 'dim_user.name',
-          'display_name' => 'COALESCE(dim_user.display_name, dim_user.name)',
+          'user_id'       => 'dim_user_id',
+          'name'          => 'dim_user.name',
+          'display_name'  => 'dim_user.display_name',
         ));
         $this->removeSelectExpression('user_count');
         $this->removeSelectExpression('group_count');
@@ -379,9 +379,8 @@ class Ubmod_DataWarehouse_QueryBuilder
         $this->setFilterExpression('dim_group.name');
         $this->addSelectExpressions(array(
           'group_id'     => 'dim_group_id',
-          'group_name'   => 'dim_group.name',
-          'display_name' => 'COALESCE(dim_group.display_name,'
-                          . ' dim_group.name)',
+          'name'         => 'dim_group.name',
+          'display_name' => 'dim_group.display_name',
         ));
         $this->removeSelectExpression('group_count');
         $this->removeSelectExpression('queue_count');
@@ -391,9 +390,8 @@ class Ubmod_DataWarehouse_QueryBuilder
         $this->setFilterExpression('dim_queue.name');
         $this->addSelectExpressions(array(
           'queue_id'     => 'dim_queue_id',
-          'queue'        => 'dim_queue.name',
-          'display_name' => 'COALESCE(dim_queue.display_name,'
-                          . ' dim_queue.name)',
+          'name'         => 'dim_queue.name',
+          'display_name' => 'dim_queue.display_name',
         ));
         $this->removeSelectExpression('queue_count');
       } elseif ($model === 'cluster') {
@@ -402,9 +400,8 @@ class Ubmod_DataWarehouse_QueryBuilder
         $this->setFilterExpression('dim_cluster.name');
         $this->addSelectExpressions(array(
           'cluster_id'   => 'dim_cluster_id',
-          'cluster'      => 'dim_cluster.name',
-          'display_name' => 'COALESCE(dim_cluster.display_name,'
-                          . ' dim_cluster.name)',
+          'name'         => 'dim_cluster.name',
+          'display_name' => 'dim_cluster.display_name',
         ));
       }
     }

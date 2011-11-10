@@ -52,9 +52,9 @@ class Ubmod_Model_Cluster
     $dbh = Ubmod_DbService::dbh();
     $sql = '
       SELECT
-        dim_cluster_id               AS cluster_id,
-        name                         AS host,
-        COALESCE(display_name, name) AS display_name
+        dim_cluster_id AS cluster_id,
+        name,
+        display_name
       FROM dim_cluster
       WHERE dim_cluster_id = ?
     ';
@@ -76,9 +76,9 @@ class Ubmod_Model_Cluster
   {
     $sql = '
       SELECT
-        dim_cluster_id               AS cluster_id,
-        name                         AS host,
-        COALESCE(display_name, name) AS display_name
+        dim_cluster_id AS cluster_id,
+        name,
+        display_name
       FROM dim_cluster
       ORDER BY display_name
     ';
@@ -92,7 +92,7 @@ class Ubmod_Model_Cluster
 
     $clusters = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    array_unshift($clusters, array('display_name' => 'All'));
+    array_unshift($clusters, array('name' => 'All'));
 
     return $clusters;
   }

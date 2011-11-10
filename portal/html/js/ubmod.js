@@ -74,9 +74,18 @@ Ext.Loader.onReady(function () {
     Ext.define('Ubmod.model.Cluster', {
         extend: 'Ext.data.Model',
         fields: [
-            'cluster_id',
-            'host',
-            'display_name'
+            { name: 'cluster_id', type: 'int', useNull: true },
+            { name: 'name',       type: 'string' },
+            {
+                name: 'display_name',
+                type: 'string',
+
+                // If the cluster doesn't have a display_name, use the
+                // name in its place.
+                convert: function (value, record) {
+                    return value ? value : record.get('name');
+                }
+            }
         ]
     });
 
@@ -87,7 +96,8 @@ Ext.Loader.onReady(function () {
         extend: 'Ext.data.Model',
         fields: [
             'user_id',
-            'user',
+            'name',
+            'display_name',
             'jobs',
             'avg_wait',
             'wallt',
@@ -103,7 +113,9 @@ Ext.Loader.onReady(function () {
         extend: 'Ext.data.Model',
         fields: [
             'user_id',
-            'user',
+            'name',
+            'display_name',
+            'group',
             'tags'
         ],
 
@@ -175,7 +187,8 @@ Ext.Loader.onReady(function () {
         extend: 'Ext.data.Model',
         fields: [
             'group_id',
-            'group_name',
+            'name',
+            'display_name',
             'jobs',
             'avg_wait',
             'wallt',
@@ -191,7 +204,8 @@ Ext.Loader.onReady(function () {
         extend: 'Ext.data.Model',
         fields: [
             'queue_id',
-            'queue',
+            'name',
+            'display_name',
             'jobs',
             'avg_wait',
             'wallt',
@@ -550,7 +564,7 @@ Ext.Loader.onReady(function () {
                     simpleSortMode: true,
                     url: '/api/rest/json/user/tags',
                     reader: { type: 'json', root: 'users' },
-                    extraParams: { sort: 'user', dir: 'ASC' }
+                    extraParams: { sort: 'name', dir: 'ASC' }
                 }
             });
             this.callParent([config]);
@@ -1252,7 +1266,7 @@ Ext.Loader.onReady(function () {
 
             this.columns = [{
                 header: 'User',
-                dataIndex: 'user',
+                dataIndex: 'name',
                 menuDisabled: true,
                 width: 128
             }, {
@@ -1347,7 +1361,7 @@ Ext.Loader.onReady(function () {
 
             Ext.apply(config, {
                 defaults: { margin: 10 },
-                title: this.user.get('user')
+                title: this.user.get('name')
             });
 
             this.callParent([config]);
@@ -1377,7 +1391,7 @@ Ext.Loader.onReady(function () {
             userHeader = Ext.create('Ext.Component', {
                 html: '<div style="padding-top:5px;" class="labelHeading">' +
                       'User: <span class="labelHeader">' +
-                      this.user.get('user') + '</span></div>'
+                      this.user.get('name') + '</span></div>'
             });
 
             // Maps tags to components in the tag panel

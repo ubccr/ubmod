@@ -6,7 +6,7 @@ Ext.onReady(function () {
         gridTitle: 'All Users',
         recordFormat: {
             label: 'User',
-            key: 'user',
+            key: 'name',
             id: 'user_id',
             detailsUrl: '/user/details'
         },
