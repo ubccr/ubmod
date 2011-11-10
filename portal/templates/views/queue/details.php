@@ -1,7 +1,7 @@
 <div style="padding:10px;">
   <?php if ($queue): ?>
     <div style="padding-top:5px;" class="labelHeading">
-      Queue: <span class="labelHeader"><?php echo $queue['queue'] ?></span>
+      Queue: <span class="labelHeader"><?php echo $queue['name'] ?></span>
     </div>
     <div style="padding:5px; margin-bottom:20px; margin-top:10px;">
       <table class="dtable">

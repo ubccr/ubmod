@@ -1,7 +1,7 @@
 <div style="padding:10px;">
   <?php if ($user): ?>
     <div style="padding-top:5px;" class="labelHeading">
-      User: <span class="labelHeader"><?php echo $user['user'] ?></span> &nbsp;&nbsp;
+      User: <span class="labelHeader"><?php echo $user['name'] ?></span> &nbsp;&nbsp;
     </div>
     <div style="padding:5px; margin-bottom:20px; margin-top:10px;">
       <table class="dtable">
