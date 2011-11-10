@@ -77,9 +77,9 @@ class Ubmod_Model_Tag
 
     $tags = array_unique($tags);
 
-    sort($tags);
+    natcasesort($tags);
 
-    return $tags;
+    return array_values($tags);
   }
 
   /**
