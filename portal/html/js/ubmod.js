@@ -220,6 +220,7 @@ Ext.Loader.onReady(function () {
         /**
          * Set both the start and end date
          *
+         * Fires the daterangechanged event
          * Fires the restparamschanged event
          *
          * @param {Date} startDate The new start date
@@ -238,6 +239,7 @@ Ext.Loader.onReady(function () {
             this.set('startDate', startDate);
             this.set('endDate', endDate);
 
+            this.fireEvent('daterangechanged', startDate, endDate);
             this.fireEvent('restparamschanged');
         },
 
