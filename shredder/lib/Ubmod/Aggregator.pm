@@ -192,7 +192,7 @@ sub _update_time_intervals {
             label        => $year,
             start        => "$year-01-01",
             end          => "$year-12-31",
-            query_params => '{"year":$year}',
+            query_params => qq({"year":$year}),
         };
 
         $self->_insert_time_interval($interval);
