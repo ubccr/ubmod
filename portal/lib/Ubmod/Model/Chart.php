@@ -970,6 +970,7 @@ class Ubmod_Model_Chart
     $radius = 85;
 
     $data = new pData();
+    $data->loadPalette(PALETTE_FILE, true);
 
     $data->addPoints($series, 'series');
     $data->addPoints($labels, 'labels');
@@ -1047,6 +1048,7 @@ class Ubmod_Model_Chart
     $center = $params['width'] / 2;
 
     $data = new pData();
+    $data->loadPalette(PALETTE_FILE, true);
 
     $data->addPoints($params['series'], 'series');
     $data->setAxisName(0, $params['yLabel']);
@@ -1137,6 +1139,7 @@ class Ubmod_Model_Chart
     $center = $params['width'] / 2;
 
     $data = new pData();
+    $data->loadPalette(PALETTE_FILE, true);
 
     foreach ($params['series'] as $key => $serie) {
       $data->addPoints($serie, $key);

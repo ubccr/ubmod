@@ -47,3 +47,9 @@ define("DW_CONFIG_FILE", CONFIG_DIR . "/datawarehouse.json");
  * Directory containing fonts.
  */
 define("FONT_DIR", LIB_DIR . "/pChart/fonts");
+
+/**
+ * Color palette file.
+ */
+define("PALETTE_FILE", CONFIG_DIR . "/palette.csv");
+
