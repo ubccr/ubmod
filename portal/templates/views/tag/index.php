@@ -11,9 +11,9 @@ Ext.onReady(function () {
   the toolbar and all charts will only include users that have that tag.
   Clicking once on the headings in each of the columns will sort the column
   (Table) from high to low. A second click will reverse the sort. The Search
-  capability allows you to search for a particular user. Press enter in the
-  search bar to filter. Double-click a row to open a detail tab for that user
-  that includes the ability to remove tags.
+  capability allows you to search for a particular user or group. Press enter
+  in the search bar to filter. Double-click a row to open a detail tab for
+  that user that includes the ability to remove tags.
 </div>
 <div class="chart-desc">
   The "Tag Activity" table provides detailed
