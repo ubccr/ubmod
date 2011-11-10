@@ -10,6 +10,9 @@
 
 require_once 'constants.php';
 
+ini_alter('include_path', ini_get('include_path') . ':' . BASE_DIR . '/lib');
+
+
 /**
  * Autoload implementation.
  *
@@ -24,8 +27,10 @@ function __autoload($className)
   }
   else
   {
-    throw new Exception('Cannot file class: ' . $className);
+    throw new Exception('Cannot find class: ' . $className);
   }
 }
 
 session_start();
+
+$GLOBALS['options'] = new Zend_Config_Ini(CONFIG_FILE);
