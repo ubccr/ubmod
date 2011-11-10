@@ -140,14 +140,14 @@ OPTIONS
     -s, --shred
         shred accounting file(s)
 
-    -f, --format=
+    -f, --format
         accounting file format (pbs or sge)
 
     -u, --update
         update aggregate tables
 
     -H, --host hostname
-        explicity set host from which the log file(s) originated from
+        explicitly set host from which the log file(s) originated from
 
     -e, --end-date
         explicitly set the end date used for aggregation time intervals
