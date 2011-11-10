@@ -998,6 +998,8 @@ Ext.Loader.onReady(function () {
                     closable: true
                 });
 
+                tagPanel.on('reportloaded', this.doComponentLayout, this);
+
                 this.add(tagPanel).show();
             }, this);
 
@@ -1105,6 +1107,12 @@ Ext.Loader.onReady(function () {
 
             this.tag = config.tag;
 
+            /**
+             * @event reportloaded
+             * Fires after the report partial has loaded.
+             */
+            this.addEvents({ reportloaded: true });
+
             Ext.apply(config, { title: this.tag.get('tag') });
 
             Ubmod.widget.TagReport.superclass.constructor.call(this, config);
@@ -1118,7 +1126,10 @@ Ext.Loader.onReady(function () {
                 params: { tag: this.tag.get('tag') }
             });
 
-            partial.on('afterload', this.doComponentLayout, this);
+            partial.on('afterload', function () {
+                this.doComponentLayout();
+                this.fireEvent('reportloaded');
+            }, this);
 
             this.items = [partial];
 
