@@ -44,7 +44,7 @@ sub main {
     $Logger = Ubmod::Logger->new($verbose);
 
     my $config = Config::Tiny->read("$FindBin::Bin/../config/settings.ini");
-    db_connect( @{ $config->{database} }{qw{ host dbname user password }} );
+    db_connect( @{ $config->{database} }{qw( host dbname user password )} );
 
     if ($shred) {
 
@@ -381,7 +381,7 @@ sub insert_host_log {
                 cpu = ?
         }
     );
-    $sth->execute( @$log{qw{ event_id host cpu }} );
+    $sth->execute( @$log{qw( event_id host cpu )} );
 }
 
 sub get_event_max_date {
