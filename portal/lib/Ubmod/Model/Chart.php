@@ -179,11 +179,11 @@ class Ubmod_Model_Chart
     }
 
     self::renderPieChart(array(
-      'width'    => 400,
-      'height'   => 350,
-      'title'    => 'User Utilization',
-      'labels'   => $users,
-      'series'   => $time,
+      'width'  => 400,
+      'height' => 350,
+      'title'  => 'User Utilization',
+      'labels' => $users,
+      'series' => $time,
     ));
   }
 
@@ -202,6 +202,7 @@ class Ubmod_Model_Chart
       'sort'        => 'wallt',
       'dir'         => 'DESC',
     );
+
     $users = array();
     $time  = array();
     foreach (Ubmod_Model_User::getActivities($dbParams) as $user) {
@@ -239,11 +240,11 @@ class Ubmod_Model_Chart
     $max   = 11;
 
     $groups = array();
-    $time  = array();
+    $time   = array();
     foreach (Ubmod_Model_Group::getActivities($dbParams) as $group) {
       if ($count < $max) {
         $groups[] = $group['group_name'];
-        $time[]  = $group['wallt'];
+        $time[]   = $group['wallt'];
       } else {
         $other += $group['wallt'];
       }
@@ -253,7 +254,7 @@ class Ubmod_Model_Chart
 
     if ($other > 0) {
       $groups[] = "Remaining\nGroups";
-      $time[]  = $other;
+      $time[]   = $other;
     }
 
     while (list($i, $t) = each($time)) {
@@ -261,11 +262,11 @@ class Ubmod_Model_Chart
     }
 
     self::renderPieChart(array(
-      'width'    => 400,
-      'height'   => 350,
-      'title'    => 'Group Utilization',
-      'labels'   => $groups,
-      'series'   => $time,
+      'width'  => 400,
+      'height' => 350,
+      'title'  => 'Group Utilization',
+      'labels' => $groups,
+      'series' => $time,
     ));
   }
 
@@ -284,6 +285,7 @@ class Ubmod_Model_Chart
       'sort'        => 'wallt',
       'dir'         => 'DESC',
     );
+
     $groups = array();
     $time   = array();
     foreach (Ubmod_Model_Group::getActivities($dbParams) as $group) {
