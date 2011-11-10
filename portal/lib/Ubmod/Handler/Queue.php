@@ -84,15 +84,15 @@ class Ubmod_Handler_Queue
   /**
    * List queue activity.
    *
-   * @param array arguments
-   * @param array postData
+   * @param array arguments Request GET data
+   * @param array postData Request POST data
    * @return Ubmod_RestResponse
    */
   public function listAction(array $arguments, array $postData = NULL)
   {
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'total'  => Ubmod_Model_Queue::getActivityCount($postData),
-      'queues' => Ubmod_Model_Queue::getActivities($postData),
+      'total'  => Ubmod_Model_Queue::getActivityCount($arguments),
+      'queues' => Ubmod_Model_Queue::getActivities($arguments),
     ));
   }
 }

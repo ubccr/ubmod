@@ -317,6 +317,95 @@ Ext.Loader.onReady(function () {
         }
     });
 
+    Ext.define('Ubmod.widget.TabPanel', {
+        extend: 'Ext.tab.Panel',
+
+        constructor: function (config) {
+            config = config || {};
+
+            Ext.apply(config, {
+                plain: true,
+                height: 400
+            });
+
+            Ubmod.widget.TabPanel.superclass.constructor.call(this, config);
+        }
+    });
+
+    Ext.define('Ubmod.widget.Grid', {
+        extend: 'Ext.grid.Panel',
+
+        constructor: function (config) {
+            config = config || {};
+
+            this.params = config.params;
+
+            Ubmod.widget.Grid.superclass.constructor.call(this, config);
+        },
+
+        initComponent: function () {
+            this.columns = [{
+                header: 'User',
+                dataIndex: 'user',
+                width: 128
+            }, {
+                header: '# Jobs',
+                dataIndex: 'jobs',
+                xtype: 'numbercolumn',
+                format: '0,000',
+                width: 100,
+                align: 'right'
+            }, {
+                header: 'Avg. Job Size (cpus)',
+                dataIndex: 'avg_cpus',
+                xtype: 'numbercolumn',
+                format: '0,000',
+                width: 118,
+                align: 'right'
+            }, {
+                header: 'Avg. Wait Time (h)',
+                dataIndex: 'avg_wait',
+                xtype: 'numbercolumn',
+                format: '0,000.00',
+                width: 118,
+                align: 'right'
+            }, {
+                header: 'Wall Time (d)',
+                dataIndex: 'wallt',
+                xtype: 'numbercolumn',
+                format: '0,000.0',
+                width: 128,
+                align: 'right'
+            }, {
+                header: 'Avg. Mem (MB)',
+                dataIndex: 'avg_mem',
+                xtype: 'numbercolumn',
+                format: '0,000.0',
+                width: 128,
+                align: 'right'
+            }];
+
+            this.dockedItems = [{
+                dock: 'bottom',
+                xtype: 'pagingtoolbar',
+                store: this.store,
+                displayInfo: true,
+                items: [
+                    '-',
+                    'Search:',
+                    { xtype: 'textfield' }
+                ]
+            }];
+
+            Ubmod.widget.Grid.superclass.initComponent.call(this);
+
+            this.store.load({ params: this.params });
+
+            this.on('itemdblclick', function (grid, record) {
+            });
+        }
+    });
+
     Ubmod.app = function () {
         var toolbar, loaded, updateCallback, updateContent;
 

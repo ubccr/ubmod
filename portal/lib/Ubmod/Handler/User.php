@@ -91,8 +91,8 @@ class Ubmod_Handler_User
   public function listAction(array $arguments, array $postData = NULL)
   {
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'total' => Ubmod_Model_User::getActivityCount($postData),
-      'users' => Ubmod_Model_User::getActivities($postData),
+      'total' => Ubmod_Model_User::getActivityCount($arguments),
+      'users' => Ubmod_Model_User::getActivities($arguments),
     ));
   }
 }

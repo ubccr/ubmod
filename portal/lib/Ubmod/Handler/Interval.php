@@ -74,8 +74,8 @@ class Ubmod_Handler_Interval
   /**
    * List time intervals.
    *
-   * @param array arguments
-   * @param array postData
+   * @param array arguments Request GET data
+   * @param array postData Request POST data
    * @return Ubmod_RestResponse
    */
   public function listAction(array $arguments, array $postData = NULL)

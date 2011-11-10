@@ -84,15 +84,15 @@ class Ubmod_Handler_Group
   /**
    * List group activity.
    *
-   * @param array arguments
-   * @param array postData
+   * @param array arguments Request GET data
+   * @param array postData Request POST data
    * @return Ubmod_RestResponse
    */
   public function listAction(array $arguments, array $postData = NULL)
   {
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'total'  => Ubmod_Model_Group::getActivityCount($postData),
-      'groups' => Ubmod_Model_Group::getActivities($postData),
+      'total'  => Ubmod_Model_Group::getActivityCount($arguments),
+      'groups' => Ubmod_Model_Group::getActivities($arguments),
     ));
   }
 }
