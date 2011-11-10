@@ -54,7 +54,7 @@ class UBMoD_Model_Group
       ':cluster_id'  => $params['cluster_id'],
     );
 
-    if ($params['filter'] != '') {
+    if (isset($params['filter']) && $params['filter'] != '') {
       $sql .= ' WHERE g.group LIKE :filter';
       $dbParams[':filter'] = '%' . $params['filter'] . '%';
     }

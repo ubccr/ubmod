@@ -54,7 +54,7 @@ class UBMoD_Model_Queue
       ':cluster_id'  => $params['cluster_id'],
     );
 
-    if ($params['filter'] != '') {
+    if (isset($params['filter']) && $params['filter'] != '') {
       $sql .= ' WHERE q.queue LIKE :filter';
       $dbParams[':filter'] = '%' . $params['filter'] . '%';
     }
@@ -97,7 +97,7 @@ class UBMoD_Model_Queue
       ':cluster_id'  => $params['cluster_id'],
     );
 
-    if ($params['filter'] != '') {
+    if (isset($params['filter']) && $params['filter'] != '') {
       $sql .= ' WHERE q.queue LIKE :filter';
       $dbParams[':filter'] = '%' . $params['filter'] . '%';
     }
