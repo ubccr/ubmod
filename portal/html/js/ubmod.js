@@ -1456,6 +1456,7 @@ Ext.Loader.onReady(function () {
             Ext.get(this.getEl()).load({
                 loadMask: 'Loading...',
                 url: this.url,
+                scripts: true,
                 params: Ext.apply(this.params, this.model.getRestParams()),
                 success: function () { this.fireEvent('afterload'); },
                 scope: this

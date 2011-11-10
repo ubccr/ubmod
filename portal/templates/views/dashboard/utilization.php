@@ -1,3 +1,29 @@
+<script type="text/javascript">
+Ext.onReady(function () {
+
+    var currentType = 'pie',
+        link = Ext.get('swap-link'),
+        pie = Ext.select('.pie'),
+        bar = Ext.select('.bar');
+
+    pie.each(function (el) { el.setVisibilityMode(Ext.Element.DISPLAY); });
+    bar.each(function (el) { el.setVisibilityMode(Ext.Element.DISPLAY); });
+
+    link.on('click', function () {
+        if (currentType === 'bar') {
+            bar.each(function (el) { el.hide(); });
+            pie.each(function (el) { el.show(); });
+            currentType = 'pie';
+            link.dom.innerHTML = 'Bar';
+        } else if (currentType === 'pie') {
+            pie.each(function (el) { el.hide(); });
+            bar.each(function (el) { el.show(); });
+            currentType = 'bar';
+            link.dom.innerHTML = 'Pie';
+        }
+    });
+});
+</script>
 <div class="labelHeading" style="font-weight:bold;">
   Utilization for
   <?php if (isset($clusterName)): ?>
@@ -11,11 +37,12 @@
 <div>
   <table>
     <tr>
-      <td colspan="2" style="font-size:x-small;">Plot format: <a class="editLink" onclick="chartswap('pie')">Pie</a> | <a class="editLink" onclick="chartswap('bar')">Bar</a></td>
+      <td colspan="2" style="font-size:x-small;">Plot format:
+        <a id="swap-link" class="editLink" href="#">Bar</a></td>
     </tr>
     <tr>
-      <td><img id="upie" src="<?php echo $userPieChart ?>" /><img id="ubar" style="display:none;" src="<?php echo $userBarChart ?>" /></td>
-      <td><img id="gpie" src="<?php echo $groupPieChart ?>" /><img id="gbar" style="display:none;" src="<?php echo $groupBarChart ?>" /></td>
+      <td><img class="pie" src="<?php echo $userPieChart ?>" /><img class="bar" style="display:none;" src="<?php echo $userBarChart ?>" /></td>
+      <td><img class="pie" src="<?php echo $groupPieChart ?>" /><img class="bar" style="display:none;" src="<?php echo $groupBarChart ?>" /></td>
     </tr>
     <?php if ($interval['multi_month']): ?>
       <tr>
