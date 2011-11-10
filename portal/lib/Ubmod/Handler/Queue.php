@@ -16,11 +16,21 @@
 class Ubmod_Handler_Queue
 {
 
+  /**
+   * Factory method.
+   *
+   * @return Ubmod_Handler_Queue
+   */
   public static function factory()
   {
     return new Ubmod_Handler_Queue();
   }
 
+  /**
+   * Return help for the "list" action.
+   *
+   * @return void
+   */
   public function listHelp()
   {
     $desc = 'List queue activity.  Results will be an array where individual'
@@ -39,6 +49,13 @@ class Ubmod_Handler_Queue
     return Ubmod_RestResponse::factory(TRUE, $desc, $options);
   }
 
+  /**
+   * List queue activity.
+   *
+   * @param array arguments
+   * @param array postData
+   * @return Ubmod_RestRespons
+   */
   public function listAction(array $arguments, array $postData = NULL)
   {
     return Ubmod_RestResponse::factory(TRUE, NULL, array(

@@ -16,11 +16,21 @@
 class Ubmod_Handler_Group
 {
 
+  /**
+   * Factory method.
+   *
+   * @return Ubmod_Handler_Group
+   */
   public static function factory()
   {
     return new Ubmod_Handler_Group();
   }
 
+  /**
+   * Return help for the "list" action.
+   *
+   * @return void
+   */
   public function listHelp()
   {
     $desc = 'List group activity.  Results will be an array where individual'
@@ -39,6 +49,13 @@ class Ubmod_Handler_Group
     return Ubmod_RestResponse::factory(TRUE, $desc, $options);
   }
 
+  /**
+   * List group activity.
+   *
+   * @param array arguments
+   * @param array postData
+   * @return Ubmod_RestRespons
+   */
   public function listAction(array $arguments, array $postData = NULL)
   {
     return Ubmod_RestResponse::factory(TRUE, NULL, array(

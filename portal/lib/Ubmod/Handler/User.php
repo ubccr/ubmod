@@ -16,11 +16,21 @@
 class Ubmod_Handler_User
 {
 
+  /**
+   * Factory method.
+   *
+   * @return Ubmod_Handler_User
+   */
   public static function factory()
   {
     return new Ubmod_Handler_User();
   }
 
+  /**
+   * List help for the "list" action.
+   *
+   * @return void
+   */
   public function listHelp()
   {
     $desc = 'List user activity.  Results will be an array where individual'
@@ -39,6 +49,13 @@ class Ubmod_Handler_User
     return Ubmod_RestResponse::factory(TRUE, $desc, $options);
   }
 
+  /**
+   * List user activity.
+   *
+   * @param array arguments
+   * @param array postData
+   * @return Ubmod_RestRespons
+   */
   public function listAction(array $arguments, array $postData = NULL)
   {
     return Ubmod_RestResponse::factory(TRUE, NULL, array(

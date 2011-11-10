@@ -26,6 +26,11 @@ class Ubmod_Handler_Interval
     return new Ubmod_Handler_Interval();
   }
 
+  /**
+   * Return help for the "list" action.
+   *
+   * @return Ubmod_RestResponse
+   */
   public function listHelp()
   {
     $desc = 'List all time intervals.  Results will be an array where'
@@ -34,8 +39,16 @@ class Ubmod_Handler_Interval
     return Ubmod_RestResponse::factory(TRUE, $desc);
   }
 
+  /**
+   * List time intervals.
+   *
+   * @param array arguments
+   * @param array postData
+   * @return Ubmod_RestResponse
+   */
   public function listAction(array $arguments, array $postData = NULL)
   {
+    error_log(print_r($arguments, 1));
     $intervals = Ubmod_Model_Interval::getAll();
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
       'data'  => $intervals,

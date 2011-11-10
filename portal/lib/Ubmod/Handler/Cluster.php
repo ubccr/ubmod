@@ -26,6 +26,11 @@ class Ubmod_Handler_Cluster
     return new Ubmod_Handler_Cluster();
   }
 
+  /**
+   * Return help for the "list" action.
+   *
+   * @return Ubmod_RestResponse
+   */
   public function listHelp()
   {
     $desc = 'List all clusters.  Results will be an array where individual'
@@ -33,6 +38,13 @@ class Ubmod_Handler_Cluster
     return Ubmod_RestResponse::factory(TRUE, $desc);
   }
 
+  /**
+   * List clusters.
+   *
+   * @param array arguments
+   * @param array postData
+   * @return Ubmod_RestRespons
+   */
   public function listAction(array $arguments, array $postData = NULL)
   {
     $clusters = Ubmod_Model_Cluster::getAll();
