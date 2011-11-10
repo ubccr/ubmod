@@ -28,13 +28,13 @@
  * required by the GPL or the LGPL. If you do not delete the provisions above,
  * a recipient may use your version of this file under the terms of any one of
  * the UBPL, the GPL or the LGPL.
- * 
+ *
  * ------------------------------------
  * stats-grid.js
  * ------------------------------------
  * Original Author: Andrew E. Bruno (CCR);
  * Contributor(s): -;
- * 
+ *
  */
 
 Ext.apply(Ext.util.Format,{
@@ -51,11 +51,11 @@ Ext.apply(Ext.util.Format,{
         } else {
             return this.commify(value.substr(0, value.length-3))+","+value.substr(value.length-3,3);
         }
-    }   
+    }
 });
 var StatsGrid = function(config){
     Ext.QuickTips.init();
-    
+
     var tabs = new Ext.TabPanel('stats-tabs', {
         resizeTabs: true,
         minTabWidth: 65,
@@ -85,53 +85,52 @@ var StatsGrid = function(config){
     var toolbar = new PBSToolbar({ds: dataStore, tabs: tabs, displayUrl: config.displayUrl});
 
     var renderLabel = function(value, p, r) {
-        //return String.format('<a href="'+config.displayUrl+'?'+config.id+'={1}&cluster_id={2}&interval_id={3}">{0}</a>', value, r.data[config.id], toolbar.clusterCombo.getValue(), toolbar.intervalCombo.getValue());
-        return value;   
+        return value;
     };
-    
+
     var renderNumber = function(value) {
         if(value == null) return '';
         return '<div style="text-align: right">'+Ext.util.Format.commify(value)+'</div>';
     };
 
     var cm = new Ext.grid.ColumnModel([{
-           id: config.id,
-           header: config.label,
-           dataIndex: config.display,
-           width: 128,
-           renderer: renderLabel,
-           css: 'white-space:normal;'
-        },{
-           header: "# Jobs",
-           dataIndex: 'jobs',
-           width: 100,
-           renderer: renderNumber,
-           align: 'right'
-        },{
-           header: "Avg. Job Size (cpus)",
-           dataIndex: 'avg_cpus',
-           width: 118,
-           renderer: renderNumber,
-           align: 'right'
-        },{
-           header: "Avg. Wait Time (h)",
-           dataIndex: 'avg_wait',
-           width: 118,
-           renderer: renderNumber,
-           align: 'right'
-        },{
-           header: "Wall Time (d)",
-           dataIndex: 'wallt',
-           width: 128,
-           renderer: renderNumber,
-           align: 'right'
-        },{
-           header: "Avg. MEM (m)",
-           dataIndex: 'avg_mem',
-           width: 128,
-           renderer: renderNumber,
-           align: 'right'
-        }]);
+        id: config.id,
+        header: config.label,
+        dataIndex: config.display,
+        width: 128,
+        renderer: renderLabel,
+        css: 'white-space:normal;'
+    },{
+        header: "# Jobs",
+        dataIndex: 'jobs',
+        width: 100,
+        renderer: renderNumber,
+        align: 'right'
+    },{
+        header: "Avg. Job Size (cpus)",
+        dataIndex: 'avg_cpus',
+        width: 118,
+        renderer: renderNumber,
+        align: 'right'
+    },{
+        header: "Avg. Wait Time (h)",
+        dataIndex: 'avg_wait',
+        width: 118,
+        renderer: renderNumber,
+        align: 'right'
+    },{
+        header: "Wall Time (d)",
+        dataIndex: 'wallt',
+        width: 128,
+        renderer: renderNumber,
+        align: 'right'
+    },{
+        header: "Avg. MEM (m)",
+        dataIndex: 'avg_mem',
+        width: 128,
+        renderer: renderNumber,
+        align: 'right'
+    }]);
 
     cm.defaultSortable = true;
 
@@ -175,16 +174,16 @@ var StatsGrid = function(config){
     });
     paging.add('-', 'Search: ');
     var filter = Ext.get(paging.addDom({
-                tag: 'input', 
-                type: 'text', 
-                size: '30', 
-                value: '', 
-                tooltip: 'Filter results by '+config.display,
-                cls: 'x-grid-filter'
-              }).el);
-              
+        tag: 'input',
+        type: 'text',
+        size: '30',
+        value: '',
+        tooltip: 'Filter results by '+config.display,
+        cls: 'x-grid-filter'
+    }).el);
+
     filter.on('keypress', function(e) {
-        if(e.getKey() == e.ENTER) dataStore.load({ 
+        if(e.getKey() == e.ENTER) dataStore.load({
             params: {start: 0, limit: 25}
         });
     });
@@ -205,5 +204,4 @@ var StatsGrid = function(config){
     });
 
     dataStore.load({params:{start:0, limit:25}});
-
 };

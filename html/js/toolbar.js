@@ -28,13 +28,13 @@
  * required by the GPL or the LGPL. If you do not delete the provisions above,
  * a recipient may use your version of this file under the terms of any one of
  * the UBPL, the GPL or the LGPL.
- * 
+ *
  * ------------------------------------
  * toolbar.js
  * ------------------------------------
  * Original Author: Andrew E. Bruno (CCR);
  * Contributor(s): -;
- * 
+ *
  */
 
 var PBSToolbar = function(config){
@@ -44,7 +44,7 @@ var PBSToolbar = function(config){
     this.displayUrl = config.displayUrl;
     this.el = config.el;
     this.hideCluster = config.hideCluster;
-    
+
     this.intervalStore = new Ext.data.Store({
         proxy: new Ext.data.HttpProxy({
             url: '/api/rest/json/interval/list'
@@ -73,11 +73,12 @@ var PBSToolbar = function(config){
         width: 100,
         selectOnFocus:true
     });
+
     this.intervalStore.on('load', function() {
-            var rec = this.intervalStore.getById(3);
-            this.intervalCombo.setValue('3');
-            this.updateDate(rec);
-        }, this, {single: true});
+        var rec = this.intervalStore.getById(3);
+        this.intervalCombo.setValue('3');
+        this.updateDate(rec);
+    }, this, {single: true});
     this.intervalStore.load();
 
     this.clusterStore = new Ext.data.Store({
@@ -95,7 +96,7 @@ var PBSToolbar = function(config){
         ]),
         remoteSort: true
     });
-    
+
     this.clusterCombo = new Ext.form.ComboBox({
         store: this.clusterStore,
         displayField:'display_name',
@@ -107,15 +108,15 @@ var PBSToolbar = function(config){
         width: 130,
         selectOnFocus:true
     });
+
     if(this.hideCluster == null) {
-    this.clusterStore.on('load', function() {
+        this.clusterStore.on('load', function() {
             var rec = this.clusterStore.getAt(0);
             this.clusterCombo.setValue(rec.get("cluster_id"));
         }, this, {single: true});
-    this.clusterStore.load();
+        this.clusterStore.load();
     }
-    
-    
+
     this.tb = new Ext.Toolbar('toolbar');
     this.tb.addText("Period: ");
     this.tb.addField(this.intervalCombo);
@@ -136,7 +137,7 @@ var PBSToolbar = function(config){
 PBSToolbar.prototype = {
     updateDate : function(record) {
         var el = Ext.get('date-display');
-        el.update(record.get('start')+' thru '+record.get('end'));   
+        el.update(record.get('start')+' thru '+record.get('end'));
     },
     refreshMeasure : function(combo, record, index) {
         this.refresh(combo, record, index);
@@ -149,7 +150,6 @@ PBSToolbar.prototype = {
         } else {
             this.update(combo, record, index);
         }
-
         this.updateDate(record);
     },
     refresh : function(combo, record, index) {
@@ -168,7 +168,7 @@ PBSToolbar.prototype = {
                     var id = tab.id;
                     var parts = id.split('-');
                     var updater = tab.getUpdateManager();
-                    updater.update(this.displayUrl, {id: parts[1], cluster_id: this.clusterCombo.getValue(), interval_id: this.intervalCombo.getValue()}); 
+                    updater.update(this.displayUrl, {id: parts[1], cluster_id: this.clusterCombo.getValue(), interval_id: this.intervalCombo.getValue()});
                 }
             }
         }
@@ -177,7 +177,7 @@ PBSToolbar.prototype = {
         var e = Ext.get(this.el);
         var updater = e.getUpdateManager();
         var params = {
-            cluster_id: this.clusterCombo.getValue(), 
+            cluster_id: this.clusterCombo.getValue(),
             interval_id: this.intervalCombo.getValue()
         };
         if(filter != null) {
