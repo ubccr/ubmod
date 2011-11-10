@@ -83,7 +83,7 @@ Ext.Loader.onReady(function () {
                 // If the cluster doesn't have a display_name, use the
                 // name in its place.
                 convert: function (value, record) {
-                    return value ? value : record.get('name');
+                    return value || record.get('name');
                 }
             }
         ]
