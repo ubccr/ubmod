@@ -50,8 +50,8 @@ var PBSToolbar = function(config){
             url: '/api/rest/json/interval/list'
         }),
         reader: new Ext.data.JsonReader({
-            root: 'results',
-            /* totalProperty: 'total', */
+            root: 'data',
+            totalProperty: 'total',
             id: 'interval_id'
         }, [
             {name: 'interval_id', mapping: 'interval_id'},
@@ -85,8 +85,8 @@ var PBSToolbar = function(config){
             url: '/api/rest/json/cluster/list'
         }),
         reader: new Ext.data.JsonReader({
-            root: 'results',
-            /* totalProperty: 'total', */
+            root: 'data',
+            totalProperty: 'total',
             id: 'cluster_id'
         }, [
             {name: 'cluster_id', mapping: 'cluster_id'},

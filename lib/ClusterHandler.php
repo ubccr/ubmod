@@ -34,6 +34,10 @@ class ClusterHandler
 
   public function listAction(array $arguments, array $postData = NULL)
   {
-    return RestResponse::factory(TRUE, NULL, UBMoD_Model_Cluster::getAll());
+    $clusters = UBMoD_Model_Cluster::getAll();
+    return RestResponse::factory(TRUE, NULL, array(
+      'data'  => $clusters,
+      'total' => count($clusters),
+    ));
   }
 }

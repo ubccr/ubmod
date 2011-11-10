@@ -83,11 +83,13 @@ class RestResponse
 
   public function jsonFormat()
   {
+    /*
     $retval = array('success' => ($this->_success ? 1 : 0),
                     'message' => $this->_message,
                     'num'     => $this->_numResults,
                     'results' => $this->_results);
-    return json_encode($retval);
+     */
+    return json_encode($this->_results);
   }  // jsonFormat()
 
   // --------------------------------------------------------------------------------
