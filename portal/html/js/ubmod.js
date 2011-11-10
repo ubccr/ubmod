@@ -1,9 +1,14 @@
 Ext.Loader.onReady(function () {
 
     /**
+     * UBMoD namespace
+     */
+    Ext.namespace('Ubmod');
+
+    /**
      * Models
      */
-    Ext.define('Interval', {
+    Ext.define('Ubmod.model.Interval', {
         extend: 'Ext.data.Model',
         fields: [
             'interval_id',
@@ -13,7 +18,7 @@ Ext.Loader.onReady(function () {
         ]
     });
 
-    Ext.define('Cluster', {
+    Ext.define('Ubmod.model.Cluster', {
         extend: 'Ext.data.Model',
         fields: [
             'cluster_id',
@@ -22,7 +27,7 @@ Ext.Loader.onReady(function () {
         ]
     });
 
-    Ext.define('User', {
+    Ext.define('Ubmod.model.User', {
         extend: 'Ext.data.Model',
         fields: [
             'user_id',
@@ -35,7 +40,7 @@ Ext.Loader.onReady(function () {
         ]
     });
 
-    Ext.define('Group', {
+    Ext.define('Ubmod.model.Group', {
         extend: 'Ext.data.Model',
         fields: [
             'group_id',
@@ -48,7 +53,7 @@ Ext.Loader.onReady(function () {
         ]
     });
 
-    Ext.define('Queue', {
+    Ext.define('Ubmod.model.Queue', {
         extend: 'Ext.data.Model',
         fields: [
             'queue_id',
@@ -64,83 +69,140 @@ Ext.Loader.onReady(function () {
     /**
      * Data stores
      */
-    var intervalStore = Ext.create('Ext.data.Store', {
-        model: 'Interval',
-        proxy: {
-            type: 'ajax',
-            url: '/api/rest/json/interval/list',
-            reader: {
-                type: 'json',
-                root: 'data'
-            }
+    Ext.define('Ubmod.store.Interval', {
+        extend: 'Ext.data.Store',
+        constructor: function (config) {
+            config = config || {};
+
+            config.model = 'Ubmod.model.Interval';
+            config.buffered = true;
+            config.proxy = {
+                type: 'ajax',
+                url: '/api/rest/json/interval/list',
+                reader: { type: 'json', root: 'data' }
+            };
+
+            Ubmod.store.Interval.superclass.constructor.call(this, config);
         }
     });
 
-    var clusterStore = Ext.create('Ext.data.Store', {
-        model: 'Cluster',
-        proxy: {
-            type: 'ajax',
-            url: '/api/rest/json/cluster/list',
-            reader: {
-                type: 'json',
-                root: 'data'
-            }
+    Ext.define('Ubmod.store.Cluster', {
+        extend: 'Ext.data.Store',
+        constructor: function (config) {
+            config = config || {};
+
+            config.model = 'Ubmod.model.Cluster';
+            config.buffered = true;
+            config.proxy = {
+                type: 'ajax',
+                url: '/api/rest/json/cluster/list',
+                reader: { type: 'json', root: 'data' }
+            };
+
+            Ubmod.store.Cluster.superclass.constructor.call(this, config);
         }
     });
 
-    var userStore = Ext.create('Ext.data.Store', {
-        model: 'User',
-        proxy: {
-            type: 'ajax',
-            url: '/api/rest/json/user/list',
-            reader: {
-                type: 'json',
-                root: 'data'
-            }
-        },
-        remoteSort: true,
-        pageSize: 25
+    Ext.define('Ubmod.store.User', {
+        extend: 'Ext.data.Store',
+        constructor: function (config) {
+            config = config || {};
+
+            config.model = 'Ubmod.model.User';
+            config.proxy = {
+                type: 'ajax',
+                url: '/api/rest/json/user/list',
+                reader: { type: 'json', root: 'data' }
+            };
+            config.remoteSort = true;
+            config.pageSize = 25;
+
+            Ubmod.store.User.superclass.constructor.call(this, config);
+        }
     });
 
-    var groupStore = Ext.create('Ext.data.Store', {
-        model: 'Group',
-        proxy: {
-            type: 'ajax',
-            url: '/api/rest/json/group/list',
-            reader: {
-                type: 'json',
-                root: 'data'
-            }
-        },
-        remoteSort: true,
-        pageSize: 25
+    Ext.define('Ubmod.store.Group', {
+        extend: 'Ext.data.Store',
+        constructor: function (config) {
+            config = config || {};
+
+            config.model = 'Ubmod.model.Group';
+            config.proxy = {
+                type: 'ajax',
+                url: '/api/rest/json/group/list',
+                reader: { type: 'json', root: 'data' }
+            };
+            config.remoteSort = true;
+            config.pageSize = 25;
+
+            Ubmod.store.Group.superclass.constructor.call(this, config);
+        }
     });
 
-    var queueStore = Ext.create('Ext.data.Store', {
-        model: 'Queue',
-        proxy: {
-            type: 'ajax',
-            url: '/api/rest/json/queue/list',
-            reader: {
-                type: 'json',
-                root: 'data'
-            }
-        },
-        remoteSort: true,
-        pageSize: 25
+    Ext.define('Ubmod.store.Queue', {
+        extend: 'Ext.data.Store',
+        constructor: function (config) {
+            config = config || {};
+
+            config.model = 'Ubmod.model.Queue';
+            config.proxy = {
+                type: 'ajax',
+                url: '/api/rest/json/queue/list',
+                reader: { type: 'json', root: 'data' }
+            };
+            config.remoteSort = true;
+            config.pageSize = 25;
+
+            Ubmod.store.Queue.superclass.constructor.call(this, config);
+        }
     });
 
-    var createGrid = function () {
-        return Ext.create('Ext.grid.Panel', {
-            store: store,
-            columns: columns,
-            renderTo: el,
-            width: width,
-            height: height
-        });
-    };
+    /**
+     * Widgets
+     */
+    Ext.define('Ubmod.widget.Interval', {
+        extend: 'Ext.form.field.ComboBox',
+        initComponent: function () {
+            this.store = Ext.create('Ubmod.store.Interval');
+            this.displayField = 'time_interval';
+            this.valueField = 'interval_id';
+            this.mode = 'local';
+            this.emptyText = 'Interval...';
 
-    Ext.namespace('Ubmod');
+            Ubmod.widget.Interval.superclass.initComponent.call(this);
+        }
+    });
+
+    Ext.define('Ubmod.widget.Cluster', {
+        extend: 'Ext.form.field.ComboBox',
+        initComponent: function () {
+            this.store = Ext.create('Ubmod.store.Cluster');
+            this.displayField = 'display_name';
+            this.valueField = 'cluster_id';
+            this.mode = 'local';
+            this.emptyText = 'Cluster...';
+
+            Ubmod.widget.Cluster.superclass.initComponent.call(this);
+        }
+    });
+
+
+    Ext.define('Ubmod.widget.Toolbar', {
+        extend: 'Ext.toolbar.Toolbar',
+        initComponent: function () {
+
+            this.renderTo = Ext.get('toolbar');
+            this.items = [
+                'Period:',
+                Ext.create('Ubmod.widget.Interval'),
+                { xtype: 'tbspacer', width: 20 },
+                'Cluster:',
+                Ext.create('Ubmod.widget.Cluster')
+            ];
+
+            Ubmod.widget.Toolbar.superclass.initComponent.call(this);
+        }
+    });
 
     Ubmod.app = function () {
         var toolbar, clusterId, intervalId, currentPage;
@@ -150,35 +212,7 @@ Ext.Loader.onReady(function () {
 
         return {
             init: function () {
-
-                Ext.create('Ext.toolbar.Toolbar', {
-                    renderTo: Ext.get('toolbar'),
-                    items: [
-                        'Period:',
-                        {
-                            xtype: 'combo',
-                            store: intervalStore,
-                            displayField: 'time_interval',
-                            valueField: 'interval_id',
-                            mode: 'local',
-                            emptyText: 'Interval...',
-                        },
-                        {
-                            xtype: 'tbspacer',
-                            width: 20
-                        },
-                        'Cluster:',
-                        {
-                            xtype: 'combo',
-                            store: clusterStore,
-                            displayField: 'display_name',
-                            valueField: 'cluster_id',
-                            mode: 'local',
-                            emptyText: 'Cluster...',
-                        }
-                    ]
-                });
-
+                toolbar = Ext.create('Ubmod.widget.Toolbar');
             },
             setClusterId: function (id) {
                 clusterId = id;
