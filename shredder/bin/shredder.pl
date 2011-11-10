@@ -5,6 +5,7 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use DBI;
 use Getopt::Long;
+use Pod::Usage;
 use File::Spec;
 use Config::Tiny;
 use DateTime;
@@ -37,8 +38,7 @@ sub main {
     );
 
     if ($help) {
-        print usage();
-        exit 0;
+        pod2usage( -exitval => 0, -verbose => 2 );
     }
 
     $Logger = Ubmod::Logger->new($verbose);
@@ -84,8 +84,7 @@ sub main {
         }
         else {
             $Logger->fatal("No input source specified.");
-            print usage();
-            exit 1;
+            pod2usage( -exitval => 1, -verbose => 1 );
         }
 
         $Logger->info("Total shredded: $count");
@@ -123,56 +122,9 @@ sub main {
     }
 
     if ( !$update && !$shred ) {
-        print usage();
-        exit 1;
+        $Logger->fatal('No shredding or updating option was specified');
+        pod2usage( -exitval => 1, -verbose => 1 );
     }
-}
-
-sub usage {
-    return <<"EOT";
-NAME
-       $0 - shred accounting log files
-
-SYNOPSIS
-       $0 [-u] [-s] [-H host] [-i file|-d dir]
-
-GENERAL OPTIONS
-       -s, --shred
-              shred accounting file(s)
-
-       -u, --update
-              update aggregate tables
-
-       -v, --verbose
-              verbose output
-
-       -h, --help
-              display this text and exit
-
-SHREDDING OPTIONS
-       -i, --in
-              input file
-
-       -d, --dir
-              location of accounting log directory
-
-       -f, --format
-              accounting file format (pbs or sge)
-
-       -H, --host hostname
-              explicitly set host from which the log file(s) originated
-
-AGGREGATION OPTIONS
-       -e, --end-date
-              explicitly set the end date used for aggregation time
-              intervals. The date must be in YYYY-MM-DD format.
-              Defaults to yesterday
-
-EXAMPLES
-       $0 -v -s -H your.host.org -d /var/spool/pbs/server_priv/accounting
-
-       $0 -v -u
-EOT
 }
 
 sub process_directory {
@@ -378,16 +330,87 @@ Version: $Id$
 
 =head1 SYNOPSIS
 
-  ./shredder.pl -s --format=pbs -H your.host.org -d /var/spool/pbs/server_priv/accounting
+B<shredder.pl> [B<-v>] [B<-u>] [B<-s>] [B<-H> I<host>] [B<-i> I<file>|B<-d> I<dir>]
 
-  ./shredder.pl -u
+=head1 OPTIONS
 
-  ./shredder.pl -h
+=head2 GENERAL OPTIONS
+
+=over 8
+
+=item B<-s>, B<--shred>
+
+Shred accounting file(s).
+
+=item B<-u>, B<--update>
+
+Update aggregate tables.
+
+=item B<-v>, B<--verbose>
+
+Increase verbosity.
+
+=item B<-h>, B<--help>
+
+Display this text and exit.
+
+=back
+
+=head2 SHREDDING OPTIONS
+
+These options may be used with the C<-s> or C<--shred> option.
+
+=over 8
+
+=item B<-f>, B<--format> I<format>
+
+Specify accounting file format (pbs or sge).
+
+=item B<-H>, B<--host> I<hostname>
+
+Explicitly set host from which the log file(s) originated.
+
+=item B<-i>, B<--in> I<file>
+
+Specify input file.
+
+=item B<-d>, B<--dir> I<directory>
+
+Specify accounting log directory.
+
+=item B<->
+
+A lone dash C<-> indicates standard input should be used.
+
+=back
+
+=head2 AGGREGATION OPTIONS
+
+These options may be used with the C<-u> or C<--update> option.
+
+=over 8
+
+=item B<-e>, B<--end-date> I<date>
+
+Explicitly set the end date used for aggregation time intervals. The
+date must be in YYYY-MM-DD format. Defaults to yesterday.
+
+=back
 
 =head1 DESCRIPTION
 
 This script can be used to parse and aggregate accounting data for use
 with the UBMoD portal.
+
+=head1 EXAMPLES
+
+  shredder.pl -s --format pbs -d /var/spool/pbs/server_priv/accounting
+
+  shredder.pl -s --format sge -i /var/lib/gridengine/default/common/accounting
+
+  shredder.pl -u
+
+  shredder.pl -h
 
 =head1 AUTHOR
 
