@@ -100,16 +100,29 @@ class Ubmod_Model_User
    */
   private static function getTagsUnlimited(Ubmod_Model_QueryParams $params)
   {
+    // The combination of SUBSTRING_INDEX and GROUP_CONCAT used below
+    // selects the last group for each user when the groups are order
+    // by date.
     $sql = "
       SELECT
-        dim_user_id          AS user_id,
-        COALESCE(tags, '[]') AS tags,
-        name,
-        display_name
-      FROM dim_user
+        dim_user_id           AS user_id,
+        COALESCE(tags, '[]')  AS tags,
+        dim_user.name         AS name,
+        dim_user.display_name AS display_name,
+        SUBSTRING_INDEX(
+          GROUP_CONCAT(dim_group.name ORDER BY dim_date.date DESC),
+          ',',
+          1
+        ) AS `group`
+      FROM fact_job
+      JOIN dim_user  USING (dim_user_id)
+      JOIN dim_group USING (dim_group_id)
+      JOIN dim_date  USING (dim_date_id)
+      GROUP BY dim_user_id
     ";
 
     $dbh = Ubmod_DbService::dbh();
+    $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
     $r = $stmt->execute();
     if (!$r) {
@@ -119,8 +132,6 @@ class Ubmod_Model_User
     $users = array();
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
       $row['tags'] = json_decode($row['tags'], 1);
-      $group = self::getGroup($row['user_id']);
-      $row['group'] = $group['name'];
       $users[] = $row;
     }
 
