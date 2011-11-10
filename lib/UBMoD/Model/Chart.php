@@ -164,7 +164,7 @@ class UBMoD_Model_Chart
       'FontSize' => 8,
     ));
 
-    $chart->setGraphArea(60, 30, 660, 330);
+    $chart->setGraphArea(60, 30, 690, 330);
 
     $chart->drawScale(array(
       'Mode'          => SCALE_MODE_START0,
