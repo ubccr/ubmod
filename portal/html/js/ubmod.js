@@ -390,6 +390,13 @@ Ext.Loader.onReady(function () {
                 });
             }, this);
 
+            // XXX Force the grid to resize. This prevents the bottom
+            // two rows of data from being hidden after viewing a
+            // different tab and returning to the grid tab.
+            this.grid.on('show', function () {
+                this.setSize(this.getWidth(), this.getHeight());
+            });
+
             this.reload();
         },
 
@@ -424,7 +431,7 @@ Ext.Loader.onReady(function () {
             this.label = config.label;
             this.labelKey = config.labelKey;
 
-            Ext.apply(config, { autoHeight: true });
+            Ext.apply(config, { height: 400 });
 
             Ubmod.widget.Grid.superclass.constructor.call(this, config);
         },
