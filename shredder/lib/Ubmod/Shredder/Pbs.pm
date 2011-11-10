@@ -19,6 +19,52 @@ my $pattern = qr|
     ( .* )                   # Params
 |x;
 
+# All the columns in the pbs_event table, excluding the primary key
+my @columns = qw(
+    date_key
+    job_id
+    job_array_index
+    host
+    queue
+    type
+    user
+    group
+    ctime
+    qtime
+    start
+    end
+    etime
+    exit_status
+    session
+    requestor
+    jobname
+    owner
+    account
+    session_id
+    error_path
+    output_path
+    exec_host
+    resources_used_vmem
+    resources_used_mem
+    resources_used_walltime
+    resources_used_nodes
+    resources_used_cpus
+    resources_used_cput
+    resource_list_nodes
+    resource_list_procs
+    resource_list_neednodes
+    resource_list_pcput
+    resource_list_cput
+    resource_list_walltime
+    resource_list_ncpus
+    resource_list_nodect
+    resource_list_mem
+    resource_list_pmem
+);
+
+# Use this hash to check if a column exists
+my %columns = map { $_ => 1 } @columns;
+
 # These entries need to be parsed and formatted
 my %formats = (
     resources_used_vmem     => 'memory',
@@ -100,6 +146,13 @@ sub shred {
         }
         else {
             $event->{$key} = $value;
+        }
+    }
+
+    foreach my $key ( keys %$event ) {
+        if ( !exists $columns{$key} ) {
+            $self->logger->warn("Ignoring unknown attribute '$key'");
+            delete $event->{$key};
         }
     }
 
