@@ -29,7 +29,6 @@ class UserHandler
 
   public function listAction(array $arguments, array $postData = NULL)
   {
-    error_log(print_r($postData));
     return RestResponse::factory(TRUE, NULL, array(
       'total' => 100,
       'users' => UBMoD_Model_User::getAll(),
