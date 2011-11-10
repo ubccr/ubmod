@@ -35,7 +35,7 @@
  * Time interval model.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
- * @version $Id$
+ * @version $Id: Interval.php 3125 2011-09-14 19:33:14Z jtpalmer@K5.CCR.BUFFALO.EDU $
  * @copyright Center for Computational Research, University at Buffalo, 2011
  * @package Ubmod
  */
@@ -45,8 +45,45 @@
  *
  * @package Ubmod
  */
-class Ubmod_Model_Interval
+class Ubmod_Model_TimeInterval
 {
+
+  /**
+   * Returns time interval data.
+   *
+   * @param int $intervalId Time interval primary key.
+   *
+   * @return array
+   */
+  public static function getById($intervalId)
+  {
+    $sql = '
+      SELECT
+        time_interval_id               AS interval_id,
+        display_name                   AS name,
+        DATE_FORMAT(start, "%m/%d/%Y") AS start,
+        DATE_FORMAT(end,   "%m/%d/%Y") AS end,
+        custom                         AS is_custom,
+        query_params                   AS params
+      FROM time_interval
+      WHERE time_interval_id = :time_interval_id
+    ';
+
+    $dbh = Ubmod_DbService::dbh();
+    $stmt = $dbh->prepare($sql);
+    $r = $stmt->execute(array(':time_interval_id' => $intervalId));
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
+
+    $interval = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$interval['is_custom']) {
+      $interval['params'] = json_decode($interval['params'], 1);
+    }
+
+    return $interval;
+  }
 
   /**
    * Returns time interval data.
@@ -60,13 +97,14 @@ class Ubmod_Model_Interval
     $sql = '
       SELECT
         time_interval_id               AS interval_id,
-        display_name                   AS time_interval,
-        start IS NULL OR end IS NULL   AS custom,
+        display_name                   AS name,
         DATE_FORMAT(start, "%m/%d/%Y") AS start,
-        DATE_FORMAT(end,   "%m/%d/%Y") AS end
+        DATE_FORMAT(end,   "%m/%d/%Y") AS end,
+        custom                         AS is_custom
       FROM time_interval
       WHERE time_interval_id = ?
     ';
+
     $dbh = Ubmod_DbService::dbh();
     $stmt = $dbh->prepare($sql);
     $r = $stmt->execute(array($params->getTimeIntervalId()));
@@ -76,9 +114,9 @@ class Ubmod_Model_Interval
     }
     $timeInterval = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($timeInterval['custom']) {
-      $timeInterval['start'] = $params->getStartDate();
-      $timeInterval['end']   = $params->getEndDate();
+    if ($timeInterval['is_custom']) {
+      $timeInterval['start'] = self::formatDate($params->getStartDate());
+      $timeInterval['end']   = self::formatDate($params->getEndDate());
     }
 
     // Check if the interval contains data for multiple months
@@ -94,15 +132,18 @@ class Ubmod_Model_Interval
    */
   public static function getAll()
   {
-    $dbh = Ubmod_DbService::dbh();
     $sql = '
       SELECT
         time_interval_id               AS interval_id,
-        display_name                   AS time_interval,
+        display_name                   AS name,
         DATE_FORMAT(start, "%m/%d/%Y") AS start,
-        DATE_FORMAT(end,   "%m/%d/%Y") AS end
-        FROM time_interval
+        DATE_FORMAT(end,   "%m/%d/%Y") AS end,
+        custom                         AS is_custom,
+        query_params                   AS params
+      FROM time_interval
     ';
+
+    $dbh = Ubmod_DbService::dbh();
     $stmt = $dbh->prepare($sql);
     $r = $stmt->execute();
     if (!$r) {
@@ -110,52 +151,15 @@ class Ubmod_Model_Interval
       throw new Exception($err[2]);
     }
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-  }
-
-  /**
-   * Returns the corresponding where clause for use in a SQL query
-   *
-   * @param array $params An array with these keys:
-   *   - interval_id
-   *   - start_date (only required for custom intervals)
-   *   - end_date (only requried for custom intervals)
-   *
-   * @return string
-   */
-  public static function getWhereClause(Ubmod_Model_QueryParams $params)
-  {
-
-    // If the given parameters don't include a interval ID, it is
-    // assumed that a specific month is being queried.
-    if (!$params->hasTimeIntervalId()) {
-      return "year = {$params->getYear()} AND month = {$params->getMonth()}";
+    $intervals = array();
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      if (!$row['is_custom']) {
+        $row['params'] = json_decode($row['params'], 1);
+      }
+      $intervals[] = $row;
     }
 
-    $sql = '
-      SELECT where_clause, start, end
-      FROM time_interval
-      WHERE time_interval_id = :time_interval_id
-    ';
-    $dbh = Ubmod_DbService::dbh();
-    $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute(array(
-      ':time_interval_id' => $params->getTimeIntervalId()
-    ));
-    if (!$r) {
-      $err = $stmt->errorInfo();
-      throw new Exception($err[2]);
-    }
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // Custom date range
-    if ($row['start'] === null || $row['end'] === null) {
-      $start = self::convertDate($params->getStartDate());
-      $end   = self::convertDate($params->getEndDate());
-      return sprintf($row['where_clause'], $start, $end);
-    } else {
-      return $row['where_clause'];
-    }
+    return $intervals;
   }
 
   /**
@@ -171,37 +175,58 @@ class Ubmod_Model_Interval
    */
   public static function getMonths(Ubmod_Model_QueryParams $params)
   {
-    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
-
-    $sql = "
-      SELECT DISTINCT month, year
-      FROM dim_date
-      WHERE $timeClause
-      ORDER BY year, month
-    ";
+    $qb = new Ubmod_DataWarehouse_QueryBuilder();
+    $qb->setFactTable('fact_job');
+    $qb->addDimensionTable('dim_date');
+    $qb->addSelectExpressions(array(
+      'min_date' => "DATE_FORMAT(MIN(date), '%Y-%m')",
+      'max_date' => "DATE_FORMAT(MAX(date), '%Y-%m')",
+    ));
+    $qb->setQueryParams($params);
+    $qb->clearLimit();
+    list($sql, $dbParams) = $qb->buildQuery();
 
     $dbh = Ubmod_DbService::dbh();
     $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute();
+    $r = $stmt->execute($dbParams);
     if (!$r) {
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
     }
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    list($year,    $month)    = explode('-', $row['min_date']);
+    list($maxYear, $maxMonth) = explode('-', $row['max_date']);
+
+    $months = array();
+
+    while ($year < $maxYear || $month <= $maxMonth) {
+      $months[] = array(
+        'year'  => $year,
+        'month' => $month,
+      );
+
+      $month++;
+      if ($month === 13) {
+        $month = 1;
+        $year++;
+      }
+    }
+
+    return $months;
   }
 
   /**
-   * Convert a date string from MM/DD/YYYY to YYYY-MM-DD
+   * Convert a date to MM/DD/YYYY.
    *
-   * @param string $date A date in MM/DD/YYYY format
+   * @param string $date A date tin YYYY-MM-DD format.
    *
    * @return string
    */
-  private static function convertDate($date)
+  public static function formatDate($date)
   {
-    if (preg_match('# ^ (\d?\d) / (\d?\d) / (\d{4}) $ #x', $date, $matches)) {
-      return sprintf('%04d-%02d-%02d', $matches[3], $matches[1], $matches[2]);
+    if (preg_match('# ^ (\d{4}) - (\d\d) - (\d\d) $ #x', $date, $matches)) {
+      return sprintf('%02d/%02d/%04d', $matches[2], $matches[3], $matches[1]);
     } else {
       throw new Exception("Invalid date format: '$date'");
     }

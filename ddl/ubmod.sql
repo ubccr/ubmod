@@ -204,7 +204,8 @@ CREATE TABLE `time_interval` (
   `display_name`     varchar(255) NOT NULL,
   `start`            date,
   `end`              date,
-  `where_clause`     varchar(255) NOT NULL,
+  `custom`           tinyint,
+  `query_params`     varchar(255),
   PRIMARY KEY (`time_interval_id`)
 ) ENGINE=MyISAM;
 

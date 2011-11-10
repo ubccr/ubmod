@@ -62,13 +62,13 @@ class Ubmod_Model_Chart
    */
   public static function getQueryString(Ubmod_Model_QueryParams $params)
   {
-    $interval = Ubmod_Model_Interval::getByParams($params);
+    $interval = Ubmod_Model_TimeInterval::getByParams($params);
     $cluster  = Ubmod_Model_Cluster::getById($params->getClusterId());
 
     $query['interval_id'] = $interval['interval_id'];
     $query['cluster_id']  = $cluster['cluster_id'];
 
-    if ($interval['custom']) {
+    if ($interval['is_custom']) {
       $query['start_date'] = $interval['start'];
       $query['end_date']   = $interval['end'];
     }
@@ -94,7 +94,7 @@ class Ubmod_Model_Chart
   private static function getSubTitle(Ubmod_Model_QueryParams $params)
   {
     $cluster  = Ubmod_Model_Cluster::getById($params->getClusterId());
-    $interval = Ubmod_Model_Interval::getByParams($params);
+    $interval = Ubmod_Model_TimeInterval::getByParams($params);
 
     $host  = $cluster['host'];
     $start = $interval['start'];
@@ -249,7 +249,7 @@ class Ubmod_Model_Chart
     Ubmod_Model_QueryParams $params)
   {
     $cpuLabels  = self::getCpuIntervalLabels();
-    $months     = Ubmod_Model_Interval::getMonths($params);
+    $months     = Ubmod_Model_TimeInterval::getMonths($params);
     $monthNames = array();
 
     // array( cpuLabel => array( month => cput, ... ), ... )
@@ -337,7 +337,7 @@ class Ubmod_Model_Chart
     Ubmod_Model_QueryParams $params)
   {
     $cpuLabels  = self::getCpuIntervalLabels();
-    $months     = Ubmod_Model_Interval::getMonths($params);
+    $months     = Ubmod_Model_TimeInterval::getMonths($params);
     $monthNames = array();
 
     // array( cpuLabel => array( month => avg_wait, ... ), ... )
@@ -553,7 +553,7 @@ class Ubmod_Model_Chart
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(1);
 
-    $months = Ubmod_Model_Interval::getMonths($params);
+    $months = Ubmod_Model_TimeInterval::getMonths($params);
 
     $maxGroups  = 11;
     $otherGroup = 'Remaining Groups';
@@ -642,7 +642,7 @@ class Ubmod_Model_Chart
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(1);
 
-    $months = Ubmod_Model_Interval::getMonths($params);
+    $months = Ubmod_Model_TimeInterval::getMonths($params);
 
     $maxUsers   = 11;
     $otherUser  = 'Remaining Users';

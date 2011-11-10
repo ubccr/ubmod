@@ -294,9 +294,41 @@ class Ubmod_DataWarehouse_QueryBuilder
       $this->addWhereClause('dim_cpus_id', '=', $params->getCpusId());
     }
 
-    // XXX QueryParams should include indiviudal attributes
-    $this->_whereClauses[] = Ubmod_Model_Interval::getWhereClause($params);
-    $this->addDimensionTable('dim_date');
+    if ($params->hasDateData()) {
+      $this->addDimensionTable('dim_date');
+
+      if ($params->hasStartDate()) {
+        $this->addWhereClause('date', '>=', $params->getStartDate());
+      }
+
+      if ($params->hasEndDate()) {
+        $this->addWhereClause('date', '<=', $params->getEndDate());
+      }
+
+      if ($params->hasMonth()) {
+        $this->addWhereClause('month', '=', $params->getMonth());
+      }
+
+      if ($params->hasYear()) {
+        $this->addWhereClause('year', '=', $params->getYear());
+      }
+
+      if ($params->isLast365Days()) {
+        $this->addWhereClause('last_365_days', '=', 1);
+      }
+
+      if ($params->isLast90Days()) {
+        $this->addWhereClause('last_90_days', '=', 1);
+      }
+
+      if ($params->isLast30Days()) {
+        $this->addWhereClause('last_30_days', '=', 1);
+      }
+
+      if ($params->isLast7Days()) {
+        $this->addWhereClause('last_7_days', '=', 1);
+      }
+    }
 
     if ($params->hasFilter() && $this->_filterExpression !== null) {
       $this->addWhereClause($this->_filterExpression, 'LIKE',
@@ -351,20 +383,28 @@ class Ubmod_DataWarehouse_QueryBuilder
 
     if (count($this->_whereClauses) > 0) {
       $whereClauses = array();
-      foreach ($this->_whereClauses as $clause) {
-        if (is_array($clause)) {
-          list($column, $oper, $value) = $clause;
-          $key = ":$column";
-          $whereClauses[] = "$column $oper $key";
 
-          if ($value !== null) {
-            $params[$key] = $value;
-          }
-        } else {
-          // XXX this is necessary due to the current date handling
-          $whereClauses[] = $clause;
+      foreach ($this->_whereClauses as $clause) {
+        list($column, $oper, $value) = $clause;
+
+        $key = ":$column";
+
+        if ($value !== null) {
+
+          // Prevent duplicate keys
+          $origKey = $key;
+          $count = 0;
+          do {
+            $count++;
+            $key = $origKey . $count;
+          } while (isset($params[$key]));
+
+          $params[$key] = $value;
         }
+
+        $whereClauses[] = "$column $oper $key";
       }
+
       $sql .= ' WHERE ' . implode(' AND ', $whereClauses);
     }
 

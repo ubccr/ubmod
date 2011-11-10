@@ -159,18 +159,18 @@ sub _update_time_intervals {
     $self->_truncate('time_interval');
 
     $self->_insert_time_interval(
-        {   label        => 'Custom Date Range',
-            where_clause => "date >= '%s' AND date <= '%s'",
+        {   label  => 'Custom Date Range',
+            custom => 1,
         }
     );
 
     my $end_date = $self->{end_date};
 
     my @labels = (
-        [ 'Last 7 days',   7,   'last_7_days = 1' ],
-        [ 'Last 30 days',  30,  'last_30_days = 1' ],
-        [ 'Last 90 days',  90,  'last_90_days = 1' ],
-        [ 'Last 365 days', 365, 'last_365_days = 1' ],
+        [ 'Last 7 days',   7,   '{"last_7_days":1}' ],
+        [ 'Last 30 days',  30,  '{"last_30_days":1}' ],
+        [ 'Last 90 days',  90,  '{"last_90_days":1}' ],
+        [ 'Last 365 days', 365, '{"last_365_days":1}' ],
     );
 
     foreach my $item (@labels) {
@@ -182,7 +182,7 @@ sub _update_time_intervals {
             label        => $label,
             start        => $start_date->iso8601(),
             end          => $end_date->iso8601(),
-            where_clause => $clause,
+            query_params => $clause,
         };
         $self->_insert_time_interval($interval);
     }
@@ -192,7 +192,7 @@ sub _update_time_intervals {
             label        => $year,
             start        => "$year-01-01",
             end          => "$year-12-31",
-            where_clause => "year = $year",
+            query_params => '{"year":$year}',
         };
 
         $self->_insert_time_interval($interval);
@@ -395,10 +395,11 @@ sub _insert_time_interval {
             `display_name` = ?,
             `start`        = ?,
             `end`          = ?,
-            `where_clause` = ?
+            `custom`       = ?,
+            `query_params` = ?
     };
     my $sth = $self->{dbh}->prepare($sql);
-    $sth->execute( @$interval{qw( label start end where_clause )} );
+    $sth->execute( @$interval{qw( label start end custom query_params )} );
 
     return $self->{dbh}->{mysql_insertid};
 }

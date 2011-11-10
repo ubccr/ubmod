@@ -82,8 +82,8 @@ class Ubmod_Handler_Cluster
   {
     $clusters = Ubmod_Model_Cluster::getAll();
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'data'  => $clusters,
-      'total' => count($clusters),
+      'total'    => count($clusters),
+      'clusters' => $clusters,
     ));
   }
 }

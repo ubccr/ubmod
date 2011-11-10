@@ -72,7 +72,7 @@ class Ubmod_Model_Tag
     $tags = array();
 
     while ($row = $stmt->fetch()) {
-      $tags = array_merge($tags, json_decode($row['tags']));
+      $tags = array_merge($tags, json_decode($row['tags'], 1));
     }
 
     $tags = array_unique($tags);
@@ -144,7 +144,7 @@ class Ubmod_Model_Tag
     $tags = array();
 
     while ($row = $stmt->fetch()) {
-      $tags = array_merge($tags, json_decode($row['tags']));
+      $tags = array_merge($tags, json_decode($row['tags'], 1));
     }
 
     $tags = array_unique($tags);

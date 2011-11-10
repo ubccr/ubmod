@@ -66,8 +66,8 @@ class Ubmod_Handler_Interval
   public function listHelp()
   {
     $desc = 'List all time intervals.  Results will be an array where'
-      . ' individual records consist of (interval_id, time_interval, start,'
-      . ' end).';
+      . ' individual records consist of (interval_id, name, start, end,'
+      . ' is_custom, params).';
     return Ubmod_RestResponse::factory(TRUE, $desc);
   }
 
@@ -81,11 +81,11 @@ class Ubmod_Handler_Interval
    */
   public function listAction(array $arguments, array $postData = NULL)
   {
-    $intervals = Ubmod_Model_Interval::getAll();
+    $intervals = Ubmod_Model_TimeInterval::getAll();
 
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'data'  => $intervals,
-      'total' => count($intervals),
+      'total'     => count($intervals),
+      'intervals' => $intervals,
     ));
   }
 }

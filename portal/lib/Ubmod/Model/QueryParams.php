@@ -49,13 +49,6 @@ class Ubmod_Model_QueryParams
 {
 
   /**
-   * Cluster dimension primary key.
-   *
-   * @var int
-   */
-  protected $_clusterId = null;
-
-  /**
    * Time interval primary key.
    *
    * @var int
@@ -63,9 +56,16 @@ class Ubmod_Model_QueryParams
   protected $_timeIntervalId = null;
 
   /**
+   * Indicates that the time interval is a custom date range.
+   *
+   * @var bool
+   */
+  protected $_isCustomDateRange = false;
+
+  /**
    * Time interval start date.
    *
-   * Used for custom date range queries. Stored in MM/DD/YYYY format.
+   * Used for custom date range queries. Stored in YYYY-MM-DD format.
    *
    * @var string
    */
@@ -74,11 +74,20 @@ class Ubmod_Model_QueryParams
   /**
    * Time interval end date.
    *
-   * Used for custom date range queries. Stored in MM/DD/YYYY format.
+   * Used for custom date range queries. Stored in YYYY-MM-DD format.
    *
    * @var string
    */
   protected $_endDate = null;
+
+  /**
+   * Time interval month.
+   *
+   * Used for monthly queries.
+   *
+   * @var int
+   */
+  protected $_month = null;
 
   /**
    * Time interval year.
@@ -90,13 +99,39 @@ class Ubmod_Model_QueryParams
   protected $_year = null;
 
   /**
-   * Time interval month.
+   * Indicates that the time interval is the last 365 days.
    *
-   * Used for monthly queries.
+   * @var bool
+   */
+  protected $_isLast365Days = false;
+
+  /**
+   * Indicates that the time interval is the last 90 days.
+   *
+   * @var bool
+   */
+  protected $_isLast90Days = false;
+
+  /**
+   * Indicates that the time interval is the last 30 days.
+   *
+   * @var bool
+   */
+  protected $_isLast30Days = false;
+
+  /**
+   * Indicates that the time interval is the last 7 days.
+   *
+   * @var bool
+   */
+  protected $_isLast7Days = false;
+
+  /**
+   * Cluster dimension primary key.
    *
    * @var int
    */
-  protected $_month = null;
+  protected $_clusterId = null;
 
   /**
    * Queue dimension primary key.
@@ -145,7 +180,7 @@ class Ubmod_Model_QueryParams
    *
    * @var bool
    */
-  protected $_isOrderByDescending = null;
+  protected $_isOrderByDescending = false;
 
   /**
    * LIMIT offset.
@@ -192,12 +227,32 @@ class Ubmod_Model_QueryParams
   {
     $query = new Ubmod_Model_QueryParams();
 
-    if (isset($params['cluster_id'])) {
-      $query->setClusterId(intval($params['cluster_id']));
-    }
-
     if (isset($params['interval_id'])) {
       $query->setTimeIntervalId(intval($params['interval_id']));
+    } else {
+      if (isset($params['month'])) {
+        $query->setMonth($params['month']);
+      }
+
+      if (isset($params['year'])) {
+        $query->setYear($params['year']);
+      }
+
+      if (isset($params['last_365_days'])) {
+        $query->setLast365Days($params['last_365_days']);
+      }
+
+      if (isset($params['last_90_days'])) {
+        $query->setLast90Days($params['last_90_days']);
+      }
+
+      if (isset($params['last_30_days'])) {
+        $query->setLast30Days($params['last_30_days']);
+      }
+
+      if (isset($params['last_7_days'])) {
+        $query->setLast7Days($params['last_7_days']);
+      }
     }
 
     if (isset($params['start_date'])) {
@@ -206,6 +261,10 @@ class Ubmod_Model_QueryParams
 
     if (isset($params['end_date'])) {
       $query->setEndDate($params['end_date']);
+    }
+
+    if (isset($params['cluster_id'])) {
+      $query->setClusterId(intval($params['cluster_id']));
     }
 
     if (isset($params['queue_id'])) {
@@ -252,38 +311,6 @@ class Ubmod_Model_QueryParams
   }
 
   /**
-   * Set the cluster ID.
-   *
-   * @param int $clusterId The cluster dimension primary key.
-   *
-   * @return void
-   */
-  public function setClusterId($clusterId)
-  {
-    $this->_clusterId = $clusterId;
-  }
-
-  /**
-   * Get the cluster ID.
-   *
-   * @return int The cluster dimension primary key.
-   */
-  public function getClusterId()
-  {
-    return $this->_clusterId;
-  }
-
-  /**
-   * Check if the cluster ID is set.
-   *
-   * @return int True if the cluster ID is set.
-   */
-  public function hasClusterId()
-  {
-    return $this->_clusterId !== null;
-  }
-
-  /**
    * Set the time interval ID.
    *
    * @param int $intervalId The time interval primary key.
@@ -293,6 +320,41 @@ class Ubmod_Model_QueryParams
   public function setTimeIntervalId($intervalId)
   {
     $this->_timeIntervalId = $intervalId;
+
+    $interval = Ubmod_Model_TimeInterval::getById($intervalId);
+
+    if (!$interval['is_custom']) {
+      $this->_startDate = null;
+      $this->_endDate   = null;
+    }
+
+    if (isset($interval['params'])) {
+      $params = $interval['params'];
+
+      if (isset($params['month'])) {
+        $this->setMonth($params['month']);
+      }
+
+      if (isset($params['year'])) {
+        $this->setYear($params['year']);
+      }
+
+      if (isset($params['last_365_days'])) {
+        $this->setLast365Days($params['last_365_days']);
+      }
+
+      if (isset($params['last_90_days'])) {
+        $this->setLast90Days($params['last_90_days']);
+      }
+
+      if (isset($params['last_30_days'])) {
+        $this->setLast30Days($params['last_30_days']);
+      }
+
+      if (isset($params['last_7_days'])) {
+        $this->setLast7Days($params['last_7_days']);
+      }
+    }
   }
 
   /**
@@ -325,6 +387,51 @@ class Ubmod_Model_QueryParams
     $this->_timeIntervalId = null;
   }
 
+
+  /**
+   * Set the cluster ID.
+   *
+   * @param int $clusterId The cluster dimension primary key.
+   *
+   * @return void
+   */
+  public function setClusterId($clusterId)
+  {
+    $this->_clusterId = $clusterId;
+  }
+
+  /**
+   * Get the cluster ID.
+   *
+   * @return int The cluster dimension primary key.
+   */
+  public function getClusterId()
+  {
+    return $this->_clusterId;
+  }
+
+  /**
+   * Check if the cluster ID is set.
+   *
+   * @return int True if the cluster ID is set.
+   */
+  public function hasClusterId()
+  {
+    return $this->_clusterId !== null;
+  }
+
+  /**
+   * Check if any data data is present.
+   *
+   * @return bool True if there is date data.
+   */
+  public function hasDateData()
+  {
+    return $this->hasStartDate() || $this->hasEndDate() || $this->hasMonth()
+      || $this->hasYear() || $this->isLast365Days() || $this->isLast90Days()
+      || $this->isLast30Days() || $this->isLast7Days();
+  }
+
   /**
    * Set the time interval start date.
    *
@@ -334,11 +441,7 @@ class Ubmod_Model_QueryParams
    */
   public function setStartDate($startDate)
   {
-    if (!$this->_isDateValid($startDate)) {
-      throw new Exception("Invalid date format: '$startDate'");
-    }
-
-    $this->_startDate = $startDate;
+    $this->_startDate = self::_convertDate($startDate);
   }
 
   /**
@@ -352,6 +455,16 @@ class Ubmod_Model_QueryParams
   }
 
   /**
+   * Check if the time interval start date is set.
+   *
+   * @return int True if the time interval start date is set.
+   */
+  public function hasStartDate()
+  {
+    return $this->_startDate !== null;
+  }
+
+  /**
    * Set the time interval end date.
    *
    * @param string $endDate The time interval end date.
@@ -360,11 +473,7 @@ class Ubmod_Model_QueryParams
    */
   public function setEndDate($endDate)
   {
-    if (!$this->_isDateValid($endDate)) {
-      throw new Exception("Invalid date format: '$endDate'");
-    }
-
-    $this->_endDate = $endDate;
+    $this->_endDate = self::_convertDate($endDate);
   }
 
   /**
@@ -375,6 +484,16 @@ class Ubmod_Model_QueryParams
   public function getEndDate()
   {
     return $this->_endDate;
+  }
+
+  /**
+   * Check if the time interval end date is set.
+   *
+   * @return int True if the time interval end date is set.
+   */
+  public function hasEndDate()
+  {
+    return $this->_endDate !== null;
   }
 
   /**
@@ -400,6 +519,16 @@ class Ubmod_Model_QueryParams
   }
 
   /**
+   * Check if the time interval month is set.
+   *
+   * @return int True if the time interval month is set.
+   */
+  public function hasMonth()
+  {
+    return $this->_month !== null;
+  }
+
+  /**
    * Set the time interval year.
    *
    * @param int $year The time interval year.
@@ -419,6 +548,104 @@ class Ubmod_Model_QueryParams
   public function getYear()
   {
     return $this->_year;
+  }
+
+  /**
+   * Check if the time interval year is set.
+   *
+   * @return int True if the time interval year is set.
+   */
+  public function hasYear()
+  {
+    return $this->_year !== null;
+  }
+
+  /**
+   * Set the time interval to be the last 365 days.
+   *
+   * @param bool $days
+   *
+   * @return void
+   */
+  public function setLast365Days($days)
+  {
+    $this->_isLast365Days = $days;
+  }
+
+  /**
+   * Check if the time interval is the last 365 days.
+   *
+   * @return bool
+   */
+  public function isLast365Days()
+  {
+    return $this->_isLast365Days;
+  }
+
+  /**
+   * Set the time interval to be the last 90 days.
+   *
+   * @param bool $days
+   *
+   * @return void
+   */
+  public function setLast90Days($days)
+  {
+    $this->_isLast90Days = $days;
+  }
+
+  /**
+   * Check if the time interval is the last 90 days.
+   *
+   * @return bool
+   */
+  public function isLast90Days()
+  {
+    return $this->_isLast90Days;
+  }
+
+  /**
+   * Set the time interval to be the last 30 days.
+   *
+   * @param bool $days
+   *
+   * @return void
+   */
+  public function setLast30Days($days)
+  {
+    $this->_isLast30Days = $days;
+  }
+
+  /**
+   * Check if the time interval is the last 30 days.
+   *
+   * @return bool
+   */
+  public function isLast30Days()
+  {
+    return $this->_isLast30Days;
+  }
+
+  /**
+   * Set the time interval to be the last 7 days.
+   *
+   * @param bool $days
+   *
+   * @return void
+   */
+  public function setLast7Days($days)
+  {
+    $this->_isLast7Days = $days;
+  }
+
+  /**
+   * Check if the time interval is the last 7 days.
+   *
+   * @return bool
+   */
+  public function isLast7Days()
+  {
+    return $this->_isLast7Days;
   }
 
   /**
@@ -732,16 +959,22 @@ class Ubmod_Model_QueryParams
   }
 
   /**
-   * Check if a string is a valid date.
+   * Convert a date string from MM/DD/YYYY to YYYY-MM-DD.
    *
-   * The only valid date format is MM/DD/YYYY
+   * @param string $date A date in MM/DD/YYYY format.
    *
-   * @param string $date The date string to check.
-   *
-   * @return bool True if that date is valid.
+   * @return string A date in YYYY-MM-DD format.
    */
-  private function _isDateValid($date)
+  private static function _convertDate($date)
   {
-     return preg_match('# ^ (\d\d) / (\d\d) / (\d{4}) $ #x', $date);
+    if (preg_match('# ^ \d{4} - \d\d - \d\d $ #x', $date)) {
+      return $date;
+    }
+
+    if (preg_match('# ^ (\d\d) / (\d\d) / (\d{4}) $ #x', $date, $matches)) {
+      return sprintf('%04d-%02d-%02d', $matches[3], $matches[1], $matches[2]);
+    } else {
+      throw new Exception("Invalid date format: '$date'");
+    }
   }
 }

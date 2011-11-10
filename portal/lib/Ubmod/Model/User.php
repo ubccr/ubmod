@@ -241,7 +241,7 @@ class Ubmod_Model_User
     }
     $users = array();
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-      $row['tags'] = json_decode($row['tags']);
+      $row['tags'] = json_decode($row['tags'], 1);
       $users[] = $row;
     }
 
@@ -283,7 +283,7 @@ class Ubmod_Model_User
       }
       $user = $selectStmt->fetch();
 
-      $tags = json_decode($user['tags']);
+      $tags = json_decode($user['tags'], 1);
 
       if (!in_array($tag, $tags)) {
         $tags[] = $tag;

@@ -45,17 +45,21 @@ Ext.Loader.onReady(function () {
     /**
      * Time interval model.
      */
-    Ext.define('Ubmod.model.Interval', {
+    Ext.define('Ubmod.model.TimeInterval', {
         extend: 'Ext.data.Model',
         fields: [
-            'interval_id',
-            'time_interval',
-            'start',
-            'end'
+            { name: 'interval_id', type: 'int' },
+            { name: 'name',        type: 'string' },
+            { name: 'start',       type: 'string' },
+            { name: 'end',         type: 'string' },
+            { name: 'is_custom',   type: 'boolean' }
         ],
 
+        /**
+         * @return {Boolean} True if this is a custom date range.
+         */
         isCustomDateRange: function () {
-            return this.get('start') === null || this.get('end') === null;
+            return this.get('is_custom');
         }
     });
 
@@ -222,10 +226,10 @@ Ext.Loader.onReady(function () {
     Ext.define('Ubmod.model.App', {
         extend: 'Ext.data.Model',
         fields: [
-            { name: 'interval', type: 'Ubmod.model.Interval' },
-            { name: 'cluster', type: 'Ubmod.model.Cluster' },
+            { name: 'interval',  type: 'Ubmod.model.TimeInterval' },
+            { name: 'cluster',   type: 'Ubmod.model.Cluster' },
             { name: 'startDate', type: 'string' },
-            { name: 'endDate', type: 'string' }
+            { name: 'endDate',   type: 'string' }
         ],
 
         constructor: function (config) {
@@ -281,13 +285,6 @@ Ext.Loader.onReady(function () {
         isReady: function () {
             return this.get('interval') !== undefined &&
                 this.get('cluster') !== undefined;
-        },
-
-        /**
-         * @return {Number} The currently selected interval ID.
-         */
-        getIntervalId: function () {
-            return this.get('interval').get('interval_id');
         },
 
         /**
@@ -347,22 +344,33 @@ Ext.Loader.onReady(function () {
         },
 
         /**
-         * @return {Object} The parameters needed for REST requests.
+         * @return {Object} The parameters defining the currently
+         *   selected time interval.
          */
-        getRestParams: function () {
+        getIntervalRestParams: function () {
             var interval, params;
 
             interval = this.get('interval');
 
-            params = {
-                'interval_id': this.getIntervalId(),
-                'cluster_id': this.getClusterId()
-            };
+            params = { interval_id: interval.get('interval_id') };
 
             if (interval.isCustomDateRange()) {
-                params.start_date = this.getStartDate();
-                params.end_date   = this.getEndDate();
+                Ext.apply(params, {
+                    start_date: this.getStartDate(),
+                    end_date:   this.getEndDate()
+                });
             }
+
+            return params;
+        },
+
+        /**
+         * @return {Object} The parameters needed for REST requests.
+         */
+        getRestParams: function () {
+            var params = { 'cluster_id': this.getClusterId() };
+
+            Ext.apply(params, this.getIntervalRestParams());
 
             return params;
         }
@@ -391,18 +399,18 @@ Ext.Loader.onReady(function () {
     /**
      * Time interval data store.
      */
-    Ext.define('Ubmod.store.Interval', {
+    Ext.define('Ubmod.store.TimeInterval', {
         extend: 'Ext.data.Store',
 
         constructor: function (config) {
             config = config || {};
             Ext.apply(config, {
-                model: 'Ubmod.model.Interval',
+                model: 'Ubmod.model.TimeInterval',
                 buffered: true,
                 proxy: {
                     type: 'ajax',
                     url: '/api/rest/json/interval/list',
-                    reader: { type: 'json', root: 'data' }
+                    reader: { type: 'json', root: 'intervals' }
                 }
             });
             this.callParent([config]);
@@ -423,7 +431,7 @@ Ext.Loader.onReady(function () {
                 proxy: {
                     type: 'ajax',
                     url: '/api/rest/json/cluster/list',
-                    reader: { type: 'json', root: 'data' }
+                    reader: { type: 'json', root: 'clusters' }
                 }
             });
             this.callParent([config]);
@@ -603,18 +611,18 @@ Ext.Loader.onReady(function () {
     /**
      * Time interval combo box.
      */
-    Ext.define('Ubmod.widget.Interval', {
+    Ext.define('Ubmod.widget.TimeInterval', {
         extend: 'Ext.form.field.ComboBox',
 
         constructor: function (config) {
             config = config || {};
             Ext.apply(config, {
                 editable: false,
-                store: Ext.create('Ubmod.store.Interval'),
-                displayField: 'time_interval',
+                store: Ext.create('Ubmod.store.TimeInterval'),
+                displayField: 'name',
                 valueField: 'interval_id',
                 queryMode: 'local',
-                emptyText: 'Interval...'
+                emptyText: 'Period...'
             });
             this.callParent([config]);
         },
@@ -680,7 +688,7 @@ Ext.Loader.onReady(function () {
         },
 
         initComponent: function () {
-            this.intervalCombo = Ext.create('Ubmod.widget.Interval');
+            this.intervalCombo = Ext.create('Ubmod.widget.TimeInterval');
             this.intervalCombo.on('select', function (combo, records) {
                 this.model.set('interval', records[0]);
             }, this);

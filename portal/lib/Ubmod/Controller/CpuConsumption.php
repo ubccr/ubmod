@@ -67,7 +67,7 @@ class Ubmod_Controller_CpuConsumption extends Ubmod_BaseController
   {
     $params = Ubmod_Model_QueryParams::factory($this->getPostData());
 
-    $this->interval = Ubmod_Model_Interval::getByParams($params);
+    $this->interval = Ubmod_Model_TimeInterval::getByParams($params);
 
     $queryString = Ubmod_Model_Chart::getQueryString($params);
 
