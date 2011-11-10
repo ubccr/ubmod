@@ -49,54 +49,6 @@ class Ubmod_Model_User
 {
 
   /**
-   * Returns the user for a given id and parameters.
-   *
-   * @param Ubmod_Model_QueryParams $params The parameters for the query.
-   *
-   * @return array
-   */
-  public static function getActivityById(Ubmod_Model_QueryParams $params)
-  {
-    $qb = new Ubmod_DataWarehouse_QueryBuilder();
-    $qb->setFactTable('fact_job');
-    $qb->addDimensionTable('dim_user');
-    $qb->addSelectExpressions(array(
-      'user_id'      => 'dim_user_id',
-      'user'         => 'name',
-      'display_name' => 'COALESCE(display_name, name)',
-      'jobs'         => 'COUNT(*)',
-      'wallt'        => 'ROUND(SUM(wallt) / 86400, 1)',
-      'avg_wallt'    => 'ROUND(AVG(wallt) / 86400, 1)',
-      'max_wallt'    => 'ROUND(MAX(wallt) / 86400, 1)',
-      'cput'         => 'ROUND(SUM(cput)  / 86400, 1)',
-      'avg_cput'     => 'ROUND(AVG(cput)  / 86400, 1)',
-      'max_cput'     => 'ROUND(MAX(cput)  / 86400, 1)',
-      'avg_mem'      => 'ROUND(AVG(mem)   / 1024,  1)',
-      'max_mem'      => 'ROUND(MAX(mem)   / 1024,  1)',
-      'avg_vmem'     => 'ROUND(AVG(vmem)  / 1024,  1)',
-      'max_vmem'     => 'ROUND(MAX(vmem)  / 1024,  1)',
-      'avg_wait'     => 'ROUND(AVG(wait)  / 3600,  1)',
-      'avg_exect'    => 'ROUND(AVG(exect) / 3600,  1)',
-      'max_nodes'    => 'ROUND(MAX(nodes),         1)',
-      'avg_nodes'    => 'ROUND(AVG(nodes),         1)',
-      'max_cpus'     => 'ROUND(MAX(cpus),          1)',
-      'avg_cpus'     => 'ROUND(AVG(cpus),          1)',
-    ));
-    $qb->setQueryParams($params);
-    list($sql, $dbParams) = $qb->buildQuery();
-
-    $dbh = Ubmod_DbService::dbh();
-    $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute($dbParams);
-    if (!$r) {
-      $err = $stmt->errorInfo();
-      throw new Exception($err[2]);
-    }
-
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-  }
-
-  /**
    * Returns the number of users for the given parameters.
    *
    * @param Ubmod_Model_QueryParams $params The parameters for the query.

@@ -66,6 +66,6 @@ class Ubmod_Controller_Group extends Ubmod_BaseController
   public function executeDetails()
   {
     $params = Ubmod_Model_QueryParams::factory($this->getPostData());
-    $this->group = Ubmod_Model_Group::getActivityById($params);
+    $this->group = Ubmod_Model_Job::getEntity('group', $params);
   }
 }

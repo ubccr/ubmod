@@ -124,4 +124,20 @@ class Ubmod_Model_Job
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
+
+  /**
+   * Returns a single array with the activity with the specific model
+   * data added.
+   *
+   * @param Ubmod_Model_QueryParams $params The parameters for the query.
+   * @param string $type The model type (user, group, queue or cluster).
+   *
+   * @return array
+   */
+  public static function getEntity($type, Ubmod_Model_QueryParams $params)
+  {
+    $params->setModel($type);
+    $activity = self::getActivity($params);
+    return $activity[0];
+  }
 }

@@ -66,6 +66,6 @@ class Ubmod_Controller_Queue extends Ubmod_BaseController
   public function executeDetails()
   {
     $params = Ubmod_Model_QueryParams::factory($this->getPostData());
-    $this->queue = Ubmod_Model_Queue::getActivityById($params);
+    $this->queue = Ubmod_Model_Job::getEntity('queue', $params);
   }
 }
