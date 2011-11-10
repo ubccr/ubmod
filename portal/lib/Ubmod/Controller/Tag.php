@@ -65,6 +65,6 @@ class Ubmod_Controller_Tag extends Ubmod_BaseController
    */
   public function executeDetails()
   {
-    $this->tag = Ubmod_Model_Tag::getActivity($this->getPostData());
+    $this->tag = Ubmod_Model_Tag::getActivityByName($this->getPostData());
   }
 }

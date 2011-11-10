@@ -189,6 +189,21 @@ Ext.Loader.onReady(function () {
     });
 
     /**
+     * Tag activity model
+     */
+    Ext.define('Ubmod.model.TagActivity', {
+        extend: 'Ext.data.Model',
+        fields: [
+            { name: 'tag',      type: 'string' },
+            { name: 'jobs',     type: 'int' },
+            { name: 'avg_wait', type: 'float' },
+            { name: 'wallt',    type: 'float' },
+            { name: 'avg_cpus', type: 'float' },
+            { name: 'avg_mem',  type: 'float' }
+        ]
+    });
+
+    /**
      * Tag model
      */
     Ext.define('Ubmod.model.Tag', {
@@ -543,6 +558,30 @@ Ext.Loader.onReady(function () {
     });
 
     /**
+     * Tag activity data store.
+     */
+    Ext.define('Ubmod.store.TagActivity', {
+        extend: 'Ubmod.data.ReverseSortStore',
+
+        constructor: function (config) {
+            config = config || {};
+            Ext.apply(config, {
+                model: 'Ubmod.model.TagActivity',
+                remoteSort: true,
+                pageSize: 25,
+                proxy: {
+                    type: 'ajax',
+                    simpleSortMode: true,
+                    url: '/api/rest/json/tag/activity',
+                    reader: { type: 'json', root: 'tags' },
+                    extraParams: { sort: 'wallt', dir: 'DESC' }
+                }
+            });
+            Ubmod.store.QueueActivity.superclass.constructor.call(this, config);
+        }
+    });
+
+    /**
      * Tag store
      */
     Ext.define('Ubmod.store.Tag', {
@@ -886,6 +925,8 @@ Ext.Loader.onReady(function () {
         constructor: function (config) {
             config = config || {};
 
+            this.model = config.model;
+
             Ext.apply(config, {
                 width: 745,
                 plain: true
@@ -895,13 +936,13 @@ Ext.Loader.onReady(function () {
         },
 
         initComponent: function () {
-            var tagGrid, tagReport;
+            var userTagGrid, tagStatsGrid;
 
-            tagGrid = Ext.create('Ubmod.widget.TagGrid', {
-                title: 'Users'
+            userTagGrid = Ext.create('Ubmod.widget.TagGrid', {
+                title: 'User Tags'
             });
 
-            tagGrid.on('itemdblclick', function (grid, record) {
+            userTagGrid.on('itemdblclick', function (grid, record) {
                 var foundTab, userPanel;
 
                 // Check if there is already a tab for this user
@@ -921,21 +962,55 @@ Ext.Loader.onReady(function () {
                 });
 
                 userPanel.on('userchanged', function () {
-                    tagGrid.store.load();
+                    userTagGrid.store.load();
                 }, this);
 
                 this.add(userPanel).show();
             }, this);
 
-            tagReport = Ext.create('Ubmod.widget.TagReport', {
-                title: 'Tag Report'
+            this.tagActivity = Ext.create('Ubmod.store.TagActivity');
+
+            tagStatsGrid = Ext.create('Ubmod.widget.StatsGrid', {
+                title: 'Tag Activity',
+                store: this.tagActivity,
+                height: 400,
+                label: 'Tag',
+                labelKey: 'tag'
             });
 
-            tagReport.on('reportloaded', this.doComponentLayout, this);
+            tagStatsGrid.on('itemdblclick', function (grid, record) {
+                var foundTab, tagPanel;
 
-            this.items = [tagGrid, tagReport];
+                // Check if there is already a tab for this tag
+                this.items.each(function (item) {
+                    if (item.tag === record) {
+                        this.setActiveTab(item);
+                        foundTab = true;
+                        return false;
+                    }
+                }, this);
+
+                if (foundTab) { return; }
+
+                tagPanel = Ext.create('Ubmod.widget.TagReport', {
+                    tag: record,
+                    closable: true
+                });
+
+                this.add(tagPanel).show();
+            }, this);
+
+            this.reload();
+
+            this.items = [userTagGrid, tagStatsGrid];
 
             Ubmod.widget.TagPanel.superclass.initComponent.call(this);
+        },
+
+        reload: function () {
+            var params = this.model.getRestParams();
+            Ext.merge(this.tagActivity.proxy.extraParams, params);
+            this.tagActivity.load();
         }
     });
 
@@ -1027,40 +1102,24 @@ Ext.Loader.onReady(function () {
         constructor: function (config) {
             config = config || {};
 
-            this.addEvents({ reportloaded: true });
+            this.tag = config.tag;
+
+            Ext.apply(config, { title: this.tag.get('tag') });
 
             Ubmod.widget.TagReport.superclass.constructor.call(this, config);
         },
 
         initComponent: function () {
-            var toolbar, tagInput, updateButton, partial;
+            var partial;
 
-            tagInput     = Ext.create('Ubmod.widget.TagInput');
-            updateButton = Ext.create('Ext.Button', { text: 'View Report' });
-
-            updateButton.on('click', function () {
-                if (partial !== undefined) {
-                    this.removeAll();
-                    partial.destroy();
-                }
-
-                partial = Ubmod.app.createPartial({
-                    url: '/tag/details',
-                    params: { tag: tagInput.getValue() }
-                });
-
-                this.add(partial);
-
-                partial.on('afterload', function () {
-                    this.fireEvent('reportloaded');
-                }, this);
-            }, this);
-
-            toolbar = Ext.create('Ext.toolbar.Toolbar', {
-                items: ['Tag:', tagInput, updateButton]
+            partial = Ubmod.app.createPartial({
+                url: '/tag/details',
+                params: { tag: this.tag.get('tag') }
             });
 
-            this.dockedItems = [toolbar];
+            partial.on('afterload', this.doComponentLayout, this);
+
+            this.items = [partial];
 
             Ubmod.widget.TagReport.superclass.initComponent.call(this);
         }
@@ -1202,6 +1261,15 @@ Ext.Loader.onReady(function () {
     Ext.define('Ubmod.widget.PagingToolbar', {
         extend: 'Ext.toolbar.Paging',
 
+        constructor: function (config) {
+            config = config || {};
+
+            this.key = config.key;
+
+            Ubmod.widget.PagingToolbar.superclass.constructor.call(this,
+                config);
+        },
+
         initComponent: function () {
             var filter = Ext.create('Ext.form.field.Text', {
                 enableKeyEvents: true
@@ -1209,24 +1277,44 @@ Ext.Loader.onReady(function () {
 
             filter.on('keypress', function (text, e) {
                 if (e.getKey() === e.ENTER) {
-                    Ext.apply(this.store.proxy.extraParams, {
-                        filter: text.getValue()
-                    });
-                    this.moveFirst();
+                    this.applyFilter(text.getValue());
                 }
             }, this);
 
             filter.on('keyup', function (text, e) {
                 if (e.getKey() === e.BACKSPACE &&
                         text.getValue().length === 0) {
-                    Ext.apply(this.store.proxy.extraParams, { filter: '' });
-                    this.moveFirst();
+                    this.clearFilter();
                 }
             }, this);
 
             this.items = [ '-', 'Search:', filter ];
 
             Ubmod.widget.PagingToolbar.superclass.initComponent.call(this);
+        },
+
+        /**
+         * Filter the store by the given keyword.
+         *
+         * Filters out any records whose key field does not contain the
+         * keyword as a substring. Also moves the store to the first
+         * page.
+         *
+         * @param {String} keyword The string to filter for.
+         */
+        applyFilter: function (keyword) {
+            Ext.apply(this.store.proxy.extraParams, { filter: keyword });
+            this.moveFirst();
+        },
+
+        /**
+         * Remove any filters from the store.
+         *
+         * Also moves the store to the first page.
+         */
+        clearFilter: function () {
+            Ext.apply(this.store.proxy.extraParams, { filter: '' });
+            this.moveFirst();
         }
     });
 

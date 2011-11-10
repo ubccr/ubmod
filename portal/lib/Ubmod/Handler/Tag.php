@@ -95,4 +95,36 @@ class Ubmod_Handler_Tag
       'tags'  => $tags,
     ));
   }
+
+  /**
+   * Help for the "activity" action.
+   *
+   * @return void
+   */
+  public function activityHelp()
+  {
+    $desc = 'Returns tag activity. Results will be an array where'
+      . ' individual records will consist of (tag, display_name, jobs, cput,'
+      . ' wallt, avg_wait, avg_cpus, avg_mem).';
+    $options = array(
+      'interval_id' => 'Return user activity in this interval. (required)',
+      'cluster_id'  => 'Return user activity in this cluster. (required)',
+    );
+    return Ubmod_RestResponse::factory(TRUE, $desc, $options);
+  }
+
+  /**
+   * Returns tag activity.
+   *
+   * @param array $arguments
+   * @param array $postData
+   *
+   * @return Ubmod_RestResponse
+   */
+  public function activityAction(array $arguments, array $postData = NULL)
+  {
+    return Ubmod_RestResponse::factory(TRUE, NULL, array(
+      'tags'  => Ubmod_Model_Tag::getActivity($arguments),
+    ));
+  }
 }
