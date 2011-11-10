@@ -9,7 +9,8 @@ Utilization for cluster: <?php echo $cluster['display_name'] ?> for period from:
     <td><img id="gpie" src="<?php echo $groupPieChart ?>" /><img id="gbar" style="display: none" src="<?php echo $groupBarChart ?>" /></td>
 </tr>
 <tr>
-    <td><img src="<?php echo $userAreaChart ?>" /></td>
+    <td style="vertical-align:top;"><img src="<?php echo $userAreaChart ?>" /></td>
+    <td style="vertical-align:top;"><img src="<?php echo $groupAreaChart ?>" /></td>
 </tr>
 </table>
 </div>

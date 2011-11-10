@@ -72,10 +72,11 @@ class Ubmod_Controller_Dashboard extends Ubmod_BaseController
 
     $queryString = Ubmod_Model_Chart::getQueryString($post);
 
-    $this->userPieChart  = '/chart/user-pie?'  . $queryString;
-    $this->userBarChart  = '/chart/user-bar?'  . $queryString;
-    $this->userAreaChart = '/chart/user-area?' . $queryString;
-    $this->groupPieChart = '/chart/group-pie?' . $queryString;
-    $this->groupBarChart = '/chart/group-bar?' . $queryString;
+    $this->userPieChart   = '/chart/user-pie?'   . $queryString;
+    $this->userBarChart   = '/chart/user-bar?'   . $queryString;
+    $this->userAreaChart  = '/chart/user-area?'  . $queryString;
+    $this->groupPieChart  = '/chart/group-pie?'  . $queryString;
+    $this->groupBarChart  = '/chart/group-bar?'  . $queryString;
+    $this->groupAreaChart = '/chart/group-area?' . $queryString;
   }
 }

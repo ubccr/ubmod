@@ -423,6 +423,89 @@ class Ubmod_Model_Chart
   }
 
   /**
+   * Create a group utilization stacked area chart and send it to the browser.
+   *
+   * @return void
+   */
+  public static function renderGroupStackedArea($params)
+  {
+    $params['sort'] = 'wallt';
+    $params['dir']  = 'DESC';
+
+    $months = Ubmod_Model_Interval::getMonths($params);
+
+    $maxGroups  = 11;
+    $otherGroup = 'Remaining Groups';
+    $groups     = array();
+    $monthNames = array();
+
+    // array( monthKey => array( group => wallt, ... ), ... )
+    $serieForMonth = array();
+
+    foreach ($months as $monthKey => $month) {
+
+      $groupCount = 0;
+      $groupWallt = array();
+      $otherWallt = 0;
+
+      $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
+      $monthNames[] = date("M 'y", $time);
+
+      $monthParams = array_merge($params, $month);
+      unset($monthParams['interval_id']);
+
+      foreach (Ubmod_Model_Group::getActivities($monthParams) as $group) {
+        if ($groupCount < $maxGroups) {
+          $groupWallt[$group['group_name']] = $group['wallt'];
+        } else {
+          $otherWallt += $group['wallt'];
+        }
+        $groupCount++;
+      }
+
+      // Don't include "other groups" here
+      $groups = array_merge($groups, array_keys($groupWallt));
+
+      if ($otherWallt > 0) {
+        $groupWallt[$otherGroup] = $otherWallt;
+      }
+
+      $serieForMonth[$monthKey] = $groupWallt;
+    }
+
+    $groups = array_unique($groups);
+
+    // The "other groups" should be listed last
+    $groups[] = $otherGroup;
+
+    // array( group => array( wallt, ... ), ... )
+    $serieForGroup = array();
+
+    foreach ($groups as $group) {
+      $serie = array();
+      foreach ($months as $monthKey => $month) {
+        if (isset($serieForMonth[$monthKey][$group])) {
+          $serie[] = $serieForMonth[$monthKey][$group];
+        } else {
+          $serie[] = 0;
+        }
+      }
+      $serieForGroup[$group] = $serie;
+    }
+
+    self::renderStackedAreaChart(array(
+      'width'    => 400,
+      'height'   => 350,
+      'title'    => 'Monthly Group Utilization',
+      'subTitle' => self::getSubTitle($params),
+      'yLabel'   => 'Wall Time (Days)',
+      'xLabel'   => 'Month',
+      'labels'   => $monthNames,
+      'series'   => $serieForGroup,
+    ));
+  }
+
+  /**
    * Create a user utilization stacked area chart and send it to the browser.
    *
    * @return void

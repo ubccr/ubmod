@@ -117,4 +117,14 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
   {
     Ubmod_Model_Chart::renderGroupBar($this->getGetData());
   }
+
+  /**
+   * Execute the group stacked area chart action.
+   *
+   * @return void
+   */
+  public function executeGroupArea()
+  {
+    Ubmod_Model_Chart::renderGroupStackedArea($this->getGetData());
+  }
 }
