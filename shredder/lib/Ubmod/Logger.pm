@@ -26,7 +26,8 @@ sub fatal {
 
 sub _log {
     my ( $self, $message, $level ) = @_;
-    print DateTime->now()->iso8601() . " [$level] $message\n";
+    my $dt = DateTime->now();
+    print $dt->ymd('-') . ' ' . $dt->hms(':') . " [$level] $message\n";
 }
 
 1;
