@@ -152,10 +152,10 @@ sub process_directory {
             exit 1;
         }
         @files = sort readdir($dh);
-    }
 
-    # Skip hidden files
-    @files = grep { !/^\./ } @files;
+        # Skip hidden files
+        @files = grep { !/^\./ } @files;
+    }
 
     # Prepend directory path
     @files = map { File::Spec->catfile( $dir, $_ ) } @files;
