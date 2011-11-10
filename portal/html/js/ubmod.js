@@ -765,12 +765,26 @@ Ext.Loader.onReady(function () {
      * Panel for adding tags
      */
     Ext.define('Ubmod.widget.TagPanel', {
-        extend: 'Ext.panel.Panel',
+        extend: 'Ext.tab.Panel',
         constructor: function (config) {
-            config = config || {};
-            Ext.apply(config, {
+            var tagGrid, tagReport;
 
+            config = config || {};
+
+            tagGrid = Ext.create('Ubmod.widget.TagGrid', {
+                title: 'Add Tags'
             });
+
+            tagReport = Ext.create('Ubmod.widget.TagReport', {
+                title: 'Tag Report'
+            });
+
+            Ext.apply(config, {
+                width: 745,
+                plain: true,
+                items: [tagGrid, tagReport]
+            });
+
             Ubmod.widget.TagPanel.superclass.constructor.call(this, config);
         },
 
@@ -789,7 +803,6 @@ Ext.Loader.onReady(function () {
         constructor: function (config) {
             config = config || {};
             Ext.apply(config, {
-                width: 745,
                 height: 400,
                 store: Ext.create('Ubmod.store.UserTags'),
                 selModel: Ext.create('Ext.selection.CheckboxModel')
@@ -839,7 +852,7 @@ Ext.Loader.onReady(function () {
                     userIds = [];
 
                 if (tag === '') {
-                    Ext.Msg.alert('No tag entered');
+                    Ext.Msg.alert('Error', 'Please enter a tag');
                     return;
                 }
 
@@ -848,7 +861,7 @@ Ext.Loader.onReady(function () {
                 });
 
                 if (userIds.length === 0) {
-                    Ext.Msg.alert('No users selected');
+                    Ext.Msg.alert('Error', 'Please select one or more users');
                     return;
                 }
 
@@ -867,6 +880,34 @@ Ext.Loader.onReady(function () {
             Ubmod.widget.TagGrid.superclass.initComponent.call(this);
 
             this.store.load();
+        }
+    });
+
+    /**
+     * Tag report panel
+     */
+    Ext.define('Ubmod.widget.TagReport', {
+        extend: 'Ext.panel.Panel',
+        constructor: function (config) {
+            config = config || {};
+            Ext.apply(config, {
+            });
+            Ubmod.widget.TagReport.superclass.constructor.call(this, config);
+        },
+
+        initComponent: function () {
+            var toolbar, tagInput, updateButton;
+
+            tagInput = Ext.create('Ext.form.field.Text');
+            updateButton = Ext.create('Ext.Button', { text: 'View Report' });
+
+            toolbar = Ext.create('Ext.toolbar.Toolbar', {
+                items: ['Tag:', tagInput, updateButton]
+            });
+
+            this.dockedItems = [toolbar];
+
+            Ubmod.widget.TagReport.superclass.initComponent.call(this);
         }
     });
 
@@ -930,7 +971,7 @@ Ext.Loader.onReady(function () {
 
             tagInput.on('keypress', function (text, e) {
                 if (e.getKey() === e.ENTER) {
-                    this.fireEvent('addtag', text);
+                    this.fireEvent('addtag', text.getValue());
                 }
             }, this);
 
@@ -1057,8 +1098,7 @@ Ext.Loader.onReady(function () {
              * Add a tag management panel
              */
             addTagPanel: function (config) {
-                //widgets.push(Ext.create('Ubmod.widget.TagPanel', config));
-                widgets.push(Ext.create('Ubmod.widget.TagGrid', config));
+                widgets.push(Ext.create('Ubmod.widget.TagPanel', config));
             }
         };
     }());
