@@ -20,7 +20,7 @@ Group: <span class="labelHeader"><?php echo $group['group_name'] ?></span> &nbsp
         <td style="font-weight: bold"><?php echo $group['avg_wait'] ?></td>
 </tr>
 <tr>
-	<th>Avg. MEM: </th>
+	<th>Avg. Mem (MB): </th>
         <td style="font-weight: bold"><?php echo number_format($group['avg_mem'], 1) ?></td>
 	<th>Avg. Job Size (CPUs): </th>
         <td style="font-weight: bold"><?php echo $group['avg_cpus'] ?></td>

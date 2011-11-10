@@ -20,7 +20,7 @@ User: <span class="labelHeader"><?php echo $user['user'] ?></span> &nbsp;&nbsp;
         <td style="font-weight: bold"><?php echo $user['avg_wait'] ?></td>
 </tr>
 <tr>
-	<th>Avg. MEM: </th>
+	<th>Avg. Mem (MB): </th>
         <td style="font-weight: bold"><?php echo number_format($user['avg_mem'], 1) ?></td>
 	<th>Avg. Job Size (CPUs): </th>
         <td style="font-weight: bold"><?php echo $user['avg_cpus'] ?></td>

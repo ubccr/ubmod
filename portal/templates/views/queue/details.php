@@ -20,7 +20,7 @@ Queue: <span class="labelHeader"><?php echo $queue['queue'] ?></span> &nbsp;&nbs
 	<td style="font-weight: bold"><?php echo $queue['avg_wait'] ?></td>
 </tr>
 <tr>
-	<th>Avg. MEM: </th>
+	<th>Avg. Mem (MB): </th>
 	<td style="font-weight: bold"><?php echo number_format($queue['avg_mem']) ?></td>
 	<th>Avg. Job Size (CPUs): </th>
 	<td style="font-weight: bold"><?php echo $queue['avg_cpus'] ?></td>
