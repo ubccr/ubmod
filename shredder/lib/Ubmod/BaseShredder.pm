@@ -81,7 +81,7 @@ Version: $Id$
 
 Then specify the format when shredding:
 
-  $ shredder.pl -s --format myformat -i /path/to/mylogfile
+  $ ubmod-shredder -s --format myformat -i /path/to/mylogfile
 
 =head1 DESCRIPTION
 

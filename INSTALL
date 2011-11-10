@@ -52,11 +52,11 @@ Download UBMoD
 
 * Load in accounting log data from TORQUE
 
-    $ ./shredder/bin/shredder.pl -v -s -H your.host.org -d /var/spool/pbs/server_priv/accounting
+    $ ubmod-shredder -v -s --format pbs -H your.host.org -d /var/spool/pbs/server_priv/accounting
 
 * Aggregate accounting log data
 
-    $ ./shredder/bin/shredder.pl -v -u
+    $ ubmod-shredder -v -u
 
 * Set up the web application
 
