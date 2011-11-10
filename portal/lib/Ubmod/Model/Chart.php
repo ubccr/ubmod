@@ -504,11 +504,10 @@ class Ubmod_Model_Chart
 
     $totalActivity = Ubmod_Model_Job::getActivity($params);
     $otherWallt = $totalActivity['wallt'] - array_sum($time);
+
     if ($otherWallt > 0) {
-      //$tags[] = 'Other';
-      //$time[] = $otherWallt;
-      array_unshift($tags, 'Other');
-      array_unshift($time, $otherWallt);
+      $tags[] = 'Other';
+      $time[] = $otherWallt;
     }
 
     self::renderPieChart(array(
@@ -519,7 +518,7 @@ class Ubmod_Model_Chart
       'labels'     => $tags,
       'series'     => $time,
       'maxSlices'  => 10,
-      'otherLabel' => "Remaining Tags",
+      'otherLabel' => "Other",
     ));
   }
 
