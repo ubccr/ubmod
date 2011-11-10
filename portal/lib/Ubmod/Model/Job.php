@@ -150,7 +150,7 @@ class Ubmod_Model_Job
    *
    * @return array
    */
-  public static function getEntity(Ubmod_Model_QueryParams $params)
+  public static function getEntity($type, Ubmod_Model_QueryParams $params)
   {
     $params->setModel($type);
     return self::getActivity($params);
