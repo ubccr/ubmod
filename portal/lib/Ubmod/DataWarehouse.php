@@ -80,6 +80,16 @@ class Ubmod_DataWarehouse
 {
 
   /**
+   * Debugging flag.
+   *
+   * If this variable is true debugging output is logged using
+   * error_log().
+   *
+   * @var bool
+   */
+  private static $_debug = false;
+
+  /**
    * Singleton instance.
    *
    * @var Ubmod_DataWarehouse
@@ -123,6 +133,13 @@ class Ubmod_DataWarehouse
   {
     if (self::$_instance === NULL) {
       $config = new Zend_Config_Json(DW_CONFIG_FILE);
+
+      $options = $GLOBALS['options'];
+      if (isset($options->datawarehouse)) {
+        if (isset($options->datawarehouse->debug)) {
+          self::$_debug = $options->datawarehouse->debug;
+        }
+      }
 
       self::$_instance = new Ubmod_DataWarehouse($config->toArray());
     }
@@ -240,7 +257,9 @@ class Ubmod_DataWarehouse
    */
   public function navigate($sql)
   {
-    error_log("Original SQL: $sql");
+    if (self::$_debug) {
+      error_log("Original SQL: $sql");
+    }
 
     try {
       $data = $this->parseSql($sql);
@@ -261,18 +280,24 @@ class Ubmod_DataWarehouse
       // Optimal set of dimensions for the query
       $optimalDimensions = array();
 
-      error_log('Query has columns: ' . print_r($nonKeyColumns, 1));
+      if (self::$_debug) {
+        error_log('Query has columns: ' . print_r($nonKeyColumns, 1));
+      }
 
       foreach ($dimensions as $dimension) {
         $columns = $dimension->intersectColumns($nonKeyColumns);
 
-        error_log($dimension->getName() . ' intersection has columns: '
-          . print_r($columns, 1));
+        if (self::$_debug) {
+          error_log($dimension->getName() . ' intersection has columns: '
+            . print_r($columns, 1));
+        }
 
         if ($rollUp = $dimension->findRollUpWith($columns)) {
           $dimensionMaps[]     = array($dimension, $rollUp);
           $optimalDimensions[] = $rollUp;
-          error_log("Found roll-up: " . $rollUp->getName());
+          if (self::$_debug) {
+            error_log("Found roll-up: " . $rollUp->getName());
+          }
         } else {
           $optimalDimensions[] = $dimension;
         }
@@ -304,10 +329,15 @@ class Ubmod_DataWarehouse
           $sql = str_replace($key, $value, $sql);
         }
 
-        error_log("Optimized SQL: $sql");
+        if (self::$_debug) {
+          error_log("Optimized SQL: $sql");
+        }
 
       } else {
-        error_log("No appropriate aggregate found");
+        if (self::$_debug) {
+          error_log("No appropriate aggregate found");
+        }
+
         return $sql;
       }
 
