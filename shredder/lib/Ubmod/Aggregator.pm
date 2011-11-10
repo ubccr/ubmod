@@ -134,8 +134,8 @@ sub _update_dates {
     my $min_date = $self->_get_min_date();
     my $max_date = $self->_get_max_date();
 
-    $self->{logger}->info("Oldest day: $min_date");
-    $self->{logger}->info("Most recent day: $max_date");
+    $self->{logger}->info( 'Oldest day: ' . $min_date->ymd() );
+    $self->{logger}->info( 'Most recent day: ' . $max_date->ymd() );
 
     return $self->_insert_dates( $min_date, $max_date );
 }
