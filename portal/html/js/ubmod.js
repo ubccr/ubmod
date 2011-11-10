@@ -317,13 +317,6 @@ Ext.Loader.onReady(function () {
             ];
 
             Ubmod.widget.Toolbar.superclass.initComponent.call(this);
-        },
-
-        getParams: function () {
-            return {
-                interval_id: this.intervalCombo.getValue(),
-                cluster_id: this.clusterCombo.getValue()
-            };
         }
     });
 
