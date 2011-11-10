@@ -1,6 +1,6 @@
 <?php
 /**
- * Default controller.
+ * Group controller.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
@@ -9,11 +9,11 @@
  */
 
 /**
- * Default controller.
+ * Group controller.
  *
  * @package UBMoD
  */
-class UBMoD_Controller_Default extends UBMoD_Controller_Base
+class UBMoD_Controller_Group extends UBMoD_Controller_Base
 {
 
   /**

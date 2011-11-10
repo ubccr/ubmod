@@ -49,9 +49,15 @@ class UBMoD_Controller_Front
 
     $controller = $this->getController($request);
     $action     = $this->getAction($request);
+    $view       = $this->getView($request);
 
     try {
       $controller->$action();
+
+      ob_start();
+      require $view;
+      $content = ob_get_clean();
+
       require TEMPLATE_DIR . '/layouts/default.php';
     } catch (Exception $e) {
       echo '<pre>' . $e->getMessage() . '</pre>';
@@ -69,7 +75,7 @@ class UBMoD_Controller_Front
     if (count($segments) > 0) {
       $class = 'UBMoD_Controller_' . $this->convertPathSegment($segments[0]);
     } else {
-      $class = 'UBMoD_Controller_Default';
+      $class = 'UBMoD_Controller_Dashboard';
     }
     return $class::factory();
   }
@@ -105,5 +111,18 @@ class UBMoD_Controller_Front
         preg_split('/\W+/', $segment)
       );
     return implode('', $words);
+  }
+
+  /**
+   * Returns the view file for the given request.
+   *
+   * @return string
+   */
+  private function getView($request)
+  {
+    $segments   = $request->getPathSegments();
+    $controller = count($segments) > 0 ? $segments[0] : 'dashboard';
+    $action     = count($segments) > 1 ? $segments[1] : 'index';
+    return TEMPLATE_DIR . '/views/' . $controller . '/' . $action . '.php';
   }
 }

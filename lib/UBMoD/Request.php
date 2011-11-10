@@ -86,6 +86,10 @@ class UBMoD_Request
    */
   public function getPathSegments()
   {
-    return explode('/', substr($this->getPath(), 1));
+    $path = trim($this->getPath(), '/');
+    if ($path === '') {
+      return array();
+    }
+    return explode('/', $path);
   }
 }
