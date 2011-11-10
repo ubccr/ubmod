@@ -11,7 +11,7 @@
 /**
  * Request class.
  *
- * @package default
+ * @package UBMoD
  */
 class UBMoD_Request
 {
