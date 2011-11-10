@@ -65,7 +65,11 @@ class Ubmod_Controller_CpuConsumption extends Ubmod_BaseController
    */
   public function executeChart()
   {
-    $queryString = Ubmod_Model_Chart::getQueryString($this->getPostData());
+    $post = $this->getPostData();
+
+    $this->interval = Ubmod_Model_Interval::getByParams($post);
+
+    $queryString = Ubmod_Model_Chart::getQueryString($post);
 
     $this->periodChart  = '/chart/cpu-consumption-period?'  . $queryString;
     $this->monthlyChart = '/chart/cpu-consumption-monthly?' . $queryString;

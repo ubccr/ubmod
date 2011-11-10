@@ -84,6 +84,12 @@ class Ubmod_Model_Interval
       $timeInterval['end']   = $params['end_date'];
     }
 
+    // Check if the start and end dates are in the same month
+    $startParts = explode('/', $timeInterval['start']);
+    $endParts   = explode('/', $timeInterval['end']);
+    $timeInterval['multi_month']
+      = $startParts[2] != $endParts[2] || $startParts[0] != $endParts[0];
+
     return $timeInterval;
   }
 

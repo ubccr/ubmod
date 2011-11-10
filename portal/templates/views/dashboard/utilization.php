@@ -8,10 +8,12 @@ Utilization for cluster: <?php echo $cluster['display_name'] ?> for period from:
     <td><img id="upie" src="<?php echo $userPieChart ?>" /><img id="ubar" style="display: none" src="<?php echo $userBarChart ?>" /></td>
     <td><img id="gpie" src="<?php echo $groupPieChart ?>" /><img id="gbar" style="display: none" src="<?php echo $groupBarChart ?>" /></td>
 </tr>
+<?php if ($interval['multi_month']): ?>
 <tr>
     <td style="vertical-align:top;"><img src="<?php echo $userAreaChart ?>" /></td>
     <td style="vertical-align:top;"><img src="<?php echo $groupAreaChart ?>" /></td>
 </tr>
+<?php endif; ?>
 </table>
 </div>
 <div style="padding: 5px;margin-bottom: 20px;margin-top:10px;">

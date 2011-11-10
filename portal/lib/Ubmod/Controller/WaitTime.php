@@ -65,7 +65,11 @@ class Ubmod_Controller_WaitTime extends Ubmod_BaseController
    */
   public function executeChart()
   {
-    $queryString = Ubmod_Model_Chart::getQueryString($this->getPostData());
+    $post = $this->getPostData();
+
+    $this->interval = Ubmod_Model_Interval::getByParams($post);
+
+    $queryString = Ubmod_Model_Chart::getQueryString($post);
 
     $this->periodChart  = '/chart/wait-time-period?'  . $queryString;
     $this->monthlyChart = '/chart/wait-time-monthly?' . $queryString;
