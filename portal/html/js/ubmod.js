@@ -828,10 +828,7 @@ Ext.Loader.onReady(function () {
             this.detailTabs = {};
 
             this.grid = Ext.create('Ubmod.widget.StatsGrid', {
-                height: 400,
                 forceFit: true,
-                padding: '0 0 6 0',
-                resizable: { pinned: true, handles: 's' },
                 title: config.gridTitle,
                 store: this.store,
                 label: this.recordFormat.label,
@@ -840,8 +837,11 @@ Ext.Loader.onReady(function () {
             });
 
             Ext.apply(config, {
-                width: 745,
                 plain: true,
+                width: 745,
+                height: 400,
+                resizable: { pinned: true, handles: 's' },
+                padding: '0 0 6 0',
                 items: this.grid
             });
 
@@ -874,7 +874,6 @@ Ext.Loader.onReady(function () {
                 tab = this.add({
                     title: record.get(this.recordFormat.key),
                     closable: true,
-                    height: 400,
                     autoScroll: true,
                     loader: {
                         url: this.recordFormat.detailsUrl,
@@ -1044,8 +1043,11 @@ Ext.Loader.onReady(function () {
             this.model = config.model;
 
             Ext.apply(config, {
+                plain: true,
                 width: 745,
-                plain: true
+                height: 400,
+                resizable: { pinned: true, handles: 's' },
+                padding: '0 0 6 0'
             });
 
             this.callParent([config]);
@@ -1094,7 +1096,6 @@ Ext.Loader.onReady(function () {
             tagStatsGrid = Ext.create('Ubmod.widget.StatsGrid', {
                 title: 'Tag Activity',
                 store: this.tagActivity,
-                height: 400,
                 label: 'Tag',
                 labelKey: 'tag'
             });
@@ -1116,11 +1117,8 @@ Ext.Loader.onReady(function () {
                 tagPanel = Ext.create('Ubmod.widget.TagReport', {
                     tag: record,
                     closable: true,
-                    height: 400,
                     autoScroll: true
                 });
-
-                tagPanel.on('reportloaded', this.doComponentLayout, this);
 
                 this.add(tagPanel).show();
             }, this);
@@ -1162,7 +1160,6 @@ Ext.Loader.onReady(function () {
             this.addEvents('userschanged');
 
             Ext.apply(config, {
-                height: 400,
                 store: Ext.create('Ubmod.store.UserTags'),
                 selModel: Ext.create('Ext.selection.CheckboxModel', {
                     checkOnly: true
@@ -1246,12 +1243,6 @@ Ext.Loader.onReady(function () {
 
             this.tag = config.tag;
 
-            /**
-             * @event reportloaded
-             * Fires after the report partial has loaded.
-             */
-            this.addEvents('reportloaded');
-
             Ext.apply(config, { title: this.tag.get('tag') });
 
             this.callParent([config]);
@@ -1264,11 +1255,6 @@ Ext.Loader.onReady(function () {
                 url: '/tag/details',
                 params: { tag: this.tag.get('tag') }
             });
-
-            partial.on('afterload', function () {
-                this.doComponentLayout();
-                this.fireEvent('reportloaded');
-            }, this);
 
             this.items = [partial];
 
@@ -1518,12 +1504,6 @@ Ext.Loader.onReady(function () {
             this.url    = config.url;
             this.params = config.params || {};
 
-            /**
-             * @event afterload
-             * Fired after the partial is loaded or reloaded.
-             */
-            this.addEvents('afterload');
-
             this.callParent([config]);
         },
 
@@ -1557,9 +1537,7 @@ Ext.Loader.onReady(function () {
                 loadMask: 'Loading...',
                 url: this.url,
                 scripts: true,
-                params: Ext.apply(this.model.getRestParams(), this.params),
-                success: function () { this.fireEvent('afterload'); },
-                scope: this
+                params: Ext.apply(this.model.getRestParams(), this.params)
             });
         }
     });
