@@ -241,6 +241,16 @@ class Ubmod_Model_QueryParams
   {
     $query = new Ubmod_Model_QueryParams();
 
+    // Set the start and end date before the time interval. That allows
+    // the time interval to override these values.
+    if (isset($params['start_date']) && $params['start_date'] !== '') {
+      $query->setStartDate($params['start_date']);
+    }
+
+    if (isset($params['end_date']) && $params['end_date'] !== '') {
+      $query->setEndDate($params['end_date']);
+    }
+
     if (isset($params['interval_id']) && $params['interval_id'] !== '') {
       $query->setTimeIntervalId(intval($params['interval_id']));
     } else {
@@ -267,14 +277,6 @@ class Ubmod_Model_QueryParams
       if (isset($params['last_7_days'])) {
         $query->setLast7Days($params['last_7_days']);
       }
-    }
-
-    if (isset($params['start_date']) && $params['start_date'] !== '') {
-      $query->setStartDate($params['start_date']);
-    }
-
-    if (isset($params['end_date']) && $params['end_date'] !== '') {
-      $query->setEndDate($params['end_date']);
     }
 
     if (isset($params['cluster_id']) && $params['cluster_id'] !== '') {
@@ -404,7 +406,6 @@ class Ubmod_Model_QueryParams
   {
     $this->_timeIntervalId = null;
   }
-
 
   /**
    * Set the cluster ID.
