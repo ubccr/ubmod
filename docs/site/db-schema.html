@@ -1,0 +1,306 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="description" content="UBMoD is an open source data warehouse and web portal for mining statistical data from resource managers (such as TORQUE) commonly found in high-performance computing environments." />
+<title>UBMoD Database Schema Docs</title>
+<style type="text/css">
+
+.data {
+    margin: 20px;
+    border-collapse: collapse;
+}
+
+.data th {
+    padding: 5px;
+    border: 1px solid black;
+    background-color: #ccc;
+}
+
+.data td {
+    padding: 5px;
+    border: 1px solid black;
+}
+
+.col {
+    font-weight: bold;
+}
+
+.ex {
+    white-space: nowrap;
+}
+
+</style>
+</head>
+<body>
+<h1>Event Table</h1>
+<table class="data">
+<tr>
+    <th>Column</th>
+    <th>Datatype</th>
+    <th>Description</th>
+    <th>Example</th>
+</tr>
+
+<tr>
+    <td class="col">event_id</td>
+    <td>bigint unsigned auto_increment</td>
+    <td>Internal unique auto incrementing ID (primary key for UBMoD)</td>
+    <td>1001</td>
+</tr>
+
+<tr>
+    <td class="col">date_key</td>
+    <td>datetime</td>
+    <td>Date and time in which the event was recorded</td>
+    <td>2008-12-10 14:18:32</td>
+</tr>
+
+<tr>
+    <td class="col">job_id</td>
+    <td>int unsigned not null</td>
+    <td>job identifier used by the resource manager</td>
+    <td>1134231</td>
+</tr>
+
+<tr>
+    <td class="col">host</td>
+    <td>varchar(255) not null</td>
+    <td>Fully qualified domain name which the event ran</td>
+    <td>node0.myhost.org</td>
+</tr>
+
+<tr>
+    <td class="col">queue</td>
+    <td>varchar(255)</td>
+    <td>The name of the queue in which the job executed</td>
+    <td>debug</td>
+</tr>
+
+<tr>
+    <td class="col">type</td>
+    <td>char(1) not null</td>
+    <td>Single character indicating the type of record. The only type currently used in UBMoD is 'E' for job ended. All other types are stored by the shredder but ignored by the application. Examples:  E = Job ended (terminated execution) A = Job was aborted B = Beginning of reservation period D = job was deleted Q = job entered queue R = job was rerun S = job started</td>
+    <td>E</td>
+</tr>
+
+<tr>
+    <td class="col">user</td>
+    <td>varchar(255)</td>
+    <td>The user name under which the job executed</td>
+    <td>joeuser1</td>
+</tr>
+
+<tr>
+    <td class="col">ugroup</td>
+    <td>varchar(255)</td>
+    <td>The group name under which the job executed</td>
+    <td>joegroup1</td>
+</tr>
+
+<tr>
+    <td class="col">ctime</td>
+    <td>datetime</td>
+    <td>Time in seconds when job was created (first submitted)</td>
+    <td>2008-12-09 23:57:43</td>
+</tr>
+
+<tr>
+    <td class="col">qtime</td>
+    <td>datetime</td>
+    <td>Time in seconds when job was queued into current queue</td>
+    <td>2008-12-09 23:57:43</td>
+</tr>
+
+<tr>
+    <td class="col">start</td>
+    <td>datetime</td>
+    <td>Time in seconds when job execution started</td>
+    <td>2008-12-09 23:57:43</td>
+</tr>
+
+<tr>
+    <td class="col">end</td>
+    <td>datetime</td>
+    <td>Time in seconds when job ended execution</td>
+    <td>2008-12-09 23:57:43</td>
+</tr>
+
+<tr>
+    <td class="col">etime</td>
+    <td>datetime</td>
+    <td>Time in seconds when job became eligible to run</td>
+    <td>2008-12-09 23:57:43</td>
+</tr>
+
+<tr>
+    <td class="col">exit_status</td>
+    <td>int</td>
+    <td>The exit status of the job. If the value is less
+        than 10000 (decimal) it is the exit value of
+        the top level process of the job, typically the
+        shell. If the value is greater than 10000, the
+        top process exited on a signal whose number
+        is given by subtracting 10000 from the exit
+        value.</td>
+    <td>0</td>
+</tr>
+
+<tr>
+    <td class="col">session</td>
+    <td>int unsigned</td>
+    <td>Optional alternate job identifier</td>
+    <td>8162</td>
+</tr>
+
+<tr>
+    <td class="col">requestor</td>
+    <td>varchar(255)</td>
+    <td>User who requested a job deletion (used for events of type 'D')</td>
+    <td>user@host</td>
+</tr>
+
+<tr>
+    <td class="col">jobname</td>
+    <td>varchar(255)</td>
+    <td>The name of the job</td>
+    <td>STDIN</td>
+</tr>
+
+<tr>
+    <td class="col">account</td>
+    <td>varchar(255)</td>
+    <td>If job has an "account name" string (not currently used)</td>
+    <td>&nbsp;</td>
+</tr>
+
+<tr>
+    <td class="col">exec_host</td>
+    <td>text</td>
+    <td>Name of host on which the job is being executed in the format: hostname/cpu+hostname/cpu ..</td>
+    <td class="ex">hostA/1+hostA/0+hostB/1+hostB/0</td>
+</tr>
+
+<tr>
+    <td class="col">resources_used_vmem</td>
+    <td>bigint unsigned</td>
+    <td>Amount of virtual mem used in kb</td>
+    <td class="ex">18259364</td>
+</tr>
+
+<tr>
+    <td class="col">resources_used_mem</td>
+    <td>bigint unsigned</td>
+    <td>Amount of physical mem used in kb</td>
+    <td class="ex">18259364</td>
+</tr>
+
+<tr>
+    <td class="col">resources_used_walltime</td>
+    <td>bigint unsigned</td>
+    <td>Amount of walltime in seconds</td>
+    <td class="ex">4841</td>
+</tr>
+
+<tr>
+    <td class="col">resources_used_nodes</td>
+    <td>int unsigned</td>
+    <td>Amount of nodes used</td>
+    <td class="ex">32</td>
+</tr>
+
+<tr>
+    <td class="col">resources_used_cpus</td>
+    <td>int unsigned</td>
+    <td>Amount of cpu's used</td>
+    <td class="ex">64</td>
+</tr>
+
+<tr>
+    <td class="col">resources_used_cput</td>
+    <td>bigint unsigned</td>
+    <td>Amount of cpu time consumed in seconds</td>
+    <td class="ex">308936</td>
+</tr>
+
+<tr>
+    <td class="col">resources_list_nodes</td>
+    <td>text</td>
+    <td>Requested of nodes (take from #PBS -l nodes=XXXX)</td>
+    <td class="ex">32:ppn=2</td>
+</tr>
+
+<tr>
+    <td class="col">resource_list_procs</td>
+    <td>text</td>
+    <td>Requested processors (currently not used)</td>
+    <td class="ex">2</td>
+</tr>
+
+<tr>
+    <td class="col">resource_list_neednodes</td>
+    <td>text</td>
+    <td>Requested requested (take from #PBS -l nodes=XXXX) currently not used</td>
+    <td class="ex">4:ppn=2</td>
+</tr>
+
+<tr>
+    <td class="col">resource_list_pcput</td>
+    <td>bigint unsigned</td>
+    <td>??? currently not used</td>
+    <td class="ex">&nbsp;</td>
+</tr>
+
+<tr>
+    <td class="col">resource_list_cput</td>
+    <td>bigint unsigned</td>
+    <td>Amount of cpu time requested in seconds (currently not used)</td>
+    <td class="ex">&nbsp;</td>
+</tr>
+
+<tr>
+    <td class="col">resource_list_walltime</td>
+    <td>bigint unsigned</td>
+    <td>Amount of walltime requested in seconds (take from: #PBS -l walltime=XXXXX)</td>
+    <td class="ex">&nbsp;</td>
+</tr>
+
+<tr>
+    <td class="col">resource_list_ncpus</td>
+    <td>tinyint unsigned</td>
+    <td>Number of cpu's requested (currently not used)</td>
+    <td class="ex">&nbsp;</td>
+</tr>
+
+
+<tr>
+    <td class="col">resource_list_nodect</td>
+    <td>int unsigned</td>
+    <td>Count of nodes requested</td>
+    <td class="ex">4</td>
+</tr>
+
+<tr>
+    <td class="col">resource_list_mem</td>
+    <td>bigint unsigned</td>
+    <td>Amount of mem requested (currently not used)</td>
+    <td class="ex">&nbsp;</td>
+</tr>
+
+<tr>
+    <td class="col">resource_list_pmem</td>
+    <td>bigint unsigned</td>
+    <td>Amount of physical mem requested (currently not used)</td>
+    <td class="ex">&nbsp;</td>
+</tr>
+
+</table>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2972782-2";
+urchinTracker();
+</script>
+</body>
+</html>
+
