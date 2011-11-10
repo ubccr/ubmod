@@ -49,7 +49,7 @@ class Ubmod_Controller_Group extends Ubmod_BaseController
 {
 
   /**
-   * Execute the index action.
+   * Execute the "index" action.
    *
    * @return void
    */
@@ -59,7 +59,7 @@ class Ubmod_Controller_Group extends Ubmod_BaseController
   }
 
   /**
-   * Execute the details action.
+   * Execute the "details" action.
    *
    * @return void
    */
@@ -74,5 +74,40 @@ class Ubmod_Controller_Group extends Ubmod_BaseController
     $this->pieChart  = '/chart/user-pie?'  . $queryString;
     $this->barChart  = '/chart/user-bar?'  . $queryString;
     $this->areaChart = '/chart/user-area?' . $queryString;
+  }
+
+  /**
+   * Execute the "csv" action.
+   *
+   * @return void
+   */
+  public function executeCsv()
+  {
+    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
+    $users = Ubmod_Model_Job::getActivityList($params);
+
+    header('Content-type: text/csv');
+    header('Content-disposition: attachment; filename=groups.csv');
+
+    $columns = array(
+      'group_name' => 'Group',
+      'jobs'       => '# Jobs',
+      'avg_cpus'   => 'Avg. Job Size (cpus)',
+      'avg_wait'   => 'Avg. Wait Time (h)',
+      'wallt'      => 'Wall Time (d)',
+      'avg_mem'    => 'Avg. Mem (MB)',
+    );
+
+    echo implode("\t", array_values($columns)), "\n";
+
+    $keys = array_keys($columns);
+
+    foreach ($users as $user) {
+      $map = function ($key) use($user) { return $user[$key]; };
+      $values = array_map($map, $keys);
+      echo implode("\t", $values), "\n";
+    }
+
+    exit();
   }
 }

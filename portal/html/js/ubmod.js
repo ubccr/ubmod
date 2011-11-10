@@ -780,7 +780,8 @@ Ext.Loader.onReady(function () {
                 title: config.gridTitle,
                 store: this.store,
                 label: this.recordFormat.label,
-                labelKey: this.recordFormat.key
+                labelKey: this.recordFormat.key,
+                downloadUrl: config.downloadUrl
             });
 
             Ext.apply(config, {
@@ -874,14 +875,16 @@ Ext.Loader.onReady(function () {
         constructor: function (config) {
             config = config || {};
 
-            this.label = config.label;
-            this.labelKey = config.labelKey;
+            this.label       = config.label;
+            this.labelKey    = config.labelKey;
+            this.downloadUrl = config.downloadUrl;
 
             this.callParent([config]);
         },
 
         initComponent: function () {
-            var pagingToolbar;
+            var dockedItems = [],
+                downloadButton;
 
             this.columns = [{
                 header: this.label,
@@ -930,13 +933,39 @@ Ext.Loader.onReady(function () {
                 align: 'right'
             }];
 
-            pagingToolbar = Ext.create('Ubmod.widget.PagingToolbar', {
+            // If a download URL is supplied add a toolbar with a
+            // download button.
+            if (this.downloadUrl) {
+                downloadButton = Ext.create('Ext.Button', {
+                    text: 'Export Data',
+                    handler: function () {
+                        var params = this.store.proxy.extraParams,
+                            querySegments = [];
+
+                        Ext.Object.each(params, function (key, value) {
+                            var encodedValue = encodeURIComponent(value);
+                            querySegments.push(key + '=' + encodedValue);
+                        });
+
+                        window.location =
+                            this.downloadUrl + '?' + querySegments.join('&');
+                    },
+                    scope: this
+                });
+
+                dockedItems.push(Ext.create('Ext.toolbar.Toolbar', {
+                    dock: 'top',
+                    items: ['->', downloadButton]
+                }));
+            }
+
+            dockedItems.push(Ext.create('Ubmod.widget.PagingToolbar', {
                 dock: 'bottom',
                 store: this.store,
                 displayInfo: true
-            });
+            }));
 
-            this.dockedItems = [pagingToolbar];
+            this.dockedItems = dockedItems;
 
             this.callParent(arguments);
         }

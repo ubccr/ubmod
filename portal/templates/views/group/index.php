@@ -9,7 +9,8 @@ Ext.onReady(function(){
             key: 'group_name',
             id: 'group_id',
             detailsUrl: '/group/details'
-        }
+        },
+        downloadUrl: '/group/csv'
     });
 });
 </script>
