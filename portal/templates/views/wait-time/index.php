@@ -13,3 +13,8 @@ Ext.onReady(function() {
   utilization, meaning that heavy users experience longer wait times than
   average users. Plots of average wait times are also available.
 </div>
+<div class="chart-desc">
+  If the selected time period spans multiple months, stacked area charts are
+  displayed with the average wait time for each month that is included in the
+  time period.
+</div>

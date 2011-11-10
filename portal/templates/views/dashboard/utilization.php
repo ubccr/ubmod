@@ -83,7 +83,15 @@ Ext.onReady(function () {
   These plots provide a quick snapshot of machine utilization. Data is
   presented in either Pie or Bar chart format. In the Pie chart format, the
   utilization is given as a percentage of total CPU days consumed and in the
-  Bar chart format in total CPU days consumed. A summary table is also
-  included that provides detailed overall statistics, such as the total number
-  of jobs submitted, the average wait time, and the average length of a job.
+  Bar chart format in total CPU days consumed.
+</div>
+<div class="chart-desc">
+  If the selected time period spans multiple months, stacked area charts are
+  displayed with the total CPU days consumed for each month that is included
+  in the time period.
+</div>
+<div class="chart-desc">
+  A summary table is also included that provides detailed overall statistics,
+  such as the total number of jobs submitted, the average wait time, and the
+  average length of a job.
 </div>

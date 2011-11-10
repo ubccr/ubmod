@@ -22,5 +22,7 @@ Ext.onReady(function () {
   in each of the columns will sort the column (Table) from high to low. A
   second click will reverse the sort. The Search capability allows you to
   search for a particular user. Press enter in the search bar to filter.
-  Double-click a row to open a detail tab for that user.
+  Double-click a row to open a detail tab for that user. Click the "Export
+  Data" button to download a CSV file containing the data that is currently
+  being displayed.
 </div>
