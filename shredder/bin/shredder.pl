@@ -162,11 +162,11 @@ SHREDDING OPTIONS
        -H, --host hostname
               explicitly set host from which the log file(s) originated
 
-AGGREGATING OPTIONS
+AGGREGATION OPTIONS
        -e, --end-date
               explicitly set the end date used for aggregation time
-              intervals date must be in YYYY-MM-DD format
-              defaults to yesterday
+              intervals. The date must be in YYYY-MM-DD format.
+              Defaults to yesterday
 
 EXAMPLES
        $0 -v -s -H your.host.org -d /var/spool/pbs/server_priv/accounting
