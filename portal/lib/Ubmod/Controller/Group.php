@@ -82,12 +82,12 @@ class Ubmod_Controller_Group extends Ubmod_BaseController
     header('Content-disposition: attachment; filename=groups.csv');
 
     $columns = array(
-      'group_name' => 'Group',
-      'jobs'       => '# Jobs',
-      'avg_cpus'   => 'Avg. Job Size (cpus)',
-      'avg_wait'   => 'Avg. Wait Time (h)',
-      'wallt'      => 'Wall Time (d)',
-      'avg_mem'    => 'Avg. Mem (MB)',
+      'name'     => 'Group',
+      'jobs'     => '# Jobs',
+      'avg_cpus' => 'Avg. Job Size (cpus)',
+      'avg_wait' => 'Avg. Wait Time (h)',
+      'wallt'    => 'Wall Time (d)',
+      'avg_mem'  => 'Avg. Mem (MB)',
     );
 
     echo implode("\t", array_values($columns)), "\n";

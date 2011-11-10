@@ -75,7 +75,7 @@ class Ubmod_Controller_User extends Ubmod_BaseController
     header('Content-disposition: attachment; filename=users.csv');
 
     $columns = array(
-      'user'     => 'User',
+      'name'     => 'User',
       'jobs'     => '# Jobs',
       'avg_cpus' => 'Avg. Job Size (cpus)',
       'avg_wait' => 'Avg. Wait Time (h)',
