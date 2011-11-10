@@ -805,7 +805,9 @@ Ext.Loader.onReady(function () {
             Ext.apply(config, {
                 height: 400,
                 store: Ext.create('Ubmod.store.UserTags'),
-                selModel: Ext.create('Ext.selection.CheckboxModel')
+                selModel: Ext.create('Ext.selection.CheckboxModel', {
+                    checkOnly: true
+                })
             });
             Ubmod.widget.TagGrid.superclass.constructor.call(this, config);
         },
