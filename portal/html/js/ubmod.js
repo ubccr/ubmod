@@ -398,6 +398,10 @@ Ext.Loader.onReady(function () {
                 this.setSize(this.getWidth(), this.getHeight());
             });
 
+            // XXX Force the tab panel to recalculate it's layout when
+            // the grid is resized.
+            this.grid.on('resize', this.doLayout, this);
+
             // XXX Reverse sort direction so that the first click on a
             // grid header results in sorting in the descending order.
             this.store.on('beforeload', function (store, options) {
