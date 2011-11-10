@@ -460,16 +460,33 @@ Ext.Loader.onReady(function () {
                 align: 'right'
             }];
 
+            var filter = Ext.create('Ext.form.field.Text', {
+                enableKeyEvents: true
+            });
+
+            filter.on('keypress', function (text, e) {
+                if (e.getKey() === e.ENTER) {
+                    Ext.merge(this.store.proxy.extraParams, {
+                        filter: text.getValue()
+                    });
+                    this.store.load();
+                }
+            }, this);
+
+            filter.on('keyup', function (text, e) {
+                if (e.getKey() === e.BACKSPACE &&
+                        text.getValue().length === 0) {
+                    Ext.merge(this.store.proxy.extraParams, { filter: '' });
+                    this.store.load();
+                }
+            }, this);
+
             this.dockedItems = [{
                 dock: 'bottom',
                 xtype: 'pagingtoolbar',
                 store: this.store,
                 displayInfo: true,
-                items: [
-                    '-',
-                    'Search:',
-                    { xtype: 'textfield' }
-                ]
+                items: [ '-', 'Search:', filter ]
             }];
 
             Ubmod.widget.Grid.superclass.initComponent.call(this);
