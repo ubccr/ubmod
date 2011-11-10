@@ -235,7 +235,7 @@ Ext.Loader.onReady(function () {
                 intervalchanged: true,
                 daterangechanged: true
             });
-            Ubmod.model.App.superclass.constructor.call(this, config);
+            this.callParent([config]);
         },
 
         /**
@@ -244,7 +244,7 @@ Ext.Loader.onReady(function () {
          * @see Ext.data.Model
          */
         set: function (field, value) {
-            Ubmod.model.App.superclass.set.call(this, field, value);
+            this.callParent([field, value]);
 
             // @see Ext.data.Model.set for implementation details
             if (!Ext.isObject(field)) {
@@ -384,8 +384,7 @@ Ext.Loader.onReady(function () {
             } else if (Ext.isString(sorters)) {
                 direction = direction === 'ASC' ? 'DESC' : 'ASC';
             }
-            return Ubmod.data.ReverseSortStore.superclass.sort.call(this,
-                sorters, direction, where, doSort);
+            return this.callParent([sorters, direction, where, doSort]);
         }
     });
 
@@ -406,7 +405,7 @@ Ext.Loader.onReady(function () {
                     reader: { type: 'json', root: 'data' }
                 }
             });
-            Ubmod.store.Interval.superclass.constructor.call(this, config);
+            this.callParent([config]);
         }
     });
 
@@ -427,7 +426,7 @@ Ext.Loader.onReady(function () {
                     reader: { type: 'json', root: 'data' }
                 }
             });
-            Ubmod.store.Cluster.superclass.constructor.call(this, config);
+            this.callParent([config]);
         }
     });
 
@@ -451,7 +450,7 @@ Ext.Loader.onReady(function () {
                     extraParams: { sort: 'wallt', dir: 'DESC' }
                 }
             });
-            Ubmod.store.UserActivity.superclass.constructor.call(this, config);
+            this.callParent([config]);
         }
     });
 
@@ -475,7 +474,7 @@ Ext.Loader.onReady(function () {
                     extraParams: { sort: 'user', dir: 'ASC' }
                 }
             });
-            Ubmod.store.UserTags.superclass.constructor.call(this, config);
+            this.callParent([config]);
         },
 
         /**
@@ -529,7 +528,7 @@ Ext.Loader.onReady(function () {
                     extraParams: { sort: 'wallt', dir: 'DESC' }
                 }
             });
-            Ubmod.store.GroupActivity.superclass.constructor.call(this, config);
+            this.callParent([config]);
         }
     });
 
@@ -553,7 +552,7 @@ Ext.Loader.onReady(function () {
                     extraParams: { sort: 'wallt', dir: 'DESC' }
                 }
             });
-            Ubmod.store.QueueActivity.superclass.constructor.call(this, config);
+            this.callParent([config]);
         }
     });
 
@@ -577,7 +576,7 @@ Ext.Loader.onReady(function () {
                     extraParams: { sort: 'wallt', dir: 'DESC' }
                 }
             });
-            Ubmod.store.QueueActivity.superclass.constructor.call(this, config);
+            this.callParent([config]);
         }
     });
 
@@ -597,7 +596,7 @@ Ext.Loader.onReady(function () {
                     reader: { type: 'json', root: 'tags' }
                 }
             });
-            Ubmod.store.Tag.superclass.constructor.call(this, config);
+            this.callParent([config]);
         }
     });
 
@@ -617,11 +616,11 @@ Ext.Loader.onReady(function () {
                 queryMode: 'local',
                 emptyText: 'Interval...'
             });
-            Ubmod.widget.Interval.superclass.constructor.call(this, config);
+            this.callParent([config]);
         },
 
         initComponent: function () {
-            Ubmod.widget.Interval.superclass.initComponent.call(this);
+            this.callParent(arguments);
 
             this.store.load({
                 scope: this,
@@ -651,11 +650,11 @@ Ext.Loader.onReady(function () {
                 queryMode: 'local',
                 emptyText: 'Cluster...'
             });
-            Ubmod.widget.Cluster.superclass.constructor.call(this, config);
+            this.callParent([config]);
         },
 
         initComponent: function () {
-            Ubmod.widget.Cluster.superclass.initComponent.call(this);
+            this.callParent(arguments);
 
             this.store.load({
                 scope: this,
@@ -677,7 +676,7 @@ Ext.Loader.onReady(function () {
             config = config || {};
             Ext.apply(config, { height: 33 });
             this.model = config.model;
-            Ubmod.widget.Cluster.superclass.constructor.call(this, config);
+            this.callParent([config]);
         },
 
         initComponent: function () {
@@ -735,7 +734,7 @@ Ext.Loader.onReady(function () {
                 this.dateRange
             ];
 
-            Ubmod.widget.Toolbar.superclass.initComponent.call(this);
+            this.callParent(arguments);
         }
     });
 
@@ -770,7 +769,7 @@ Ext.Loader.onReady(function () {
                 items: this.grid
             });
 
-            Ubmod.widget.StatsPanel.superclass.constructor.call(this, config);
+            this.callParent([config]);
         },
 
         initComponent: function () {
@@ -780,7 +779,7 @@ Ext.Loader.onReady(function () {
                 this.model.removeListener('restparamschanged', listener, this);
             }, this);
 
-            Ubmod.widget.StatsPanel.superclass.initComponent.call(this);
+            this.callParent(arguments);
 
             this.grid.on('itemdblclick', function (grid, record) {
                 var id, params, tab;
@@ -856,7 +855,7 @@ Ext.Loader.onReady(function () {
             this.label = config.label;
             this.labelKey = config.labelKey;
 
-            Ubmod.widget.StatsGrid.superclass.constructor.call(this, config);
+            this.callParent([config]);
         },
 
         initComponent: function () {
@@ -917,7 +916,7 @@ Ext.Loader.onReady(function () {
 
             this.dockedItems = [pagingToolbar];
 
-            Ubmod.widget.StatsGrid.superclass.initComponent.call(this);
+            this.callParent(arguments);
         }
     });
 
@@ -936,7 +935,7 @@ Ext.Loader.onReady(function () {
                 plain: true
             });
 
-            Ubmod.widget.TagPanel.superclass.constructor.call(this, config);
+            this.callParent([config]);
         },
 
         initComponent: function () {
@@ -1011,7 +1010,7 @@ Ext.Loader.onReady(function () {
 
             this.items = [userTagGrid, tagStatsGrid];
 
-            Ubmod.widget.TagPanel.superclass.initComponent.call(this);
+            this.callParent(arguments);
         },
 
         reload: function () {
@@ -1036,7 +1035,7 @@ Ext.Loader.onReady(function () {
                     checkOnly: true
                 })
             });
-            Ubmod.widget.TagGrid.superclass.constructor.call(this, config);
+            this.callParent([config]);
         },
 
         initComponent: function () {
@@ -1095,7 +1094,7 @@ Ext.Loader.onReady(function () {
 
             this.dockedItems = [pagingToolbar, tagToolbar];
 
-            Ubmod.widget.TagGrid.superclass.initComponent.call(this);
+            this.callParent(arguments);
 
             this.store.load();
         }
@@ -1119,7 +1118,7 @@ Ext.Loader.onReady(function () {
 
             Ext.apply(config, { title: this.tag.get('tag') });
 
-            Ubmod.widget.TagReport.superclass.constructor.call(this, config);
+            this.callParent([config]);
         },
 
         initComponent: function () {
@@ -1137,7 +1136,7 @@ Ext.Loader.onReady(function () {
 
             this.items = [partial];
 
-            Ubmod.widget.TagReport.superclass.initComponent.call(this);
+            this.callParent(arguments);
         }
     });
 
@@ -1162,7 +1161,7 @@ Ext.Loader.onReady(function () {
                 title: this.user.get('user')
             });
 
-            Ubmod.widget.UserTags.superclass.constructor.call(this, config);
+            this.callParent([config]);
         },
 
         initComponent: function () {
@@ -1204,7 +1203,7 @@ Ext.Loader.onReady(function () {
             this.dockedItems = [tagToolbar];
             this.items       = [ userHeader, this.tagPanel ];
 
-            Ubmod.widget.UserTags.superclass.initComponent.call(this);
+            this.callParent(arguments);
         },
 
         /**
@@ -1267,7 +1266,7 @@ Ext.Loader.onReady(function () {
                 minChars: 1
             });
 
-            Ubmod.widget.TagInput.superclass.constructor.call(this, config);
+            this.callParent([config]);
         }
     });
 
@@ -1282,8 +1281,7 @@ Ext.Loader.onReady(function () {
 
             this.key = config.key;
 
-            Ubmod.widget.PagingToolbar.superclass.constructor.call(this,
-                config);
+            this.callParent([config]);
         },
 
         initComponent: function () {
@@ -1306,7 +1304,7 @@ Ext.Loader.onReady(function () {
 
             this.items = [ '-', 'Search:', filter ];
 
-            Ubmod.widget.PagingToolbar.superclass.initComponent.call(this);
+            this.callParent(arguments);
         },
 
         /**
@@ -1352,8 +1350,7 @@ Ext.Loader.onReady(function () {
              */
             this.addEvents({ addtag: true });
 
-            Ubmod.widget.TaggingToolbar.superclass.constructor.call(this,
-                config);
+            this.callParent([config]);
         },
 
         initComponent: function () {
@@ -1369,7 +1366,7 @@ Ext.Loader.onReady(function () {
 
             this.items = [ 'Tag:', tagInput, addButton ];
 
-            Ubmod.widget.TaggingToolbar.superclass.initComponent.call(this);
+            this.callParent(arguments);
         }
     });
 
@@ -1388,7 +1385,7 @@ Ext.Loader.onReady(function () {
 
             this.addEvents({ afterload: true });
 
-            Ubmod.widget.Partial.superclass.constructor.call(this, config);
+            this.callParent([config]);
         },
 
         initComponent: function () {
@@ -1408,7 +1405,7 @@ Ext.Loader.onReady(function () {
             // been added to the DOM.
             this.on('afterrender', reload, this);
 
-            Ubmod.widget.Partial.superclass.initComponent.call(this);
+            this.callParent(arguments);
         },
 
         /**
