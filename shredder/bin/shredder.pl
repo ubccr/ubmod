@@ -8,7 +8,6 @@ use Getopt::Long;
 use File::Spec;
 use Config::Tiny;
 use DateTime;
-use Ubmod::Shredder::Pbs;
 use Ubmod::Aggregator;
 use Ubmod::Logger;
 
@@ -18,19 +17,22 @@ my $Logger;
 my $Host;
 
 sub main {
-    my ( $stdio, $file, $dir, $host, $shred, $update, $verbose, $help );
+    my ($stdio,  $file,   $dir,     $host, $shred,
+        $format, $update, $verbose, $help
+    );
 
     Getopt::Long::Configure('no_ignore_case');
 
     my $result = GetOptions(
-        ''          => \$stdio,
-        'in|i=s'    => \$file,
-        'dir|d=s'   => \$dir,
-        'host|H=s'  => \$host,
-        'shred|s'   => \$shred,
-        'update|u'  => \$update,
-        'verbose|v' => \$verbose,
-        'help|h'    => \$help,
+        ''           => \$stdio,
+        'in|i=s'     => \$file,
+        'dir|d=s'    => \$dir,
+        'host|H=s'   => \$host,
+        'shred|s'    => \$shred,
+        'format|f=s' => \$format,
+        'update|u'   => \$update,
+        'verbose|v'  => \$verbose,
+        'help|h'     => \$help,
     );
 
     if ($help) {
@@ -44,7 +46,24 @@ sub main {
     db_connect( @{ $config->{database} }{qw{ host dbname user password }} );
 
     if ($shred) {
-        my $shredder = Ubmod::Shredder::Pbs->new();
+
+        if ( !$format ) {
+            $Logger->fatal("No input format specified.");
+            exit 1;
+        }
+        elsif ( $format !~ /^\w+$/ ) {
+            $Logger->fatal("Invalid input format specified.");
+            exit 1;
+        }
+
+        my $shredder_class = 'Ubmod::Shredder::' . ucfirst( lc($format) );
+
+        if ( !eval("require $shredder_class") ) {
+            $Logger->fatal("Unknown input format specified.");
+            exit 1;
+        }
+
+        my $shredder = $shredder_class->new();
 
         $Host = $host if defined $host;
 
@@ -104,6 +123,9 @@ OPTIONS
 
     -s, --shred
         shred accounting file(s)
+
+    -f, --format=
+        accounting file format (pbs or sge)
 
     -u, --update
         update aggregate tables
@@ -217,7 +239,12 @@ sub process_fh {
             $Logger->fatal($@);
             next;
         }
+
+        # Skip empty events
+        next unless %$event;
+
         $event->{host} = $Host if defined $Host;
+
         my $event_id = insert_event($event);
         foreach my $host ( @{ $event->{hosts} } ) {
             insert_host_log( { %$host, event_id => $event_id } );
@@ -389,7 +416,7 @@ Version: $Id$
 
 =head1 SYNOPSIS
 
-  ./shredder.pl -s -H your.host.org -d /var/spool/pbs/server_priv/accounting
+  ./shredder.pl -s --format=pbs -H your.host.org -d /var/spool/pbs/server_priv/accounting
 
   ./shredder.pl -u
 
