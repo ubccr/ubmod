@@ -421,6 +421,7 @@ sub _insert_dates {
             `date`          = ?,
             `week`          = ?,
             `month`         = ?,
+            `quarter`       = ?,
             `year`          = ?,
             `last_7_days`   = ?,
             `last_30_days`  = ?,
@@ -440,9 +441,10 @@ sub _insert_dates {
         # XXX ISO week numbers start on Monday
         my $r = $sth->execute(
             $current->ymd,   $current->week_number,
-            $current->month, $current->year,
-            $non_neg && $days < 7,  $non_neg && $days < 30,
-            $non_neg && $days < 90, $non_neg && $days < 365,
+            $current->month, $current->quarter,
+            $current->year,  $non_neg && $days < 7,
+            $non_neg && $days < 30, $non_neg && $days < 90,
+            $non_neg && $days < 365,
         );
         if ( !$r ) {
             $self->{logger}->fatal( $sth->errstr() );
