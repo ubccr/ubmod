@@ -49,13 +49,23 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
 {
 
   /**
-   * Execute the cpu consumption action.
+   * Execute the cpu consumption period action.
    *
    * @return void
    */
-  public function executeCpuConsumption()
+  public function executeCpuConsumptionPeriod()
   {
-    Ubmod_Model_Chart::renderCpuConsumption($this->getGetData());
+    Ubmod_Model_Chart::renderCpuConsumptionPeriod($this->getGetData());
+  }
+
+  /**
+   * Execute the cpu consumption monthly action.
+   *
+   * @return void
+   */
+  public function executeCpuConsumptionMonthly()
+  {
+    Ubmod_Model_Chart::renderCpuConsumptionMonthly($this->getGetData());
   }
 
   /**

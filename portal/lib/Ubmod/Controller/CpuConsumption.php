@@ -67,6 +67,7 @@ class Ubmod_Controller_CpuConsumption extends Ubmod_BaseController
   {
     $queryString = Ubmod_Model_Chart::getQueryString($this->getPostData());
 
-    $this->chart = '/chart/cpu-consumption?' . $queryString;
+    $this->periodChart  = '/chart/cpu-consumption-period?'  . $queryString;
+    $this->monthlyChart = '/chart/cpu-consumption-monthly?' . $queryString;
   }
 }

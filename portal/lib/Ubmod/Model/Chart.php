@@ -205,11 +205,11 @@ class Ubmod_Model_Chart
   }
 
   /**
-   * Create a CPU consumption chart and send it to the browser.
+   * Create a CPU consumption chart period and send it to the browser.
    *
    * @return void
    */
-  public static function renderCpuConsumption($params)
+  public static function renderCpuConsumptionPeriod($params)
   {
     $cputForLabel = array();
     foreach (self::getCpuConsumption($params) as $cpu) {
@@ -233,6 +233,55 @@ class Ubmod_Model_Chart
       'labels'        => $cpus,
       'series'        => $time,
       'displayValues' => TRUE,
+    ));
+  }
+
+  /**
+   * Create a CPU consumption chart monthly and send it to the browser.
+   *
+   * @return void
+   */
+  public static function renderCpuConsumptionMonthly($params)
+  {
+    $cpuLabels  = self::getCpuIntervalLabels();
+    $months     = Ubmod_Model_Interval::getMonths($params);
+    $monthNames = array();
+
+    // array( cpuLabel => array( month => cput, ... ), ... )
+    $serieForCpus = array();
+
+    foreach ($months as $monthKey => $month) {
+
+      // array( cpuLabel => avg_cput, ... )
+      $cputForLabel = array();
+
+      $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
+      $monthNames[] = date("M 'y", $time);
+
+      $monthParams = array_merge($params, $month);
+      unset($monthParams['interval_id']);
+
+      foreach (self::getCpuConsumption($monthParams) as $cpu) {
+        $cputForLabel[$cpu['label']] = $cpu['cput'];
+      }
+
+      foreach ($cpuLabels as $label) {
+        $cpuLabel = "$label CPUs/Job";
+        $serieForCpus[$cpuLabel][$monthKey]
+          = isset($cputForLabel[$label]) ? $cputForLabel[$label] : 0;
+      }
+    }
+
+    self::renderStackedAreaChart(array(
+      'width'      => 700,
+      'height'     => 400,
+      'title'      => 'CPU Consumption vs. Job Size (Monthly)',
+      'subTitle'   => self::getSubTitle($params),
+      'yLabel'     => 'Delivered CPU Time (CPU Days)',
+      'xLabel'     => 'Month',
+      'labels'     => $monthNames,
+      'series'     => $serieForCpus,
+      'legendMode' => LEGEND_VERTICAL,
     ));
   }
 
