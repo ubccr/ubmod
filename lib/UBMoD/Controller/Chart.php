@@ -26,4 +26,15 @@ class UBMoD_Controller_Chart extends UBMoD_Controller_Base
     UBMoD_Model_Chart::renderCpuConsumption($this->getGetData());
     exit(0);
   }
+
+  /**
+   * Execute the wait time action.
+   *
+   * @return void
+   */
+  public function executeWaitTime()
+  {
+    UBMoD_Model_Chart::renderWaitTime($this->getGetData());
+    exit(0);
+  }
 }

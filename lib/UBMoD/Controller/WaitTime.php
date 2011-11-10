@@ -25,4 +25,17 @@ class UBMoD_Controller_WaitTime extends UBMoD_Controller_Base
   {
 
   }
+
+  /**
+   * Execute the chart action.
+   *
+   * @return void
+   */
+  public function executeChart()
+  {
+    $post = $this->getPostData();
+    $this->chart
+      = '/chart/wait-time?interval_id=' . $post['interval_id']
+      . '&amp;cluster_id=' . $post['cluster_id'] . '&amp;t=' . time();
+  }
 }

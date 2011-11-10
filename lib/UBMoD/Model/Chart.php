@@ -85,14 +85,53 @@ class UBMoD_Model_Chart
       $time[] = (int) $point['cput'];
     }
 
+    self::renderBarChart(array(
+      'labels' => $cpus,
+      'series' => $time,
+      'title'  => 'CPU Consumption vs. Job Size',
+      'yLabel' => 'Delivered CPU time [cpu days]',
+      'xLabel' => 'Number of CPUs/Job',
+    ));
+  }
+
+  /**
+   * Create a wait time chart and send it to the browser.
+   *
+   * @return void
+   */
+  public static function renderWaitTime($params)
+  {
+    $cpus = array();
+    $time = array();
+    foreach (self::getWaitTime($params) as $point) {
+      $cpus[] = $point['label'];
+      $time[] = $point['avg_wait'];
+    }
+
+    self::renderBarChart(array(
+      'labels' => $cpus,
+      'series' => $time,
+      'title'  => '',
+      'yLabel' => '',
+      'xLabel' => '',
+    ));
+  }
+
+  /**
+   * Render a bar chart.
+   *
+   * @return void
+   */
+  private static function renderBarChart($params)
+  {
     $data = new pData();
 
-    $data->addPoints($time, 'time');
-    $data->setAxisName(0, 'Delivered CPU time [cpu days]');
+    $data->addPoints($params['series'], 'series');
+    $data->setAxisName(0, $params['yLabel']);
 
-    $data->addPoints($cpus, 'cpus');
-    $data->setAbscissa('cpus');
-    $data->setAbscissaName('Number of CPUs/Job');
+    $data->addPoints($params['labels'], 'labels');
+    $data->setAbscissa('labels');
+    $data->setAbscissaName($params['xLabel']);
 
     $chart = new pImage(700, 400, $data);
 
@@ -100,7 +139,7 @@ class UBMoD_Model_Chart
       'FontName' => FONT_DIR . '/Forgotte.ttf',
     ));
 
-    $chart->drawText(350, 25, 'CPU Consumption vs. Job Size', array(
+    $chart->drawText(350, 25, $params['title'], array(
       'FontSize' => 20,
       'Align'    => TEXT_ALIGN_BOTTOMMIDDLE,
     ));
