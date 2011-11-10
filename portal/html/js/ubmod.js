@@ -202,7 +202,7 @@ Ext.Loader.onReady(function () {
 
         constructor: function (config) {
             config = config || {};
-            Ext.apply({
+            Ext.apply(config, {
                 model: 'Ubmod.model.Group',
                 remoteSort: true,
                 pageSize: 25,
