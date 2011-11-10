@@ -4,7 +4,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 use DBI;
-use Getopt::Long;
+use Getopt::Long qw(GetOptionsFromArray);
 use Pod::Usage;
 use File::Spec;
 use Config::Tiny;
@@ -24,7 +24,8 @@ sub main {
 
     Getopt::Long::Configure('no_ignore_case');
 
-    my $result = GetOptions(
+    my $result = GetOptionsFromArray(
+        \@_,
         ''             => \$stdio,
         'in|i=s'       => \$file,
         'dir|d=s'      => \$dir,
