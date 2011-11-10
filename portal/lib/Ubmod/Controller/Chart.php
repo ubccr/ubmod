@@ -59,13 +59,23 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
   }
 
   /**
-   * Execute the wait time action.
+   * Execute the wait time period action.
    *
    * @return void
    */
-  public function executeWaitTime()
+  public function executeWaitTimePeriod()
   {
-    Ubmod_Model_Chart::renderWaitTime($this->getGetData());
+    Ubmod_Model_Chart::renderWaitTimePeriod($this->getGetData());
+  }
+
+  /**
+   * Execute the wait time monthly action.
+   *
+   * @return void
+   */
+  public function executeWaitTimeMonthly()
+  {
+    Ubmod_Model_Chart::renderWaitTimeMonthly($this->getGetData());
   }
 
   /**

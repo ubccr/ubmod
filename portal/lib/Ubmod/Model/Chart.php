@@ -237,11 +237,11 @@ class Ubmod_Model_Chart
   }
 
   /**
-   * Create a wait time chart and send it to the browser.
+   * Create a wait time period chart and send it to the browser.
    *
    * @return void
    */
-  public static function renderWaitTime($params)
+  public static function renderWaitTimePeriod($params)
   {
     $waitForLabel = array();
     foreach (self::getWaitTime($params) as $cpu) {
@@ -265,6 +265,55 @@ class Ubmod_Model_Chart
       'labels'        => $cpus,
       'series'        => $time,
       'displayValues' => TRUE,
+    ));
+  }
+
+  /**
+   * Create a wait time monthly chart and send it to the browser.
+   *
+   * @return void
+   */
+  public static function renderWaitTimeMonthly($params)
+  {
+    $cpuLabels  = self::getCpuIntervalLabels();
+    $months     = Ubmod_Model_Interval::getMonths($params);
+    $monthNames = array();
+
+    // array( cpuLabel => array( month => avg_wait, ... ), ... )
+    $serieForCpus = array();
+
+    foreach ($months as $monthKey => $month) {
+
+      // array( cpuLabel => avg_wait, ... )
+      $waitForLabel = array();
+
+      $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
+      $monthNames[] = date("M 'y", $time);
+
+      $monthParams = array_merge($params, $month);
+      unset($monthParams['interval_id']);
+
+      foreach (self::getWaitTime($monthParams) as $cpu) {
+        $waitForLabel[$cpu['label']] = $cpu['avg_wait'];
+      }
+
+      foreach ($cpuLabels as $label) {
+        $cpuLabel = "$label CPUs/Job";
+        $serieForCpus[$cpuLabel][$monthKey]
+          = isset($waitForLabel[$label]) ? $waitForLabel[$label] : 0;
+      }
+    }
+
+    self::renderStackedAreaChart(array(
+      'width'      => 700,
+      'height'     => 400,
+      'title'      => 'Job Wait vs. Job Size (Monthly)',
+      'subTitle'   => self::getSubTitle($params),
+      'yLabel'     => 'Average Wait Time (Hours)',
+      'xLabel'     => 'Month',
+      'labels'     => $monthNames,
+      'series'     => $serieForCpus,
+      'legendMode' => LEGEND_VERTICAL,
     ));
   }
 
@@ -494,14 +543,15 @@ class Ubmod_Model_Chart
     }
 
     self::renderStackedAreaChart(array(
-      'width'    => 400,
-      'height'   => 350,
-      'title'    => 'Monthly Group Utilization',
-      'subTitle' => self::getSubTitle($params),
-      'yLabel'   => 'Wall Time (Days)',
-      'xLabel'   => 'Month',
-      'labels'   => $monthNames,
-      'series'   => $serieForGroup,
+      'width'      => 400,
+      'height'     => 350,
+      'title'      => 'Monthly Group Utilization',
+      'subTitle'   => self::getSubTitle($params),
+      'yLabel'     => 'Wall Time (Days)',
+      'xLabel'     => 'Month',
+      'labels'     => $monthNames,
+      'series'     => $serieForGroup,
+      'legendMode' => LEGEND_VERTICAL,
     ));
   }
 
@@ -577,14 +627,15 @@ class Ubmod_Model_Chart
     }
 
     self::renderStackedAreaChart(array(
-      'width'    => 400,
-      'height'   => 350,
-      'title'    => 'Monthly User Utilization',
-      'subTitle' => self::getSubTitle($params),
-      'yLabel'   => 'Wall Time (Days)',
-      'xLabel'   => 'Month',
-      'labels'   => $monthNames,
-      'series'   => $serieForUser,
+      'width'      => 400,
+      'height'     => 350,
+      'title'      => 'Monthly User Utilization',
+      'subTitle'   => self::getSubTitle($params),
+      'yLabel'     => 'Wall Time (Days)',
+      'xLabel'     => 'Month',
+      'labels'     => $monthNames,
+      'series'     => $serieForUser,
+      'legendMode' => LEGEND_VERTICAL,
     ));
   }
 
@@ -781,8 +832,19 @@ class Ubmod_Model_Chart
       $areaY2 += 10;
     }
 
-    $chart = new pImage($params['width'],
-      $params['height'] + count($params['series']) * 13, $data);
+    $legendMode = LEGEND_VERTICAL;
+    if (isset($params['legendMode'])) {
+      $legendMode = $params['legendMode'];
+    }
+
+    // XXX Should perform calculation based on font size
+    $legendHeight
+      = $legendMode === LEGEND_VERTICAL
+      ?count($params['series']) * 13
+      : 13;
+
+    $height = $params['height'] + $legendHeight;
+    $chart = new pImage($params['width'], $height, $data);
 
     $chart->setFontProperties(array(
       'FontName' => FONT_DIR . '/verdana.ttf',
@@ -835,7 +897,7 @@ class Ubmod_Model_Chart
 
     $chart->drawLegend(10, $params['height'], array(
       'Style'  => LEGEND_NOBORDER,
-      'Mode'   => LEGEND_VERTICAL,
+      'Mode'   => $legendMode,
       'Family' => LEGEND_FAMILY_CIRCLE,
     ));
 

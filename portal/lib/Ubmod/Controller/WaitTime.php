@@ -67,6 +67,7 @@ class Ubmod_Controller_WaitTime extends Ubmod_BaseController
   {
     $queryString = Ubmod_Model_Chart::getQueryString($this->getPostData());
 
-    $this->chart = '/chart/wait-time?' . $queryString;
+    $this->periodChart  = '/chart/wait-time-period?'  . $queryString;
+    $this->monthlyChart = '/chart/wait-time-monthly?' . $queryString;
   }
 }
