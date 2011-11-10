@@ -25,6 +25,7 @@ sub aggregate {
     $self->_update_groups();
     $self->_update_users();
     $self->_update_dates();
+    $self->_update_tags();
     $self->_update_cpus();
 
     # Time intervals
@@ -138,6 +139,19 @@ sub _update_dates {
     $self->{logger}->info( 'Most recent day: ' . $max_date->ymd() );
 
     return $self->_insert_dates( $min_date, $max_date );
+}
+
+sub _update_tags {
+    my ($self) = @_;
+
+    $self->_truncate('dim_tags');
+
+    my $sql = q{
+        INSERT INTO `dim_tags` (`event_tags`)
+        SELECT DISTINCT `tags` FROM `event`
+    };
+
+    $self->{dbh}->do($sql);
 }
 
 sub _update_cpus {

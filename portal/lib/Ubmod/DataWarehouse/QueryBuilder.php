@@ -220,18 +220,19 @@ class Ubmod_DataWarehouse_QueryBuilder
   /**
    * Add a WHERE clause to the generated query.
    *
-   * @param string $expr A valid SQL expression.
-   * @param string $op A valid SQL (binary) operator (e.g. =, >, LIKE).
-   * @param string $value (optional) The value to be used with the
-   *   expression. This value will be paramterized and returned in an
-   *   array when the query is built. If ommited, it is necessary to add
-   *   the value to the parameter array before executing the query.
+   * @param string $expr A valid SQL expression. It may contain named
+   *   paramater markers.
+   * @param array $params (optional) An array of named parameters that
+   *   should be used with the expression. These will be returned in an
+   *   array when the query is built. If ommited, and the expression
+   *   contains parameter markers, it is necessary to add the value to
+   *   the parameter array before executing the query.
    *
    * @return void
    */
-  public function addWhereClause($expr, $op, $value = null)
+  public function addWhereClause($expr, array $params = array())
   {
-    $this->_whereClauses[] = array($expr, $op, $value);
+    $this->_whereClauses[] = array($expr, $params);
   }
 
   /**
@@ -282,58 +283,76 @@ class Ubmod_DataWarehouse_QueryBuilder
   public function setQueryParams(Ubmod_Model_QueryParams $params)
   {
     if ($params->hasClusterId()) {
-      $this->addWhereClause('dim_cluster_id', '=', $params->getClusterId());
+      $this->addWhereClause('dim_cluster_id = :dim_cluster_id', array(
+        ':dim_cluster_id' => $params->getClusterId()
+      ));
     }
 
     if ($params->hasQueueId()) {
-      $this->addWhereClause('dim_queue_id', '=', $params->getQueueId());
+      $this->addWhereClause('dim_queue_id = :dim_queue_id', array(
+        ':dim_queue_id' => $params->getQueueId()
+      ));
     }
 
     if ($params->hasUserId()) {
-      $this->addWhereClause('dim_user_id', '=', $params->getUserId());
+      $this->addWhereClause('dim_user_id = :dim_user_id', array(
+        ':dim_user_id' => $params->getUserId()
+      ));
     }
 
     if ($params->hasGroupId()) {
-      $this->addWhereClause('dim_group_id', '=', $params->getGroupId());
+      $this->addWhereClause('dim_group_id = :dim_group_id', array(
+        ':dim_group_id' => $params->getGroupId()
+      ));
     }
 
     if ($params->hasCpusId()) {
-      $this->addWhereClause('dim_cpus_id', '=', $params->getCpusId());
+      $this->addWhereClause('dim_cpus_id = :dim_cpus_id', array(
+        ':dim_cpus_id' => $params->getCpusId()
+      ));
     }
 
     if ($params->hasDateData()) {
       $this->addDimensionTable('dim_date');
 
       if ($params->hasStartDate()) {
-        $this->addWhereClause('date', '>=', $params->getStartDate());
+        $this->addWhereClause('date >= :start_date', array(
+          ':start_date' => $params->getStartDate()
+        ));
       }
 
       if ($params->hasEndDate()) {
-        $this->addWhereClause('date', '<=', $params->getEndDate());
+        $this->addWhereClause('date <= :end_date', array(
+          ':end_date' => $params->getEndDate()
+        ));
       }
 
       if ($params->hasMonth()) {
-        $this->addWhereClause('month', '=', $params->getMonth());
+        $this->addWhereClause('month = :month', array(
+          ':month' => $params->getMonth()
+        ));
       }
 
       if ($params->hasYear()) {
-        $this->addWhereClause('year', '=', $params->getYear());
+        $this->addWhereClause('year = :year', array(
+          ':year' => $params->getYear()
+        ));
       }
 
       if ($params->isLast365Days()) {
-        $this->addWhereClause('last_365_days', '=', 1);
+        $this->addWhereClause('last_365_days = 1');
       }
 
       if ($params->isLast90Days()) {
-        $this->addWhereClause('last_90_days', '=', 1);
+        $this->addWhereClause('last_90_days = 1');
       }
 
       if ($params->isLast30Days()) {
-        $this->addWhereClause('last_30_days', '=', 1);
+        $this->addWhereClause('last_30_days = 1');
       }
 
       if ($params->isLast7Days()) {
-        $this->addWhereClause('last_7_days', '=', 1);
+        $this->addWhereClause('last_7_days = 1');
       }
     }
 
@@ -395,14 +414,23 @@ class Ubmod_DataWarehouse_QueryBuilder
     }
 
     if ($params->hasFilter() && $this->_filterExpression !== null) {
-      $this->addWhereClause($this->_filterExpression, 'LIKE',
-        '%' . $params->getFilter() . '%');
+      $this->addWhereClause($this->_filterExpression . ' LIKE :filter', array(
+        ':filter' => '%' . $params->getFilter() . '%'
+      ));
     }
 
     if ($params->hasTag()) {
+      $tag = json_encode($params->getTag());
       $this->addDimensionTable('dim_user');
-      $this->addWhereClause('tags', 'LIKE',
-        '%' . json_encode($params->getTag()) . '%');
+      $this->addDimensionTable('dim_tags');
+
+      $this->addWhereClause(
+        '(tags LIKE :tags OR event_tags LIKE :event_tags)',
+        array(
+          ':tags'       => '%' . $tag . '%',
+          ':event_tags' => '%' . $tag . '%',
+        )
+      );
     }
 
     if ($params->hasOrderByColumn()) {
@@ -529,31 +557,17 @@ class Ubmod_DataWarehouse_QueryBuilder
       return array('', array());
     }
 
-    $params       = array();
-    $whereClauses = array();
+    $params  = array();
+    $clauses = array();
 
     foreach ($this->_whereClauses as $clause) {
-      list($column, $oper, $value) = $clause;
+      list($expr, $clauseParams) = $clause;
 
-      $key = str_replace('.', '_', ":$column");
-
-      if ($value !== null) {
-
-        // Prevent duplicate parameter keys
-        $origKey = $key;
-        $count = 0;
-        do {
-          $count++;
-          $key = $origKey . $count;
-        } while (isset($params[$key]));
-
-        $params[$key] = $value;
-      }
-
-      $whereClauses[] = "$column $oper $key";
+      $clauses[] = $expr;
+      $params    = array_merge($params, $clauseParams);
     }
 
-    $sql = ' WHERE ' . implode(' AND ', $whereClauses);
+    $sql = ' WHERE ' . implode(' AND ', $clauses);
 
     return array($sql, $params);
   }

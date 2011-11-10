@@ -169,6 +169,7 @@ CREATE TABLE `event` (
   `queue`                     varchar(255) NOT NULL,
   `user`                      varchar(255) NOT NULL,
   `group`                     varchar(255) NOT NULL,
+  `tags`                      varchar(255) NOT NULL default '[]',
   `account`                   varchar(255),
   `start_time`                datetime NOT NULL,
   `end_time`                  datetime NOT NULL,
@@ -265,6 +266,14 @@ CREATE TABLE `dim_group` (
   KEY (`name`)
 ) ENGINE=MyISAM;
 
+DROP TABLE IF EXISTS `dim_tags`;
+CREATE TABLE `dim_tags` (
+  `dim_tags_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `event_tags`  varchar(255) NOT NULL,
+  PRIMARY KEY (`dim_tags_id`),
+  KEY (`event_tags`)
+) ENGINE=MyISAM;
+
 DROP TABLE IF EXISTS `dim_cpus`;
 CREATE TABLE `dim_cpus` (
   `dim_cpus_id`  int unsigned NOT NULL AUTO_INCREMENT,
@@ -313,6 +322,7 @@ CREATE TABLE `fact_job` (
   `dim_queue_id`   int    unsigned NOT NULL,
   `dim_user_id`    int    unsigned NOT NULL,
   `dim_group_id`   int    unsigned NOT NULL,
+  `dim_tags_id`    int    unsigned NOT NULL,
   `dim_cpus_id`    int    unsigned NOT NULL,
   `wallt`          bigint unsigned NOT NULL,
   `cput`           bigint unsigned NOT NULL,
@@ -338,6 +348,7 @@ CREATE TABLE `agg_job_by_all` (
   `dim_queue_id`       int    unsigned NOT NULL,
   `dim_user_id`        int    unsigned NOT NULL,
   `dim_group_id`       int    unsigned NOT NULL,
+  `dim_tags_id`        int    unsigned NOT NULL,
   `dim_cpus_id`        int    unsigned NOT NULL,
   `fact_job_count`     int    unsigned NOT NULL,
   `wallt_sum`          bigint unsigned NOT NULL,
@@ -366,6 +377,7 @@ CREATE TABLE `agg_job_by_timespan` (
   `dim_queue_id`           int    unsigned NOT NULL,
   `dim_user_id`            int    unsigned NOT NULL,
   `dim_group_id`           int    unsigned NOT NULL,
+  `dim_tags_id`            int    unsigned NOT NULL,
   `dim_cpus_id`            int    unsigned NOT NULL,
   `fact_job_count`         int    unsigned NOT NULL,
   `wallt_sum`              bigint unsigned NOT NULL,
@@ -442,6 +454,7 @@ BEGIN
     `dim_queue_id`,
     `dim_user_id`,
     `dim_group_id`,
+    `dim_tags_id`,
     `dim_cpus_id`,
     `wallt`,
     `cput`,
@@ -458,6 +471,7 @@ BEGIN
     `dim_queue`.`dim_queue_id`,
     `dim_user`.`dim_user_id`,
     `dim_group`.`dim_group_id`,
+    `dim_tags`.`dim_tags_id`,
     `dim_cpus`.`dim_cpus_id`,
     `event`.`wallt`,
     `event`.`cput`,
@@ -473,6 +487,7 @@ BEGIN
   JOIN `dim_queue`   ON `event`.`queue`          = `dim_queue`.`name`
   JOIN `dim_user`    ON `event`.`user`           = `dim_user`.`name`
   JOIN `dim_group`   ON `event`.`group`          = `dim_group`.`name`
+  JOIN `dim_tags`    ON `event`.`tags`           = `dim_tags`.`event_tags`
   JOIN `dim_cpus`    ON `event`.`cpus`           = `dim_cpus`.`cpu_count`;
 END//
 
@@ -498,6 +513,7 @@ BEGIN
     `dim_queue_id`,
     `dim_user_id`,
     `dim_group_id`,
+    `dim_tags_id`,
     `dim_cpus_id`,
     `fact_job_count`,
     `wallt_sum`,
@@ -521,6 +537,7 @@ BEGIN
     `fact_job`.`dim_queue_id`,
     `fact_job`.`dim_user_id`,
     `fact_job`.`dim_group_id`,
+    `fact_job`.`dim_tags_id`,
     `fact_job`.`dim_cpus_id`,
     COUNT(*),
     SUM(`wallt`),
@@ -544,6 +561,7 @@ BEGIN
     `fact_job`.`dim_queue_id`,
     `fact_job`.`dim_user_id`,
     `fact_job`.`dim_group_id`,
+    `fact_job`.`dim_tags_id`,
     `fact_job`.`dim_cpus_id`;
 END//
 
@@ -558,6 +576,7 @@ BEGIN
     `dim_queue_id`,
     `dim_user_id`,
     `dim_group_id`,
+    `dim_tags_id`,
     `dim_cpus_id`,
     `fact_job_count`,
     `wallt_sum`,
@@ -581,6 +600,7 @@ BEGIN
     `fact_job`.`dim_queue_id`,
     `fact_job`.`dim_user_id`,
     `fact_job`.`dim_group_id`,
+    `fact_job`.`dim_tags_id`,
     `fact_job`.`dim_cpus_id`,
     COUNT(*),
     SUM(`wallt`),
@@ -611,6 +631,7 @@ BEGIN
     `fact_job`.`dim_queue_id`,
     `fact_job`.`dim_user_id`,
     `fact_job`.`dim_group_id`,
+    `fact_job`.`dim_tags_id`,
     `fact_job`.`dim_cpus_id`;
 END//
 

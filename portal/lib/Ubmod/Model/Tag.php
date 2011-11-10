@@ -41,11 +41,11 @@ class Ubmod_Model_Tag
 {
 
   /**
-   * Returns all the tags in the database.
+   * Returns all tags in the user table.
    *
-   * @return array All the tag names.
+   * @return array
    */
-  public static function getAll()
+  private static function _getAllUserTags()
   {
     $sql = "
       SELECT DISTINCT tags
@@ -67,6 +67,47 @@ class Ubmod_Model_Tag
       $tags = array_merge($tags, json_decode($row['tags'], 1));
     }
 
+    return array_unique($tags);
+  }
+
+  /**
+   * Returns all tags in the dim_tags table.
+   *
+   * @return array
+   */
+  private static function _getAllDimTags()
+  {
+    $sql = "
+      SELECT DISTINCT event_tags
+      FROM dim_tags
+      WHERE event_tags IS NOT NULL
+    ";
+
+    $dbh = Ubmod_DbService::dbh();
+    $stmt = $dbh->prepare($sql);
+    $r = $stmt->execute();
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
+
+    $tags = array();
+
+    while ($row = $stmt->fetch()) {
+      $tags = array_merge($tags, json_decode($row['event_tags'], 1));
+    }
+
+    return array_unique($tags);
+  }
+
+  /**
+   * Returns all the tags in the database.
+   *
+   * @return array All the tag names.
+   */
+  public static function getAll()
+  {
+    $tags = array_merge(self::_getAllUserTags(), self::_getAllDimTags());
     $tags = array_unique($tags);
 
     natcasesort($tags);
@@ -186,11 +227,13 @@ class Ubmod_Model_Tag
     $qb = new Ubmod_DataWarehouse_QueryBuilder();
     $qb->setFactTable('fact_job');
     $qb->addDimensionTable('dim_user');
+    $qb->addDimensionTable('dim_tags');
     $qb->addSelectExpressions(array(
-      'tags' => "COALESCE(dim_user.tags, '[]')",
+      'user_tags' => "COALESCE(dim_user.tags,       '[]')",
+      'job_tags'  => "COALESCE(dim_tags.event_tags, '[]')",
     ));
     $qb->setQueryParams($params);
-    $qb->setGroupBy('tags');
+    $qb->setGroupBy('tags, event_tags');
     $qb->clearLimit();
     list($sql, $dbParams) = $qb->buildQuery();
 
@@ -205,7 +248,8 @@ class Ubmod_Model_Tag
     $tags = array();
 
     while ($row = $stmt->fetch()) {
-      $tags = array_merge($tags, json_decode($row['tags'], 1));
+      $tags = array_merge($tags, json_decode($row['user_tags'], 1),
+        json_decode($row['job_tags'], 1));
     }
 
     $tags = array_unique($tags);
