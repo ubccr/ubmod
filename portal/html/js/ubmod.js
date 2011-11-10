@@ -132,6 +132,16 @@ Ext.Loader.onReady(function () {
     });
 
     /**
+     * Tag model
+     */
+    Ext.define('Ubmod.model.Tag', {
+        extend: 'Ext.data.Model',
+        fields: [
+            'name'
+        ]
+    });
+
+    /**
      * Application model
      *
      * Stores the state of the application and provides an event to
@@ -442,6 +452,26 @@ Ext.Loader.onReady(function () {
                 }
             });
             Ubmod.store.QueueActivity.superclass.constructor.call(this, config);
+        }
+    });
+
+    /**
+     * Tag store
+     */
+    Ext.define('Ubmod.store.Tag', {
+        extend: 'Ext.data.Store',
+        constructor: function (config) {
+            config = config || {};
+            Ext.apply(config, {
+                model: 'Ubmod.model.Tag',
+                proxy: {
+                    type: 'ajax',
+                    simpleSortMode: true,
+                    url: '/api/rest/json/tag/list',
+                    reader: { type: 'json', root: 'tags' }
+                }
+            });
+            Ubmod.store.Tag.superclass.constructor.call(this, config);
         }
     });
 
@@ -900,7 +930,13 @@ Ext.Loader.onReady(function () {
         initComponent: function () {
             var toolbar, tagInput, updateButton;
 
-            tagInput = Ext.create('Ext.form.field.Text');
+            tagInput = Ext.create('Ext.form.field.ComboBox', {
+                store: Ext.create('Ubmod.store.Tag'),
+                displayField: 'name',
+                hideLabel: true,
+                hideTrigger: true,
+                minChars: 1
+            });
             updateButton = Ext.create('Ext.Button', { text: 'View Report' });
 
             toolbar = Ext.create('Ext.toolbar.Toolbar', {
