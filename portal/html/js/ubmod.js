@@ -235,11 +235,33 @@ Ext.Loader.onReady(function () {
 
         constructor: function (config) {
             config = config || {};
-            this.addEvents({
-                restparamschanged: true,
-                intervalchanged: true,
-                daterangechanged: true
-            });
+
+            this.addEvents(
+
+                /**
+                 * @event restparamschanged
+                 * Fired after any of the parameters needed for REST
+                 * requests have changed.
+                 */
+                'restparamschanged',
+
+                /**
+                 * @event intervalchanged
+                 * Fired after the time interval is changed.
+                 * @param {Ubmod.model.TimeInterval} interval The new
+                 *   time interval.
+                 */
+                'intervalchanged',
+
+                /**
+                 * @event daterangechanged
+                 * Fired after the start and end date are changed.
+                 * @param {String} startDate The new start date.
+                 * @param {String} endDate The new end date.
+                 */
+                'daterangechanged'
+            );
+
             this.callParent([config]);
         },
 
@@ -1135,7 +1157,7 @@ Ext.Loader.onReady(function () {
              * Fires when a tag has been added to one or more users.
              * @param {Array} users The users that changed.
              */
-            this.addEvents({ userschanged: true });
+            this.addEvents('userschanged');
 
             Ext.apply(config, {
                 height: 400,
@@ -1226,7 +1248,7 @@ Ext.Loader.onReady(function () {
              * @event reportloaded
              * Fires after the report partial has loaded.
              */
-            this.addEvents({ reportloaded: true });
+            this.addEvents('reportloaded');
 
             Ext.apply(config, { title: this.tag.get('tag') });
 
@@ -1266,7 +1288,7 @@ Ext.Loader.onReady(function () {
              * Fires when a tag has been added or removed from the user.
              * @param {Ubmod.model.UserTags} user The user that changed.
              */
-            this.addEvents({ userchanged: true });
+            this.addEvents('userchanged');
 
             Ext.apply(config, {
                 defaults: { margin: 10 },
@@ -1459,7 +1481,7 @@ Ext.Loader.onReady(function () {
              * Fires when a tag should be added.
              * @param {String} tag The text entered in the toolbar.
              */
-            this.addEvents({ addtag: true });
+            this.addEvents('addtag');
 
             this.callParent([config]);
         },
@@ -1494,7 +1516,11 @@ Ext.Loader.onReady(function () {
             this.url    = config.url;
             this.params = config.params || {};
 
-            this.addEvents({ afterload: true });
+            /**
+             * @event afterload
+             * Fired after the partial is loaded or reloaded.
+             */
+            this.addEvents('afterload');
 
             this.callParent([config]);
         },
