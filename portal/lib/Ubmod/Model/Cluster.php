@@ -106,7 +106,7 @@ class Ubmod_Model_Cluster
         IFNULL(a.max_cput, 0) AS max_cput,
         IFNULL(ROUND(a.avg_mem/1024, 1), 0) AS avg_mem,
         IFNULL(a.max_mem, 0) AS max_mem,
-        IFNULL(a.avg_vmem, 0) AS avg_mem,
+        IFNULL(a.avg_vmem, 0) AS avg_vmem,
         IFNULL(a.max_vmem, 0) AS max_vmem,
         IFNULL(ROUND(a.avg_wait/3600, 1), 0) AS avg_wait,
         IFNULL(ROUND(a.avg_exect/3600, 1), 0) AS avg_exect,
