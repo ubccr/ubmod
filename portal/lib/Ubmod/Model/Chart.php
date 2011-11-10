@@ -828,6 +828,7 @@ class Ubmod_Model_Chart
     }
 
     $center = $params['width'] / 2;
+    $middle = $params['height'] / 2;
     $radius = 85;
 
     $data = new pData();
@@ -854,7 +855,7 @@ class Ubmod_Model_Chart
 
     $pie = new pPie($chart, $data);
 
-    $pie->draw2DPie($center, $radius + 60, array(
+    $pie->draw2DPie($center, $middle, array(
       'Radius'        => 80,
       'DrawLabels'    => TRUE,
       'LabelStacked'  => TRUE,
