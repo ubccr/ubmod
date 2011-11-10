@@ -1082,8 +1082,10 @@ Ext.Loader.onReady(function () {
                         }
 
                         Ext.Object.each(params, function (key, value) {
-                            var encodedValue = encodeURIComponent(value);
-                            querySegments.push(key + '=' + encodedValue);
+                            if (value !== null) {
+                                var encodedValue = encodeURIComponent(value);
+                                querySegments.push(key + '=' + encodedValue);
+                            }
                         });
 
                         window.location =
