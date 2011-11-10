@@ -172,7 +172,7 @@ class Ubmod_Model_Chart
     }
 
     while (list($i, $t) = each($time)) {
-      $users[$i] .= sprintf(' (%d%%)', $t / $total * 100);
+      $users[$i] .= sprintf(' (%d%%)', round($t / $total * 100));
     }
 
     self::renderPieChart(array(
@@ -253,7 +253,7 @@ class Ubmod_Model_Chart
     }
 
     while (list($i, $t) = each($time)) {
-      $groups[$i] .= sprintf(' (%d%%)', $t / $total * 100);
+      $groups[$i] .= sprintf(' (%d%%)', round($t / $total * 100));
     }
 
     self::renderPieChart(array(
