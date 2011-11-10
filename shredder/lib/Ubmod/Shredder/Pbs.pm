@@ -204,15 +204,14 @@ Ubmod::Shredder::Pbs - Parse PBS/TORQUE format accounting logs
 
 =head1 SYNOPSIS
 
-    my $shredder = Ubmod::Shredder::Pbs->new( logger => $Logger );
+    my $shredder = Ubmod::Shredder::Pbs->new( logger => $logger );
     $shredder->set_host($host);
     $shredder->set_fh($fh);
     my $event = $shredder->shred();
 
 =head1 DESCRIPTION
 
-This module uses data in the C<event> table to produce aggregate data,
-which can then be viewed using the UBMoD portal.
+This module parses PBS/TORQUE accounting log files.
 
 =head1 CONSTRUCTOR
 
