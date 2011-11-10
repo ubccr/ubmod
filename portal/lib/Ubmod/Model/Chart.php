@@ -531,8 +531,9 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
       if ($user['wallt'] == 0) { continue; }
 
-      $users[] = self::formatNameShort($user['name'], $user['display_name']);
-      $time[]  = $user['wallt'];
+      $users[]
+        = self::formatNameShort($user['name'], $user['display_name'], 10);
+      $time[] = $user['wallt'];
     }
 
     self::renderBarChart(array(
@@ -566,7 +567,7 @@ class Ubmod_Model_Chart
       if ($group['wallt'] == 0) { continue; }
 
       $groups[]
-        = self::formatNameShort($group['name'], $group['display_name']);
+        = self::formatNameShort($group['name'], $group['display_name'], 10);
       $time[]   = $group['wallt'];
     }
 
@@ -600,7 +601,7 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Tag::getActivityList($params) as $tag) {
       if ($tag['wallt'] == 0) { continue; }
 
-      $tags[] = self::formatNameShort($tag['tag_value']);
+      $tags[] = self::formatNameShort($tag['tag_value'], null, 10);
       $time[] = $tag['wallt'];
     }
 
