@@ -1099,6 +1099,13 @@ class Ubmod_Model_Chart
       'Align'    => TEXT_ALIGN_TOPMIDDLE,
     ));
 
+    if (isset($params['subTitle'])) {
+      $chart->drawText($center, 16, $params['subTitle'], array(
+        'Align'    => TEXT_ALIGN_TOPMIDDLE,
+        'FontSize' => 8,
+      ));
+    }
+
     $chart->drawText($center, $middle, 'No data found', array(
       'FontSize' => 10,
       'Align'    => TEXT_ALIGN_TOPMIDDLE,
