@@ -532,7 +532,9 @@ class Ubmod_Model_Chart
       if ($user['wallt'] == 0) { continue; }
 
       $users[]
-        = self::formatNameShort($user['name'], $user['display_name'], 10);
+        = isset($user['display_name'])
+        ? $user['display_name']
+        : $user['name'];
       $time[] = $user['wallt'];
     }
 
@@ -567,7 +569,9 @@ class Ubmod_Model_Chart
       if ($group['wallt'] == 0) { continue; }
 
       $groups[]
-        = self::formatNameShort($group['name'], $group['display_name'], 10);
+        = isset($group['display_name'])
+        ? $group['display_name']
+        : $group['name'];
       $time[]   = $group['wallt'];
     }
 
@@ -601,7 +605,7 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Tag::getActivityList($params) as $tag) {
       if ($tag['wallt'] == 0) { continue; }
 
-      $tags[] = self::formatNameShort($tag['tag_value'], null, 10);
+      $tags[] = $tag['tag_value'];
       $time[] = $tag['wallt'];
     }
 
@@ -1107,7 +1111,7 @@ class Ubmod_Model_Chart
       'GridG'         => 0,
       'GridB'         => 0,
       'GridAlpha'     => 20,
-      'LabelRotation' => 45,
+      'LabelRotation' => 30,
     ));
 
     $displayValues
