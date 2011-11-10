@@ -791,6 +791,8 @@ Ext.Loader.onReady(function () {
         },
 
         initComponent: function () {
+            var clearTagButton;
+
             this.intervalCombo = Ext.create('Ubmod.widget.TimeInterval');
             this.intervalCombo.on('select', function (combo, records) {
                 this.model.setInterval(records[0]);
@@ -851,6 +853,12 @@ Ext.Loader.onReady(function () {
                 }
             }, this);
 
+            clearTagButton = Ext.create('Ext.Button', { text: 'Clear Tag' });
+            clearTagButton.on('click', function () {
+                this.tagInput.setValue('');
+                this.model.setTag('');
+            }, this);
+
             this.renderTo = Ext.get('toolbar');
             this.items = [
                 'Cluster:',
@@ -861,7 +869,11 @@ Ext.Loader.onReady(function () {
                 { xtype: 'tbspacer', width: 20 },
                 this.dateRange,
                 'Tag:',
-                this.tagInput
+                this.tagInput,
+
+                // The container is used to change the style of the
+                // button.
+                { xtype: 'container', items: [ clearTagButton ] }
             ];
 
             this.callParent(arguments);
