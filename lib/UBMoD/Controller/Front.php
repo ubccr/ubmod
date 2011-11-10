@@ -58,6 +58,8 @@ class UBMoD_Controller_Front
       require $view;
       $content = ob_get_clean();
 
+      $segments = $request->getPathSegments();
+      $page     = $segments[0];
       require TEMPLATE_DIR . '/layouts/default.php';
     } catch (Exception $e) {
       echo '<pre>' . $e->getMessage() . '</pre>';
