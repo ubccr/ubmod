@@ -480,6 +480,7 @@ Ext.Loader.onReady(function () {
 
         constructor: function (config) {
             config = config || {};
+            Ext.apply(config, { height: 33 });
             this.model = config.model;
             Ubmod.widget.Cluster.superclass.constructor.call(this, config);
         },
@@ -495,13 +496,9 @@ Ext.Loader.onReady(function () {
                 this.model.set('cluster', records[0]);
             }, this);
 
-            this.startDate = Ext.create('Ext.form.field.Date');
-            this.endDate   = Ext.create('Ext.form.field.Date');
-
-            this.updateButton = Ext.create('Ext.Button', {
-                text: 'Update',
-                hidden: true
-            });
+            this.startDate    = Ext.create('Ext.form.field.Date');
+            this.endDate      = Ext.create('Ext.form.field.Date');
+            this.updateButton = Ext.create('Ext.Button', { text: 'Update' });
 
             this.updateButton.on('click', function () {
                 this.model.setDates(this.startDate.getValue(),
@@ -510,17 +507,27 @@ Ext.Loader.onReady(function () {
 
             this.model.on('intervalchanged', function (interval) {
                 if (interval.isCustomDateRange()) {
-                    this.startDate.setReadOnly(false);
-                    this.endDate.setReadOnly(false);
-                    this.updateButton.show();
+                    this.startDate.setValue(this.model.get('startDate'));
+                    this.endDate.setValue(this.model.get('endDate'));
+                    this.dateRange.show();
                 } else {
-                    this.updateButton.hide();
-                    this.startDate.setReadOnly(true);
-                    this.endDate.setReadOnly(true);
-                    this.startDate.setValue(interval.get('start'));
-                    this.endDate.setValue(interval.get('end'));
+                    this.dateRange.hide();
                 }
             }, this);
+
+            this.dateRange = Ext.create('Ext.container.Container', {
+                layout: { type: 'hbox', align: 'middle' },
+                width: 500,
+                hidden: true,
+                items: [
+                    { xtype: 'tbtext', text: 'Date Range:' },
+                    this.startDate,
+                    { xtype: 'tbtext', text: 'to' },
+                    this.endDate,
+                    { xtype: 'tbspacer', width: 5 },
+                    this.updateButton
+                ]
+            });
 
             this.renderTo = Ext.get('toolbar');
             this.items = [
@@ -530,11 +537,7 @@ Ext.Loader.onReady(function () {
                 'Period:',
                 this.intervalCombo,
                 { xtype: 'tbspacer', width: 20 },
-                'Date Range:',
-                this.startDate,
-                'to',
-                this.endDate,
-                this.updateButton
+                this.dateRange
             ];
 
             Ubmod.widget.Toolbar.superclass.initComponent.call(this);
