@@ -39,6 +39,7 @@ class UBMoD_Model_User
   public static function getActivityCount($params)
   {
     $dbh = UBMoD_DBService::dbh();
+
     $sql = 'SELECT count(*)
       FROM user u
       JOIN user_activity ua
@@ -47,11 +48,19 @@ class UBMoD_Model_User
         AND ua.cluster_id = :cluster_id
       JOIN activity a
         ON ua.activity_id = a.activity_id';
-    $stmt = $dbh->prepare($sql);
-    $stmt->execute(array(
+
+    $dbParams = array(
       ':interval_id' => $params['interval_id'],
       ':cluster_id'  => $params['cluster_id'],
-    ));
+    );
+
+    if ($params['filter'] != '') {
+      $sql .= ' WHERE u.user LIKE :filter';
+      $dbParams[':filter'] = '%' . $params['filter'] . '%';
+    }
+
+    $stmt = $dbh->prepare($sql);
+    $stmt->execute($dbParams);
     $result = $stmt->fetch();
     return $result[0];
   }
