@@ -213,9 +213,7 @@ Ext.Loader.onReady(function () {
         },
 
         initComponent: function () {
-            var store = Ext.create('Ubmod.store.Interval');
-
-            this.store = store;
+            this.store = Ext.create('Ubmod.store.Interval');
             this.displayField = 'time_interval';
             this.valueField = 'interval_id';
             this.queryMode = 'local';
@@ -223,7 +221,7 @@ Ext.Loader.onReady(function () {
 
             Ubmod.widget.Interval.superclass.initComponent.call(this);
 
-            store.load({
+            this.store.load({
                 scope: this,
                 callback: function (records) {
                     this.setValue(records[3].get(this.valueField));
@@ -244,9 +242,7 @@ Ext.Loader.onReady(function () {
         },
 
         initComponent: function () {
-            var store = Ext.create('Ubmod.store.Cluster');
-
-            this.store = store;
+            this.store = Ext.create('Ubmod.store.Cluster');
             this.displayField = 'display_name';
             this.valueField = 'cluster_id';
             this.queryMode = 'local';
@@ -254,7 +250,7 @@ Ext.Loader.onReady(function () {
 
             Ubmod.widget.Cluster.superclass.initComponent.call(this);
 
-            store.load({
+            this.store.load({
                 scope: this,
                 callback: function (records) {
                     this.setValue(records[0].get(this.valueField));
