@@ -151,7 +151,8 @@ OPTIONS
 
     -e, --end-date
         explicitly set the end date used for aggregation time intervals
-        default to yesterday
+        date must be in YYYY-MM-DD format
+        defaults to yesterday
 
     -v, --verbose
         verbose output
