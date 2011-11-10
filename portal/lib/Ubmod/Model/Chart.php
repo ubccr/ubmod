@@ -982,15 +982,6 @@ class Ubmod_Model_Chart
       'FontSize' => 8,
     ));
 
-    $chart->setShadow(TRUE, array(
-      'X'     => 5,
-      'Y'     => 5,
-      'R'     => 0,
-      'G'     => 0,
-      'B'     => 0,
-      'Alpha' => 50,
-    ));
-
     $pie = new pPie($chart, $data);
 
     $pie->draw2DPie($center, $middle, array(
