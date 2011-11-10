@@ -922,31 +922,40 @@ Ext.Loader.onReady(function () {
         extend: 'Ext.panel.Panel',
         constructor: function (config) {
             config = config || {};
+
+            Ext.apply(config, {
+                height: 200,
+                layout: 'fit'
+            });
+
             Ubmod.widget.TagReport.superclass.constructor.call(this, config);
         },
 
         initComponent: function () {
-            var toolbar, tagInput, updateButton, detailsPanel;
+            var toolbar, tagInput, updateButton, currentPartial;
 
-            detailsPanel = Ext.create('Ext.panel.Panel', { height: 200 });
-
-            tagInput = Ext.create('Ubmod.widget.TagInput');
-
+            tagInput     = Ext.create('Ubmod.widget.TagInput');
             updateButton = Ext.create('Ext.Button', { text: 'View Report' });
 
             updateButton.on('click', function () {
-                var partial = Ubmod.app.createPartial({
+                if (currentPartial !== undefined) {
+                    this.removeAll();
+                    currentPartial.destroy();
+                }
+
+                currentPartial = Ubmod.app.createPartial({
                     url: '/tag/details',
                     params: { tag: tagInput.getValue() }
                 });
-                detailsPanel.add(partial);
+
+                this.add(currentPartial);
+                this.doLayout();
             }, this);
 
             toolbar = Ext.create('Ext.toolbar.Toolbar', {
                 items: ['Tag:', tagInput, updateButton]
             });
 
-            this.items       = [detailsPanel];
             this.dockedItems = [toolbar];
 
             Ubmod.widget.TagReport.superclass.initComponent.call(this);
