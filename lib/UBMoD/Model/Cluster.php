@@ -17,6 +17,21 @@ class UBMoD_Model_Cluster
 {
 
   /**
+   * Return cluster data given a cluster id.
+   *
+   * @param int id The cluster id
+   * @return array
+   */
+  public static function getById($id)
+  {
+    $dbh = UBMoD_DBService::dbh();
+    $sql = 'SELECT * from cluster WHERE cluster_id = ?';
+    $stmt = $dbh->prepare($sql);
+    $stmt->execute(array($id));
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+  /**
    * Returns an array of all clusters.
    *
    * @return array

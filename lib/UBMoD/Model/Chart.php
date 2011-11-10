@@ -85,12 +85,19 @@ class UBMoD_Model_Chart
       $time[] = (int) $point['cput'];
     }
 
+    $cluster  = UBMoD_Model_Cluster::getById($params['cluster_id']);
+    $interval = UBMoD_Model_Interval::getById($params['interval_id']);
+
+    $subTitle = 'Cluster: ' . $cluster['host'] . ' From: ' . $interval['start']
+      . ' To: ' . $interval['end'];
+
     self::renderBarChart(array(
-      'labels' => $cpus,
-      'series' => $time,
-      'title'  => 'CPU Consumption vs. Job Size',
-      'yLabel' => 'Delivered CPU time [cpu days]',
-      'xLabel' => 'Number of CPUs/Job',
+      'title'    => 'CPU Consumption vs. Job Size',
+      'subTitle' => $subTitle,
+      'yLabel'   => 'Delivered CPU time [cpu days]',
+      'xLabel'   => 'Number of CPUs/Job',
+      'labels'   => $cpus,
+      'series'   => $time,
     ));
   }
 
@@ -108,12 +115,19 @@ class UBMoD_Model_Chart
       $time[] = $point['avg_wait'];
     }
 
+    $cluster  = UBMoD_Model_Cluster::getById($params['cluster_id']);
+    $interval = UBMoD_Model_Interval::getById($params['interval_id']);
+
+    $subTitle = 'Cluster: ' . $cluster['host'] . ' From: ' . $interval['start']
+      . ' To: ' . $interval['end'];
+
     self::renderBarChart(array(
-      'labels' => $cpus,
-      'series' => $time,
-      'title'  => '',
-      'yLabel' => '',
-      'xLabel' => '',
+      'title'    => 'Job Wait vs. Job Size',
+      'subTitle' => $subTitle,
+      'yLabel'   => 'Avg. Wait Time [hours]',
+      'xLabel'   => 'Number of CPUs/Job',
+      'labels'   => $cpus,
+      'series'   => $time,
     ));
   }
 
@@ -136,23 +150,38 @@ class UBMoD_Model_Chart
     $chart = new pImage(700, 400, $data);
 
     $chart->setFontProperties(array(
-      'FontName' => FONT_DIR . '/Forgotte.ttf',
+      'FontName' => FONT_DIR . '/verdana.ttf',
+      'FontSize' => 8,
     ));
 
-    $chart->drawText(350, 25, $params['title'], array(
-      'FontSize' => 20,
-      'Align'    => TEXT_ALIGN_BOTTOMMIDDLE,
+    $chart->drawText(350, 0, $params['title'], array(
+      'FontSize' => 12,
+      'Align'    => TEXT_ALIGN_TOPMIDDLE,
+    ));
+
+    $chart->drawText(350, 16, $params['subTitle'], array(
+      'Align'    => TEXT_ALIGN_TOPMIDDLE,
+      'FontSize' => 8,
     ));
 
     $chart->setGraphArea(60, 30, 660, 330);
 
     $chart->drawScale(array(
-      'DrawSubTicks' => TRUE,
-      'GridR'        => 0,
-      'GridG'        => 0,
-      'GridB'        => 0,
-      'GridAlpha'    => 10,
-      'Mode'         => SCALE_MODE_START0,
+      'Mode'          => SCALE_MODE_START0,
+      'GridR'         => 0,
+      'GridG'         => 0,
+      'GridB'         => 0,
+      'GridAlpha'     => 20,
+      'LabelRotation' => 45,
+    ));
+
+    $chart->setShadow(TRUE, array(
+      'X'     => 1,
+      'Y'     => 1,
+      'R'     => 0,
+      'G'     => 0,
+      'B'     => 0,
+      'Alpha' => 20,
     ));
 
     $chart->drawBarChart(array(
@@ -160,6 +189,7 @@ class UBMoD_Model_Chart
       'DisplayR'      => 0,
       'DisplayG'      => 0,
       'DisplayB'      => 0,
+      'DisplayShadow' => TRUE,
     ));
 
     $chart->stroke();
