@@ -27,6 +27,9 @@
           <td style="font-weight:bold;"><?php echo $tag['avg_exect'] ?></td>
         </tr>
       </table>
+      <div style="margin-top:10px;"><img src="<?php echo $tagPieChart ?>" /></div>
+      <div style="margin-top:10px;"><img src="<?php echo $tagBarChart ?>" /></div>
+      <div style="margin-top:10px;"><img src="<?php echo $tagAreaChart ?>" /></div>
     </div>
   <?php else: ?>
     No job data found for this tag in given time period.

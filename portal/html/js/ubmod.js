@@ -1022,7 +1022,9 @@ Ext.Loader.onReady(function () {
 
                 tagPanel = Ext.create('Ubmod.widget.TagReport', {
                     tag: record,
-                    closable: true
+                    closable: true,
+                    height: 400,
+                    autoScroll: true
                 });
 
                 tagPanel.on('reportloaded', this.doComponentLayout, this);

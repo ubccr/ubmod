@@ -73,6 +73,10 @@ class Ubmod_Model_Chart
       $query['end_date']   = $interval['end'];
     }
 
+    if ($params->hasTag()) {
+      $query['tag'] = $params->getTag();
+    }
+
     // Append time to prevent browser caching
     $query['t'] = time();
 

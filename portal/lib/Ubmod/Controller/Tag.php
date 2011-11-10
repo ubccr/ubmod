@@ -66,6 +66,12 @@ class Ubmod_Controller_Tag extends Ubmod_BaseController
   public function executeDetails()
   {
     $params = Ubmod_Model_QueryParams::factory($this->getPostData());
-    $this->tag = Ubmod_Model_Tag::getActivityByName($params);
+
+    $this->tag   = Ubmod_Model_Tag::getActivityByName($params);
+    $queryString = Ubmod_Model_Chart::getQueryString($params);
+
+    $this->tagPieChart  = '/chart/user-pie?'  . $queryString;
+    $this->tagBarChart  = '/chart/user-bar?'  . $queryString;
+    $this->tagAreaChart = '/chart/user-area?' . $queryString;
   }
 }
