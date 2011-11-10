@@ -439,7 +439,7 @@ class Ubmod_Model_Chart
       'subtitle'   => self::getSubtitle($params),
       'labels'     => $users,
       'series'     => $time,
-      'maxSlices'  => 11,
+      'maxSlices'  => 10,
       'otherLabel' => "Remaining\nUsers",
     ));
   }
@@ -474,7 +474,7 @@ class Ubmod_Model_Chart
       'subtitle'   => self::getSubtitle($params),
       'labels'     => $groups,
       'series'     => $time,
-      'maxSlices'  => 11,
+      'maxSlices'  => 10,
       'otherLabel' => "Remaining\nGroups",
     ));
   }
@@ -507,7 +507,7 @@ class Ubmod_Model_Chart
       'subtitle'   => self::getSubtitle($params),
       'labels'     => $tags,
       'series'     => $time,
-      'maxSlices'  => 11,
+      'maxSlices'  => 10,
       'otherLabel' => "Remaining\nTags",
     ));
   }
@@ -631,7 +631,7 @@ class Ubmod_Model_Chart
 
     $months = Ubmod_Model_TimeInterval::getMonths($params);
 
-    $maxUsers   = 11;
+    $maxUsers   = 10;
     $otherUser  = 'Remaining Users';
     $users      = array();
     $monthNames = array();
@@ -657,7 +657,7 @@ class Ubmod_Model_Chart
       foreach (Ubmod_Model_Job::getActivityList($monthParams) as $user) {
         if ($user['wallt'] == 0) { continue; }
 
-        if ($userCount < $maxUsers) {
+        if ($userCount < $maxUsers - 1) {
           $name = self::_formatNameLong($user['name'], $user['display_name']);
           $userWallt[$name] = $user['wallt'];
         } else {
@@ -728,7 +728,7 @@ class Ubmod_Model_Chart
 
     $months = Ubmod_Model_TimeInterval::getMonths($params);
 
-    $maxGroups  = 11;
+    $maxGroups  = 10;
     $otherGroup = 'Remaining Groups';
     $groups     = array();
     $monthNames = array();
@@ -754,7 +754,7 @@ class Ubmod_Model_Chart
       foreach (Ubmod_Model_Job::getActivityList($monthParams) as $group) {
         if ($group['wallt'] == 0) { continue; }
 
-        if ($groupCount < $maxGroups) {
+        if ($groupCount < $maxGroups - 1) {
           $name
             = self::_formatNameLong($group['name'], $group['display_name']);
           $groupWallt[$name] = $group['wallt'];
@@ -826,7 +826,7 @@ class Ubmod_Model_Chart
 
     $months = Ubmod_Model_TimeInterval::getMonths($params);
 
-    $maxTags    = 11;
+    $maxTags    = 10;
     $otherTag   = 'Remaining Tags';
     $tags       = array();
     $monthNames = array();
@@ -852,7 +852,7 @@ class Ubmod_Model_Chart
       foreach (Ubmod_Model_Tag::getActivityList($monthParams) as $tag) {
         if ($tag['wallt'] == 0) { continue; }
 
-        if ($tagCount < $maxTags) {
+        if ($tagCount < $maxTags - 1) {
           $tagWallt[$tag['tag_value']] = $tag['wallt'];
         } else {
           $otherWallt += $tag['wallt'];
@@ -928,7 +928,7 @@ class Ubmod_Model_Chart
     // Calculate total and "other" values, copy data into $series and
     // $labels arrays.
     foreach ($params['series'] as $i => $value) {
-      if ($count < $params['maxSlices']) {
+      if ($count < $params['maxSlices'] - 1) {
         $series[] = $value;
         $labels[] = $params['labels'][$i];
       } else {
