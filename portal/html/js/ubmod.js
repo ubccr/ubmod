@@ -918,7 +918,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Panel for adding tags
+     * Panel for various tag views.
      */
     Ext.define('Ubmod.widget.TagPanel', {
         extend: 'Ext.tab.Panel',
@@ -963,6 +963,7 @@ Ext.Loader.onReady(function () {
 
                 userPanel.on('userchanged', function () {
                     userTagGrid.store.load();
+                    tagStatsGrid.store.load();
                 }, this);
 
                 this.add(userPanel).show();
