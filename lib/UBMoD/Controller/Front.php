@@ -38,28 +38,72 @@ class UBMoD_Controller_Front
    */
   public function process()
   {
-    $requestUrl = $_SERVER['REQUEST_URI'];
-    $pathInfo = $_SERVER['PATH_INFO'];
+    $requestUrl  = $_SERVER['REQUEST_URI'];
+    $pathInfo    = $_SERVER['PATH_INFO'];
     $queryString = $_SERVER['QUERY_STRING'];
-    $getData = $_GET;
-    $postData = $_POST;
+    $getData     = $_GET;
+    $postData    = $_POST;
 
-    /*
-    echo '<pre>';
-    echo $requestUrl . "\n";
-    echo $pathInfo . "\n";
-    echo $queryString . "\n";
-    echo '</pre>';
-     */
+    $request = UBMoD_Request::factory($requestUrl, $pathInfo, $queryString,
+      $getData, $postData);
 
-    $c = 'UBMoD_Controller_Default';
-    $action = 'executeIndex';
+    $controller = $this->getController($request);
+    $action     = $this->getAction($request);
 
     try {
-      $c::factory()->$action();
+      $controller->$action();
       require TEMPLATE_DIR . '/layouts/default.php';
     } catch (Exception $e) {
       echo '<pre>' . $e->getMessage() . '</pre>';
     }
+  }
+
+  /**
+   * Create a controller for a given request.
+   *
+   * @return UBMoD_Controller
+   */
+  private function getController($request)
+  {
+    $segments = $request->getPathSegments();
+    if (count($segments) > 0) {
+      $class = 'UBMoD_Controller_' . $this->convertPathSegment($segments[0]);
+    } else {
+      $class = 'UBMoD_Controller_Default';
+    }
+    return $class::factory();
+  }
+
+  /**
+   * Returns the name of action for a given request.
+   *
+   * @return string
+   */
+  private function getAction($request)
+  {
+    $segments = $request->getPathSegments();
+    if (count($segments) > 1) {
+      $action = 'execute' . $this->convertPathSegment($segments[1]);
+    } else {
+      $action = 'executeIndex';
+    }
+    return $action;
+  }
+
+  /**
+   * Convert a path segment string to the corresponding camel case string.
+   *
+   * @param string The path segment
+   * @return string
+   */
+  private function convertPathSegment($segment)
+  {
+    $words = array_map(
+      function ($word) {
+        return ucfirst(strtolower($word));
+      },
+        preg_split('/\W+/', $segment)
+      );
+    return implode('', $words);
   }
 }
