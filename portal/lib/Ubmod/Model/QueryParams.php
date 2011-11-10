@@ -241,14 +241,14 @@ class Ubmod_Model_QueryParams
   {
     $query = new Ubmod_Model_QueryParams();
 
-    if (isset($params['interval_id'])) {
+    if (isset($params['interval_id']) && $params['interval_id'] !== '') {
       $query->setTimeIntervalId(intval($params['interval_id']));
     } else {
-      if (isset($params['month'])) {
+      if (isset($params['month']) && $params['month'] !== '') {
         $query->setMonth($params['month']);
       }
 
-      if (isset($params['year'])) {
+      if (isset($params['year']) && $params['year'] !== '') {
         $query->setYear($params['year']);
       }
 
@@ -269,63 +269,59 @@ class Ubmod_Model_QueryParams
       }
     }
 
-    if (isset($params['start_date'])) {
+    if (isset($params['start_date']) && $params['start_date'] !== '') {
       $query->setStartDate($params['start_date']);
     }
 
-    if (isset($params['end_date'])) {
+    if (isset($params['end_date']) && $params['end_date'] !== '') {
       $query->setEndDate($params['end_date']);
     }
 
-    if (isset($params['cluster_id'])) {
+    if (isset($params['cluster_id']) && $params['cluster_id'] !== '') {
       $query->setClusterId(intval($params['cluster_id']));
     }
 
-    if (isset($params['queue_id'])) {
+    if (isset($params['queue_id']) && $params['queue_id'] !== '') {
       $query->setQueueId(intval($params['queue_id']));
     }
 
-    if (isset($params['user_id'])) {
+    if (isset($params['user_id']) && $params['user_id'] !== '') {
       $query->setUserId(intval($params['user_id']));
     }
 
-    if (isset($params['group_id'])) {
+    if (isset($params['group_id']) && $params['group_id'] !== '') {
       $query->setGroupId(intval($params['group_id']));
     }
 
-    if (isset($params['cpus_id'])) {
+    if (isset($params['cpus_id']) && $params['cpus_id'] !== '') {
       $query->setCpusId(intval($params['cpus_id']));
     }
 
-    if (isset($params['filter'])) {
+    if (isset($params['filter']) && $params['filter'] !== '') {
       $query->setFilter($params['filter']);
     }
 
-    if (isset($params['group_by'])) {
-      $query->setGroupByColumn($params['group_by']);
-    }
-
-    if (isset($params['sort'])) {
+    if (isset($params['sort']) && $params['sort'] !== '') {
       $query->setOrderByColumn($params['sort']);
     }
 
-    if (isset($params['dir'])) {
+    if (isset($params['dir']) && $params['dir'] !== '') {
       $query->setOrderByDescending($params['dir'] === 'DESC');
     }
 
-    if (isset($params['start'])) {
+    if (isset($params['start']) && $params['start'] !== '') {
       $query->setLimitOffset(intval($params['start']));
     }
 
-    if (isset($params['limit'])) {
+    if (isset($params['limit']) && $params['limit'] !== '') {
       $query->setLimitRowCount(intval($params['limit']));
     }
 
-    if (isset($params['tag'])) {
+    if (isset($params['tag']) && $params['tag'] !== '') {
       $query->setTag($params['tag']);
     }
 
-    if (isset($params['model'])) {
+    if (isset($params['model']) && $params['model'] !== '') {
       $query->setModel($params['model']);
     }
 
