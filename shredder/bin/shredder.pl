@@ -29,7 +29,7 @@ sub main {
     }
 
     my $config = Config::Tiny->read("$FindBin::Bin/../config/settings.ini");
-    db_connect(@{ $config->{database} }{qw{ dsn user password }});
+    db_connect( @{ $config->{database} }{qw{ dsn user password }} );
 
     if ($shred) {
         my $shredder = Ubmod::Shredder::Pbs->new();
@@ -37,13 +37,17 @@ sub main {
         $shredder->set_host($host) if $host;
 
         if ($dir) {
-            process_dir($shredder, $dir);
-        } elsif ($file) {
-            process_file($shredder, $file);
+            process_dir( $shredder, $dir );
         }
-    } elsif ($update) {
+        elsif ($file) {
+            process_file( $shredder, $file );
+        }
+    }
+    elsif ($update) {
+
         # TODO
-    } else {
+    }
+    else {
         die usage();
     }
 }
@@ -96,10 +100,7 @@ sub process_file {
 
     $shredder->set_fh($fh);
 
-    while (my $event = $shredder->shred()) {
-        #use Data::Dumper;
-        #print Dumper($event);
-
+    while ( my $event = $shredder->shred() ) {
         insert_event($event);
     }
 }
@@ -111,100 +112,108 @@ sub db_connect {
 
 sub insert_event {
     my ($event) = @_;
-    my $sth = $Dbh->prepare(q{
-        INSERT INTO event SET
-            date_key = ?,
-            job_id = ?,
-            job_array_index = ?,
-            host = LOWER(?),
-            type = ?,
-            user = LOWER(?),
-            ugroup = LOWER(?),
-            queue = LOWER(?),
-            ctime = FROM_UNIXTIME(?),
-            qtime = FROM_UNIXTIME(?),
-            start = FROM_UNIXTIME(?),
-            end = FROM_UNIXTIME(?),
-            etime = FROM_UNIXTIME(?),
-            exit_status = ?,
-            session = ?,
-            requestor = ?,
-            jobname = ?,
-            account = ?,
-            exec_host = ?,
-            resources_used_vmem = ?,
-            resources_used_mem = ?,
-            resources_used_walltime = ?,
-            resources_used_nodes = ?,
-            resources_used_cpus = ?,
-            resources_used_cput = ?,
-            resource_list_nodes = ?,
-            resource_list_procs = ?,
-            resource_list_neednodes = ?,
-            resource_list_pcput = ?,
-            resource_list_cput = ?,
-            resource_list_walltime = ?,
-            resource_list_ncpus = ?,
-            resource_list_nodect = ?,
-            resource_list_mem = ?,
-            resource_list_pmem = ?
-    });
-    $sth->execute(@$event{qw{
-        date_key
-        job_id
-        job_array_index
-        host
-        type
-        user
-        group
-        queue
-        ctime
-        qtime
-        start
-        end
-        etime
-        exit_status
-        session
-        requestor
-        jobname
-        account
-        exec_host
-        resources_used_vmem
-        resources_used_mem
-        resources_used_walltime
-        resources_used_nodes
-        resources_used_cpus
-        resources_used_cput
-        resource_list_nodes
-        resource_list_procs
-        resource_list_neednodes
-        resource_list_pcput
-        resource_list_cput
-        resource_list_walltime
-        resource_list_ncpus
-        resource_list_nodect
-        resource_list_mem
-        resource_list_pmem
-    }});
+    my $sth = $Dbh->prepare(
+        q{
+            INSERT INTO event SET
+                date_key = ?,
+                job_id = ?,
+                job_array_index = ?,
+                host = LOWER(?),
+                type = ?,
+                user = LOWER(?),
+                ugroup = LOWER(?),
+                queue = LOWER(?),
+                ctime = FROM_UNIXTIME(?),
+                qtime = FROM_UNIXTIME(?),
+                start = FROM_UNIXTIME(?),
+                end = FROM_UNIXTIME(?),
+                etime = FROM_UNIXTIME(?),
+                exit_status = ?,
+                session = ?,
+                requestor = ?,
+                jobname = ?,
+                account = ?,
+                exec_host = ?,
+                resources_used_vmem = ?,
+                resources_used_mem = ?,
+                resources_used_walltime = ?,
+                resources_used_nodes = ?,
+                resources_used_cpus = ?,
+                resources_used_cput = ?,
+                resource_list_nodes = ?,
+                resource_list_procs = ?,
+                resource_list_neednodes = ?,
+                resource_list_pcput = ?,
+                resource_list_cput = ?,
+                resource_list_walltime = ?,
+                resource_list_ncpus = ?,
+                resource_list_nodect = ?,
+                resource_list_mem = ?,
+                resource_list_pmem = ?
+        }
+    );
+    $sth->execute(
+        @$event{
+            qw{
+                date_key
+                job_id
+                job_array_index
+                host
+                type
+                user
+                group
+                queue
+                ctime
+                qtime
+                start
+                end
+                etime
+                exit_status
+                session
+                requestor
+                jobname
+                account
+                exec_host
+                resources_used_vmem
+                resources_used_mem
+                resources_used_walltime
+                resources_used_nodes
+                resources_used_cpus
+                resources_used_cput
+                resource_list_nodes
+                resource_list_procs
+                resource_list_neednodes
+                resource_list_pcput
+                resource_list_cput
+                resource_list_walltime
+                resource_list_ncpus
+                resource_list_nodect
+                resource_list_mem
+                resource_list_pmem
+            }
+        }
+    );
 
     return $Dbh->{mysql_insertid};
 }
 
 sub insert_host_log {
     my ($log) = @_;
-    my $sth = $Dbh->prepare(q{
-        INSERT INTO host_log SET
-            event_id = ?,
-            host = ?,
-            cpu = ?
-    });
-    $sth->execute(@$log{qw{ event_id host cpu }});
+    my $sth = $Dbh->prepare(
+        q{
+            INSERT INTO host_log SET
+                event_id = ?,
+                host = ?,
+                cpu = ?
+        }
+    );
+    $sth->execute( @$log{qw{ event_id host cpu }} );
 }
 
 sub get_event_max_date {
-    my $sth = $Dbh->prepare(q{
-        SELECT MAX(date_key) FROM event
-    });
+    my $sth = $Dbh->prepare(
+        q{ SELECT MAX(date_key) FROM event }
+    );
     $sth->execute();
     return $sth->fetchrow_arrayref->[0];
 }

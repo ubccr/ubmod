@@ -63,15 +63,15 @@ sub set_host {
 sub shred {
     my ($self) = @_;
 
-    my $line = readline($self->{fh});
+    my $line = readline( $self->{fh} );
 
     return unless defined $line;
 
-    if ($line !~ $pattern) {
+    if ( $line !~ $pattern ) {
         die "Malformed PBS acct line: $line\n";
     }
 
-    my ($date, $type, $job_id, $params) = ($1, $2, $3, $4);
+    my ( $date, $type, $job_id, $params ) = ( $1, $2, $3, $4 );
 
     $date =~ s#^(\d{2})/(\d{2})/(\d{4})#$3-$1-$2#;
 
@@ -86,16 +86,16 @@ sub shred {
     my @parts = split /\s+/, $params;
 
     foreach my $part (@parts) {
-        my ($key, $value) = split /=/, $part, 2;
+        my ( $key, $value ) = split /=/, $part, 2;
 
         $key =~ s/\./_/g;
         $key = lc $key;
 
         if ( $key eq 'exec_host' ) {
-            $self->set_exec_host($event, $value);
+            $self->set_exec_host( $event, $value );
         }
 
-        if (defined( my $type = $params{$key} )) {
+        if ( defined( my $type = $params{$key} ) ) {
             if ( $type ne '' ) {
                 my $parser = "parse_$type";
                 $value = $self->$parser($value);
@@ -110,7 +110,7 @@ sub shred {
 sub parse_time {
     my ( $self, $time ) = @_;
 
-    my ($h, $m, $s) = split /:/, $time;
+    my ( $h, $m, $s ) = split /:/, $time;
     return $h * 60 * 60 + $m * 60 + $s;
 }
 
@@ -119,7 +119,7 @@ sub parse_memory {
 
     my $unit = 'kb';
 
-    if ($memory =~ /^\d+(.*)/) {
+    if ( $memory =~ /^\d+(.*)/ ) {
         $unit = $1;
     }
 
@@ -134,8 +134,8 @@ sub scale_memory {
     # XXX because our default unit is KB just return 1
     return 1 if $unit eq 'b';
 
-    return $value if $unit eq 'kb';
-    return $value * 1024 if $unit eq 'mb';
+    return $value               if $unit eq 'kb';
+    return $value * 1024        if $unit eq 'mb';
     return $value * 1024 * 1024 if $unit eq 'gb';
 }
 
@@ -146,10 +146,10 @@ sub set_job_id_and_host {
 
     my ( $id, $index ) = split /-/, $job;
 
-    $event->{job_id} = $id;
+    $event->{job_id}          = $id;
     $event->{job_array_index} = $index;
 
-    $event->{host} = $host if ! defined $event->{host};
+    $event->{host} = $host if !defined $event->{host};
 }
 
 sub set_exec_host {
@@ -159,17 +159,17 @@ sub set_exec_host {
     my $nodes = 0;
 
     my %map;
-    foreach my $host (@{ $self->parse_hosts($hosts) }) {
-        $map{$host->{host}} += 1;
+    foreach my $host ( @{ $self->parse_hosts($hosts) } ) {
+        $map{ $host->{host} } += 1;
     }
 
-    while (my ($host, $total) = each(%map)) {
+    while ( my ( $host, $total ) = each(%map) ) {
         $nodes++;
         $cpus += $total;
     }
 
     $event->{resources_used_nodes} = $nodes;
-    $event->{resources_used_cpus} = $cpus;
+    $event->{resources_used_cpus}  = $cpus;
 }
 
 sub parse_hosts {
@@ -180,10 +180,11 @@ sub parse_hosts {
     my @hosts;
     foreach my $part (@parts) {
         my ( $host, $cpu ) = split /\//, $part;
-        push @hosts, {
+        push @hosts,
+          {
             host => $host,
             cpu  => $cpu,
-        };
+          };
     }
 
     return \@hosts;
