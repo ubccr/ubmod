@@ -233,7 +233,8 @@ Ext.Loader.onReady(function () {
                 endYear = endDate.getFullYear(),
                 endMonth = endDate.getMonth() + 1,
                 endDay = endDate.getDate(),
-                start, end;
+                start,
+                end;
 
             // Add zero padding
             if (startDay   < 10) { startDay   = '0' + startDay; }
