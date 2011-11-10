@@ -74,6 +74,7 @@ class Ubmod_Controller_Dashboard extends Ubmod_BaseController
 
     $this->userPieChart  = '/chart/user-pie?'  . $queryString;
     $this->userBarChart  = '/chart/user-bar?'  . $queryString;
+    $this->userAreaChart = '/chart/user-area?' . $queryString;
     $this->groupPieChart = '/chart/group-pie?' . $queryString;
     $this->groupBarChart = '/chart/group-bar?' . $queryString;
   }

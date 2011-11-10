@@ -89,6 +89,16 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
   }
 
   /**
+   * Execute the user stacked area chart action.
+   *
+   * @return void
+   */
+  public function executeUserArea()
+  {
+    Ubmod_Model_Chart::renderUserStackedArea($this->getGetData());
+  }
+
+  /**
    * Execute the group pie chart action.
    *
    * @return void

@@ -124,6 +124,12 @@ class Ubmod_Model_Interval
    */
   public static function whereClause($params)
   {
+    if (!isset($params['interval_id'])) {
+      if (isset($params['year']) && isset($params['month'])) {
+        return "year = {$params['year']} AND month = {$params['month']}";
+      }
+    }
+
     $sql = '
       SELECT where_clause, start, end
       FROM time_interval
@@ -146,6 +152,37 @@ class Ubmod_Model_Interval
     } else {
       return $row['where_clause'];
     }
+  }
+
+  /**
+   * Return an array of months
+   *
+   * @param array $params An array with these keys:
+   *   - interval_id
+   *   - start_date (only required for custom intervals)
+   *   - end_date (only requried for custom intervals)
+   *
+   * @return array
+   */
+  public static function getMonths($params)
+  {
+    $timeClause = Ubmod_Model_Interval::whereClause($params);
+
+    $sql = "
+      SELECT DISTINCT month, year
+      FROM dim_date
+      WHERE $timeClause
+      ORDER BY year, month
+    ";
+
+    $dbh = Ubmod_DbService::dbh();
+    $stmt = $dbh->prepare($sql);
+    $r = $stmt->execute();
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
   /**

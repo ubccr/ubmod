@@ -423,6 +423,89 @@ class Ubmod_Model_Chart
   }
 
   /**
+   * Create a user utilization stacked area chart and send it to the browser.
+   *
+   * @return void
+   */
+  public static function renderUserStackedArea($params)
+  {
+    $params['sort'] = 'wallt';
+    $params['dir']  = 'DESC';
+
+    $months = Ubmod_Model_Interval::getMonths($params);
+
+    $maxUsers   = 11;
+    $otherUser  = 'Remaining Users';
+    $users      = array();
+    $monthNames = array();
+
+    // array( monthKey => array( user => wallt, ... ), ... )
+    $serieForMonth = array();
+
+    foreach ($months as $monthKey => $month) {
+
+      $userCount = 0;
+      $userWallt  = array();
+      $otherWallt = 0;
+
+      $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
+      $monthNames[] = date("M 'y", $time);
+
+      $monthParams = array_merge($params, $month);
+      unset($monthParams['interval_id']);
+
+      foreach (Ubmod_Model_User::getActivities($monthParams) as $user) {
+        if ($userCount < $maxUsers) {
+          $userWallt[$user['user']] = $user['wallt'];
+        } else {
+          $otherWallt += $user['wallt'];
+        }
+        $userCount++;
+      }
+
+      // Don't include "other users" here
+      $users = array_merge($users, array_keys($userWallt));
+
+      if ($otherWallt > 0) {
+        $userWallt[$otherUser] = $otherWallt;
+      }
+
+      $serieForMonth[$monthKey] = $userWallt;
+    }
+
+    $users = array_unique($users);
+
+    // The "other users" should be listed last
+    $users[] = $otherUser;
+
+    // array( user => array( wallt, ... ), ... )
+    $serieForUser = array();
+
+    foreach ($users as $user) {
+      $serie = array();
+      foreach ($months as $monthKey => $month) {
+        if (isset($serieForMonth[$monthKey][$user])) {
+          $serie[] = $serieForMonth[$monthKey][$user];
+        } else {
+          $serie[] = 0;
+        }
+      }
+      $serieForUser[$user] = $serie;
+    }
+
+    self::renderStackedAreaChart(array(
+      'width'    => 400,
+      'height'   => 350,
+      'title'    => 'Monthly User Utilization',
+      'subTitle' => self::getSubTitle($params),
+      'yLabel'   => 'Wall Time (Days)',
+      'xLabel'   => 'Month',
+      'labels'   => $monthNames,
+      'series'   => $serieForUser,
+    ));
+  }
+
+  /**
    * Render a bar chart.
    *
    * @return void
@@ -576,6 +659,102 @@ class Ubmod_Model_Chart
         'FontSize' => 8,
       ));
     }
+
+    $chart->stroke();
+    exit(0);
+  }
+
+  /**
+   * Render a stacked area chart chart.
+   *
+   * @return void
+   */
+  private static function renderStackedAreaChart($params)
+  {
+    if (count($params['series']) == 0) {
+      self::renderNoDataImage($params);
+    }
+
+    $areaX1 = 60;
+    $areaY1 = 30;
+    $areaX2 = $params['width'] - 10;
+    $areaY2 = $params['height'] - 70;
+
+    $center = $params['width'] / 2;
+
+    $data = new pData();
+
+    foreach ($params['series'] as $key => $serie) {
+      $data->addPoints($serie, $key);
+    }
+    $data->setAxisName(0, $params['yLabel']);
+
+    $data->addPoints($params['labels'], 'labels');
+    $data->setAbscissa('labels');
+
+    if (isset($params['xLabel'])) {
+      $data->setAbscissaName($params['xLabel']);
+    } else {
+      $areaY2 += 10;
+    }
+
+    $chart = new pImage($params['width'],
+      $params['height'] + count($params['series']) * 13, $data);
+
+    $chart->setFontProperties(array(
+      'FontName' => FONT_DIR . '/verdana.ttf',
+      'FontSize' => 8,
+    ));
+
+    $chart->setShadow(TRUE, array(
+      'X'     => 1,
+      'Y'     => 1,
+      'R'     => 0,
+      'G'     => 0,
+      'B'     => 0,
+      'Alpha' => 20,
+    ));
+
+    $chart->drawText($center, 0, $params['title'], array(
+      'FontSize' => 12,
+      'Align'    => TEXT_ALIGN_TOPMIDDLE,
+    ));
+
+    if (isset($params['subTitle'])) {
+      $chart->drawText($center, 16, $params['subTitle'], array(
+        'Align'    => TEXT_ALIGN_TOPMIDDLE,
+        'FontSize' => 8,
+      ));
+    } else {
+      $areaY1 -= 10;
+    }
+
+    $chart->setGraphArea($areaX1, $areaY1, $areaX2, $areaY2);
+
+    $chart->drawScale(array(
+      'Mode'          => SCALE_MODE_ADDALL_START0,
+      'GridR'         => 0,
+      'GridG'         => 0,
+      'GridB'         => 0,
+      'GridAlpha'     => 20,
+      'LabelRotation' => 45,
+    ));
+
+    $displayValues
+      = isset($params['displayValues']) && $params['displayValues'];
+
+    $chart->drawStackedAreaChart(array(
+      'DisplayValues' => $displayValues,
+      'DisplayR'      => 0,
+      'DisplayG'      => 0,
+      'DisplayB'      => 0,
+    ));
+
+    $chart->drawLegend(10, $params['height'], array(
+      'Style'  => LEGEND_NOBORDER,
+      'Mode'   => LEGEND_VERTICAL,
+      'Family' => LEGEND_FAMILY_CIRCLE,
+    ));
 
     $chart->stroke();
     exit(0);
