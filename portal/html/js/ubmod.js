@@ -200,7 +200,7 @@ Ext.Loader.onReady(function () {
     Ext.define('Ubmod.widget.Interval', {
         extend: 'Ext.form.field.ComboBox',
         constructor: function (config) {
-            config = config || {}
+            config = config || {};
             config.editable = false;
             this.addEvents({ load: true });
             Ubmod.widget.Interval.superclass.constructor.call(this, config);
@@ -229,7 +229,7 @@ Ext.Loader.onReady(function () {
     Ext.define('Ubmod.widget.Cluster', {
         extend: 'Ext.form.field.ComboBox',
         constructor: function (config) {
-            config = config || {}
+            config = config || {};
             config.editable = false;
             this.addEvents({ load: true });
             Ubmod.widget.Cluster.superclass.constructor.call(this, config);
@@ -259,7 +259,7 @@ Ext.Loader.onReady(function () {
     Ext.define('Ubmod.widget.Toolbar', {
         extend: 'Ext.toolbar.Toolbar',
         constructor: function (config) {
-            config = config || {}
+            config = config || {};
             this.addEvents({ load: true, change: true });
             Ubmod.widget.Cluster.superclass.constructor.call(this, config);
         },
