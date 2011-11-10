@@ -45,14 +45,9 @@ my %params = (
 );
 
 sub new {
-    my ( $class, %options ) = @_;
-    my $self = \%options;
+    my ( $class ) = @_;
+    my $self = {};
     return bless $self, $class;
-}
-
-sub set_fh {
-    my ( $self, $fh ) = @_;
-    $self->{fh} = $fh;
 }
 
 sub set_host {
@@ -61,15 +56,10 @@ sub set_host {
 }
 
 sub shred {
-    my ($self) = @_;
-
-    my $line = readline( $self->{fh} );
-
-    return unless defined $line;
+    my ( $self, $line ) = @_;
 
     if ( $line !~ $pattern ) {
-        $self->{logger}->warn("Malformed PBS acct line: $line");
-        return {};
+        die "Malformed PBS acct line: $line";
     }
 
     my ( $date, $type, $job_id, $params ) = ( $1, $2, $3, $4 );
@@ -82,7 +72,7 @@ sub shred {
         host     => $self->{host},
     };
 
-    $self->set_job_id_and_host( $event, $job_id );
+    $self->_set_job_id_and_host( $event, $job_id );
 
     my @parts = split /\s+/, $params;
 
@@ -93,12 +83,12 @@ sub shred {
         $key = lc $key;
 
         if ( $key eq 'exec_host' ) {
-            $self->set_exec_host( $event, $value );
+            $self->_set_exec_host( $event, $value );
         }
 
         if ( defined( my $type = $params{$key} ) ) {
             if ( $type ne '' ) {
-                my $parser = "parse_$type";
+                my $parser = "_parse_$type";
                 $value = $self->$parser($value);
             }
             $event->{$key} = $value;
@@ -108,14 +98,14 @@ sub shred {
     return $event;
 }
 
-sub parse_time {
+sub _parse_time {
     my ( $self, $time ) = @_;
 
     my ( $h, $m, $s ) = split /:/, $time;
     return $h * 60 * 60 + $m * 60 + $s;
 }
 
-sub parse_memory {
+sub _parse_memory {
     my ( $self, $memory ) = @_;
 
     my $unit = 'kb';
@@ -126,10 +116,10 @@ sub parse_memory {
 
     $memory =~ s/\D+//g;
 
-    return $self->scale_memory( $unit, $memory );
+    return $self->_scale_memory( $unit, $memory );
 }
 
-sub scale_memory {
+sub _scale_memory {
     my ( $self, $unit, $value ) = @_;
 
     # XXX because our default unit is KB just return 1
@@ -140,7 +130,7 @@ sub scale_memory {
     return $value * 1024 * 1024 if $unit eq 'gb';
 }
 
-sub set_job_id_and_host {
+sub _set_job_id_and_host {
     my ( $self, $event, $job_id ) = @_;
 
     my ( $job, $host ) = split /\./, $job_id, 2;
@@ -153,13 +143,13 @@ sub set_job_id_and_host {
     $event->{host} = $host if !defined $event->{host};
 }
 
-sub set_exec_host {
+sub _set_exec_host {
     my ( $self, $event, $hosts_str ) = @_;
 
     my $cpus  = 0;
     my $nodes = 0;
 
-    my $hosts = $self->parse_hosts($hosts_str);
+    my $hosts = $self->_parse_hosts($hosts_str);
 
     my %map;
     foreach my $host (@$hosts) {
@@ -176,7 +166,7 @@ sub set_exec_host {
     $event->{hosts}                = $hosts;
 }
 
-sub parse_hosts {
+sub _parse_hosts {
     my ( $self, $hosts ) = @_;
 
     my @parts = split /\+/, $hosts;
@@ -204,10 +194,9 @@ Ubmod::Shredder::Pbs - Parse PBS/TORQUE format accounting logs
 
 =head1 SYNOPSIS
 
-    my $shredder = Ubmod::Shredder::Pbs->new( logger => $logger );
+    my $shredder = Ubmod::Shredder::Pbs->new();
     $shredder->set_host($host);
-    $shredder->set_fh($fh);
-    my $event = $shredder->shred();
+    my $event = $shredder->shred($line);
 
 =head1 DESCRIPTION
 
@@ -215,30 +204,25 @@ This module parses PBS/TORQUE accounting log files.
 
 =head1 CONSTRUCTOR
 
-=head2 new( logger => $logger );
+=head2 new()
 
-    my $aggregator = Ubmod::Shredder::Pbs->new( logger => $logger );
-
-$logger is required, it should be an instance of Ubmod::Logger.
+    my $shredder = Ubmod::Shredder::Pbs->new();
 
 =head1 METHODS
 
 =head2 set_host($host)
 
+    $shredder->set_host($host);
+
 Set the name of the cluster to C<$host>.  This will override any host
 names that are found in the log file during the shredding process.
 
-=head2 set_fh($fh)
+=head2 shred($line)
 
-Set the current file handle to C<$fh>.  $fh should be a file handle to
-an accounting log file that has been opened for read access.
+    my $event = $shredder->shred($line);
 
-=head2 shred()
-
-Shred a single line in the current file.  Returns C<undef> when there
-are no more lines to be processed.  Returns an empty hashref if there
-was an error.  Otherwise, returns a hashref containing the information
-parsed from the current line.
+Shred the given C<$line>.  Returns a hashref containing the information
+parsed from the line.  C<die>s if there was an error parsing the line.
 
 =head1 AUTHOR
 

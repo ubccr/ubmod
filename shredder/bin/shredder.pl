@@ -41,34 +41,41 @@ sub main {
     db_connect( @{ $config->{database} }{qw{ dsn user password }} );
 
     if ($shred) {
-        my $shredder = Ubmod::Shredder::Pbs->new( logger => $Logger );
+        my $shredder = Ubmod::Shredder::Pbs->new();
 
         $shredder->set_host($host) if $host;
 
         $Logger->info("Shredding.");
 
+        my $count;
         if ($dir) {
-            process_directory( $shredder, $dir );
+            $count = process_directory( $shredder, $dir );
         }
         elsif ($file) {
-            process_file( $shredder, $file );
+            $count = process_file( $shredder, $file );
         }
         elsif ($stdio) {
-            $Logger->info("Processing standard input");
-            process_fh( $shredder, *STDIN );
+            $Logger->info("Processing standard input.");
+            $count = process_fh( $shredder, *STDIN );
         }
         else {
+            $Logger->fatal("No input source specified.");
             print usage();
             exit 1;
         }
 
+        $Logger->info("Total shredded: $count");
         $Logger->info("Done shredding!");
     }
 
     if ($update) {
+        $Logger->info("Updating aggregate tables.");
+
         my $aggregator
             = Ubmod::Aggregator->new( dbh => $Dbh, logger => $Logger );
         $aggregator->aggregate();
+
+        $Logger->info("Done updating aggregate tables!");
     }
 
     if ( !$update && !$shred ) {
@@ -130,7 +137,8 @@ sub process_directory {
         exit 1;
     }
 
-    my $count = 0;
+    my $record_count = 0;
+    my $file_count   = 0;
 
     while ( my $file = readdir($dh) ) {
 
@@ -147,10 +155,13 @@ sub process_directory {
             next;
         }
 
-        $count += process_file( $shredder, $file_path );
+        $record_count += process_file( $shredder, $file_path );
+        $file_count++;
     }
 
-    $Logger->info("Total shredded: $count");
+    $Logger->info("Shredded $file_count files.");
+
+    return $record_count;
 }
 
 sub process_file {
@@ -175,11 +186,13 @@ sub process_file {
 sub process_fh {
     my ( $shredder, $fh ) = @_;
 
-    $shredder->set_fh($fh);
-
     my $count = 0;
-    while ( my $event = $shredder->shred() ) {
-        next unless %$event;
+    while ( defined( my $line = readline($fh) ) ) {
+        my $event = eval { $shredder->shred($line); };
+        if ($@) {
+            $Logger->fatal($@);
+            next;
+        }
         my $event_id = insert_event($event);
         foreach my $host ( @{ $event->{hosts} } ) {
             insert_host_log( { %$host, event_id => $event_id } );
