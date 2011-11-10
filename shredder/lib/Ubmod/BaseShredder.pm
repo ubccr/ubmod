@@ -8,19 +8,19 @@ sub new {
     return bless $self, $class;
 }
 
+sub host {
+    my ($self) = @_;
+    return $self->{host};
+}
+
 sub set_host {
     my ( $self, $host ) = @_;
     $self->{host} = $host;
 }
 
-sub get_host {
-    my ($self) = @_;
-    return $self->{host};
-}
-
 sub has_host {
     my ($self) = @_;
-    return exists $self->{host};
+    return defined $self->{host};
 }
 
 sub shred {
@@ -91,15 +91,15 @@ class.
 
 Default constructor.
 
+=head2 host()
+
+Returns the hostname if it has been set. This should be used by the
+shred implementation to replace the cluster name.
+
 =head2 set_host( $host )
 
 Set the hostname to use. This is typically set by the -H option of the
 frontend script.
-
-=head2 get_host()
-
-Returns the hostname if it has been set. This should be used by the
-shred implementation to replace the cluster name.
 
 =head2 has_host()
 

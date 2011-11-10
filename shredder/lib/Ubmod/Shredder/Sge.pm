@@ -150,7 +150,7 @@ sub shred {
 
     $self->_set_resource_lists( \%event, $event{category} );
 
-    $event{cluster} = $self->get_host();
+    $event{cluster} = $self->host();
 
     return \%event;
 }

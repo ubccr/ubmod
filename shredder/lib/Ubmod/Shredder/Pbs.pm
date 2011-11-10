@@ -79,7 +79,7 @@ sub shred {
 
     $self->_set_job_id_and_host( $event, $job_id );
 
-    $event->{host} = $self->get_host() if $self->has_host();
+    $event->{host} = $self->host() if $self->has_host();
 
     my @parts = split /\s+/, $params;
 
