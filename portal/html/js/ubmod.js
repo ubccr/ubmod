@@ -246,7 +246,7 @@ Ext.Loader.onReady(function () {
          * Fires the restparamschanged event
          *
          * @param {Date} startDate The new start date
-         * @param {Date} endDate The new end date
+         * @param {Date} endDate   The new end date
          */
         setDates: function (startDate, endDate) {
             var startYear = startDate.getFullYear(),
@@ -1140,10 +1140,10 @@ Ext.Loader.onReady(function () {
             },
 
             /**
-             * Create an element that should be updated whenever the
+             * Creates a component that should be updated whenever the
              * time interval or cluster is changed.
              *
-             * @param {object} config
+             * @param {Object} config Constructor arguments
              *
              * @return {Ubmod.widget.Partial}
              */
@@ -1158,10 +1158,10 @@ Ext.Loader.onReady(function () {
             },
 
             /**
-             * Create a stats panel that should be updated whenever the
+             * Creates a stats panel that should be updated whenever the
              * time interval or cluster is changed.
              *
-             * @param {object} config
+             * @param {Object} config Constructor arguments
              *
              * @return {Ubmod.widget.StatsPanel}
              */
@@ -1176,9 +1176,9 @@ Ext.Loader.onReady(function () {
             },
 
             /**
-             * Create a tag management panel.
+             * Creates a tag management panel.
              *
-             * @param {object} config
+             * @param {Object} config Constructor arguments
              *
              * @return {Ubmod.widget.TagPanel}
              */
