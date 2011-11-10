@@ -127,7 +127,9 @@ class Ubmod_Model_Tag
     $keys = array();
     foreach ($tags as $tag) {
       list($key) = self::splitTag($tag);
-      $keys[] = $key;
+      if ($key !== null) {
+        $keys[] = $key;
+      }
     }
 
     return array_unique($keys);
@@ -326,8 +328,10 @@ class Ubmod_Model_Tag
       $tagActivity['tag'] = $tag;
 
       list($key, $value) = self::splitTag($tag);
-      $tagActivity['tag_key']   = $key;
-      $tagActivity['tag_value'] = $value;
+      if ($key !== null) {
+        $tagActivity['tag_key']   = $key;
+        $tagActivity['tag_value'] = $value;
+      }
 
       $activity[] = $tagActivity;
     }
@@ -389,6 +393,12 @@ class Ubmod_Model_Tag
    */
   public static function splitTag($tag)
   {
-      return explode('=', $tag, 2);
+    // If the tag isn't a key value pair, return null for both the key
+    // and value.
+    if (strpos($tag, '=') === false) {
+      return array(null, null);
+    }
+
+    return explode('=', $tag, 2);
   }
 }

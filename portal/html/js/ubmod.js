@@ -1263,11 +1263,6 @@ Ext.Loader.onReady(function () {
                 if (tag === '') {
                     Ext.Msg.alert('Error', 'Please enter a tag');
                     return;
-                } else if (tag.indexOf('=') === -1) {
-                    Ext.Msg.alert('Error', 'Tags must be key value pairs' +
-                        ' joined with an equals sign (e.g.' +
-                        ' department=chemistry).');
-                    return;
                 }
 
                 if (selection.length === 0) {
