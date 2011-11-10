@@ -5,15 +5,15 @@
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
  * Dashboard controller.
  *
- * @package UBMoD
+ * @package Ubmod
  */
-class UBMoD_Controller_Dashboard extends UBMoD_Controller_Base
+class Ubmod_Controller_Dashboard extends Ubmod_Controller_Base
 {
 
   /**
@@ -35,8 +35,8 @@ class UBMoD_Controller_Dashboard extends UBMoD_Controller_Base
   {
     $post = $this->getPostData();
 
-    $this->interval = UBMoD_Model_Interval::getById($post['interval_id']);
-    $this->cluster = UBMoD_Model_Cluster::getActivity($post);
+    $this->interval = Ubmod_Model_Interval::getById($post['interval_id']);
+    $this->cluster = Ubmod_Model_Cluster::getActivity($post);
 
     $this->userPieChart
       = '/chart/user-pie?interval_id=' . $post['interval_id']

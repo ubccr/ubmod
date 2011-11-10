@@ -5,15 +5,15 @@
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
  * Group Model
  *
- * @package UBMoD
+ * @package Ubmod
  **/
-class UBMoD_Model_Group
+class Ubmod_Model_Group
 {
 
   /**
@@ -23,7 +23,7 @@ class UBMoD_Model_Group
    */
   public static function getAll()
   {
-    $dbh = UBMoD_DBService::dbh();
+    $dbh = Ubmod_DbService::dbh();
     $sql = 'SELECT * FROM research_group ORDER BY group';
     $stmt = $dbh->prepare($sql);
     $stmt->execute();
@@ -38,7 +38,7 @@ class UBMoD_Model_Group
    */
   public static function getActivityCount($params)
   {
-    $dbh = UBMoD_DBService::dbh();
+    $dbh = Ubmod_DbService::dbh();
 
     $sql = 'SELECT COUNT(*)
       FROM research_group g
@@ -73,7 +73,7 @@ class UBMoD_Model_Group
    */
   public static function getActivities($params)
   {
-    $dbh = UBMoD_DBService::dbh();
+    $dbh = Ubmod_DbService::dbh();
 
     $sql = 'SELECT
         g.group_id,
@@ -124,7 +124,7 @@ class UBMoD_Model_Group
    */
   public static function getActivityById($params)
   {
-    $dbh = UBMoD_DBService::dbh();
+    $dbh = Ubmod_DbService::dbh();
 
     $sql = 'SELECT
         g.group_id,

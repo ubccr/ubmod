@@ -5,15 +5,15 @@
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
  * Base Controller.
  *
- * @package UBMoD
+ * @package Ubmod
  */
-class UBMoD_Controller_Base
+class Ubmod_Controller_Base
 {
 
   /**
@@ -26,14 +26,14 @@ class UBMoD_Controller_Base
   /**
    * Request object.
    *
-   * @var UBMoD_Request
+   * @var Ubmod_Request
    */
   protected $_request;
 
   /**
    * Response Object.
    *
-   * @var UBMoD_Response
+   * @var Ubmod_Response
    */
   protected $_response;
 
@@ -60,7 +60,7 @@ class UBMoD_Controller_Base
   /**
    * Returns the request for this controller.
    *
-   * @return UBMoD_Request
+   * @return Ubmod_Request
    */
   public function getRequest()
   {

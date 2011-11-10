@@ -5,20 +5,20 @@
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
  * Database service.
  *
- * @package UBMoD
+ * @package Ubmod
  */
-class UBMoD_DBService
+class Ubmod_DbService
 {
   /**
    * Singleton instance.
    *
-   * @var UBMoD_DBService
+   * @var Ubmod_DbService
    */
   private static $instance;
 
@@ -42,7 +42,7 @@ class UBMoD_DBService
   /**
    * Factory method.
    *
-   * @return UBMoD_DBService
+   * @return Ubmod_DbService
    */
   public static function factory()
   {
@@ -55,7 +55,7 @@ class UBMoD_DBService
         throw new Exception($msg);
       }
 
-      self::$instance = new UBMoD_DBService($options->$section->dsn,
+      self::$instance = new Ubmod_DbService($options->$section->dsn,
                                       $options->$section->user,
                                       $options->$section->password);
     }

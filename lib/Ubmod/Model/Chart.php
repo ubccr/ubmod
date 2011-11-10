@@ -5,7 +5,7 @@
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 require_once('pChart/class/pDraw.class.php');
@@ -16,9 +16,9 @@ require_once('pChart/class/pPie.class.php');
 /**
  * Chart model.
  *
- * @package UBMoD
+ * @package Ubmod
  */
-class UBMoD_Model_Chart
+class Ubmod_Model_Chart
 {
 
   /**
@@ -28,7 +28,7 @@ class UBMoD_Model_Chart
    */
   public static function getCpuConsumption($params)
   {
-    $dbh = UBMoD_DBService::dbh();
+    $dbh = Ubmod_DbService::dbh();
     $sql = 'SELECT
         cput / 86400 AS cput,
         label,
@@ -53,7 +53,7 @@ class UBMoD_Model_Chart
    */
   public static function getWaitTime($params)
   {
-    $dbh = UBMoD_DBService::dbh();
+    $dbh = Ubmod_DbService::dbh();
     $sql = 'SELECT
         round(avg_wait/3600) as avg_wait,
         label,
@@ -85,8 +85,8 @@ class UBMoD_Model_Chart
       $time[] = (int) $cpu['cput'];
     }
 
-    $cluster  = UBMoD_Model_Cluster::getById($params['cluster_id']);
-    $interval = UBMoD_Model_Interval::getById($params['interval_id']);
+    $cluster  = Ubmod_Model_Cluster::getById($params['cluster_id']);
+    $interval = Ubmod_Model_Interval::getById($params['interval_id']);
 
     $subTitle = 'Cluster: ' . $cluster['host'] . ' From: ' . $interval['start']
       . ' To: ' . $interval['end'];
@@ -117,8 +117,8 @@ class UBMoD_Model_Chart
       $time[] = $cpu['avg_wait'];
     }
 
-    $cluster  = UBMoD_Model_Cluster::getById($params['cluster_id']);
-    $interval = UBMoD_Model_Interval::getById($params['interval_id']);
+    $cluster  = Ubmod_Model_Cluster::getById($params['cluster_id']);
+    $interval = Ubmod_Model_Interval::getById($params['interval_id']);
 
     $subTitle = 'Cluster: ' . $cluster['host'] . ' From: ' . $interval['start']
       . ' To: ' . $interval['end'];
@@ -155,7 +155,7 @@ class UBMoD_Model_Chart
     $max = 11;
     $users = array();
     $time  = array();
-    foreach (UBMoD_Model_User::getActivities($dbParams) as $user) {
+    foreach (Ubmod_Model_User::getActivities($dbParams) as $user) {
       if ($count < $max) {
         $users[] = $user['user'];
         $time[]  = $user['wallt'];
@@ -201,7 +201,7 @@ class UBMoD_Model_Chart
     );
     $users = array();
     $time  = array();
-    foreach (UBMoD_Model_User::getActivities($dbParams) as $user) {
+    foreach (Ubmod_Model_User::getActivities($dbParams) as $user) {
       $users[] = $user['user'];
       $time[]  = $user['wallt'];
     }
@@ -236,7 +236,7 @@ class UBMoD_Model_Chart
     $max = 11;
     $groups = array();
     $time  = array();
-    foreach (UBMoD_Model_Group::getActivities($dbParams) as $group) {
+    foreach (Ubmod_Model_Group::getActivities($dbParams) as $group) {
       if ($count < $max) {
         $groups[] = $group['group_name'];
         $time[]  = $group['wallt'];
@@ -282,7 +282,7 @@ class UBMoD_Model_Chart
     );
     $groups = array();
     $time   = array();
-    foreach (UBMoD_Model_Group::getActivities($dbParams) as $group) {
+    foreach (Ubmod_Model_Group::getActivities($dbParams) as $group) {
       $groups[] = $group['group_name'];
       $time[]   = $group['wallt'];
     }

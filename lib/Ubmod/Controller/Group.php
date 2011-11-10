@@ -1,19 +1,19 @@
 <?php
 /**
- * Queue controller.
+ * Group controller.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
- * Queue controller.
+ * Group controller.
  *
- * @package UBMoD
+ * @package Ubmod
  */
-class UBMoD_Controller_Queue extends UBMoD_Controller_Base
+class Ubmod_Controller_Group extends Ubmod_Controller_Base
 {
 
   /**
@@ -33,6 +33,6 @@ class UBMoD_Controller_Queue extends UBMoD_Controller_Base
    */
   public function executeDetails()
   {
-    $this->queue = UBMoD_Model_Queue::getActivityById($this->getPostData());
+    $this->group = Ubmod_Model_Group::getActivityById($this->getPostData());
   }
 }

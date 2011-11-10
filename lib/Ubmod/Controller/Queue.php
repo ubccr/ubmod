@@ -1,19 +1,19 @@
 <?php
 /**
- * User controller.
+ * Queue controller.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
- * User controller.
+ * Queue controller.
  *
- * @package UBMoD
+ * @package Ubmod
  */
-class UBMoD_Controller_User extends UBMoD_Controller_Base
+class Ubmod_Controller_Queue extends Ubmod_Controller_Base
 {
 
   /**
@@ -33,6 +33,6 @@ class UBMoD_Controller_User extends UBMoD_Controller_Base
    */
   public function executeDetails()
   {
-    $this->user = UBMoD_Model_User::getActivityById($this->getPostData());
+    $this->queue = Ubmod_Model_Queue::getActivityById($this->getPostData());
   }
 }

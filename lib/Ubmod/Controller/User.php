@@ -1,19 +1,19 @@
 <?php
 /**
- * Group controller.
+ * User controller.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
- * Group controller.
+ * User controller.
  *
- * @package UBMoD
+ * @package Ubmod
  */
-class UBMoD_Controller_Group extends UBMoD_Controller_Base
+class Ubmod_Controller_User extends Ubmod_Controller_Base
 {
 
   /**
@@ -33,6 +33,6 @@ class UBMoD_Controller_Group extends UBMoD_Controller_Base
    */
   public function executeDetails()
   {
-    $this->group = UBMoD_Model_Group::getActivityById($this->getPostData());
+    $this->user = Ubmod_Model_User::getActivityById($this->getPostData());
   }
 }

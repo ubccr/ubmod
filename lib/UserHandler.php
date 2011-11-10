@@ -5,13 +5,13 @@
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
  * User REST Handler.
  *
- * @package UBMoD
+ * @package Ubmod
  */
 class UserHandler
 {
@@ -30,8 +30,8 @@ class UserHandler
   public function listAction(array $arguments, array $postData = NULL)
   {
     return RestResponse::factory(TRUE, NULL, array(
-      'total' => UBMoD_Model_User::getActivityCount($postData),
-      'users' => UBMoD_Model_User::getActivities($postData),
+      'total' => Ubmod_Model_User::getActivityCount($postData),
+      'users' => Ubmod_Model_User::getActivities($postData),
     ));
   }
 }

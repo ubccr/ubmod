@@ -5,13 +5,13 @@
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
  * Queue REST Handler.
  *
- * @package UBMoD
+ * @package Ubmod
  */
 class QueueHandler
 {
@@ -30,8 +30,8 @@ class QueueHandler
   public function listAction(array $arguments, array $postData = NULL)
   {
     return RestResponse::factory(TRUE, NULL, array(
-      'total'  => UBMoD_Model_Queue::getActivityCount($postData),
-      'queues' => UBMoD_Model_Queue::getActivities($postData),
+      'total'  => Ubmod_Model_Queue::getActivityCount($postData),
+      'queues' => Ubmod_Model_Queue::getActivities($postData),
     ));
   }
 }

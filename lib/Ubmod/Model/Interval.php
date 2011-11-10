@@ -5,15 +5,15 @@
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
  * Time interval Model
  *
- * @package UBMoD
+ * @package Ubmod
  **/
-class UBMoD_Model_Interval
+class Ubmod_Model_Interval
 {
 
   /**
@@ -24,7 +24,7 @@ class UBMoD_Model_Interval
    */
   public static function getById($id)
   {
-    $dbh = UBMoD_DBService::dbh();
+    $dbh = Ubmod_DbService::dbh();
     $sql = 'SELECT
         interval_id,
         time_interval,
@@ -44,7 +44,7 @@ class UBMoD_Model_Interval
    */
   public static function getAll()
   {
-    $dbh = UBMoD_DBService::dbh();
+    $dbh = Ubmod_DbService::dbh();
     $sql = 'SELECT
         interval_id,
         time_interval,

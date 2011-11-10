@@ -3,15 +3,15 @@
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
  * Front controller.
  *
- * @package UBMoD
+ * @package Ubmod
  */
-class UBMoD_Controller_Front
+class Ubmod_Controller_Front
 {
 
   /**
@@ -28,7 +28,7 @@ class UBMoD_Controller_Front
    */
   public static function factory()
   {
-    return new UBMoD_Controller_Front();
+    return new Ubmod_Controller_Front();
   }
 
   /**
@@ -44,7 +44,7 @@ class UBMoD_Controller_Front
     $getData     = $_GET;
     $postData    = $_POST;
 
-    $request = UBMoD_Request::factory($requestUrl, $pathInfo, $queryString,
+    $request = Ubmod_Request::factory($requestUrl, $pathInfo, $queryString,
       $getData, $postData);
 
     $controller = $this->getController($request);
@@ -72,7 +72,7 @@ class UBMoD_Controller_Front
    * Render a view template.
    *
    * @param view str The path to the view to render
-   * @param controller UBMoD_Controller_Base The controller for the view
+   * @param controller Ubmod_Controller_Base The controller for the view
    * @return string
    */
   private function renderView($view, $controller)
@@ -88,15 +88,15 @@ class UBMoD_Controller_Front
   /**
    * Create a controller for a given request.
    *
-   * @return UBMoD_Controller
+   * @return Ubmod_Controller
    */
   private function getController($request)
   {
     $segments = $request->getPathSegments();
     if (count($segments) > 0) {
-      $class = 'UBMoD_Controller_' . $this->convertPathSegment($segments[0]);
+      $class = 'Ubmod_Controller_' . $this->convertPathSegment($segments[0]);
     } else {
-      $class = 'UBMoD_Controller_Dashboard';
+      $class = 'Ubmod_Controller_Dashboard';
     }
     return $class::factory($request);
   }

@@ -5,16 +5,16 @@
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
- * UBMoD version string.
+ * Ubmod version string.
  */
 define("UBMOD_VERSION", "0.2.0");
 
 /**
- * UBMoD application base directory.
+ * Ubmod application base directory.
  */
 define("BASE_DIR", dirname(dirname(__FILE__)));
 

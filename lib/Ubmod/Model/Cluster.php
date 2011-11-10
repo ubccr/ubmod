@@ -5,15 +5,15 @@
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
  * Cluster Model
  *
- * @package UBMoD
+ * @package Ubmod
  **/
-class UBMoD_Model_Cluster
+class Ubmod_Model_Cluster
 {
 
   /**
@@ -24,7 +24,7 @@ class UBMoD_Model_Cluster
    */
   public static function getById($id)
   {
-    $dbh = UBMoD_DBService::dbh();
+    $dbh = Ubmod_DbService::dbh();
     $sql = 'SELECT * FROM cluster WHERE cluster_id = ?';
     $stmt = $dbh->prepare($sql);
     $stmt->execute(array($id));
@@ -38,7 +38,7 @@ class UBMoD_Model_Cluster
    */
   public static function getAll()
   {
-    $dbh = UBMoD_DBService::dbh();
+    $dbh = Ubmod_DbService::dbh();
     $sql = 'SELECT
         c.cluster_id,
         IFNULL(c.display_name, c.host) AS display_name,
@@ -58,7 +58,7 @@ class UBMoD_Model_Cluster
    */
   public static function getActivity($params)
   {
-    $dbh = UBMoD_DBService::dbh();
+    $dbh = Ubmod_DbService::dbh();
     $sql = 'SELECT
         c.cluster_id,
         c.host,

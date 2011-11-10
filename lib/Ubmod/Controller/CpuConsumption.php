@@ -1,19 +1,19 @@
 <?php
 /**
- * Wait time controller.
+ * CPU Consumption controller.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
- * Wait time controller.
+ * CPU Consumption controller.
  *
- * @package UBMoD
+ * @package Ubmod
  */
-class UBMoD_Controller_WaitTime extends UBMoD_Controller_Base
+class Ubmod_Controller_CpuConsumption extends Ubmod_Controller_Base
 {
 
   /**
@@ -35,7 +35,7 @@ class UBMoD_Controller_WaitTime extends UBMoD_Controller_Base
   {
     $post = $this->getPostData();
     $this->chart
-      = '/chart/wait-time?interval_id=' . $post['interval_id']
+      = '/chart/cpu-consumption?interval_id=' . $post['interval_id']
       . '&amp;cluster_id=' . $post['cluster_id'] . '&amp;t=' . time();
   }
 }

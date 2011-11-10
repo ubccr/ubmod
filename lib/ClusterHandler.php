@@ -5,13 +5,13 @@
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
  * Cluster REST Handler.
  *
- * @package UBMoD
+ * @package Ubmod
  */
 class ClusterHandler
 {
@@ -34,7 +34,7 @@ class ClusterHandler
 
   public function listAction(array $arguments, array $postData = NULL)
   {
-    $clusters = UBMoD_Model_Cluster::getAll();
+    $clusters = Ubmod_Model_Cluster::getAll();
     return RestResponse::factory(TRUE, NULL, array(
       'data'  => $clusters,
       'total' => count($clusters),

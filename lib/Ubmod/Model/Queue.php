@@ -1,53 +1,53 @@
 <?php
 /**
- * User model.
+ * Queue model.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
- * User Model
+ * Queue Model
  *
- * @package UBMoD
+ * @package Ubmod
  **/
-class UBMoD_Model_User
+class Ubmod_Model_Queue
 {
 
   /**
-   * Returns an array of all users.
+   * Returns an array of all queues.
    *
    * @return array
    */
   public static function getAll()
   {
-    $dbh = UBMoD_DBService::dbh();
-    $sql = 'SELECT * FROM user ORDER BY user';
+    $dbh = Ubmod_DbService::dbh();
+    $sql = 'SELECT * FROM queue ORDER BY queue';
     $stmt = $dbh->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
   /**
-   * Return the number of users with activities.
+   * Return the number of queues with activities.
    *
    * @param array params The parameters for the query
    * @return int
    */
   public static function getActivityCount($params)
   {
-    $dbh = UBMoD_DBService::dbh();
+    $dbh = Ubmod_DbService::dbh();
 
     $sql = 'SELECT COUNT(*)
-      FROM user u
-      JOIN user_activity ua
-        ON u.user_id = ua.user_id
-        AND ua.interval_id = :interval_id
-        AND ua.cluster_id = :cluster_id
+      FROM queue q
+      JOIN queue_activity qa
+        ON q.queue_id = qa.queue_id
+        AND qa.interval_id = :interval_id
+        AND qa.cluster_id = :cluster_id
       JOIN activity a
-        ON ua.activity_id = a.activity_id';
+        ON qa.activity_id = a.activity_id';
 
     $dbParams = array(
       ':interval_id' => $params['interval_id'],
@@ -55,7 +55,7 @@ class UBMoD_Model_User
     );
 
     if (isset($params['filter']) && $params['filter'] != '') {
-      $sql .= ' WHERE u.user LIKE :filter';
+      $sql .= ' WHERE q.queue LIKE :filter';
       $dbParams[':filter'] = '%' . $params['filter'] . '%';
     }
 
@@ -66,32 +66,31 @@ class UBMoD_Model_User
   }
 
   /**
-   * Retuns an array of users joined with their activities.
+   * Retuns an array of queues joined with their activities.
    *
    * @param array params The parameters for the query
    * @return array
    */
   public static function getActivities($params)
   {
-    $dbh = UBMoD_DBService::dbh();
+    $dbh = Ubmod_DbService::dbh();
 
     $sql = 'SELECT
-        u.user_id,
-        u.user,
-        u.display_name,
+        q.queue_id,
+        q.queue,
         IFNULL(a.jobs, 0) AS jobs,
         IFNULL(ROUND(a.cput/cast(86400 AS DECIMAL), 2), 0) AS cput,
         IFNULL(ROUND(a.wallt/cast(86400 AS DECIMAL), 2), 0) AS wallt,
         IFNULL(ROUND(a.avg_wait/cast(3600 AS DECIMAL), 2), 0) AS avg_wait,
         IFNULL(a.avg_cpus, 0) AS avg_cpus,
         IFNULL(ROUND(a.avg_mem/1024,1), 0) AS avg_mem
-      FROM user u
-      JOIN user_activity ua
-        ON u.user_id = ua.user_id
-        AND ua.interval_id = :interval_id
-        AND ua.cluster_id = :cluster_id
+      FROM queue q
+      JOIN queue_activity qa
+        ON q.queue_id = qa.queue_id
+        AND qa.interval_id = :interval_id
+        AND qa.cluster_id = :cluster_id
       JOIN activity a
-        ON ua.activity_id = a.activity_id';
+        ON qa.activity_id = a.activity_id';
 
     $dbParams = array(
       ':interval_id' => $params['interval_id'],
@@ -99,7 +98,7 @@ class UBMoD_Model_User
     );
 
     if (isset($params['filter']) && $params['filter'] != '') {
-      $sql .= ' WHERE u.user LIKE :filter';
+      $sql .= ' WHERE q.queue LIKE :filter';
       $dbParams[':filter'] = '%' . $params['filter'] . '%';
     }
 
@@ -107,9 +106,7 @@ class UBMoD_Model_User
       $sql .= sprintf(' ORDER BY %s %s', $params['sort'], $params['dir']);
     }
 
-    if (isset($params['start'])) {
-      $sql .= sprintf(' LIMIT %d, %d', $params['start'], $params['limit']);
-    }
+    $sql .= sprintf(' LIMIT %d, %d', $params['start'], $params['limit']);
 
     $stmt = $dbh->prepare($sql);
     $stmt->execute($dbParams);
@@ -117,19 +114,19 @@ class UBMoD_Model_User
   }
 
   /**
-   * Returns the user for a given id and parameters
+   * Returns the queue for a given id and parameters
    *
    * @param array params The parameters for the query
    * @return array
    */
   public static function getActivityById($params)
   {
-    $dbh = UBMoD_DBService::dbh();
+    $dbh = Ubmod_DbService::dbh();
 
     $sql = 'SELECT
-        u.user_id,
-        u.user,
-        u.display_name,
+        q.queue_id,
+        q.queue,
+        qa.user_count,
         IFNULL(a.jobs, 0) AS jobs,
         IFNULL(a.wallt, 0) AS wallt,
         IFNULL(ROUND(a.avg_wallt/86400, 1), 0) AS avg_wallt,
@@ -147,21 +144,21 @@ class UBMoD_Model_User
         IFNULL(a.max_nodes, 0) AS max_nodes,
         IFNULL(a.avg_cpus, 0) AS avg_cpus,
         IFNULL(a.max_cpus, 0) AS max_cpus
-      FROM user u
+      FROM queue q
       JOIN
-        user_activity ua
-        ON u.user_id = ua.user_id
-        AND ua.cluster_id = :cluster_id
-        AND ua.interval_id = :interval_id
+        queue_activity qa
+        ON q.queue_id = qa.queue_id
+        AND qa.cluster_id = :cluster_id
+        AND qa.interval_id = :interval_id
       JOIN
         activity a
-        ON ua.activity_id = a.activity_id
-      WHERE u.user_id = :user_id';
+        ON qa.activity_id = a.activity_id
+      WHERE q.queue_id = :queue_id';
 
     $dbParams = array(
       ':interval_id' => $params['interval_id'],
       ':cluster_id'  => $params['cluster_id'],
-      ':user_id'     => $params['id'],
+      ':queue_id'    => $params['id'],
     );
 
     $stmt = $dbh->prepare($sql);

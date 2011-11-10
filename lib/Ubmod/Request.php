@@ -5,15 +5,15 @@
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
  * Request class.
  *
- * @package UBMoD
+ * @package Ubmod
  */
-class UBMoD_Request
+class Ubmod_Request
 {
 
   /**
@@ -60,12 +60,12 @@ class UBMoD_Request
   /**
    * Factory method.
    *
-   * @return UBMoD_Request
+   * @return Ubmod_Request
    */
   public static function factory($requestUrl, $pathInfo, $queryString, $getData,
     $postData)
   {
-    return new UBMoD_Request($requestUrl, $pathInfo, $queryString, $getData,
+    return new Ubmod_Request($requestUrl, $pathInfo, $queryString, $getData,
       $postData);
   }
 

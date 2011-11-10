@@ -5,15 +5,15 @@
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
  * Chart controller.
  *
- * @package UBMoD
+ * @package Ubmod
  */
-class UBMoD_Controller_Chart extends UBMoD_Controller_Base
+class Ubmod_Controller_Chart extends Ubmod_Controller_Base
 {
 
   /**
@@ -23,7 +23,7 @@ class UBMoD_Controller_Chart extends UBMoD_Controller_Base
    */
   public function executeCpuConsumption()
   {
-    UBMoD_Model_Chart::renderCpuConsumption($this->getGetData());
+    Ubmod_Model_Chart::renderCpuConsumption($this->getGetData());
   }
 
   /**
@@ -33,7 +33,7 @@ class UBMoD_Controller_Chart extends UBMoD_Controller_Base
    */
   public function executeWaitTime()
   {
-    UBMoD_Model_Chart::renderWaitTime($this->getGetData());
+    Ubmod_Model_Chart::renderWaitTime($this->getGetData());
   }
 
   /**
@@ -43,7 +43,7 @@ class UBMoD_Controller_Chart extends UBMoD_Controller_Base
    */
   public function executeUserPie()
   {
-    UBMoD_Model_Chart::renderUserPie($this->getGetData());
+    Ubmod_Model_Chart::renderUserPie($this->getGetData());
   }
 
   /**
@@ -53,7 +53,7 @@ class UBMoD_Controller_Chart extends UBMoD_Controller_Base
    */
   public function executeUserBar()
   {
-    UBMoD_Model_Chart::renderUserBar($this->getGetData());
+    Ubmod_Model_Chart::renderUserBar($this->getGetData());
   }
 
   /**
@@ -63,7 +63,7 @@ class UBMoD_Controller_Chart extends UBMoD_Controller_Base
    */
   public function executeGroupPie()
   {
-    UBMoD_Model_Chart::renderGroupPie($this->getGetData());
+    Ubmod_Model_Chart::renderGroupPie($this->getGetData());
   }
 
   /**
@@ -73,6 +73,6 @@ class UBMoD_Controller_Chart extends UBMoD_Controller_Base
    */
   public function executeGroupBar()
   {
-    UBMoD_Model_Chart::renderGroupBar($this->getGetData());
+    Ubmod_Model_Chart::renderGroupBar($this->getGetData());
   }
 }

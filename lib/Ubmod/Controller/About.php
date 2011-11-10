@@ -5,15 +5,15 @@
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
- * @package UBMoD
+ * @package Ubmod
  */
 
 /**
  * About page controller.
  *
- * @package UBMoD
+ * @package Ubmod
  */
-class UBMoD_Controller_About extends UBMoD_Controller_Base
+class Ubmod_Controller_About extends Ubmod_Controller_Base
 {
 
   /**
