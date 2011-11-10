@@ -90,7 +90,7 @@ sub shred {
 
     my @entries = split /:/, $line;
 
-    if (scalar @entries != scalar @entry_names) {
+    if ( scalar @entries != scalar @entry_names ) {
         die "Malformed SGE acct line: $line";
     }
 
@@ -123,7 +123,7 @@ sub get_transform_query {
 }
 
 sub set_host {
-    my ($self, $host) = @_;
+    my ( $self, $host ) = @_;
     $self->{host} = $host;
 }
 
