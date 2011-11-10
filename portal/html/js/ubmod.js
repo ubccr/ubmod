@@ -660,7 +660,7 @@ Ext.Loader.onReady(function () {
                 header: 'Avg. Job Size (cpus)',
                 dataIndex: 'avg_cpus',
                 xtype: 'numbercolumn',
-                format: '0,000',
+                format: '0,000.0',
                 menuDisabled: true,
                 width: 118,
                 align: 'right'
@@ -668,7 +668,7 @@ Ext.Loader.onReady(function () {
                 header: 'Avg. Wait Time (h)',
                 dataIndex: 'avg_wait',
                 xtype: 'numbercolumn',
-                format: '0,000.00',
+                format: '0,000.0',
                 menuDisabled: true,
                 width: 118,
                 align: 'right'
