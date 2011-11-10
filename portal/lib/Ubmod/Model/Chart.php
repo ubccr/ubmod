@@ -819,7 +819,7 @@ class Ubmod_Model_Chart
     }
 
     $areaX1 = 60;
-    $areaY1 = 30;
+    $areaY1 = 35;
     $areaX2 = $params['width'] - 10;
     $areaY2 = $params['height'] - 70;
 
@@ -983,7 +983,7 @@ class Ubmod_Model_Chart
     }
 
     $areaX1 = 60;
-    $areaY1 = 30;
+    $areaY1 = 35;
     $areaX2 = $params['width'] - 10;
     $areaY2 = $params['height'] - 70;
 
