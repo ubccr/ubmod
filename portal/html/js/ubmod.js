@@ -1557,7 +1557,7 @@ Ext.Loader.onReady(function () {
                 loadMask: 'Loading...',
                 url: this.url,
                 scripts: true,
-                params: Ext.apply(this.params, this.model.getRestParams()),
+                params: Ext.apply(this.model.getRestParams(), this.params),
                 success: function () { this.fireEvent('afterload'); },
                 scope: this
             });
