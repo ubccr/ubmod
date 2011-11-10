@@ -14,17 +14,24 @@ This installation document assumes you are running a Linux based system and
 already have Apache with mod_rewrite and MySQL version 5 or greater installed
 and running. UBMoD requires PHP version 5.3 or greater and Perl 5.8 or
 greater. PHP must be built with GD and PDO support. Perl requires the
-following modules: DBI, DBD::mysql, Config::Tiny and DateTime. These can be
-installed on Debain and Ubuntu with the following command:
+following modules: DBI, DBD::mysql, Config::Tiny and DateTime.
 
-    % apt-get install libdbi-perl libdbd-mysql-perl libconfig-tiny-perl \
-                      libdatetime-perl
+These can be installed on Red Hat based systems with the following command:
+
+    # yum install httpd mysql-server mysql php php-mysql php-pdo php-gd perl \
+                  perl-DBI perl-DBD-MySQL perl-Config-Tiny perl-DateTime
+
+and on Debain debian based systems with this command:
+
+    # apt-get install apache2 mysql-server mysql-client libapache2-mod-php5 \
+                      php5 php5-mysql php5-gd perl libdbi-perl \
+                      libdbd-mysql-perl libconfig-tiny-perl libdatetime-perl
 
 Download UBMoD
 
-* Download the latest pre-built release (ubmod-x.x.x-bin.tar.gz)
+* Download the latest pre-built release (ubmod-x.x.x.tar.gz)
 
-    $ tar -xvzf ubmod-x.x.x-bin.tar.gz
+    $ tar -xvzf ubmod-x.x.x.tar.gz
     $ cd ubmod-x.x.x
 
 * Set up the MySQL database
@@ -70,16 +77,10 @@ Download UBMoD
     Listen 8080
     <VirtualHost *:8080>
         DocumentRoot /path/to/ubmod/html
-        <Directory />
-            Options FollowSymLinks
-            AllowOverride None
-        </Directory>
         <Directory /path/to/ubmod/html>
             RewriteEngine on
-
             RewriteCond $1 !^index\.php/
             RewriteRule ^api/rest/(.*)$ /api/rest/index.php/$1 [L]
-
             RewriteCond $1 !^api/rest/
             RewriteCond $1 !^(favicon\.ico|robots\.txt)$
             RewriteCond $1 !^(css|images|js|resources)/
