@@ -350,14 +350,15 @@ CREATE TABLE `fact_job` (
 -- Aggregates
 --
 
-DROP TABLE IF EXISTS `agg_job_by_date`;
-CREATE TABLE `agg_job_by_date` (
-  `agg_job_by_date_id` int    unsigned NOT NULL AUTO_INCREMENT,
+DROP TABLE IF EXISTS `agg_job_by_all`;
+CREATE TABLE `agg_job_by_all` (
+  `agg_job_by_all_id`  int    unsigned NOT NULL AUTO_INCREMENT,
   `dim_date_id`        int    unsigned NOT NULL,
   `dim_cluster_id`     int    unsigned NOT NULL,
   `dim_queue_id`       int    unsigned NOT NULL,
   `dim_user_id`        int    unsigned NOT NULL,
   `dim_group_id`       int    unsigned NOT NULL,
+  `dim_cpus_id`        int    unsigned NOT NULL,
   `fact_job_count`     int    unsigned NOT NULL,
   `wallt_sum`          bigint unsigned NOT NULL,
   `wallt_max`          bigint unsigned NOT NULL,
@@ -373,8 +374,8 @@ CREATE TABLE `agg_job_by_date` (
   `nodes_max`          int    unsigned NOT NULL,
   `cpus_sum`           bigint unsigned NOT NULL,
   `cpus_max`           int    unsigned NOT NULL,
-  PRIMARY KEY (`agg_job_by_date_id`),
-  KEY (`dim_date_id`,`dim_cluster_id`,`dim_queue_id`,`dim_user_id`,`dim_group_id`)
+  PRIMARY KEY (`agg_job_by_all_id`),
+  KEY (`dim_date_id`,`dim_cluster_id`,`dim_queue_id`,`dim_user_id`,`dim_group_id`,`dim_cpus_id`)
 ) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `agg_job_by_timespan`;
@@ -543,23 +544,24 @@ END//
 DROP PROCEDURE IF EXISTS UpdateJobAggregates//
 CREATE PROCEDURE UpdateJobAggregates()
 BEGIN
-  CALL UpdateJobAggregateByDate();
+  CALL UpdateJobAggregateByAll();
   CALL UpdateJobAggregateByTimespan();
   CALL UpdateJobAggregateByDateByCpus();
   CALL UpdateJobAggregateByTimespanByCpus();
 END//
 
-DROP PROCEDURE IF EXISTS UpdateJobAggregateByDate//
-CREATE PROCEDURE UpdateJobAggregateByDate()
+DROP PROCEDURE IF EXISTS UpdateJobAggregateByAll//
+CREATE PROCEDURE UpdateJobAggregateByAll()
 BEGIN
-  TRUNCATE `agg_job_by_date`;
+  TRUNCATE `agg_job_by_all`;
 
-  INSERT INTO `agg_job_by_date` (
+  INSERT INTO `agg_job_by_all` (
     `dim_date_id`,
     `dim_cluster_id`,
     `dim_queue_id`,
     `dim_user_id`,
     `dim_group_id`,
+    `dim_cpus_id`,
     `fact_job_count`,
     `wallt_sum`,
     `wallt_max`,
@@ -582,6 +584,7 @@ BEGIN
     `fact_job`.`dim_queue_id`,
     `fact_job`.`dim_user_id`,
     `fact_job`.`dim_group_id`,
+    `fact_job`.`dim_cpus_id`,
     COUNT(*),
     SUM(`wallt`),
     MAX(`wallt`),
@@ -603,7 +606,8 @@ BEGIN
     `fact_job`.`dim_cluster_id`,
     `fact_job`.`dim_queue_id`,
     `fact_job`.`dim_user_id`,
-    `fact_job`.`dim_group_id`;
+    `fact_job`.`dim_group_id`,
+    `fact_job`.`dim_cpus_id`;
 END//
 
 DROP PROCEDURE IF EXISTS UpdateJobAggregateByTimespan//

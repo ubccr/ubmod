@@ -26,7 +26,8 @@
     }, {
       "name": "dim_user",
       "attributes": [
-        "user"
+        "user",
+        "tags"
       ]
     }, {
       "name": "dim_group",
@@ -86,14 +87,15 @@
   ],
   "aggregates": [
     {
-      "name": "agg_job_by_date",
+      "name": "agg_job_by_all",
       "base": "fact_job",
       "dimensions": [
         "dim_date",
         "dim_cluster",
         "dim_queue",
         "dim_user",
-        "dim_group"
+        "dim_group",
+        "dim_cpus"
       ],
       "facts": [
         { "base": "wallt", "type": [ "sum", "max" ] },
