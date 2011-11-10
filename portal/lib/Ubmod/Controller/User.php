@@ -58,7 +58,8 @@ class Ubmod_Controller_User extends Ubmod_BaseController
   public function executeDetails()
   {
     $params = Ubmod_Model_QueryParams::factory($this->getPostData());
-    $this->user = Ubmod_Model_Job::getEntity('user', $params);
+    $this->user  = Ubmod_Model_Job::getEntity('user', $params);
+    $this->group = Ubmod_Model_User::getGroup($this->user['user_id']);
   }
 
   /**
