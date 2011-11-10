@@ -13,7 +13,7 @@ User: <span class="labelHeader"><?php echo $user['user'] ?></span> &nbsp;&nbsp;
 	<th>Name: </th>
         <td style="font-weight: bold"><?php echo $user['display_name'] ?></td>
 	<th>Total Jobs: </th>
-        <td style="font-weight: bold"><?php echo $user['jobs'] ?></td>
+        <td style="font-weight: bold"><?php echo number_format($user['jobs']) ?></td>
 	<th>Avg. Wall (d): </th>
         <td style="font-weight: bold"><?php echo $user['avg_wallt'] ?></td>
 	<th>Avg. Wait (h): </th>
@@ -21,7 +21,7 @@ User: <span class="labelHeader"><?php echo $user['user'] ?></span> &nbsp;&nbsp;
 </tr>
 <tr>
 	<th>Avg. MEM: </th>
-        <td style="font-weight: bold"><?php echo $user['avg_mem'] ?></td>
+        <td style="font-weight: bold"><?php echo number_format($user['avg_mem'], 1) ?></td>
 	<th>Avg. Job Size (CPUs): </th>
         <td style="font-weight: bold"><?php echo $user['avg_cpus'] ?></td>
 	<th>Avg. Job Size (Nodes): </th>
