@@ -195,6 +195,11 @@ class Ubmod_Model_TimeInterval
     }
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Check for empty date range
+    if (!$row['min_date'] || !$row['max_date']) {
+      return array();
+    }
+
     list($year,    $month)    = explode('-', $row['min_date']);
     list($maxYear, $maxMonth) = explode('-', $row['max_date']);
 
