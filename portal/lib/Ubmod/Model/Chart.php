@@ -308,6 +308,10 @@ class Ubmod_Model_Chart
    */
   private static function renderBarChart($params)
   {
+    if (count($params['series']) == 0) {
+      self::renderNoDataImage($params);
+    }
+
     $areaX1 = 60;
     $areaY1 = 30;
     $areaX2 = $params['width'] - 10;
@@ -392,6 +396,10 @@ class Ubmod_Model_Chart
    */
   private static function renderPieChart($params)
   {
+    if (count($params['series']) == 0) {
+      self::renderNoDataImage($params);
+    }
+
     $center = $params['width'] / 2;
     $radius = 85;
 
@@ -438,6 +446,46 @@ class Ubmod_Model_Chart
 
     $chart->drawText($center, 0, $params['title'], array(
       'FontSize' => 12,
+      'Align'    => TEXT_ALIGN_TOPMIDDLE,
+    ));
+
+    $chart->stroke();
+    exit(0);
+  }
+
+  /**
+   * Render an image stating no data is found.
+   *
+   * @return void
+   */
+  private static function renderNoDataImage($params)
+  {
+    $center = $params['width'] / 2;
+    $middle = $params['height'] / 2;
+
+    $chart = new pImage($params['width'], $params['height']);
+
+    $chart->setFontProperties(array(
+      'FontName' => FONT_DIR . '/verdana.ttf',
+      'FontSize' => 8,
+    ));
+
+    $chart->setShadow(TRUE, array(
+      'X'     => 1,
+      'Y'     => 1,
+      'R'     => 0,
+      'G'     => 0,
+      'B'     => 0,
+      'Alpha' => 20,
+    ));
+
+    $chart->drawText($center, 0, $params['title'], array(
+      'FontSize' => 12,
+      'Align'    => TEXT_ALIGN_TOPMIDDLE,
+    ));
+
+    $chart->drawText($center, $middle, 'No data found', array(
+      'FontSize' => 10,
       'Align'    => TEXT_ALIGN_TOPMIDDLE,
     ));
 
