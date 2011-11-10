@@ -102,10 +102,10 @@ class Ubmod_Model_Queue
       $dbParams[':filter'] = '%' . $params['filter'] . '%';
     }
 
-    $sortOrders
+    $sortFields
       = array('queue', 'jobs', 'avg_cpus', 'avg_wait', 'wallt', 'avg_mem');
 
-    if (isset($params['sort']) && in_array($params['sort'], $sortOrders)) {
+    if (isset($params['sort']) && in_array($params['sort'], $sortFields)) {
       if (!in_array($params['dir'], array('ASC', 'DESC'))) {
         $params['dir'] = 'ASC';
       }
