@@ -130,35 +130,37 @@ NAME
 SYNOPSIS
     $0 [-u] [-s] [-H host] [-i file|-d dir]
 
-OPTIONS
-    -i, --in
-        input file
-
-    -d, --dir
-        location of accounting log directory
-
+GENERAL OPTIONS
     -s, --shred
         shred accounting file(s)
 
-    -f, --format
-        accounting file format (pbs or sge)
-
     -u, --update
         update aggregate tables
-
-    -H, --host hostname
-        explicitly set host from which the log file(s) originated from
-
-    -e, --end-date
-        explicitly set the end date used for aggregation time intervals
-        date must be in YYYY-MM-DD format
-        defaults to yesterday
 
     -v, --verbose
         verbose output
 
     -h, --help
         display this text and exit
+
+SHREDDING OPTIONS
+    -i, --in
+        input file
+
+    -d, --dir
+        location of accounting log directory
+
+    -f, --format
+        accounting file format (pbs or sge)
+
+    -H, --host hostname
+        explicitly set host from which the log file(s) originated from
+
+AGGREGATING OPTIONS
+    -e, --end-date
+        explicitly set the end date used for aggregation time intervals
+        date must be in YYYY-MM-DD format
+        defaults to yesterday
 
 EXAMPLES
     $0 -v -s -H your.host.org -d /var/spool/pbs/server_priv/accounting
