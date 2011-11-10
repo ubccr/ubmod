@@ -96,4 +96,39 @@ class Ubmod_Controller_Tag extends Ubmod_BaseController
     $this->barChart  = '/chart/tag-bar?'  . $queryString;
     $this->areaChart = '/chart/tag-area?' . $queryString;
   }
+
+  /**
+   * Execute the "csv" action.
+   *
+   * @return void
+   */
+  public function executeCsv()
+  {
+    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
+    $tags   = Ubmod_Model_Tag::getActivityList($params);
+
+    header('Content-type: text/csv');
+    header('Content-disposition: attachment; filename=tags.csv');
+
+    $columns = array(
+      'tag'      => 'Tag',
+      'jobs'     => '# Jobs',
+      'avg_cpus' => 'Avg. Job Size (cpus)',
+      'avg_wait' => 'Avg. Wait Time (h)',
+      'wallt'    => 'Wall Time (d)',
+      'avg_mem'  => 'Avg. Mem (MB)',
+    );
+
+    echo implode("\t", array_values($columns)), "\n";
+
+    $keys = array_keys($columns);
+
+    foreach ($tags as $tag) {
+      $map = function ($key) use($tag) { return $tag[$key]; };
+      $values = array_map($map, $keys);
+      echo implode("\t", $values), "\n";
+    }
+
+    exit();
+  }
 }

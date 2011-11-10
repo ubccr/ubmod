@@ -1177,7 +1177,8 @@ Ext.Loader.onReady(function () {
                 title: 'Tag Activity',
                 store: this.tagActivity,
                 label: 'Tag',
-                labelKey: 'tag'
+                labelKey: 'tag',
+                downloadUrl: '/tag/csv'
             });
 
             tagStatsGrid.on('itemdblclick', function (grid, record) {
