@@ -83,7 +83,11 @@ class Ubmod_Handler_Tag
    */
   public function listAction(array $arguments, array $postData = NULL)
   {
-    $tagNames = Ubmod_Model_Tag::getMatching($arguments['query']);
+    if (isset($arguments['query'])) {
+      $tagNames = Ubmod_Model_Tag::getMatching($arguments['query']);
+    } else {
+      $tagNames = Ubmod_Model_Tag::getAll();
+    }
 
     $tags = array();
     foreach ($tagNames as $name) {
