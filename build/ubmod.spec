@@ -35,6 +35,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
+%doc %dir /usr/share/doc/%{name}-%{version}
 %doc /usr/share/doc/%{name}-%{version}/AUTHORS
 %doc /usr/share/doc/%{name}-%{version}/ChangeLog
 %doc /usr/share/doc/%{name}-%{version}/INSTALL
@@ -43,6 +44,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc /usr/share/doc/%{name}-%{version}/README
 %doc /usr/share/doc/%{name}-%{version}/docs
 %doc /usr/share/doc/%{name}-%{version}/ddl
+%config %dir /etc/ubmod
 %config(noreplace) /etc/httpd/conf.d/ubmod.conf
 %config(noreplace) /etc/ubmod/settings.ini
 %config(noreplace) /etc/ubmod/palette.csv
