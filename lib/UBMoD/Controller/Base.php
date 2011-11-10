@@ -21,7 +21,7 @@ class UBMoD_Controller_Base
    *
    * @var array
    */
-  private $_data;
+  private $_data = array();
 
   /**
    * Request object.
