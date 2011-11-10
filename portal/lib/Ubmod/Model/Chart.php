@@ -116,7 +116,8 @@ class Ubmod_Model_Chart
 
     if ($params->hasGroupId()) {
       $group = Ubmod_Model_Job::getEntity('group', $params);
-      $parts[] = 'Group: ' . $group['name'];
+      $parts[] = 'Group: '
+        . self::_formatNameShort($group['name'], $group['display_name']);
     }
 
     if ($params->hasTag()) {
@@ -427,7 +428,7 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
       if ($user['wallt'] == 0) { continue; }
 
-      $users[] = $user['name'];
+      $users[] = self::_formatNameShort($user['name'], $user['display_name']);
       $time[]  = $user['wallt'];
     }
 
@@ -461,8 +462,9 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Job::getActivityList($params) as $group) {
       if ($group['wallt'] == 0) { continue; }
 
-      $groups[] = $group['name'];
-      $time[]   = $group['wallt'];
+      $groups[]
+        = self::_formatNameShort($group['name'], $group['display_name']);
+      $time[] = $group['wallt'];
     }
 
     self::renderPieChart(array(
@@ -529,7 +531,7 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
       if ($user['wallt'] == 0) { continue; }
 
-      $users[] = $user['name'];
+      $users[] = self::_formatNameShort($user['name'], $user['display_name']);
       $time[]  = $user['wallt'];
     }
 
@@ -563,7 +565,8 @@ class Ubmod_Model_Chart
     foreach (Ubmod_Model_Job::getActivityList($params) as $group) {
       if ($group['wallt'] == 0) { continue; }
 
-      $groups[] = $group['name'];
+      $groups[]
+        = self::_formatNameShort($group['name'], $group['display_name']);
       $time[]   = $group['wallt'];
     }
 
@@ -655,7 +658,8 @@ class Ubmod_Model_Chart
         if ($user['wallt'] == 0) { continue; }
 
         if ($userCount < $maxUsers) {
-          $userWallt[$user['name']] = $user['wallt'];
+          $name = self::_formatNameLong($user['name'], $user['display_name']);
+          $userWallt[$name] = $user['wallt'];
         } else {
           $otherWallt += $user['wallt'];
         }
@@ -751,7 +755,9 @@ class Ubmod_Model_Chart
         if ($group['wallt'] == 0) { continue; }
 
         if ($groupCount < $maxGroups) {
-          $groupWallt[$group['name']] = $group['wallt'];
+          $name
+            = self::_formatNameLong($group['name'], $group['display_name']);
+          $groupWallt[$name] = $group['wallt'];
         } else {
           $otherWallt += $group['wallt'];
         }
@@ -1266,5 +1272,43 @@ class Ubmod_Model_Chart
 
     $chart->stroke();
     exit(0);
+  }
+
+  /**
+   * Format a name, shortening it when necessary.
+   *
+   * @param string $name The name to use when no display name is given.
+   * @param string $displayName The display name.
+   * @param int $maxLength Maximum number of characters to allow before
+   *   truncating the name.
+   *
+   * @return string
+   */
+  private static function _formatNameShort($name, $displayName = null,
+    $maxLength = 8)
+  {
+    if ($displayName) {
+      $name = $displayName;
+    }
+    if (strlen($name) > $maxLength) {
+      $name = substr($name, 0, $maxLength - 2) . '...';
+    }
+    return $name;
+  }
+
+  /**
+   * Format a name, combining the display name when available.
+   *
+   * @param string $name The name to use when no display name is given.
+   * @param string $displayName The display name.
+   *
+   * @return string
+   */
+  private static function _formatNameLong($name, $displayName = null)
+  {
+    if ($displayName) {
+      $name .= " ($displayName)";
+    }
+    return $name;
   }
 }
