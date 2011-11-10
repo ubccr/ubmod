@@ -174,7 +174,8 @@ Ext.Loader.onReady(function () {
                 type: 'ajax',
                 simpleSortMode: true,
                 url: '/api/rest/json/user/list',
-                reader: { type: 'json', root: 'users' }
+                reader: { type: 'json', root: 'users' },
+                extraParams: { sort: 'wallt', dir: 'DESC' }
             };
             config.remoteSort = true;
             config.pageSize = 25;
@@ -194,7 +195,8 @@ Ext.Loader.onReady(function () {
                 type: 'ajax',
                 simpleSortMode: true,
                 url: '/api/rest/json/group/list',
-                reader: { type: 'json', root: 'groups' }
+                reader: { type: 'json', root: 'groups' },
+                extraParams: { sort: 'wallt', dir: 'DESC' }
             };
             config.remoteSort = true;
             config.pageSize = 25;
@@ -214,7 +216,8 @@ Ext.Loader.onReady(function () {
                 type: 'ajax',
                 simpleSortMode: true,
                 url: '/api/rest/json/queue/list',
-                reader: { type: 'json', root: 'queues' }
+                reader: { type: 'json', root: 'queues' },
+                extraParams: { sort: 'wallt', dir: 'DESC' }
             };
             config.remoteSort = true;
             config.pageSize = 25;
@@ -372,10 +375,10 @@ Ext.Loader.onReady(function () {
             var interval = this.model.get('interval'),
                 cluster = this.model.get('cluster');
             if (interval != null && cluster != null) {
-                this.store.proxy.extraParams = {
+                Ext.merge(this.store.proxy.extraParams, {
                     interval_id: interval.get('interval_id'),
                     cluster_id: cluster.get('cluster_id')
-                };
+                });
                 this.store.load();
             }
         }
