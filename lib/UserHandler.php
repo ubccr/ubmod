@@ -30,8 +30,8 @@ class UserHandler
   public function listAction(array $arguments, array $postData = NULL)
   {
     return RestResponse::factory(TRUE, NULL, array(
-      'total' => 100,
-      'users' => UBMoD_Model_User::getAll(),
+      'total' => UBMoD_Model_User::getActivityCount($postData),
+      'users' => UBMoD_Model_User::getActivities($postData),
     ));
   }
 }
