@@ -13,9 +13,9 @@ The latest version of this document can be found online at:
 This installation document assumes you are running a Linux based system and
 already have Apache with mod_rewrite and MySQL version 5 or greater installed
 and running. UBMoD requires PHP version 5.3 or greater and Perl 5.8 or
-greater. PHP must be built with GD support. Perl requires the following
-modules: DBI, DBD::mysql, Config::Tiny and DateTime. These can be installed on
-Debain and Ubuntu with the following command:
+greater. PHP must be built with GD and PDO support. Perl requires the
+following modules: DBI, DBD::mysql, Config::Tiny and DateTime. These can be
+installed on Debain and Ubuntu with the following command:
 
     % apt-get install libdbi-perl libdbd-mysql-perl libconfig-tiny-perl \
                       libdatetime-perl
