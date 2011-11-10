@@ -153,13 +153,15 @@ sub set_job_id_and_host {
 }
 
 sub set_exec_host {
-    my ( $self, $event, $hosts ) = @_;
+    my ( $self, $event, $hosts_str ) = @_;
 
     my $cpus  = 0;
     my $nodes = 0;
 
+    my $hosts = $self->parse_hosts($hosts_str);
+
     my %map;
-    foreach my $host ( @{ $self->parse_hosts($hosts) } ) {
+    foreach my $host (@$hosts) {
         $map{ $host->{host} } += 1;
     }
 
@@ -170,6 +172,7 @@ sub set_exec_host {
 
     $event->{resources_used_nodes} = $nodes;
     $event->{resources_used_cpus}  = $cpus;
+    $event->{hosts}                = $hosts;
 }
 
 sub parse_hosts {

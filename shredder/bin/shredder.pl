@@ -127,7 +127,10 @@ sub process_file {
 
     my $count = 0;
     while ( my $event = $shredder->shred() ) {
-        insert_event($event);
+        my $event_id = insert_event($event);
+        foreach my $host ( @{ $event->{hosts} } ) {
+            insert_host_log( { %$host, event_id => $event_id } );
+        }
         $count++;
     }
 
