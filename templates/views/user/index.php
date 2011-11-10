@@ -10,8 +10,7 @@ Ext.onReady(function(){
         displayUrl: '/user/details'
     });
 });
-</script> 
-
+</script>
 <div id="stats-tabs">
 <div id="stats-list" class="tab-content">
 <div id="stats-grid" style="border:1px solid #99bbe8;overflow: hidden; width: 735px; height: 400px;"></div>

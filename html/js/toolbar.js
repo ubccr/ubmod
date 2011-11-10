@@ -78,6 +78,11 @@ var PBSToolbar = function(config){
         var rec = this.intervalStore.getById(3);
         this.intervalCombo.setValue('3');
         this.updateDate(rec);
+        if (this.loading == null) {
+            this.loading = 1;
+        } else {
+            (this.dataStore != null) ? this.refresh() : this.update();
+        }
     }, this, {single: true});
     this.intervalStore.load();
 
@@ -113,6 +118,11 @@ var PBSToolbar = function(config){
         this.clusterStore.on('load', function() {
             var rec = this.clusterStore.getAt(0);
             this.clusterCombo.setValue(rec.get("cluster_id"));
+            if (this.loading == null) {
+                this.loading = 1;
+            } else {
+                (this.dataStore != null) ? this.refresh() : this.update();
+            }
         }, this, {single: true});
         this.clusterStore.load();
     }
