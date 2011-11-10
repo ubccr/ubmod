@@ -145,15 +145,15 @@ Ext.Loader.onReady(function () {
 
         constructor: function (config) {
             config = config || {};
-
-            config.model = 'Ubmod.model.Interval';
-            config.buffered = true;
-            config.proxy = {
-                type: 'ajax',
-                url: '/api/rest/json/interval/list',
-                reader: { type: 'json', root: 'data' }
-            };
-
+            Ext.apply(config, {
+                model: 'Ubmod.model.Interval',
+                buffered: true,
+                proxy: {
+                    type: 'ajax',
+                    url: '/api/rest/json/interval/list',
+                    reader: { type: 'json', root: 'data' }
+                }
+            });
             Ubmod.store.Interval.superclass.constructor.call(this, config);
         }
     });
@@ -163,15 +163,15 @@ Ext.Loader.onReady(function () {
 
         constructor: function (config) {
             config = config || {};
-
-            config.model = 'Ubmod.model.Cluster';
-            config.buffered = true;
-            config.proxy = {
-                type: 'ajax',
-                url: '/api/rest/json/cluster/list',
-                reader: { type: 'json', root: 'data' }
-            };
-
+            Ext.apply(config, {
+                model: 'Ubmod.model.Cluster',
+                buffered: true,
+                proxy: {
+                    type: 'ajax',
+                    url: '/api/rest/json/cluster/list',
+                    reader: { type: 'json', root: 'data' }
+                }
+            });
             Ubmod.store.Cluster.superclass.constructor.call(this, config);
         }
     });
@@ -181,18 +181,18 @@ Ext.Loader.onReady(function () {
 
         constructor: function (config) {
             config = config || {};
-
-            config.model = 'Ubmod.model.User';
-            config.proxy = {
-                type: 'ajax',
-                simpleSortMode: true,
-                url: '/api/rest/json/user/list',
-                reader: { type: 'json', root: 'users' },
-                extraParams: { sort: 'wallt', dir: 'DESC' }
-            };
-            config.remoteSort = true;
-            config.pageSize = 25;
-
+            Ext.apply(config, {
+                model: 'Ubmod.model.User',
+                remoteSort: true,
+                pageSize: 25,
+                proxy: {
+                    type: 'ajax',
+                    simpleSortMode: true,
+                    url: '/api/rest/json/user/list',
+                    reader: { type: 'json', root: 'users' },
+                    extraParams: { sort: 'wallt', dir: 'DESC' }
+                }
+            });
             Ubmod.store.User.superclass.constructor.call(this, config);
         }
     });
@@ -202,18 +202,18 @@ Ext.Loader.onReady(function () {
 
         constructor: function (config) {
             config = config || {};
-
-            config.model = 'Ubmod.model.Group';
-            config.proxy = {
-                type: 'ajax',
-                simpleSortMode: true,
-                url: '/api/rest/json/group/list',
-                reader: { type: 'json', root: 'groups' },
-                extraParams: { sort: 'wallt', dir: 'DESC' }
-            };
-            config.remoteSort = true;
-            config.pageSize = 25;
-
+            Ext.apply({
+                model: 'Ubmod.model.Group',
+                remoteSort: true,
+                pageSize: 25,
+                proxy: {
+                    type: 'ajax',
+                    simpleSortMode: true,
+                    url: '/api/rest/json/group/list',
+                    reader: { type: 'json', root: 'groups' },
+                    extraParams: { sort: 'wallt', dir: 'DESC' }
+                }
+            });
             Ubmod.store.Group.superclass.constructor.call(this, config);
         }
     });
@@ -223,18 +223,18 @@ Ext.Loader.onReady(function () {
 
         constructor: function (config) {
             config = config || {};
-
-            config.model = 'Ubmod.model.Queue';
-            config.proxy = {
-                type: 'ajax',
-                simpleSortMode: true,
-                url: '/api/rest/json/queue/list',
-                reader: { type: 'json', root: 'queues' },
-                extraParams: { sort: 'wallt', dir: 'DESC' }
-            };
-            config.remoteSort = true;
-            config.pageSize = 25;
-
+            Ext.apply(config, {
+                model: 'Ubmod.model.Queue',
+                remoteSort: true,
+                pageSize: 25,
+                proxy: {
+                    type: 'ajax',
+                    simpleSortMode: true,
+                    url: '/api/rest/json/queue/list',
+                    reader: { type: 'json', root: 'queues' },
+                    extraParams: { sort: 'wallt', dir: 'DESC' }
+                }
+            });
             Ubmod.store.Queue.superclass.constructor.call(this, config);
         }
     });
@@ -247,7 +247,7 @@ Ext.Loader.onReady(function () {
 
         constructor: function (config) {
             config = config || {};
-            config.editable = false;
+            Ext.apply(config, { editable: false });
             Ubmod.widget.Interval.superclass.constructor.call(this, config);
         },
 
@@ -275,7 +275,7 @@ Ext.Loader.onReady(function () {
 
         constructor: function (config) {
             config = config || {};
-            config.editable = false;
+            Ext.apply(config, { editable: false });
             Ubmod.widget.Cluster.superclass.constructor.call(this, config);
         },
 
@@ -422,7 +422,8 @@ Ext.Loader.onReady(function () {
 
             this.label = config.label;
             this.labelKey = config.labelKey;
-            config.height = 400;
+
+            Ext.apply(config, { height: 400 });
 
             Ubmod.widget.Grid.superclass.constructor.call(this, config);
         },
