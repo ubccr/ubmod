@@ -1,5 +1,11 @@
 <div class="labelHeading" style="font-weight:bold;">
-  Utilization for cluster: <?php echo $clusterName ?>, for period
+  Utilization for
+  <?php if (isset($clusterName)): ?>
+    cluster: <?php echo $clusterName ?>,
+  <?php else: ?>
+    all clusters,
+  <?php endif; ?>
+  for period
   from: <?php echo $interval['start'] ?> to: <?php echo $interval['end'] ?>
 </div>
 <div>
