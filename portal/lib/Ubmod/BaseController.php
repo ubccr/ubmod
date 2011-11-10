@@ -41,8 +41,8 @@
  */
 
 /**
- * Base class for handling requests.  Other controllers should extend this
- * class.
+ * Base class for handling requests. Other controllers should extend
+ * this class.
  *
  * @package Ubmod
  */
@@ -66,8 +66,10 @@ class Ubmod_BaseController
   /**
    * Constructor.
    *
-   * @param Ubmod_Request request The request this controller is handling
-   * @return void
+   * @param Ubmod_Request $request The request this controller is
+   *   handling.
+   *
+   * @return Ubmod_BaseController
    */
   protected function __construct(Ubmod_Request $request)
   {
@@ -77,7 +79,9 @@ class Ubmod_BaseController
   /**
    * Factory method.
    *
-   * @param Ubmod_Request request The request this controller is handling
+   * @param Ubmod_Request $request The request this controller is
+   *   handling.
+   *
    * @return Ubmod_BaseController
    */
   public static function factory(Ubmod_Request $request)
@@ -128,7 +132,8 @@ class Ubmod_BaseController
   /**
    * Overload reading properties.
    *
-   * @param string The property name
+   * @param string $name The property name.
+   *
    * @return mixed
    */
   public function __get($name)
@@ -139,8 +144,9 @@ class Ubmod_BaseController
   /**
    * Overload writing properties.
    *
-   * @param string The property name
-   * @param mixed value the value to associate with this property
+   * @param string $name The property name.
+   * @param mixed $value The value to associate with this property.
+   *
    * @return void
    */
   public function __set($name, $value)
@@ -151,7 +157,8 @@ class Ubmod_BaseController
   /**
    * Overload isset on properties.
    *
-   * @param string The property name
+   * @param string $name The property name.
+   *
    * @return bool
    */
   public function __isset($name)
@@ -162,7 +169,8 @@ class Ubmod_BaseController
   /**
    * Overload unset on properties.
    *
-   * @param string The property name
+   * @param string $name The property name.
+   *
    * @return void
    */
   public function __unset($name)
