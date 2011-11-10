@@ -8,5 +8,6 @@ Ext.onReady(function() {
 </script>
 <div id="dash-chart"></div>
 <div class="chart-desc">
-Plot of the distribution of CPU utilization in CPU days delivered versus job size (number of cpu's)
+  Plot of the distribution of CPU utilization in CPU days delivered versus job
+  size (number of cpu's)
 </div>
