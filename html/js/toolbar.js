@@ -47,11 +47,11 @@ var PBSToolbar = function(config){
     
     this.intervalStore = new Ext.data.Store({
         proxy: new Ext.data.HttpProxy({
-            url: '/data/list/interval'
+            url: '/api/rest/json/interval/list'
         }),
         reader: new Ext.data.JsonReader({
-            root: 'data',
-            totalProperty: 'total',
+            root: 'results',
+            /* totalProperty: 'total', */
             id: 'interval_id'
         }, [
             {name: 'interval_id', mapping: 'interval_id'},
@@ -82,11 +82,11 @@ var PBSToolbar = function(config){
 
     this.clusterStore = new Ext.data.Store({
         proxy: new Ext.data.HttpProxy({
-            url: '/data/list/cluster'
+            url: '/api/rest/json/cluster/list'
         }),
         reader: new Ext.data.JsonReader({
-            root: 'data',
-            totalProperty: 'total',
+            root: 'results',
+            /* totalProperty: 'total', */
             id: 'cluster_id'
         }, [
             {name: 'cluster_id', mapping: 'cluster_id'},

@@ -1,6 +1,6 @@
 <?php
 /**
- * User model.
+ * Time interval model.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
@@ -9,33 +9,29 @@
  */
 
 /**
- * User Model
+ * Time interval Model
  *
  * @package UBMoD
  **/
-class UBMoD_Model_User
+class UBMoD_Model_Interval
 {
 
   /**
-   * Returns an array of all users.
+   * Returns an array of all time intervals.
    *
    * @return array
    */
   public static function getAll()
   {
     $dbh = UBMoD_DBService::dbh();
-    $sql = 'SELECT * FROM user ORDER BY user';
+    $sql = 'SELECT
+        interval_id,
+        time_interval,
+        DATE_FORMAT(start, "%m/%d/%Y") AS start,
+        DATE_FORMAT(end, "%m/%d/%Y") AS end
+      FROM time_interval';
     $stmt = $dbh->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-  }
-
-  /**
-   * Retuns an array of all users joined with their activities.
-   *
-   * @return array
-   */
-  public static function getAllActivities()
-  {
   }
 }

@@ -2,12 +2,12 @@
 <script type="text/javascript">
 Ext.onReady(function(){
     var statsGrid = new StatsGrid({
-        dataUrl: '/data/activity/user',
+        dataUrl: '/api/rest/json/user/list',
         root: 'users',
         id: 'user_id',
         display: 'user',
         label: 'User',
-        displayUrl: '/partial/show/user'
+        displayUrl: '/user/detail'
     });
 });
 </script> 
