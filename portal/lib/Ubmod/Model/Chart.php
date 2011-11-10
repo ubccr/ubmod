@@ -101,7 +101,7 @@ class Ubmod_Model_Chart
    *
    * @return string
    */
-  private static function getSubTitle(Ubmod_Model_QueryParams $params)
+  private static function getSubtitle(Ubmod_Model_QueryParams $params)
   {
     $interval = Ubmod_Model_TimeInterval::getByParams($params);
 
@@ -244,7 +244,7 @@ class Ubmod_Model_Chart
       'width'         => 700,
       'height'        => 400,
       'title'         => 'CPU Consumption vs. Job Size',
-      'subTitle'      => self::getSubTitle($params),
+      'subtitle'      => self::getSubtitle($params),
       'yLabel'        => 'Delivered CPU Time (CPU Days)',
       'xLabel'        => 'Number of CPUs/Job',
       'labels'        => $cpus,
@@ -298,7 +298,7 @@ class Ubmod_Model_Chart
       'width'      => 700,
       'height'     => 400,
       'title'      => 'CPU Consumption vs. Job Size (Monthly)',
-      'subTitle'   => self::getSubTitle($params),
+      'subtitle'   => self::getSubtitle($params),
       'yLabel'     => 'Delivered CPU Time (CPU Days)',
       'xLabel'     => 'Month',
       'labels'     => $monthNames,
@@ -332,7 +332,7 @@ class Ubmod_Model_Chart
       'width'         => 700,
       'height'        => 400,
       'title'         => 'Job Wait vs. Job Size',
-      'subTitle'      => self::getSubTitle($params),
+      'subtitle'      => self::getSubtitle($params),
       'yLabel'        => 'Average Wait Time (Hours)',
       'xLabel'        => 'Number of CPUs/Job',
       'labels'        => $cpus,
@@ -386,7 +386,7 @@ class Ubmod_Model_Chart
       'width'      => 700,
       'height'     => 400,
       'title'      => 'Job Wait vs. Job Size (Monthly)',
-      'subTitle'   => self::getSubTitle($params),
+      'subtitle'   => self::getSubtitle($params),
       'yLabel'     => 'Average Wait Time (Hours)',
       'xLabel'     => 'Month',
       'labels'     => $monthNames,
@@ -458,7 +458,7 @@ class Ubmod_Model_Chart
       'width'    => 400,
       'height'   => 350,
       'title'    => 'User Utilization',
-      'subTitle' => self::getSubTitle($params),
+      'subtitle' => self::getSubtitle($params),
       'labels'   => $users,
       'series'   => $time,
     ));
@@ -491,7 +491,7 @@ class Ubmod_Model_Chart
       'width'    => 400,
       'height'   => 350,
       'title'    => 'User Utilization',
-      'subTitle' => self::getSubTitle($params),
+      'subtitle' => self::getSubtitle($params),
       'yLabel'   => 'Wall Time (Days)',
       'labels'   => $users,
       'series'   => $time,
@@ -561,7 +561,7 @@ class Ubmod_Model_Chart
       'width'    => 400,
       'height'   => 350,
       'title'    => 'Group Utilization',
-      'subTitle' => self::getSubTitle($params),
+      'subtitle' => self::getSubtitle($params),
       'labels'   => $groups,
       'series'   => $time,
     ));
@@ -594,7 +594,7 @@ class Ubmod_Model_Chart
       'width'    => 400,
       'height'   => 350,
       'title'    => 'Group Utilization',
-      'subTitle' => self::getSubTitle($params),
+      'subtitle' => self::getSubtitle($params),
       'yLabel'   => 'Wall Time (Days)',
       'labels'   => $groups,
       'series'   => $time,
@@ -688,7 +688,7 @@ class Ubmod_Model_Chart
       'width'      => 400,
       'height'     => 350,
       'title'      => 'Monthly Group Utilization',
-      'subTitle'   => self::getSubTitle($params),
+      'subtitle'   => self::getSubtitle($params),
       'yLabel'     => 'Wall Time (Days)',
       'xLabel'     => 'Month',
       'labels'     => $monthNames,
@@ -784,7 +784,7 @@ class Ubmod_Model_Chart
       'width'      => 400,
       'height'     => 350,
       'title'      => 'Monthly User Utilization',
-      'subTitle'   => self::getSubTitle($params),
+      'subtitle'   => self::getSubtitle($params),
       'yLabel'     => 'Wall Time (Days)',
       'xLabel'     => 'Month',
       'labels'     => $monthNames,
@@ -848,8 +848,8 @@ class Ubmod_Model_Chart
       'Align'    => TEXT_ALIGN_TOPMIDDLE,
     ));
 
-    if (isset($params['subTitle'])) {
-      $chart->drawText($center, 16, $params['subTitle'], array(
+    if (isset($params['subtitle'])) {
+      $chart->drawText($center, 16, $params['subtitle'], array(
         'Align'    => TEXT_ALIGN_TOPMIDDLE,
         'FontSize' => 8,
       ));
@@ -946,8 +946,8 @@ class Ubmod_Model_Chart
       'Align'    => TEXT_ALIGN_TOPMIDDLE,
     ));
 
-    if (isset($params['subTitle'])) {
-      $chart->drawText($center, 16, $params['subTitle'], array(
+    if (isset($params['subtitle'])) {
+      $chart->drawText($center, 16, $params['subtitle'], array(
         'Align'    => TEXT_ALIGN_TOPMIDDLE,
         'FontSize' => 8,
       ));
@@ -1026,8 +1026,8 @@ class Ubmod_Model_Chart
       'Align'    => TEXT_ALIGN_TOPMIDDLE,
     ));
 
-    if (isset($params['subTitle'])) {
-      $chart->drawText($center, 16, $params['subTitle'], array(
+    if (isset($params['subtitle'])) {
+      $chart->drawText($center, 16, $params['subtitle'], array(
         'Align'    => TEXT_ALIGN_TOPMIDDLE,
         'FontSize' => 8,
       ));
@@ -1099,8 +1099,8 @@ class Ubmod_Model_Chart
       'Align'    => TEXT_ALIGN_TOPMIDDLE,
     ));
 
-    if (isset($params['subTitle'])) {
-      $chart->drawText($center, 16, $params['subTitle'], array(
+    if (isset($params['subtitle'])) {
+      $chart->drawText($center, 16, $params['subtitle'], array(
         'Align'    => TEXT_ALIGN_TOPMIDDLE,
         'FontSize' => 8,
       ));
