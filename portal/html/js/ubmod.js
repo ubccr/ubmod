@@ -96,7 +96,64 @@ Ext.Loader.onReady(function () {
             'user_id',
             'user',
             'tags'
-        ]
+        ],
+
+        /**
+         * Add a tag to this user.
+         *
+         * @param {String} tag The tag to add.
+         * @param {Function} success (optional) Success callback function.
+         * @param {Object} scope (optional) Success callback scope.
+         */
+        addTag: function (tag, success, scope) {
+            var tags = this.get('tags');
+
+            tags.push(tag);
+
+            this.updateTags(tags, success, scope);
+        },
+
+        /**
+         * Remove a tag from this user.
+         *
+         * @param {String} tag The tag to remove.
+         * @param {Function} success (optional) Success callback function.
+         * @param {Object} scope (optional) Success callback scope.
+         */
+        removeTag: function (tag, success, scope) {
+            var tags = [];
+
+            Ext.each(this.get('tags'), function (currentTag) {
+                if (currentTag !== tag) {
+                    tags.push(currentTag);
+                }
+            }, this);
+
+            this.updateTags(tags, success, scope);
+        },
+
+        /**
+         * Update the tags for this user.
+         *
+         * @param {Array} tags The tags.
+         * @param {Function} success (optional) Success callback function.
+         * @param {Object} scope (optional) Success callback scope.
+         */
+        updateTags: function (tags, success, scope) {
+            success = success || function () {};
+            scope = scope || this;
+
+            Ext.Ajax.request({
+                url: '/api/rest/json/user/updateTags',
+                params: { userId: this.get('user_id'), 'tags[]': tags },
+                success: function (response) {
+                    var tags = Ext.JSON.decode(response.responseText).tags;
+                    this.set('tags', tags);
+                    success.call(scope);
+                },
+                scope: this
+            });
+        }
     });
 
     /**
@@ -404,6 +461,36 @@ Ext.Loader.onReady(function () {
                 }
             });
             Ubmod.store.UserTags.superclass.constructor.call(this, config);
+        },
+
+        /**
+         * Add a tag to one or more users.
+         *
+         * @param {String} tag The tag to add.
+         * @param {Array} users The users to add the tag to.
+         * @param {Function} success (optional) Success callback function.
+         * @param {Object} scope (optional) Success function scope.
+         */
+        addTag: function (tag, users, success, scope) {
+            var userIds;
+
+            success = success || function () {};
+            scope = scope || this;
+
+            userIds = [];
+            Ext.each(users, function (user) {
+                userIds.push(user.get('user_id'));
+            });
+
+            Ext.Ajax.request({
+                url: '/api/rest/json/user/addTag',
+                params: { tag: tag, 'userIds[]': userIds },
+                success: function () {
+                    this.load();
+                    success.call(scope);
+                },
+                scope: this
+            });
         }
     });
 
@@ -811,8 +898,34 @@ Ext.Loader.onReady(function () {
             var tagGrid, tagReport;
 
             tagGrid = Ext.create('Ubmod.widget.TagGrid', {
-                title: 'Add Tags'
+                title: 'Users'
             });
+
+            tagGrid.on('itemdblclick', function (grid, record) {
+                var foundTab, userPanel;
+
+                // Check if there is already a tab for this user
+                this.items.each(function (item) {
+                    if (item.user === record) {
+                        this.setActiveTab(item);
+                        foundTab = true;
+                        return false;
+                    }
+                }, this);
+
+                if (foundTab) { return; }
+
+                userPanel = Ext.create('Ubmod.widget.UserTags', {
+                    user: record,
+                    closable: true
+                });
+
+                userPanel.on('userchanged', function () {
+                    tagGrid.store.load();
+                }, this);
+
+                this.add(userPanel).show();
+            }, this);
 
             tagReport = Ext.create('Ubmod.widget.TagReport', {
                 title: 'Tag Report'
@@ -868,7 +981,7 @@ Ext.Loader.onReady(function () {
                 dataIndex: 'tags',
                 renderer: tagRenderer,
                 menuDisabled: true,
-                width: 575
+                width: 574
             }];
 
             pagingToolbar = Ext.create('Ubmod.widget.PagingToolbar', {
@@ -878,35 +991,24 @@ Ext.Loader.onReady(function () {
             });
 
             tagToolbar = Ext.create('Ubmod.widget.TaggingToolbar', {
-                dock: 'top'
+                dock: 'top',
+                buttonText: 'Add Tag to Selected Users'
             });
 
             tagToolbar.on('addtag', function (tag) {
-                var selection = this.getSelectionModel().getSelection(),
-                    userIds = [];
+                var selection = this.getSelectionModel().getSelection();
 
                 if (tag === '') {
                     Ext.Msg.alert('Error', 'Please enter a tag');
                     return;
                 }
 
-                Ext.each(selection, function (user) {
-                    userIds.push(user.get('user_id'));
-                });
-
-                if (userIds.length === 0) {
+                if (selection.length === 0) {
                     Ext.Msg.alert('Error', 'Please select one or more users');
                     return;
                 }
 
-                Ext.Ajax.request({
-                    url: '/api/rest/json/user/addTag',
-                    params: { tag: tag, 'userIds[]': userIds },
-                    success: function (response) {
-                        this.store.load();
-                    },
-                    scope: this
-                });
+                this.store.addTag(tag, selection);
             }, this);
 
             this.dockedItems = [pagingToolbar, tagToolbar];
@@ -965,6 +1067,115 @@ Ext.Loader.onReady(function () {
     });
 
     /**
+     * Panel for editing tags for a single user.
+     */
+    Ext.define('Ubmod.widget.UserTags', {
+        extend: 'Ext.panel.Panel',
+
+        constructor: function (config) {
+            this.user = config.user;
+
+            /**
+             * @event userchanged
+             * Fires when a tag has been added or removed from the user.
+             * @param {Ubmod.model.UserTags} user The user that changed.
+             */
+            this.addEvents({ userchanged: true });
+
+            Ext.apply(config, {
+                defaults: { margin: 10 },
+                title: this.user.get('user')
+            });
+
+            Ubmod.widget.UserTags.superclass.constructor.call(this, config);
+        },
+
+        initComponent: function () {
+            var tagToolbar, userHeader;
+
+            tagToolbar = Ext.create('Ubmod.widget.TaggingToolbar', {
+                dock: 'top',
+                buttonText: 'Add Tag to User'
+            });
+
+            tagToolbar.on('addtag', function (tag) {
+                if (this.tagMap[tag] !== undefined) {
+                    return;
+                }
+
+                this.tagPanel.setLoading(true);
+                this.user.addTag(tag, function () {
+                    this.addTag(tag);
+                    this.fireEvent('userchanged', this.user);
+                    this.tagPanel.setLoading(false);
+                }, this);
+            }, this);
+
+            userHeader = Ext.create('Ext.Component', {
+                html: '<div style="padding-top:5px;" class="labelHeading">' +
+                      'User: <span class="labelHeader">' +
+                      this.user.get('user') + '</span></div>'
+            });
+
+            // Maps tags to components in the tag panel
+            this.tagMap = {};
+
+            this.tagPanel = Ext.create('Ext.form.FieldSet', {
+                title: 'Tags'
+            });
+
+            Ext.each(this.user.get('tags'), this.addTag, this);
+
+            this.dockedItems = [tagToolbar];
+            this.items       = [ userHeader, this.tagPanel ];
+
+            Ubmod.widget.UserTags.superclass.initComponent.call(this);
+        },
+
+        /**
+         * Add a tag to the tag list.
+         *
+         * Also adds a remove button that will remove the tag from the
+         * list when it is clicked.
+         *
+         * @param {String} tag The tag to add.
+         */
+        addTag: function (tag) {
+            var button = Ext.create('Ext.Button', { text: 'Remove' });
+
+            button.on('click', function () {
+                this.tagPanel.setLoading(true);
+                this.user.removeTag(tag, function () {
+                    this.removeTag(tag);
+                    this.fireEvent('userchanged', this.user);
+                    this.tagPanel.setLoading(false);
+                }, this);
+            }, this);
+
+            this.tagMap[tag] = this.tagPanel.add({
+                xtype: 'container',
+                layout: { type: 'hbox', align: 'middle' },
+                defaults: { margin: 1 },
+                items: [
+                    button,
+                    { xtype: 'component', html: tag }
+                ]
+            });
+        },
+
+        /**
+         * Remove a tag from the tag list.
+         *
+         * @param {String} tag The tag to remove.
+         */
+        removeTag: function (tag) {
+            this.tagPanel.remove(this.tagMap[tag]);
+
+            delete this.tagMap[tag];
+        }
+    });
+
+    /**
      * Tag auto-completing combo box.
      */
     Ext.define('Ubmod.widget.TagInput', {
@@ -986,7 +1197,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Paging toolbar with a search box
+     * Paging toolbar with a search box.
      */
     Ext.define('Ubmod.widget.PagingToolbar', {
         extend: 'Ext.toolbar.Paging',
@@ -1020,7 +1231,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Toolbar with a tag input
+     * Toolbar with a tag input.
      */
     Ext.define('Ubmod.widget.TaggingToolbar', {
         extend: 'Ext.toolbar.Toolbar',
@@ -1028,6 +1239,13 @@ Ext.Loader.onReady(function () {
         constructor: function (config) {
             config = config || {};
 
+            this.buttonText = config.buttonText || 'Add Tag';
+
+            /**
+             * @event addtag
+             * Fires when a tag should be added.
+             * @param {String} tag The text entered in the toolbar.
+             */
             this.addEvents({ addtag: true });
 
             Ubmod.widget.TaggingToolbar.superclass.constructor.call(this,
@@ -1039,9 +1257,7 @@ Ext.Loader.onReady(function () {
 
             tagInput = Ext.create('Ubmod.widget.TagInput');
 
-            addButton = Ext.create('Ext.Button', {
-                text: 'Add Tag to Selected Users'
-            });
+            addButton = Ext.create('Ext.Button', { text: this.buttonText });
 
             addButton.on('click', function () {
                 this.fireEvent('addtag', tagInput.getValue());
@@ -1075,7 +1291,8 @@ Ext.Loader.onReady(function () {
             var reload = function () { this.reload(); };
 
             // Add a listener to update the partial when the model
-            // parameters have changed. Remove it 
+            // parameters have changed. Remove it when the component is
+            // destroyed.
             this.model.on('restparamschanged', reload, this);
 
             this.on('destroy', function () {

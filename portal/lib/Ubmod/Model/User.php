@@ -359,14 +359,15 @@ class Ubmod_Model_User
    */
   public static function updateTags($userId, array $tags)
   {
+    $tags = array_unique($tags);
+    natcasesort($tags);
+    $tags = array_values($tags);
+
     $sql = "
       UPDATE dim_user
       SET tags = :tags
       WHERE dim_user_id = :dim_user_id
     ";
-
-    natcasesort($tags);
-    $tags = array_values($tags);
 
     $dbh = Ubmod_DbService::dbh();
     $stmt = $dbh->prepare($sql);
@@ -379,6 +380,6 @@ class Ubmod_Model_User
       throw new Exception($err[2]);
     }
 
-    return true;
+    return $tags;
   }
 }

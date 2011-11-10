@@ -164,4 +164,37 @@ class Ubmod_Handler_User
       'success' => Ubmod_Model_User::addTag($tag, $userIds),
     ));
   }
+
+  /**
+   * Help for the "updateTags" action.
+   *
+   * @return void
+   */
+  public function updateTagsHelp()
+  {
+    $desc = 'Updates the tags for a single users. Returns the users tags';
+    $options = array(
+      'userId' => 'The id of the user to update.',
+      'tags'   => 'An array of tags.',
+    );
+    return Ubmod_RestResponse::factory(TRUE, $desc, $options);
+  }
+
+  /**
+   * Update the tags for a given user.
+   *
+   * @param array $arguments
+   * @param array $postData
+   *
+   * @return Ubmod_RestResponse
+   */
+  public function updateTagsAction(array $arguments, array $postData = NULL)
+  {
+    $tags   = $postData['tags'];
+    $userId = $postData['userId'];
+
+    return Ubmod_RestResponse::factory(TRUE, NULL, array(
+      'tags' => Ubmod_Model_User::updateTags($userId, $tags),
+    ));
+  }
 }
