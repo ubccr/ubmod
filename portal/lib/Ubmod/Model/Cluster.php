@@ -140,7 +140,6 @@ class Ubmod_Model_Cluster
     list($sql, $dbParams) = $qb->buildQuery();
 
     $dbh = Ubmod_DbService::dbh();
-    $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
     $r = $stmt->execute($dbParams);
     if (!$r) {

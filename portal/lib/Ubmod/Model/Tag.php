@@ -134,7 +134,6 @@ class Ubmod_Model_Tag
     list($sql, $dbParams) = $qb->buildQuery();
 
     $dbh = Ubmod_DbService::dbh();
-    $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
     $r = $stmt->execute($dbParams);
     if (!$r) {
@@ -206,7 +205,6 @@ class Ubmod_Model_Tag
     list($sql, $dbParams) = $qb->buildQuery();
 
     $dbh = Ubmod_DbService::dbh();
-    $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
 
     if ($params->hasFilter()) {
@@ -306,7 +304,6 @@ class Ubmod_Model_Tag
     list($sql, $dbParams) = $qb->buildQuery();
 
     $dbh = Ubmod_DbService::dbh();
-    $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
     $r = $stmt->execute($dbParams);
     if (!$r) {

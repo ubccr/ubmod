@@ -386,6 +386,8 @@ class Ubmod_DataWarehouse_QueryBuilder
       }
     }
 
+    $sql = Ubmod_DataWarehouse::optimize($sql);
+
     return array($sql, $params);
   }
 }

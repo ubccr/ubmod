@@ -67,7 +67,6 @@ class Ubmod_Model_Queue
     list($sql, $dbParams) = $qb->buildQuery();
 
     $dbh = Ubmod_DbService::dbh();
-    $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
     $r = $stmt->execute($dbParams);
     if (!$r) {
@@ -108,7 +107,6 @@ class Ubmod_Model_Queue
     list($sql, $dbParams) = $qb->buildQuery();
 
     $dbh = Ubmod_DbService::dbh();
-    $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
     $r = $stmt->execute($dbParams);
     if (!$r) {
@@ -158,7 +156,6 @@ class Ubmod_Model_Queue
     list($sql, $dbParams) = $qb->buildQuery();
 
     $dbh = Ubmod_DbService::dbh();
-    $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
     $r = $stmt->execute($dbParams);
     if (!$r) {
