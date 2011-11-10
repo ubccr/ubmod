@@ -1,5 +1,5 @@
 <div class="labelHeading" style="font-weight:bold;">
-  Utilization for cluster: <?php echo $cluster['display_name'] ?> for period
+  Utilization for cluster: <?php echo $clusterName ?>, for period
   from: <?php echo $interval['start'] ?> to: <?php echo $interval['end'] ?>
 </div>
 <div>
@@ -26,23 +26,23 @@
   <table class="dtable">
     <tr>
       <th>Users: </th>
-      <td style="font-weight:bold;"><?php echo $cluster['user_count'] ?></td>
+      <td style="font-weight:bold;"><?php echo $activity['user_count'] ?></td>
       <th>Total Jobs: </th>
-      <td style="font-weight:bold;"><?php echo number_format($cluster['jobs']) ?></td>
+      <td style="font-weight:bold;"><?php echo number_format($activity['jobs']) ?></td>
       <th>Avg. Wall Time (d): </th>
-      <td style="font-weight:bold;"><?php echo $cluster['avg_wallt'] ?></td>
+      <td style="font-weight:bold;"><?php echo $activity['avg_wallt'] ?></td>
       <th>Avg. Wait Time (h): </th>
-      <td style="font-weight:bold;"><?php echo $cluster['avg_wait'] ?></td>
+      <td style="font-weight:bold;"><?php echo $activity['avg_wait'] ?></td>
     </tr>
     <tr>
       <th>Groups: </th>
-      <td style="font-weight:bold;"><? echo $cluster['group_count'] ?></td>
+      <td style="font-weight:bold;"><? echo $activity['group_count'] ?></td>
       <th>Avg. Job Size (CPUs): </th>
-      <td style="font-weight:bold;"><? echo $cluster['avg_cpus'] ?></td>
+      <td style="font-weight:bold;"><? echo $activity['avg_cpus'] ?></td>
       <th>Avg. Job Size (Nodes): </th>
-      <td style="font-weight:bold;"><? echo $cluster['avg_nodes'] ?></td>
+      <td style="font-weight:bold;"><? echo $activity['avg_nodes'] ?></td>
       <th>Avg. Exec Time (h): </th>
-      <td style="font-weight:bold;"><? echo $cluster['avg_exect'] ?></td>
+      <td style="font-weight:bold;"><? echo $activity['avg_exect'] ?></td>
     </tr>
   </table>
 </div>

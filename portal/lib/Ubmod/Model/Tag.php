@@ -174,7 +174,7 @@ class Ubmod_Model_Tag
    *
    * @return array
    */
-  public static function getActivity(Ubmod_Model_QueryParams $params)
+  public static function getActivityList(Ubmod_Model_QueryParams $params)
   {
     $qb = new Ubmod_DataWarehouse_QueryBuilder();
     $qb->setFactTable('fact_job');

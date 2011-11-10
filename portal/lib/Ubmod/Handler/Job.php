@@ -95,7 +95,7 @@ class Ubmod_Handler_Job
 
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
       'total'    => Ubmod_Model_Job::getActivityCount($params),
-      'activity' => Ubmod_Model_Job::getActivity($params),
+      'activity' => Ubmod_Model_Job::getActivityList($params),
     ));
   }
 }

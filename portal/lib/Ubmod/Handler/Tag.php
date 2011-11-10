@@ -133,7 +133,7 @@ class Ubmod_Handler_Tag
 
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
       'total' => Ubmod_Model_Tag::getActivityCount($params),
-      'tags'  => Ubmod_Model_Tag::getActivity($params),
+      'tags'  => Ubmod_Model_Tag::getActivityList($params),
     ));
   }
 }

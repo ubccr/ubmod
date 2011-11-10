@@ -63,14 +63,16 @@ class Ubmod_Model_Chart
   public static function getQueryString(Ubmod_Model_QueryParams $params)
   {
     $interval = Ubmod_Model_TimeInterval::getByParams($params);
-    $cluster  = Ubmod_Model_Cluster::getById($params->getClusterId());
 
     $query['interval_id'] = $interval['interval_id'];
-    $query['cluster_id']  = $cluster['cluster_id'];
 
     if ($interval['is_custom']) {
       $query['start_date'] = $interval['start'];
       $query['end_date']   = $interval['end'];
+    }
+
+    if ($params->hasClusterId()) {
+      $query['cluster_id']  = $params->getClusterId();
     }
 
     if ($params->hasGroupId()) {
@@ -101,14 +103,19 @@ class Ubmod_Model_Chart
    */
   private static function getSubTitle(Ubmod_Model_QueryParams $params)
   {
-    $cluster  = Ubmod_Model_Cluster::getById($params->getClusterId());
     $interval = Ubmod_Model_TimeInterval::getByParams($params);
 
-    $host  = $cluster['host'];
     $start = $interval['start'];
     $end   = $interval['end'];
 
-    return "Cluster: $host From: $start To: $end";
+    if ($params->hasClusterId()) {
+      $cluster = Ubmod_Model_Cluster::getById($params->getClusterId());
+      $host = $cluster['host'];
+    } else {
+      return "All Clusters, From: $start To: $end";
+    }
+
+    return "Cluster: $host, From: $start To: $end";
   }
 
   /**
@@ -408,7 +415,7 @@ class Ubmod_Model_Chart
 
     $users = array();
     $time  = array();
-    foreach (Ubmod_Model_Job::getActivity($params) as $user) {
+    foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
       if ($count < $max) {
         $users[] = $user['user'];
         $time[]  = $user['wallt'];
@@ -454,7 +461,7 @@ class Ubmod_Model_Chart
 
     $users = array();
     $time  = array();
-    foreach (Ubmod_Model_Job::getActivity($params) as $user) {
+    foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
       $users[] = $user['user'];
       $time[]  = $user['wallt'];
     }
@@ -490,7 +497,7 @@ class Ubmod_Model_Chart
 
     $groups = array();
     $time   = array();
-    foreach (Ubmod_Model_Job::getActivity($params) as $group) {
+    foreach (Ubmod_Model_Job::getActivityList($params) as $group) {
       if ($count < $max) {
         $groups[] = $group['group_name'];
         $time[]   = $group['wallt'];
@@ -536,7 +543,7 @@ class Ubmod_Model_Chart
 
     $groups = array();
     $time   = array();
-    foreach (Ubmod_Model_Job::getActivity($params) as $group) {
+    foreach (Ubmod_Model_Job::getActivityList($params) as $group) {
       $groups[] = $group['group_name'];
       $time[]   = $group['wallt'];
     }
@@ -591,7 +598,7 @@ class Ubmod_Model_Chart
       $monthParams->setYear($month['year']);
       $monthParams->setMonth($month['month']);
 
-      foreach (Ubmod_Model_Job::getActivity($monthParams) as $group) {
+      foreach (Ubmod_Model_Job::getActivityList($monthParams) as $group) {
         if ($groupCount < $maxGroups) {
           $groupWallt[$group['group_name']] = $group['wallt'];
         } else {
@@ -685,7 +692,7 @@ class Ubmod_Model_Chart
       $monthParams->setYear($month['year']);
       $monthParams->setMonth($month['month']);
 
-      foreach (Ubmod_Model_Job::getActivity($monthParams) as $user) {
+      foreach (Ubmod_Model_Job::getActivityList($monthParams) as $user) {
         if ($userCount < $maxUsers) {
           $userWallt[$user['user']] = $user['wallt'];
         } else {

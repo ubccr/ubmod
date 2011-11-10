@@ -83,7 +83,7 @@ class Ubmod_Model_Job
    *
    * @return array
    */
-  public static function getActivity(Ubmod_Model_QueryParams $params)
+  public static function getActivityList(Ubmod_Model_QueryParams $params)
   {
     $qb = new Ubmod_DataWarehouse_QueryBuilder();
 
@@ -91,23 +91,26 @@ class Ubmod_Model_Job
 
     // Common fields
     $qb->addSelectExpressions(array(
-      'jobs'      => 'COUNT(*)',
-      'wallt'     => 'ROUND(SUM(wallt) / 86400, 1)',
-      'avg_wallt' => 'ROUND(AVG(wallt) / 86400, 1)',
-      'max_wallt' => 'ROUND(MAX(wallt) / 86400, 1)',
-      'cput'      => 'ROUND(SUM(cput)  / 86400, 1)',
-      'avg_cput'  => 'ROUND(AVG(cput)  / 86400, 1)',
-      'max_cput'  => 'ROUND(MAX(cput)  / 86400, 1)',
-      'avg_mem'   => 'ROUND(AVG(mem)   / 1024,  1)',
-      'max_mem'   => 'ROUND(MAX(mem)   / 1024,  1)',
-      'avg_vmem'  => 'ROUND(AVG(vmem)  / 1024,  1)',
-      'max_vmem'  => 'ROUND(MAX(vmem)  / 1024,  1)',
-      'avg_wait'  => 'ROUND(AVG(wait)  / 3600,  1)',
-      'avg_exect' => 'ROUND(AVG(exect) / 3600,  1)',
-      'max_nodes' => 'ROUND(MAX(nodes),         1)',
-      'avg_nodes' => 'ROUND(AVG(nodes),         1)',
-      'max_cpus'  => 'ROUND(MAX(cpus),          1)',
-      'avg_cpus'  => 'ROUND(AVG(cpus),          1)',
+      'jobs'        => 'COUNT(*)',
+      'user_count'  => 'COUNT(DISTINCT dim_user_id)',
+      'group_count' => 'COUNT(DISTINCT dim_group_id)',
+      'queue_count' => 'COUNT(DISTINCT dim_queue_id)',
+      'wallt'       => 'ROUND(SUM(wallt) / 86400, 1)',
+      'avg_wallt'   => 'ROUND(AVG(wallt) / 86400, 1)',
+      'max_wallt'   => 'ROUND(MAX(wallt) / 86400, 1)',
+      'cput'        => 'ROUND(SUM(cput)  / 86400, 1)',
+      'avg_cput'    => 'ROUND(AVG(cput)  / 86400, 1)',
+      'max_cput'    => 'ROUND(MAX(cput)  / 86400, 1)',
+      'avg_mem'     => 'ROUND(AVG(mem)   / 1024,  1)',
+      'max_mem'     => 'ROUND(MAX(mem)   / 1024,  1)',
+      'avg_vmem'    => 'ROUND(AVG(vmem)  / 1024,  1)',
+      'max_vmem'    => 'ROUND(MAX(vmem)  / 1024,  1)',
+      'avg_wait'    => 'ROUND(AVG(wait)  / 3600,  1)',
+      'avg_exect'   => 'ROUND(AVG(exect) / 3600,  1)',
+      'max_nodes'   => 'ROUND(MAX(nodes),         1)',
+      'avg_nodes'   => 'ROUND(AVG(nodes),         1)',
+      'max_cpus'    => 'ROUND(MAX(cpus),          1)',
+      'avg_cpus'    => 'ROUND(AVG(cpus),          1)',
     ));
 
     $qb->setQueryParams($params);
@@ -126,6 +129,19 @@ class Ubmod_Model_Job
   }
 
   /**
+   * Returns a single array of activity.
+   *
+   * @param Ubmod_Model_QueryParams $params The parameters for the query.
+   *
+   * @return array
+   */
+  public static function getActivity(Ubmod_Model_QueryParams $params)
+  {
+    $activity = self::getActivityList($params);
+    return $activity[0];
+  }
+
+  /**
    * Returns a single array with the activity with the specific model
    * data added.
    *
@@ -134,10 +150,9 @@ class Ubmod_Model_Job
    *
    * @return array
    */
-  public static function getEntity($type, Ubmod_Model_QueryParams $params)
+  public static function getEntity(Ubmod_Model_QueryParams $params)
   {
     $params->setModel($type);
-    $activity = self::getActivity($params);
-    return $activity[0];
+    return self::getActivity($params);
   }
 }

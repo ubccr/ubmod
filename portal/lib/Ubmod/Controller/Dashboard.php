@@ -68,7 +68,14 @@ class Ubmod_Controller_Dashboard extends Ubmod_BaseController
     $params = Ubmod_Model_QueryParams::factory($this->getPostData());
 
     $this->interval = Ubmod_Model_TimeInterval::getByParams($params);
-    $this->cluster  = Ubmod_Model_Cluster::getActivity($params);
+    $this->activity = Ubmod_Model_Job::getActivity($params);
+
+    if ($params->hasClusterId()) {
+      $cluster = Ubmod_Model_Cluster::getById($params->getClusterId());
+      $this->clusterName = $cluster['host'];
+    } else {
+      $this->clusterName = 'All';
+    }
 
     $queryString = Ubmod_Model_Chart::getQueryString($params);
 

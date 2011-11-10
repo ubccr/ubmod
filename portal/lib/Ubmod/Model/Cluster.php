@@ -97,56 +97,11 @@ class Ubmod_Model_Cluster
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
     }
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-  }
 
-  /**
-   * Returns activity data for a given cluster and interval.
-   *
-   * @param Ubmod_Model_QueryParams $params The query parameters.
-   *
-   * @return array
-   */
-  public static function getActivity($params)
-  {
-    $qb = new Ubmod_DataWarehouse_QueryBuilder();
-    $qb->setFactTable('fact_job');
-    $qb->addDimensionTable('dim_cluster');
-    $qb->addSelectExpressions(array(
-      'cluster_id'   => 'dim_cluster_id',
-      'host'         => 'name',
-      'display_name' => 'COALESCE(display_name, name)',
-      'jobs'         => 'COUNT(*)',
-      'user_count'   => 'COUNT(DISTINCT dim_user_id)',
-      'group_count'  => 'COUNT(DISTINCT dim_group_id)',
-      'wallt'        => 'ROUND(SUM(wallt) / 86400, 1)',
-      'avg_wallt'    => 'ROUND(AVG(wallt) / 86400, 1)',
-      'max_wallt'    => 'ROUND(MAX(wallt) / 86400, 1)',
-      'cput'         => 'ROUND(SUM(cput)  / 86400, 1)',
-      'avg_cput'     => 'ROUND(AVG(cput)  / 86400, 1)',
-      'max_cput'     => 'ROUND(MAX(cput)  / 86400, 1)',
-      'avg_mem'      => 'ROUND(AVG(mem)   / 1024,  1)',
-      'max_mem'      => 'ROUND(MAX(mem)   / 1024,  1)',
-      'avg_vmem'     => 'ROUND(AVG(vmem)  / 1024,  1)',
-      'max_vmem'     => 'ROUND(MAX(vmem)  / 1024,  1)',
-      'avg_wait'     => 'ROUND(AVG(wait)  / 3600,  1)',
-      'avg_exect'    => 'ROUND(AVG(exect) / 3600,  1)',
-      'max_nodes'    => 'ROUND(MAX(nodes),         1)',
-      'avg_nodes'    => 'ROUND(AVG(nodes),         1)',
-      'max_cpus'     => 'ROUND(MAX(cpus),          1)',
-      'avg_cpus'     => 'ROUND(AVG(cpus),          1)',
-    ));
-    $qb->setQueryParams($params);
-    list($sql, $dbParams) = $qb->buildQuery();
+    $clusters = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $dbh = Ubmod_DbService::dbh();
-    $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute($dbParams);
-    if (!$r) {
-      $err = $stmt->errorInfo();
-      throw new Exception($err[2]);
-    }
+    array_unshift($clusters, array('display_name' => 'All'));
 
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    return $clusters;
   }
 }

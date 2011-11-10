@@ -146,6 +146,19 @@ class Ubmod_DataWarehouse_QueryBuilder
   }
 
   /**
+   * Remove a SELECT expression from the query.
+   *
+   * @param string $alias The alias of the expression that should be
+   *   removed. This may be the expression if no alias was specified.
+   *
+   * @return void
+   */
+  public function removeSelectExpression($alias)
+  {
+    unset($this->_selectExpressions["`$alias`"]);
+  }
+
+  /**
    * Add multiple select expressions to the generated query.
    *
    * If the supplied array has string keys, they will be used as aliases
@@ -346,6 +359,9 @@ class Ubmod_DataWarehouse_QueryBuilder
           'user'         => 'dim_user.name',
           'display_name' => 'COALESCE(dim_user.display_name, dim_user.name)',
         ));
+        $this->removeSelectExpression('user_count');
+        $this->removeSelectExpression('group_count');
+        $this->removeSelectExpression('queue_count');
       } elseif ($model === 'group') {
         $this->addDimensionTable('dim_group');
         $this->setGroupBy('dim_group_id');
@@ -355,8 +371,9 @@ class Ubmod_DataWarehouse_QueryBuilder
           'group_name'   => 'dim_group.name',
           'display_name' => 'COALESCE(dim_group.display_name,'
                           . ' dim_group.name)',
-          'user_count'   => 'COUNT(DISTINCT dim_user_id)',
         ));
+        $this->removeSelectExpression('group_count');
+        $this->removeSelectExpression('queue_count');
       } elseif ($model === 'queue') {
         $this->addDimensionTable('dim_queue');
         $this->setGroupBy('dim_queue_id');
@@ -366,9 +383,8 @@ class Ubmod_DataWarehouse_QueryBuilder
           'queue'        => 'dim_queue.name',
           'display_name' => 'COALESCE(dim_queue.display_name,'
                           . ' dim_queue.name)',
-          'user_count'   => 'COUNT(DISTINCT dim_user_id)',
-          'group_count'  => 'COUNT(DISTINCT dim_group_id)',
         ));
+        $this->removeSelectExpression('queue_count');
       } elseif ($model === 'cluster') {
         $this->addDimensionTable('dim_cluster');
         $this->setGroupBy('dim_cluster_id');
@@ -378,9 +394,6 @@ class Ubmod_DataWarehouse_QueryBuilder
           'cluster'      => 'dim_cluster.name',
           'display_name' => 'COALESCE(dim_cluster.display_name,'
                           . ' dim_cluster.name)',
-          'user_count'   => 'COUNT(DISTINCT dim_user_id)',
-          'group_count'  => 'COUNT(DISTINCT dim_group_id)',
-          'queue_count'  => 'COUNT(DISTINCT dim_queue_id)',
         ));
       }
     }
