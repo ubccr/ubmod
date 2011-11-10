@@ -891,10 +891,6 @@ Ext.Loader.onReady(function () {
                 this.detailTabs[id] = tab;
             }, this);
 
-            // XXX Force the tab panel to recalculate it's layout when
-            // the grid is resized.
-            this.grid.on('resize', this.doLayout, this);
-
             this.reload();
         },
 
