@@ -1598,7 +1598,7 @@ Ext.Loader.onReady(function () {
 
             /**
              * Creates a component that should be updated whenever the
-             * time interval or cluster is changed.
+             * app model is changed.
              *
              * @param {Object} config Constructor arguments.
              *
@@ -1616,7 +1616,7 @@ Ext.Loader.onReady(function () {
 
             /**
              * Creates a stats panel that should be updated whenever the
-             * time interval or cluster is changed.
+             * app model is changed.
              *
              * @param {Object} config Constructor arguments.
              *
