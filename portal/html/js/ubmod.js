@@ -924,7 +924,15 @@ Ext.Loader.onReady(function () {
         initComponent: function () {
             var tagInput, addButton;
 
-            tagInput = Ext.create('Ext.form.field.Text');
+            tagInput = Ext.create('Ext.form.field.Text', {
+                enableKeyEvents: true
+            });
+
+            tagInput.on('keypress', function (text, e) {
+                if (e.getKey() === e.ENTER) {
+                    this.fireEvent('addtag', text);
+                }
+            }, this);
 
             addButton = Ext.create('Ext.Button', {
                 text: 'Add Tag to Selected Users'
