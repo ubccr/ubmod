@@ -798,7 +798,18 @@ Ext.Loader.onReady(function () {
         },
 
         initComponent: function () {
-            var pagingToolbar, tagToolbar;
+            var tagRenderer, pagingToolbar, tagToolbar;
+
+            tagRenderer = function (tags) {
+                var output = '';
+
+                Ext.each(tags, function (tag) {
+                    if (output !== '') { output += ', '; }
+                    output += tag;
+                });
+
+                return output;
+            };
 
             this.columns = [{
                 header: 'User',
@@ -808,6 +819,7 @@ Ext.Loader.onReady(function () {
             }, {
                 header: 'Tags',
                 dataIndex: 'tags',
+                renderer: tagRenderer,
                 menuDisabled: true,
                 width: 575
             }];
