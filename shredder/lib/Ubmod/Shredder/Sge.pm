@@ -51,6 +51,37 @@ my @entry_names = qw(
     ar_submission_time
 );
 
+my @resource_attributes = qw(
+    arch
+    qname
+    hostname
+    notify
+    calendar
+    min_cpu_interval
+    tmpdir
+    seq_no
+    s_rt
+    h_rt
+    s_cpu
+    h_cpu
+    s_data
+    h_data
+    s_stack
+    h_stack
+    s_core
+    h_core
+    s_rss
+    h_rss
+    slots
+    s_vmem
+    h_vmem
+    s_fsize
+    h_fsize
+);
+
+# Use this hash to check if a resource exists
+my %resource_attributes = map { $_ => 1 } @resource_attributes;
+
 # These resource attributes may require formatting
 my %resource_formats = (
     s_data  => 'memory',
@@ -184,6 +215,11 @@ sub _parse_resource_list_options {
 
     foreach my $option (@options) {
         my ( $key, $value ) = split /=/, $option, 2;
+
+        if ( !exists $resource_attributes{$key} ) {
+            warn "Unkown resource attribute: '$key'";
+            next;
+        }
 
         if ( defined( $resource_formats{$key} ) ) {
             my $parser = '_parse_' . $resource_formats{$key};
