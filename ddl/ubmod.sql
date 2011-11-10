@@ -261,7 +261,8 @@ CREATE TABLE `dim_user` (
   `display_name` varchar(255),
   `tags`         varchar(255),
   PRIMARY KEY (`dim_user_id`),
-  KEY (`name`)
+  KEY (`name`),
+  KEY (`tags`)
 ) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `dim_group`;
