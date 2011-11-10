@@ -551,7 +551,7 @@ Ext.Loader.onReady(function () {
      * User tag data store.
      */
     Ext.define('Ubmod.store.UserTags', {
-        extend: 'Ubmod.data.ReverseSortStore',
+        extend: 'Ext.data.Store',
 
         constructor: function (config) {
             config = config || {};
