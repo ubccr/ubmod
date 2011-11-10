@@ -930,13 +930,8 @@ Ext.Loader.onReady(function () {
 
             detailsPanel = Ext.create('Ext.panel.Panel', { height: 200 });
 
-            tagInput = Ext.create('Ext.form.field.ComboBox', {
-                store: Ext.create('Ubmod.store.Tag'),
-                displayField: 'name',
-                hideLabel: true,
-                hideTrigger: true,
-                minChars: 1
-            });
+            tagInput = Ext.create('Ubmod.widget.TagInput');
+
             updateButton = Ext.create('Ext.Button', { text: 'View Report' });
 
             updateButton.on('click', function () {
@@ -955,6 +950,27 @@ Ext.Loader.onReady(function () {
             this.dockedItems = [toolbar];
 
             Ubmod.widget.TagReport.superclass.initComponent.call(this);
+        }
+    });
+
+    /**
+     * Tag auto-completing combo box.
+     */
+    Ext.define('Ubmod.widget.TagInput', {
+        extend: 'Ext.form.field.ComboBox',
+
+        constructor: function (config) {
+            config = config || {};
+
+            Ext.apply(config, {
+                store: Ext.create('Ubmod.store.Tag'),
+                displayField: 'name',
+                hideLabel: true,
+                hideTrigger: true,
+                minChars: 1
+            });
+
+            Ubmod.widget.TagInput.superclass.constructor.call(this, config);
         }
     });
 
@@ -1012,15 +1028,7 @@ Ext.Loader.onReady(function () {
         initComponent: function () {
             var tagInput, addButton;
 
-            tagInput = Ext.create('Ext.form.field.Text', {
-                enableKeyEvents: true
-            });
-
-            tagInput.on('keypress', function (text, e) {
-                if (e.getKey() === e.ENTER) {
-                    this.fireEvent('addtag', text.getValue());
-                }
-            }, this);
+            tagInput = Ext.create('Ubmod.widget.TagInput');
 
             addButton = Ext.create('Ext.Button', {
                 text: 'Add Tag to Selected Users'
