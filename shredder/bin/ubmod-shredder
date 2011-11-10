@@ -341,7 +341,7 @@ Version: $Id$
 
 =head1 SYNOPSIS
 
-B<ubmod-shredder> [B<-v>] [B<-u>] [B<-s>] [B<-H> I<host>] [B<-i> I<file>|B<-d> I<dir>]
+B<ubmod-shredder> [B<-v>] [B<-u>] [B<-s>] [B<-H> I<host>] [B<-f> I<format>] [B<-i> I<file>|B<-d> I<dir>]
 
 =head1 OPTIONS
 
