@@ -194,4 +194,12 @@ var StatsGrid = function(config){
         });
     });
     filter.on('focus', function(){this.dom.select();});
+
+    dataStore.on('beforeload', function() {
+        dataStore.baseParams = {
+            filter: filter.getValue(),
+            cluster_id: toolbar.clusterCombo.getValue(),
+            interval_id: toolbar.intervalCombo.getValue()
+        };
+    });
 };
