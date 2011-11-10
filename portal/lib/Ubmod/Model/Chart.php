@@ -504,8 +504,6 @@ class Ubmod_Model_Chart
 
     $totalActivity = Ubmod_Model_Job::getActivity($params);
     $otherWallt = $totalActivity['wallt'] - array_sum($time);
-    error_log($totalActivity['wallt']);
-    error_log($otherWallt);
     if ($otherWallt > 0) {
       //$tags[] = 'Other';
       //$time[] = $otherWallt;
