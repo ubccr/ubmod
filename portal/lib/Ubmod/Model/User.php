@@ -143,8 +143,9 @@ class Ubmod_Model_User
       $filtered = array();
 
       foreach ($users as $user) {
-        if (   strpos($user['name'],  $filter) !== false
-            || strpos($user['group'], $filter) !== false) {
+        if (   strpos($user['name'],         $filter) !== false
+            || strpos($user['display_name'], $filter) !== false
+            || strpos($user['group'],        $filter) !== false) {
           $filtered[] = $user;
         }
       }
