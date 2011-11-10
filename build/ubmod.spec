@@ -46,9 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/httpd/conf.d/ubmod.conf
 %config(noreplace) /etc/ubmod/settings.ini
 %config(noreplace) /etc/ubmod/palette.csv
-/etc/ubmod/datawarehouse.json
-/etc/ubmod/bootstrap.php
-/etc/ubmod/constants.php
+%config /etc/ubmod/datawarehouse.json
+%config /etc/ubmod/bootstrap.php
+%config /etc/ubmod/constants.php
 /usr/bin/ubmod-shredder
 /usr/share/ubmod
 
