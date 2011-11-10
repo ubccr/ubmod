@@ -64,7 +64,7 @@ class Ubmod_Controller_Dashboard extends Ubmod_BaseController
 
     if ($params->hasClusterId()) {
       $cluster = Ubmod_Model_Cluster::getById($params->getClusterId());
-      $this->clusterName = $cluster['host'];
+      $this->clusterName = $cluster['name'];
     }
 
     $queryString = Ubmod_Model_Chart::getQueryString($params);
