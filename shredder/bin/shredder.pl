@@ -125,47 +125,47 @@ sub main {
 sub usage {
     return <<"EOT";
 NAME
-    $0 - shred accounting log files
+       $0 - shred accounting log files
 
 SYNOPSIS
-    $0 [-u] [-s] [-H host] [-i file|-d dir]
+       $0 [-u] [-s] [-H host] [-i file|-d dir]
 
 GENERAL OPTIONS
-    -s, --shred
-        shred accounting file(s)
+       -s, --shred
+              shred accounting file(s)
 
-    -u, --update
-        update aggregate tables
+       -u, --update
+              update aggregate tables
 
-    -v, --verbose
-        verbose output
+       -v, --verbose
+              verbose output
 
-    -h, --help
-        display this text and exit
+       -h, --help
+              display this text and exit
 
 SHREDDING OPTIONS
-    -i, --in
-        input file
+       -i, --in
+              input file
 
-    -d, --dir
-        location of accounting log directory
+       -d, --dir
+              location of accounting log directory
 
-    -f, --format
-        accounting file format (pbs or sge)
+       -f, --format
+              accounting file format (pbs or sge)
 
-    -H, --host hostname
-        explicitly set host from which the log file(s) originated from
+       -H, --host hostname
+              explicitly set host from which the log file(s) originated
 
 AGGREGATING OPTIONS
-    -e, --end-date
-        explicitly set the end date used for aggregation time intervals
-        date must be in YYYY-MM-DD format
-        defaults to yesterday
+       -e, --end-date
+              explicitly set the end date used for aggregation time
+              intervals date must be in YYYY-MM-DD format
+              defaults to yesterday
 
 EXAMPLES
-    $0 -v -s -H your.host.org -d /var/spool/pbs/server_priv/accounting
+       $0 -v -s -H your.host.org -d /var/spool/pbs/server_priv/accounting
 
-    $0 -v -u
+       $0 -v -u
 EOT
 }
 
