@@ -73,13 +73,13 @@ Ext.onReady(function () {
     </tr>
     <tr>
       <th>Groups: </th>
-      <td style="font-weight:bold;"><? echo $activity['group_count'] ?></td>
+      <td style="font-weight:bold;"><?php echo $activity['group_count'] ?></td>
       <th>Avg. Job Size (CPUs): </th>
-      <td style="font-weight:bold;"><? echo $activity['avg_cpus'] ?></td>
+      <td style="font-weight:bold;"><?php echo $activity['avg_cpus'] ?></td>
       <th>Avg. Job Size (Nodes): </th>
-      <td style="font-weight:bold;"><? echo $activity['avg_nodes'] ?></td>
+      <td style="font-weight:bold;"><?php echo $activity['avg_nodes'] ?></td>
       <th>Avg. Exec Time (h): </th>
-      <td style="font-weight:bold;"><? echo $activity['avg_exect'] ?></td>
+      <td style="font-weight:bold;"><?php echo $activity['avg_exect'] ?></td>
     </tr>
   </table>
 </div>
