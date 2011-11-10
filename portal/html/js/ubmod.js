@@ -325,12 +325,11 @@ Ext.Loader.onReady(function () {
 
                 // Listen for clicks on menu links.
                 Ext.select('#menu-list a').each(function (el) {
-                    var url = this.getAttribute('href');
+                    var href = this.getAttribute('href');
                     this.on('click', function (evt, el) {
-                        Ext.get('content').load({
-                            url: url,
-                            scripts: true
-                        });
+                        Ext.get('content').load({ url: href, scripts: true });
+
+                        // Update menu CSS classes.
                         Ext.select('#menu-list li').each(function () {
                             this.removeCls('menu-active');
                         });
@@ -341,8 +340,11 @@ Ext.Loader.onReady(function () {
 
                 toolbar = Ext.create('Ubmod.widget.Toolbar', {
                     listeners: {
-                        load: function () { loaded = true; updateContent(); },
-                        change: function () { updateContent(); }
+                        load: function () {
+                            loaded = true;
+                            updateContent();
+                        },
+                        change: updateContent
                     }
                 });
             },
