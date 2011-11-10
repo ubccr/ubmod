@@ -38,12 +38,12 @@
 Ext.Loader.onReady(function () {
 
     /**
-     * UBMoD namespace
+     * UBMoD namespace.
      */
     Ext.namespace('Ubmod');
 
     /**
-     * Time interval model
+     * Time interval model.
      */
     Ext.define('Ubmod.model.Interval', {
         extend: 'Ext.data.Model',
@@ -60,7 +60,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Cluster model
+     * Cluster model.
      */
     Ext.define('Ubmod.model.Cluster', {
         extend: 'Ext.data.Model',
@@ -72,7 +72,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * User activity model
+     * User activity model.
      */
     Ext.define('Ubmod.model.UserActivity', {
         extend: 'Ext.data.Model',
@@ -88,7 +88,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * User tags model
+     * User tags model.
      */
     Ext.define('Ubmod.model.UserTags', {
         extend: 'Ext.data.Model',
@@ -157,7 +157,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Group activity model
+     * Group activity model.
      */
     Ext.define('Ubmod.model.GroupActivity', {
         extend: 'Ext.data.Model',
@@ -173,7 +173,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Queue activity model
+     * Queue activity model.
      */
     Ext.define('Ubmod.model.QueueActivity', {
         extend: 'Ext.data.Model',
@@ -189,7 +189,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Tag activity model
+     * Tag activity model.
      */
     Ext.define('Ubmod.model.TagActivity', {
         extend: 'Ext.data.Model',
@@ -204,7 +204,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Tag model
+     * Tag model.
      */
     Ext.define('Ubmod.model.Tag', {
         extend: 'Ext.data.Model',
@@ -214,7 +214,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Application model
+     * Application model.
      *
      * Stores the state of the application and provides an event to
      * signal a change in state.
@@ -239,7 +239,7 @@ Ext.Loader.onReady(function () {
         },
 
         /**
-         * Override the set method to fire events
+         * Override the set method to fire events.
          *
          * @see Ext.data.Model
          */
@@ -276,7 +276,7 @@ Ext.Loader.onReady(function () {
         },
 
         /**
-         * @return {boolean} True if both fields are defined
+         * @return {Boolean} True if both fields are defined.
          */
         isReady: function () {
             return this.get('interval') !== undefined &&
@@ -284,41 +284,41 @@ Ext.Loader.onReady(function () {
         },
 
         /**
-         * @return {integer} The currently selected interval ID
+         * @return {Number} The currently selected interval ID.
          */
         getIntervalId: function () {
             return this.get('interval').get('interval_id');
         },
 
         /**
-         * @return {integer} The currently selected cluster ID
+         * @return {Number} The currently selected cluster ID.
          */
         getClusterId: function () {
             return this.get('cluster').get('cluster_id');
         },
 
         /**
-         * @return {string} The currently selected start date
+         * @return {String} The currently selected start date.
          */
         getStartDate: function () {
             return this.get('startDate');
         },
 
         /**
-         * @return {string} The currently selected end date
+         * @return {String} The currently selected end date.
          */
         getEndDate: function () {
             return this.get('endDate');
         },
 
         /**
-         * Set both the start and end date
+         * Set both the start and end date.
          *
-         * Fires the daterangechanged event
-         * Fires the restparamschanged event
+         * Fires the daterangechanged event.
+         * Fires the restparamschanged event.
          *
-         * @param {Date} startDate The new start date
-         * @param {Date} endDate   The new end date
+         * @param {Date} startDate The new start date.
+         * @param {Date} endDate The new end date.
          */
         setDates: function (startDate, endDate) {
             var startYear = startDate.getFullYear(),
@@ -347,7 +347,7 @@ Ext.Loader.onReady(function () {
         },
 
         /**
-         * @return {object} The parameters needed for REST requests
+         * @return {Object} The parameters needed for REST requests.
          */
         getRestParams: function () {
             var interval, params;
@@ -369,7 +369,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Data store that reverses sorting
+     * Data store that reverses sorting.
      */
     Ext.define('Ubmod.data.ReverseSortStore', {
         extend: 'Ext.data.Store',
@@ -390,7 +390,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Time interval data store
+     * Time interval data store.
      */
     Ext.define('Ubmod.store.Interval', {
         extend: 'Ext.data.Store',
@@ -411,7 +411,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Cluster data store
+     * Cluster data store.
      */
     Ext.define('Ubmod.store.Cluster', {
         extend: 'Ext.data.Store',
@@ -432,7 +432,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * User activity data store
+     * User activity data store.
      */
     Ext.define('Ubmod.store.UserActivity', {
         extend: 'Ubmod.data.ReverseSortStore',
@@ -456,7 +456,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * User tag data store
+     * User tag data store.
      */
     Ext.define('Ubmod.store.UserTags', {
         extend: 'Ubmod.data.ReverseSortStore',
@@ -510,7 +510,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Group activity data store
+     * Group activity data store.
      */
     Ext.define('Ubmod.store.GroupActivity', {
         extend: 'Ubmod.data.ReverseSortStore',
@@ -534,7 +534,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Queue activity data store
+     * Queue activity data store.
      */
     Ext.define('Ubmod.store.QueueActivity', {
         extend: 'Ubmod.data.ReverseSortStore',
@@ -582,7 +582,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Tag store
+     * Tag store.
      */
     Ext.define('Ubmod.store.Tag', {
         extend: 'Ext.data.Store',
@@ -602,7 +602,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Time interval combo box
+     * Time interval combo box.
      */
     Ext.define('Ubmod.widget.Interval', {
         extend: 'Ext.form.field.ComboBox',
@@ -636,7 +636,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Cluster combo box
+     * Cluster combo box.
      */
     Ext.define('Ubmod.widget.Cluster', {
         extend: 'Ext.form.field.ComboBox',
@@ -668,7 +668,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Toolbar for time period and cluster
+     * Toolbar for time period and cluster.
      */
     Ext.define('Ubmod.widget.Toolbar', {
         extend: 'Ext.toolbar.Toolbar',
@@ -740,7 +740,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Tab panel for stats grid and detail pages
+     * Tab panel for stats grid and detail pages.
      */
     Ext.define('Ubmod.widget.StatsPanel', {
         extend: 'Ext.tab.Panel',
@@ -821,7 +821,7 @@ Ext.Loader.onReady(function () {
         },
 
         /**
-         * Reloads all tabs
+         * Reloads all tabs.
          */
         reload: function () {
             if (!this.model.isReady()) { return; }
@@ -841,7 +841,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Stats grid
+     * Stats grid.
      */
     Ext.define('Ubmod.widget.StatsGrid', {
         extend: 'Ext.grid.Panel',
@@ -1016,7 +1016,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Tag grid
+     * Tag grid.
      */
     Ext.define('Ubmod.widget.TagGrid', {
         extend: 'Ext.grid.Panel',
@@ -1096,7 +1096,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Tag report panel
+     * Tag report panel.
      */
     Ext.define('Ubmod.widget.TagReport', {
         extend: 'Ext.panel.Panel',
@@ -1359,7 +1359,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Component used for loading pages using AJAX
+     * Component used for loading pages using AJAX.
      */
     Ext.define('Ubmod.widget.Partial', {
         extend: 'Ext.Component',
@@ -1397,7 +1397,7 @@ Ext.Loader.onReady(function () {
         },
 
         /**
-         * Reloads the element
+         * Reloads the element.
          */
         reload: function () {
             if (!this.model.isReady()) { return; }
@@ -1413,7 +1413,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Application object
+     * Application object.
      */
     Ubmod.app = (function () {
         var model, widgets;
@@ -1470,7 +1470,7 @@ Ext.Loader.onReady(function () {
              * Creates a component that should be updated whenever the
              * time interval or cluster is changed.
              *
-             * @param {Object} config Constructor arguments
+             * @param {Object} config Constructor arguments.
              *
              * @return {Ubmod.widget.Partial}
              */
@@ -1488,7 +1488,7 @@ Ext.Loader.onReady(function () {
              * Creates a stats panel that should be updated whenever the
              * time interval or cluster is changed.
              *
-             * @param {Object} config Constructor arguments
+             * @param {Object} config Constructor arguments.
              *
              * @return {Ubmod.widget.StatsPanel}
              */
@@ -1505,7 +1505,7 @@ Ext.Loader.onReady(function () {
             /**
              * Creates a tag management panel.
              *
-             * @param {Object} config Constructor arguments
+             * @param {Object} config Constructor arguments.
              *
              * @return {Ubmod.widget.TagPanel}
              */
