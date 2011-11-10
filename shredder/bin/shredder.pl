@@ -7,6 +7,7 @@ use DBI;
 use Getopt::Long;
 use File::Spec;
 use Config::Tiny;
+use DateTime;
 use Ubmod::Shredder::Pbs;
 use Ubmod::Aggregator;
 use Ubmod::Logger;
@@ -133,31 +134,52 @@ sub process_directory {
         exit 1;
     }
 
-    my $dh;
-    if ( !opendir $dh, $dir ) {
-        $Logger->fatal("Could not open dir '$dir': $!");
-        exit 1;
+    my @files;
+    if ( my $date = get_event_max_date() ) {
+        $Logger->info("Shredding files dated after $date.");
+        @files = @{ get_file_names($date) };
     }
+    else {
+        $Logger->info('Empty database, shredding all files.');
+
+        my $dh;
+        if ( !opendir $dh, $dir ) {
+            $Logger->fatal("Could not open dir '$dir': $!");
+            exit 1;
+        }
+        @files = sort readdir($dh);
+    }
+
+    # Skip hidden files
+    @files = grep { !/^\./ } @files;
+
+    # Prepend directory path
+    @files = map { File::Spec->catfile( $dir, $_ ) } @files;
+
+    return process_files( $shredder, \@files );
+}
+
+sub process_files {
+    my ( $shredder, $files ) = @_;
 
     my $record_count = 0;
     my $file_count   = 0;
 
-    while ( my $file = readdir($dh) ) {
-
-        # Skip hidden files
-        next if $file =~ /^\./;
-
-        my $file_path = File::Spec->catfile( $dir, $file );
-        if ( !-f $file_path ) {
-            $Logger->warn("Skipping '$file'.");
+    foreach my $file (@$files) {
+        if ( !-e $file ) {
+            $Logger->warn("File not found '$file'.");
             next;
         }
-        if ( !-r $file_path ) {
+        if ( !-f $file ) {
+            $Logger->warn("Skipping non-file '$file'.");
+            next;
+        }
+        if ( !-r $file ) {
             $Logger->warn("Skipping unreadable file '$file'.");
             next;
         }
 
-        $record_count += process_file( $shredder, $file_path );
+        $record_count += process_file( $shredder, $file );
         $file_count++;
     }
 
@@ -314,9 +336,42 @@ sub insert_host_log {
 }
 
 sub get_event_max_date {
-    my $sth = $Dbh->prepare(q{ SELECT MAX(date_key) FROM event });
-    $sth->execute();
-    return $sth->fetchrow_arrayref->[0];
+    my $sql = q{
+        SELECT DATE_FORMAT( MAX(date_key), '%Y-%m-%d' )
+        FROM event
+    };
+    return $Dbh->selectrow_arrayref($sql)->[0];
+}
+
+sub get_file_names {
+    my ($date) = @_;
+
+    my $today = DateTime->now();
+    $today->set(
+        hour   => 0,
+        minute => 0,
+        second => 0,
+    );
+
+    if ( $date !~ /^(\d{4})-(\d{2})-(\d{2})$/ ) {
+        $Logger->fatal("Unknown date format: '$date'");
+        exit 1;
+    }
+
+    my $current = DateTime->new(
+        year  => $1,
+        month => $2,
+        day   => $3,
+    );
+
+    my @files;
+
+    while ( DateTime->compare( $current, $today ) < 0 ) {
+        $current->add( days => 1 );
+        push @files, $current->strftime('%Y%m%d');
+    }
+
+    return \@files;
 }
 
 main(@ARGV) unless caller();
