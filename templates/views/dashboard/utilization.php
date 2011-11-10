@@ -1,13 +1,12 @@
 <div class="labelHeading" style="font-weight: bold">
-Utilization for period from: <?php echo date('MM/dd/yyyy', $interval['start']) ?>
-to: <?php echo date('MM/dd/yyyy', $interval['end']) ?>
+Utilization for period from: <?php echo $interval['start'] ?> to: <?php echo $interval['end'] ?>
 </div>
 <div>
 <table>
 <tr><td colspan="2" style="font-size: x-small">Plot format: <a class="editLink" onclick="chartswap('pie')">Pie</a> | <a class="editLink" onclick="chartswap('bar')">Bar</a></td></tr>
 <tr>
-    <td><img id="upie" src="/chart?filename=<?php echo $userPieChart ?>" /><img id="ubar" style="display: none" src="/chart?filename=<?php echo $userBarChart ?>" /></td>
-    <td><img id="gpie" src="/chart?filename=<?php echo $groupPieChart?>" /><img id="gbar" style="display: none" src="/chart?filename=<?php echo $groupBarChart ?>" /></td>
+    <td><img id="upie" src="<?php echo $userPieChart ?>" /><img id="ubar" style="display: none" src="<?php echo $userBarChart ?>" /></td>
+    <td><img id="gpie" src="<?php echo $groupPieChart ?>" /><img id="gbar" style="display: none" src="<?php echo $groupBarChart ?>" /></td>
 </tr>
 </table>
 </div>
@@ -20,7 +19,7 @@ Overall Statistics
     <th>Users: </th>
     <td style="font-weight: bold"><?php echo $cluster['user_count'] ?></td>
     <th>Total Jobs: </th>
-    <td style="font-weight: bold"><?php echo $cluster['jobs'] ?>)</td>
+    <td style="font-weight: bold"><?php echo number_format($cluster['jobs']) ?></td>
     <th>Avg. Wall Time (d): </th>
     <td style="font-weight: bold"><?php echo $cluster['avg_wallt'] ?></td>
     <th>Avg. Wait Time (h): </th>

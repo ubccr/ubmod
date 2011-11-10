@@ -98,7 +98,7 @@ class UBMoD_Model_User
       ':cluster_id'  => $params['cluster_id'],
     );
 
-    if ($params['filter'] != '') {
+    if (isset($params['filter']) && $params['filter'] != '') {
       $sql .= ' WHERE u.user LIKE :filter';
       $dbParams[':filter'] = '%' . $params['filter'] . '%';
     }
@@ -107,7 +107,9 @@ class UBMoD_Model_User
       $sql .= sprintf(' ORDER BY %s %s', $params['sort'], $params['dir']);
     }
 
-    $sql .= sprintf(' LIMIT %d, %d', $params['start'], $params['limit']);
+    if (isset($params['start'])) {
+      $sql .= sprintf(' LIMIT %d, %d', $params['start'], $params['limit']);
+    }
 
     $stmt = $dbh->prepare($sql);
     $stmt->execute($dbParams);

@@ -37,4 +37,48 @@ class UBMoD_Controller_Chart extends UBMoD_Controller_Base
     UBMoD_Model_Chart::renderWaitTime($this->getGetData());
     exit(0);
   }
+
+  /**
+   * Execute the user pie chart action.
+   *
+   * @return void
+   */
+  public function executeUserPie()
+  {
+    UBMoD_Model_Chart::renderUserPie($this->getGetData());
+    exit(0);
+  }
+
+  /**
+   * Execute the user bar chart action.
+   *
+   * @return void
+   */
+  public function executeUserBar()
+  {
+    UBMoD_Model_Chart::renderUserBar($this->getGetData());
+    exit(0);
+  }
+
+  /**
+   * Execute the group pie chart action.
+   *
+   * @return void
+   */
+  public function executeGroupPie()
+  {
+    UBMoD_Model_Chart::renderGroupPie($this->getGetData());
+    exit(0);
+  }
+
+  /**
+   * Execute the user group bar action.
+   *
+   * @return void
+   */
+  public function executeGroupBar()
+  {
+    UBMoD_Model_Chart::renderGroupBar($this->getGetData());
+    exit(0);
+  }
 }

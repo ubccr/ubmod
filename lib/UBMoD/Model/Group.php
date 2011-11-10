@@ -77,7 +77,7 @@ class UBMoD_Model_Group
 
     $sql = 'SELECT
         g.group_id,
-        ifnull(g.pi_name, g.group_name) as group_name,
+        IFNULL(g.pi_name, g.group_name) AS group_name,
         g.pi_name,
         IFNULL(a.jobs, 0) AS jobs,
         IFNULL(ROUND(a.cput/cast(86400 AS DECIMAL), 2), 0) AS cput,
@@ -98,7 +98,7 @@ class UBMoD_Model_Group
       ':cluster_id'  => $params['cluster_id'],
     );
 
-    if ($params['filter'] != '') {
+    if (isset($params['filter']) && $params['filter'] != '') {
       $sql .= ' WHERE g.group_name LIKE :filter';
       $dbParams[':filter'] = '%' . $params['filter'] . '%';
     }
@@ -107,7 +107,9 @@ class UBMoD_Model_Group
       $sql .= sprintf(' ORDER BY %s %s', $params['sort'], $params['dir']);
     }
 
-    $sql .= sprintf(' LIMIT %d, %d', $params['start'], $params['limit']);
+    if (isset($params['start'])) {
+      $sql .= sprintf(' LIMIT %d, %d', $params['start'], $params['limit']);
+    }
 
     $stmt = $dbh->prepare($sql);
     $stmt->execute($dbParams);
@@ -126,7 +128,7 @@ class UBMoD_Model_Group
 
     $sql = 'SELECT
         g.group_id,
-        ifnull(g.pi_name, g.group_name) as group_name,
+        IFNULL(g.pi_name, g.group_name) AS group_name,
         g.pi_name,
         ga.user_count,
         IFNULL(a.jobs, 0) AS jobs,

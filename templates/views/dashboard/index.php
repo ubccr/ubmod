@@ -24,7 +24,7 @@ function chartswap(type) {
 	}
 }
 Ext.onReady(function(){
-    var url = "/partial/dashboard";
+    var url = "/dashboard/utilization";
 	var toolbar = new PBSToolbar({el: 'dash-chart', displayUrl: url});
     var e = Ext.get("dash-chart");
     var updater = e.getUpdateManager();
