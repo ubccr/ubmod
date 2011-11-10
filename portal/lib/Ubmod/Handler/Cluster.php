@@ -43,7 +43,7 @@ class Ubmod_Handler_Cluster
    *
    * @param array arguments
    * @param array postData
-   * @return Ubmod_RestRespons
+   * @return Ubmod_RestResponse
    */
   public function listAction(array $arguments, array $postData = NULL)
   {
