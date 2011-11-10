@@ -5,7 +5,7 @@ body {
 }
 
 a {
-    text-decoration: none;   
+    text-decoration: none;
 }
 
 .header {
@@ -34,9 +34,8 @@ a {
     padding: 1px;
     text-align: center;
     width: 200px;
-    /* float: left; */
-    margin-right: 15px; 
-    margin-bottom: 15px; 
+    margin-right: 15px;
+    margin-bottom: 15px;
 }
 
 .menu-content, .news-content {
@@ -49,7 +48,7 @@ a {
 }
 
 .menu-content {
-    background-color: #DEDEBD; 
+    background-color: #DEDEBD;
 }
 
 #menu-list, #news-list {
@@ -67,20 +66,20 @@ a {
 }
 
 #news-list li {
-    font-size: x-small;   
+    font-size: x-small;
 }
 
 #menu-list li:hover {
-    background-color: #CCCC99;    
+    background-color: #CCCC99;
 }
 
 #menu-list a {
-    color: #003366;   
+    color: #003366;
 }
 
 .menu-active {
     background-color: #CCCC99;
-    font-weight: bold;   
+    font-weight: bold;
 }
 
 #submenu li {
@@ -89,17 +88,6 @@ a {
     background-repeat: no-repeat;
     background-position: 0px;
     font-size: x-small;
-}
-
-.content {
-/*    margin-top: 40px; */
-/*    margin-left: 190px; */
-}
-
-#toolbar {
-    /* width: 100%; */
-    /* background-color: #D0DEF0; */
-    /* float: right; */
 }
 
 .dtable {
@@ -121,15 +109,14 @@ a {
 
 .tab-content {
     width: 750px;
-    padding: 4px;    
+    padding: 4px;
 }
 
 #stats-tabs {
-    width: 750px;  
+    width: 750px;
 }
 
 .labelHeading {
-    /* background-color: #6699CC; */
     background-color: #DEDEBD;
     color: #003366;
     border: 1px solid #ccc;
@@ -139,18 +126,18 @@ a {
 
 #date-display {
     font-size: 14px;
-    background-color: #ffc;    
+    background-color: #ffc;
 }
 
 .editLink {
-	cursor: pointer;
-	text-decoration: underline;
-	color: blue;
-	font-size: x-small;
+    cursor: pointer;
+    text-decoration: underline;
+    color: blue;
+    font-size: x-small;
 }
 
 .edit {
-    font-size: x-small;    
+    font-size: x-small;
 }
 
 .labelHeader {
@@ -159,37 +146,37 @@ a {
 }
 
 div#menux {
-    float:left;
+    float: left;
     width: 100%;
-    padding-top:0px;
+    padding-top: 0px;
     background: white;
     border-bottom: 1px solid #ccc;
 }
 
-ul#nav,ul#nav li {
-    list-style-type:none;
-    margin:0px;
-    padding:0px;
+ul#nav, ul#nav li {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
 }
 
 ul#nav {
     margin-left: 100px;
-    width:700px;
+    width: 700px;
     white-space: nowrap;
 }
 
 ul#nav li {
-    float:left;
+    float: left;
     margin-right: 3px;
     text-align: center;
 }
 
 ul#nav a {
-    float:left;
+    float: left;
     width: 8em;
     padding: 5px 0;
     background: #039;
-    text-decoration:none;
+    text-decoration: none;
     color: #fff;
     font-size: x-small;
 }
@@ -199,7 +186,7 @@ ul#nav a:hover {
     color: #FFF;
 }
 
-ul#nav li.activelink a,ul#nav li.activelink a:hover {
+ul#nav li.activelink a, ul#nav li.activelink a:hover {
     background: #69c;
     color: #fff;
 }
@@ -209,13 +196,13 @@ ul#nav li.activelink a,ul#nav li.activelink a:hover {
     font-size: 14px;
     font-style: italic;
     margin-bottom: 5px;
-    width: 700px;  
+    width: 700px;
 }
 
 .disk-usage {
     width: 100%;
- }
- 
+}
+
 .disk-usage td {
     text-align: center;
     border: 0px solid #ccc;
@@ -224,7 +211,7 @@ ul#nav li.activelink a,ul#nav li.activelink a:hover {
     padding-right: 0px;
     color: #039;
 }
- 
+
 .disk-usage th {
     text-align: center;
     border: 0px solid #ccc;
