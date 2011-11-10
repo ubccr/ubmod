@@ -112,24 +112,23 @@ class Ubmod_Model_Tag
   }
 
   /**
-   * Returns the number of tags that have activity for the given
+   * Returns an array of tags that have activity for the given
    * parameters.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
-   * @return int
+   * @return array
    */
-  public static function getActivityCount(Ubmod_Model_QueryParams $params)
+  public static function getTagsWithActivity(Ubmod_Model_QueryParams $params)
   {
     $qb = new Ubmod_DataWarehouse_QueryBuilder();
     $qb->setFactTable('fact_job');
     $qb->addDimensionTable('dim_user');
     $qb->addSelectExpressions(array(
-      'user_id' => 'dim_user_id',
-      'tags'    => "COALESCE(tags, '[]')",
+      'tags' => "COALESCE(dim_user.tags, '[]')",
     ));
     $qb->setQueryParams($params);
-    $qb->setGroupBy('user_id');
+    $qb->setGroupBy('tags');
     $qb->clearLimit();
     list($sql, $dbParams) = $qb->buildQuery();
 
@@ -149,21 +148,34 @@ class Ubmod_Model_Tag
 
     $tags = array_unique($tags);
 
-    $filtered = array();
-
     if ($params->hasFilter()) {
       $filter = $params->getFilter();
 
+      $filtered = array();
+
       foreach ($tags as $tag) {
-        if (stripos($tag, $filter) !== false) {
+        if (!strpos($tag, $filter)) {
           $filtered[] = $tag;
         }
       }
-    } else {
-      $filtered = $tags;
+
+      $tags = $filtered;
     }
 
-    return count($filtered);
+    return $tags;
+  }
+
+  /**
+   * Returns the number of tags that have activity for the given
+   * parameters.
+   *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
+   * @return int
+   */
+  public static function getActivityCount(Ubmod_Model_QueryParams $params)
+  {
+    return count(self::getTagsWithActivity($params));
   }
 
   /**
@@ -176,62 +188,15 @@ class Ubmod_Model_Tag
    */
   public static function getActivityList(Ubmod_Model_QueryParams $params)
   {
-    $qb = new Ubmod_DataWarehouse_QueryBuilder();
-    $qb->setFactTable('fact_job');
-    $qb->addDimensionTable('dim_user');
-    $qb->addSelectExpressions(array(
-      'user_id'      => 'dim_user_id',
-      'jobs'         => 'COUNT(*)',
-      'wallt'        => 'ROUND(SUM(wallt) / 86400, 1)',
-      'avg_wallt'    => 'ROUND(AVG(wallt) / 86400, 1)',
-      'max_wallt'    => 'ROUND(MAX(wallt) / 86400, 1)',
-      'cput'         => 'ROUND(SUM(cput)  / 86400, 1)',
-      'avg_cput'     => 'ROUND(AVG(cput)  / 86400, 1)',
-      'max_cput'     => 'ROUND(MAX(cput)  / 86400, 1)',
-      'avg_mem'      => 'ROUND(AVG(mem)   / 1024,  1)',
-      'max_mem'      => 'ROUND(MAX(mem)   / 1024,  1)',
-      'avg_vmem'     => 'ROUND(AVG(vmem)  / 1024,  1)',
-      'max_vmem'     => 'ROUND(MAX(vmem)  / 1024,  1)',
-      'avg_wait'     => 'ROUND(AVG(wait)  / 3600,  1)',
-      'avg_exect'    => 'ROUND(AVG(exect) / 3600,  1)',
-      'max_nodes'    => 'ROUND(MAX(nodes),         1)',
-      'avg_nodes'    => 'ROUND(AVG(nodes),         1)',
-      'max_cpus'     => 'ROUND(MAX(cpus),          1)',
-      'avg_cpus'     => 'ROUND(AVG(cpus),          1)',
-    ));
-    $qb->setQueryParams($params);
-    $qb->setGroupBy('user_id');
-    $qb->addWhereClause('tags', 'LIKE');
-    list($sql, $dbParams) = $qb->buildQuery();
-
-    $dbh = Ubmod_DbService::dbh();
-    $stmt = $dbh->prepare($sql);
-
-    if ($params->hasFilter()) {
-      $filter = $params->getFilter();
-    }
-
     $activity = array();
-    foreach (self::getAll() as $tag) {
 
-      if (isset($filter)) {
-        // Skip tags that don't match
-        if (stripos($tag, $filter) === false) {
-          continue;
-        }
-      }
-
-      $dbParams[':tags'] = '%' . json_encode($tag) . '%';
-      $r = $stmt->execute($dbParams);
-      if (!$r) {
-        $err = $stmt->errorInfo();
-        throw new Exception($err[2]);
-      }
-      $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-      $row['tag'] = $tag;
-
-      $activity[] = $row;
+    // It isn't possible to GROUP BY a tag, so a separate query is
+    // performed for each tag.
+    foreach (self::getTagsWithActivity($params) as $tag) {
+      $params->setTag($tag);
+      $tagActivity = Ubmod_Model_Job::getActivity($params);
+      $tagActivity['tag'] = $tag;
+      $activity[] = $tagActivity;
     }
 
     $sortFields
