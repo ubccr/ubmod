@@ -82,6 +82,7 @@ sub shred {
     my @parts = split /\s+/, $params;
 
     foreach my $part (@parts) {
+
         # Skip parts that aren't attributes.
         next unless $part =~ /=/;
 
