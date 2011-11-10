@@ -233,20 +233,22 @@ Ext.Loader.onReady(function () {
                 endYear = endDate.getFullYear(),
                 endMonth = endDate.getMonth() + 1,
                 endDay = endDate.getDate(),
-                startDate = startMonth + '/' + startDay + '/' + startYear,
-                endDate = endMonth + '/' + endDay + '/' + endYear;
+                start, end;
 
-            this.set('startDate', startDate);
-            this.set('endDate', endDate);
+            // Add zero padding
+            if (startDay   < 10) { startDay   = '0' + startDay; }
+            if (endDay     < 10) { endDay     = '0' + endDay; }
+            if (startMonth < 10) { startMonth = '0' + startMonth; }
+            if (endMonth   < 10) { endMonth   = '0' + endMonth; }
 
-            this.fireEvent('daterangechanged', startDate, endDate);
+            start = startMonth + '/' + startDay + '/' + startYear;
+            end   = endMonth   + '/' + endDay   + '/' + endYear;
+
+            this.set('startDate', start);
+            this.set('endDate', end);
+
+            this.fireEvent('daterangechanged', start, end);
             this.fireEvent('restparamschanged');
-        },
-
-        /**
-         * @param {Date} endDate The new end date
-         */
-        setEndDate: function (endDate) {
         },
 
         /**
@@ -259,7 +261,7 @@ Ext.Loader.onReady(function () {
 
             params = {
                 'interval_id': this.getIntervalId(),
-                'cluster_id': this.getClusterId(),
+                'cluster_id': this.getClusterId()
             };
 
             if (interval.isCustomDateRange()) {
