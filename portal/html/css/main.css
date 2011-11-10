@@ -63,7 +63,7 @@ a {
     background-image: url(../images/bullet.gif);
     background-repeat: no-repeat;
     background-position: 0px .5em;
-    font-size: small;
+    font-size: 14px;
 }
 
 #news-list li {
@@ -138,7 +138,7 @@ a {
 }
 
 #date-display {
-    font-size: small;
+    font-size: 14px;
     background-color: #ffc;    
 }
 
@@ -206,6 +206,7 @@ ul#nav li.activelink a,ul#nav li.activelink a:hover {
 
 .chart-desc {
     text-align: center;
+    font-size: 14px;
     font-style: italic;
     margin-bottom: 5px;
     width: 700px;  
