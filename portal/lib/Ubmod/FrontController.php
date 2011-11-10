@@ -107,7 +107,12 @@ class Ubmod_FrontController
   {
     $segment = $request->getControllerSegment();
     $class = 'Ubmod_Controller_' . $this->convertPathSegment($segment);
-    return $class::factory($request);
+    try {
+      return $class::factory($request);
+    } catch (Exception $e) {
+      header('HTTP/1.0 404 Not Found');
+      exit(0);
+    }
   }
 
   /**
