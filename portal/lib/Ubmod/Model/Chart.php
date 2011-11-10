@@ -154,7 +154,8 @@ class Ubmod_Model_Chart
     $total = 0;
     $other = 0;
     $count = 0;
-    $max = 11;
+    $max   = 11;
+
     $users = array();
     $time  = array();
     foreach (Ubmod_Model_User::getActivities($dbParams) as $user) {
@@ -235,7 +236,8 @@ class Ubmod_Model_Chart
     $total = 0;
     $other = 0;
     $count = 0;
-    $max = 11;
+    $max   = 11;
+
     $groups = array();
     $time  = array();
     foreach (Ubmod_Model_Group::getActivities($dbParams) as $group) {
