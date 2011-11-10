@@ -38,6 +38,11 @@
 Ext.Loader.onReady(function () {
 
     /**
+     * Local blank image.
+     */
+    Ext.BLANK_IMAGE_URL = '/images/s.gif';
+
+    /**
      * UBMoD namespace.
      */
     Ext.namespace('Ubmod');
