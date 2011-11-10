@@ -295,8 +295,6 @@ Ext.Loader.onReady(function () {
         },
 
         initComponent: function () {
-            var onComboLoad, comboArgs;
-
             this.intervalCombo = Ext.create('Ubmod.widget.Interval');
             this.intervalCombo.on('select', function (combo, records) {
                 this.model.set('interval', records[0]);
@@ -346,7 +344,7 @@ Ext.Loader.onReady(function () {
 
         initComponent: function () {
             var listener = function (field) {
-                if (field == 'interval' || field == 'cluster') {
+                if (field === 'interval' || field === 'cluster') {
                     this.reload();
                 }
             };
@@ -367,7 +365,7 @@ Ext.Loader.onReady(function () {
         reload: function () {
             var interval = this.model.get('interval'),
                 cluster = this.model.get('cluster');
-            if (interval != null && cluster != null) {
+            if (interval !== undefined && cluster !== undefined) {
                 Ext.merge(this.store.proxy.extraParams, {
                     interval_id: interval.get('interval_id'),
                     cluster_id: cluster.get('cluster_id')
@@ -460,7 +458,7 @@ Ext.Loader.onReady(function () {
 
         initComponent: function () {
             var listener = function (field) {
-                if (field == 'interval' || field == 'cluster') {
+                if (field === 'interval' || field === 'cluster') {
                     this.reload();
                 }
             };
@@ -477,7 +475,7 @@ Ext.Loader.onReady(function () {
         reload: function () {
             var interval = this.model.get('interval'),
                 cluster = this.model.get('cluster');
-            if (interval != null && cluster != null) {
+            if (interval !== undefined && cluster !== undefined) {
                 Ext.get(this.element).load({
                     url: this.url,
                     params: {
@@ -489,7 +487,7 @@ Ext.Loader.onReady(function () {
         }
     });
 
-    Ubmod.app = function () {
+    Ubmod.app = (function () {
         var model, widgets;
 
         return {
@@ -499,7 +497,7 @@ Ext.Loader.onReady(function () {
                 widgets = [];
 
                 model.on('fieldchanged', function (field, value) {
-                    if (field == 'interval') {
+                    if (field === 'interval') {
                         Ext.get('date-display').update(
                             value.get('start') + ' thru ' + value.get('end')
                         );
@@ -507,7 +505,7 @@ Ext.Loader.onReady(function () {
                 });
 
                 // Listen for clicks on menu links.
-                Ext.select('#menu-list a').each(function (el) {
+                Ext.select('#menu-list a').each(function () {
                     var href = this.getAttribute('href');
                     this.on('click', function (evt, el) {
 
@@ -546,7 +544,7 @@ Ext.Loader.onReady(function () {
                 widgets.push(Ext.create('Ubmod.widget.StatsPanel', config));
             }
         };
-    }();
+    }());
 
     Ext.onReady(Ubmod.app.init, Ubmod);
 
