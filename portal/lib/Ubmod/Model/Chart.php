@@ -55,7 +55,7 @@ class Ubmod_Model_Chart
   {
     $dbh = Ubmod_DbService::dbh();
     $sql = 'SELECT
-        avg_wait/3600 as avg_wait,
+        ROUND(avg_wait / 3600, 2) AS avg_wait,
         label,
         view_order
       FROM actual_wait_time
@@ -92,14 +92,15 @@ class Ubmod_Model_Chart
       . ' To: ' . $interval['end'];
 
     self::renderBarChart(array(
-      'width'    => 700,
-      'height'   => 400,
-      'title'    => 'CPU Consumption vs. Job Size',
-      'subTitle' => $subTitle,
-      'yLabel'   => 'Delivered CPU time [cpu days]',
-      'xLabel'   => 'Number of CPUs/Job',
-      'labels'   => $cpus,
-      'series'   => $time,
+      'width'         => 700,
+      'height'        => 400,
+      'title'         => 'CPU Consumption vs. Job Size',
+      'subTitle'      => $subTitle,
+      'yLabel'        => 'Delivered CPU time [cpu days]',
+      'xLabel'        => 'Number of CPUs/Job',
+      'labels'        => $cpus,
+      'series'        => $time,
+      'displayValues' => TRUE,
     ));
   }
 
@@ -124,14 +125,15 @@ class Ubmod_Model_Chart
       . ' To: ' . $interval['end'];
 
     self::renderBarChart(array(
-      'width'    => 700,
-      'height'   => 400,
-      'title'    => 'Job Wait vs. Job Size',
-      'subTitle' => $subTitle,
-      'yLabel'   => 'Avg. Wait Time [hours]',
-      'xLabel'   => 'Number of CPUs/Job',
-      'labels'   => $cpus,
-      'series'   => $time,
+      'width'         => 700,
+      'height'        => 400,
+      'title'         => 'Job Wait vs. Job Size',
+      'subTitle'      => $subTitle,
+      'yLabel'        => 'Avg. Wait Time [hours]',
+      'xLabel'        => 'Number of CPUs/Job',
+      'labels'        => $cpus,
+      'series'        => $time,
+      'displayValues' => TRUE,
     ));
   }
 
@@ -207,12 +209,12 @@ class Ubmod_Model_Chart
     }
 
     self::renderBarChart(array(
-      'width'    => 400,
-      'height'   => 350,
-      'title'    => 'User Utilization',
-      'yLabel'   => 'Wall time [days]',
-      'labels'   => $users,
-      'series'   => $time,
+      'width'  => 400,
+      'height' => 350,
+      'title'  => 'User Utilization',
+      'yLabel' => 'Wall time [days]',
+      'labels' => $users,
+      'series' => $time,
     ));
   }
 
@@ -288,12 +290,12 @@ class Ubmod_Model_Chart
     }
 
     self::renderBarChart(array(
-      'width'    => 400,
-      'height'   => 350,
-      'title'    => 'Group Utilization',
-      'yLabel'   => 'Wall time [days]',
-      'labels'   => $groups,
-      'series'   => $time,
+      'width'  => 400,
+      'height' => 350,
+      'title'  => 'Group Utilization',
+      'yLabel' => 'Wall time [days]',
+      'labels' => $groups,
+      'series' => $time,
     ));
   }
 
@@ -322,7 +324,7 @@ class Ubmod_Model_Chart
     if (isset($params['xLabel'])) {
       $data->setAbscissaName($params['xLabel']);
     } else {
-      // TODO
+      $areaY2 += 10;
     }
 
     $chart = new pImage($params['width'], $params['height'], $data);
@@ -330,6 +332,15 @@ class Ubmod_Model_Chart
     $chart->setFontProperties(array(
       'FontName' => FONT_DIR . '/verdana.ttf',
       'FontSize' => 8,
+    ));
+
+    $chart->setShadow(TRUE, array(
+      'X'     => 1,
+      'Y'     => 1,
+      'R'     => 0,
+      'G'     => 0,
+      'B'     => 0,
+      'Alpha' => 20,
     ));
 
     $chart->drawText($center, 0, $params['title'], array(
@@ -343,7 +354,7 @@ class Ubmod_Model_Chart
         'FontSize' => 8,
       ));
     } else {
-      // TODO
+      $areaY1 -= 10;
     }
 
     $chart->setGraphArea($areaX1, $areaY1, $areaX2, $areaY2);
@@ -357,17 +368,11 @@ class Ubmod_Model_Chart
       'LabelRotation' => 45,
     ));
 
-    $chart->setShadow(TRUE, array(
-      'X'     => 1,
-      'Y'     => 1,
-      'R'     => 0,
-      'G'     => 0,
-      'B'     => 0,
-      'Alpha' => 20,
-    ));
+    $displayValues
+      = isset($params['displayValues']) && $params['displayValues'];
 
     $chart->drawBarChart(array(
-      #'DisplayValues' => TRUE,
+      'DisplayValues' => $displayValues,
       'DisplayR'      => 0,
       'DisplayG'      => 0,
       'DisplayB'      => 0,
@@ -402,12 +407,12 @@ class Ubmod_Model_Chart
     ));
 
     $chart->setShadow(TRUE, array(
-      'X'     => 1,
-      'Y'     => 1,
+      'X'     => 5,
+      'Y'     => 5,
       'R'     => 0,
       'G'     => 0,
       'B'     => 0,
-      'Alpha' => 20,
+      'Alpha' => 50,
     ));
 
     $pie = new pPie($chart, $data);
@@ -418,6 +423,15 @@ class Ubmod_Model_Chart
       'LabelStacked'  => TRUE,
       'Border'        => TRUE,
       'SecondPass'    => TRUE,
+    ));
+
+    $chart->setShadow(TRUE, array(
+      'X'     => 1,
+      'Y'     => 1,
+      'R'     => 0,
+      'G'     => 0,
+      'B'     => 0,
+      'Alpha' => 20,
     ));
 
     $chart->drawText($center, 0, $params['title'], array(
