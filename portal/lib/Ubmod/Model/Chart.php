@@ -60,15 +60,15 @@ class Ubmod_Model_Chart
    */
   public static function getQueryString($params)
   {
-    $interval = Ubmod_Model_Interval::getById($params['interval_id']);
-    $cluster  = Ubmod_Model_Cluster::getActivity($params);
+    $interval = Ubmod_Model_Interval::getByParams($params);
+    $cluster  = Ubmod_Model_Cluster::getById($params['cluster_id']);
 
     $query['interval_id'] = $interval['interval_id'];
     $query['cluster_id']  = $cluster['cluster_id'];
 
     if ($interval['custom']) {
-      $query['start_date'] = $params['start_date'];
-      $query['end_date']   = $params['end_date'];
+      $query['start_date'] = $interval['start'];
+      $query['end_date']   = $interval['end'];
     }
 
     // Append time to prevent browser caching
@@ -91,12 +91,13 @@ class Ubmod_Model_Chart
   private static function getSubTitle($params)
   {
     $cluster  = Ubmod_Model_Cluster::getById($params['cluster_id']);
-    $interval = Ubmod_Model_Interval::getById($params['interval_id']);
+    $interval = Ubmod_Model_Interval::getByParams($params);
 
-    $start = $interval['start'] ? $interval['start'] : $params['start_date'];
-    $end   = $interval['end']   ? $interval['end']   : $params['end_date'];
+    $host  = $cluster['host'];
+    $start = $interval['start'];
+    $end   = $interval['end'];
 
-    return 'Cluster: ' . $cluster['host'] . " From: $start To: $end";
+    return "Cluster: $host From: $start To: $end";
   }
 
   /**

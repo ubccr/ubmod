@@ -49,18 +49,22 @@ class Ubmod_Model_Interval
 {
 
   /**
-   * Return time interval data given a interval id.
+   * Returns time interval data
    *
-   * @param int id The interval id
+   * @param array $params An array with these keys:
+   *   - interval_id
+   *   - start_date (only required for custom intervals)
+   *   - end_date (only requried for custom intervals)
+   *
    * @return array
    */
-  public static function getById($id)
+  public static function getByParams($params)
   {
     $sql = '
       SELECT
         time_interval_id               AS interval_id,
         display_name                   AS time_interval,
-        start IS NULL                  AS custom,
+        start IS NULL OR end IS NULL   AS custom,
         DATE_FORMAT(start, "%m/%d/%Y") AS start,
         DATE_FORMAT(end,   "%m/%d/%Y") AS end
       FROM time_interval
@@ -68,12 +72,19 @@ class Ubmod_Model_Interval
     ';
     $dbh = Ubmod_DbService::dbh();
     $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute(array($id));
+    $r = $stmt->execute(array($params['interval_id']));
     if (!$r) {
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
     }
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    $timeInterval = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($timeInterval['custom']) {
+      $timeInterval['start'] = $params['start_date'];
+      $timeInterval['end']   = $params['end_date'];
+    }
+
+    return $timeInterval;
   }
 
   /**
@@ -104,8 +115,10 @@ class Ubmod_Model_Interval
   /**
    * Returns the corresponding where clause for use in a SQL query
    *
-   * @param array $params The needed parameters.  These include the
-   *   interval_id, start_date and end_date.
+   * @param array $params An array with these keys:
+   *   - interval_id
+   *   - start_date (only required for custom intervals)
+   *   - end_date (only requried for custom intervals)
    *
    * @return string
    */
@@ -127,7 +140,6 @@ class Ubmod_Model_Interval
 
     // Custom date range
     if ($row['start'] === null || $row['end'] === null) {
-      error_log(print_r($params, 1));
       $start = self::convertDate($params['start_date']);
       $end   = self::convertDate($params['end_date']);
       return sprintf($row['where_clause'], $start, $end);

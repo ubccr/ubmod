@@ -67,7 +67,7 @@ class Ubmod_Controller_Dashboard extends Ubmod_BaseController
   {
     $post = $this->getPostData();
 
-    $this->interval = Ubmod_Model_Interval::getById($post['interval_id']);
+    $this->interval = Ubmod_Model_Interval::getByParams($post);
     $this->cluster  = Ubmod_Model_Cluster::getActivity($post);
 
     $queryString = Ubmod_Model_Chart::getQueryString($post);
