@@ -172,6 +172,7 @@ Ext.Loader.onReady(function () {
             config.model = 'Ubmod.model.User';
             config.proxy = {
                 type: 'ajax',
+                simpleSortMode: true,
                 url: '/api/rest/json/user/list',
                 reader: { type: 'json', root: 'users' }
             };
@@ -191,6 +192,7 @@ Ext.Loader.onReady(function () {
             config.model = 'Ubmod.model.Group';
             config.proxy = {
                 type: 'ajax',
+                simpleSortMode: true,
                 url: '/api/rest/json/group/list',
                 reader: { type: 'json', root: 'groups' }
             };
@@ -210,6 +212,7 @@ Ext.Loader.onReady(function () {
             config.model = 'Ubmod.model.Queue';
             config.proxy = {
                 type: 'ajax',
+                simpleSortMode: true,
                 url: '/api/rest/json/queue/list',
                 reader: { type: 'json', root: 'queues' }
             };
