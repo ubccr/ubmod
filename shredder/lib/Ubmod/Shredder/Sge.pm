@@ -51,6 +51,22 @@ my @entry_names = qw(
     ar_submission_time
 );
 
+# These resource attributes may require formatting
+my %resource_formats = (
+    s_data  => 'memory',
+    h_data  => 'memory',
+    s_stack => 'memory',
+    h_stack => 'memory',
+    s_core  => 'memory',
+    h_core  => 'memory',
+    s_rss   => 'memory',
+    h_rss   => 'memory',
+    s_vmem  => 'memory',
+    h_vmem  => 'memory',
+    s_fsize => 'memory',
+    h_fsize => 'memory',
+);
+
 # Mapping from generic event table to SGE specific event table
 my %map = (
     date_key        => 'FROM_UNIXTIME(MAX(end_time))',
@@ -169,6 +185,11 @@ sub _parse_resource_list_options {
     foreach my $option (@options) {
         my ( $key, $value ) = split /=/, $option, 2;
 
+        if ( defined( $resource_formats{$key} ) ) {
+            my $parser = '_parse_' . $resource_formats{$key};
+            $value = $self->$parser($value);
+        }
+
         $resources{"resource_list_$key"} = $value;
     }
 
@@ -181,6 +202,39 @@ sub _parse_parallel_environment_options {
     my ( $env, $slots ) = split /\s+/, $options;
 
     return { resource_list_slots => $slots };
+}
+
+sub _parse_memory {
+    my ( $self, $memory ) = @_;
+
+    if ( $memory =~ /^\d+$/ ) {
+        return $self->_scale_memory( $memory, 'b' );
+    }
+    elsif ( $memory =~ /^(\d+)(\D+)$/ ) {
+        return $self->_scale_memory( $1, $2 );
+    }
+    else {
+        die "Unknown memory format: $memory";
+    }
+}
+
+# Scale from the given unit to KiB
+sub _scale_memory {
+    my ( $self, $value, $unit ) = @_;
+
+    my $bytes;
+
+    $bytes = $value                      if $unit eq 'b';
+    $bytes = $value * 1000               if $unit eq 'k';
+    $bytes = $value * 1024               if $unit eq 'K';
+    $bytes = $value * 1000 * 1000        if $unit eq 'm';
+    $bytes = $value * 1024 * 1024        if $unit eq 'M';
+    $bytes = $value * 1000 * 1000 * 1000 if $unit eq 'g';
+    $bytes = $value * 1024 * 1024 * 1024 if $unit eq 'G';
+
+    die "Unknown memory unit: $unit" unless defined $bytes;
+
+    return $bytes / 1024;
 }
 
 1;

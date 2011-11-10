@@ -115,7 +115,7 @@ sub get_transform_query {
 }
 
 sub set_host {
-    my ($self, $host) = @_;
+    my ( $self, $host ) = @_;
     $self->{host} = $host;
 }
 
@@ -139,25 +139,27 @@ sub _parse_time {
 sub _parse_memory {
     my ( $self, $memory ) = @_;
 
-    my $unit = 'kb';
-
-    if ( $memory =~ /^\d+(.*)/ ) {
-        $unit = $1;
+    if ( $memory =~ /^\d+$/ ) {
+        return $self->_scale_memory( $memory, 'kb' );
     }
-
-    $memory =~ s/\D+//g;
-
-    return $self->_scale_memory( $unit, $memory );
+    elsif ( $memory =~ /^(\d+)(\D+)$/ ) {
+        return $self->_scale_memory( $1, $2 );
+    }
+    else {
+        die "Unknown memory format: $memory";
+    }
 }
 
 # Scale from the given unit to KiB
 sub _scale_memory {
-    my ( $self, $unit, $value ) = @_;
+    my ( $self, $value, $unit ) = @_;
 
     return $value / 1024        if $unit eq 'b';
     return $value               if $unit eq 'kb';
     return $value * 1024        if $unit eq 'mb';
     return $value * 1024 * 1024 if $unit eq 'gb';
+
+    die "Unknown memory unit: $unit";
 }
 
 sub _set_job_id_and_host {
