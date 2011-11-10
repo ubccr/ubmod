@@ -797,9 +797,18 @@ Ext.Loader.onReady(function () {
     Ext.define('Ubmod.widget.TagPanel', {
         extend: 'Ext.tab.Panel',
         constructor: function (config) {
-            var tagGrid, tagReport;
-
             config = config || {};
+
+            Ext.apply(config, {
+                width: 745,
+                plain: true
+            });
+
+            Ubmod.widget.TagPanel.superclass.constructor.call(this, config);
+        },
+
+        initComponent: function () {
+            var tagGrid, tagReport;
 
             tagGrid = Ext.create('Ubmod.widget.TagGrid', {
                 title: 'Add Tags'
@@ -809,16 +818,9 @@ Ext.Loader.onReady(function () {
                 title: 'Tag Report'
             });
 
-            Ext.apply(config, {
-                width: 745,
-                plain: true,
-                items: [tagGrid, tagReport]
-            });
+            tagReport.on('reportloaded', this.doComponentLayout, this);
 
-            Ubmod.widget.TagPanel.superclass.constructor.call(this, config);
-        },
-
-        initComponent: function () {
+            this.items = [tagGrid, tagReport];
 
             Ubmod.widget.TagPanel.superclass.initComponent.call(this);
         }
@@ -923,33 +925,33 @@ Ext.Loader.onReady(function () {
         constructor: function (config) {
             config = config || {};
 
-            Ext.apply(config, {
-                height: 200,
-                layout: 'fit'
-            });
+            this.addEvents({ reportloaded: true });
 
             Ubmod.widget.TagReport.superclass.constructor.call(this, config);
         },
 
         initComponent: function () {
-            var toolbar, tagInput, updateButton, currentPartial;
+            var toolbar, tagInput, updateButton, partial;
 
             tagInput     = Ext.create('Ubmod.widget.TagInput');
             updateButton = Ext.create('Ext.Button', { text: 'View Report' });
 
             updateButton.on('click', function () {
-                if (currentPartial !== undefined) {
+                if (partial !== undefined) {
                     this.removeAll();
-                    currentPartial.destroy();
+                    partial.destroy();
                 }
 
-                currentPartial = Ubmod.app.createPartial({
+                partial = Ubmod.app.createPartial({
                     url: '/tag/details',
                     params: { tag: tagInput.getValue() }
                 });
 
-                this.add(currentPartial);
-                this.doLayout();
+                this.add(partial);
+
+                partial.on('afterload', function () {
+                    this.fireEvent('reportloaded');
+                }, this);
             }, this);
 
             toolbar = Ext.create('Ext.toolbar.Toolbar', {
@@ -1064,6 +1066,8 @@ Ext.Loader.onReady(function () {
             this.url    = config.url;
             this.params = config.params || {};
 
+            this.addEvents({ afterload: true });
+
             Ubmod.widget.Partial.superclass.constructor.call(this, config);
         },
 
@@ -1095,7 +1099,9 @@ Ext.Loader.onReady(function () {
             Ext.get(this.getEl()).load({
                 loadMask: 'Loading...',
                 url: this.url,
-                params: Ext.apply(this.params, this.model.getRestParams())
+                params: Ext.apply(this.params, this.model.getRestParams()),
+                success: function () { this.fireEvent('afterload'); },
+                scope: this
             });
         }
     });
