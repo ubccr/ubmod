@@ -494,12 +494,23 @@ class Ubmod_Model_Chart
     $params->setOrderByDescending(TRUE);
 
     $tags = array();
-    $time   = array();
+    $time = array();
     foreach (Ubmod_Model_Tag::getActivityList($params) as $tag) {
       if ($tag['wallt'] == 0) { continue; }
 
       $tags[] = $tag['tag_value'];
       $time[] = $tag['wallt'];
+    }
+
+    $totalActivity = Ubmod_Model_Job::getActivity($params);
+    $otherWallt = $totalActivity['wallt'] - array_sum($time);
+    error_log($totalActivity['wallt']);
+    error_log($otherWallt);
+    if ($otherWallt > 0) {
+      //$tags[] = 'Other';
+      //$time[] = $otherWallt;
+      array_unshift($tags, 'Other');
+      array_unshift($time, $otherWallt);
     }
 
     self::renderPieChart(array(
