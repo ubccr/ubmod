@@ -60,7 +60,7 @@ class Ubmod_Model_Chart
    *
    * @return string
    */
-  public static function getQueryString($params)
+  public static function getQueryString(Ubmod_Model_QueryParams $params)
   {
     $interval = Ubmod_Model_Interval::getByParams($params);
     $cluster  = Ubmod_Model_Cluster::getById($params->getClusterId());
@@ -91,7 +91,7 @@ class Ubmod_Model_Chart
    *
    * @return string
    */
-  private static function getSubTitle($params)
+  private static function getSubTitle(Ubmod_Model_QueryParams $params)
   {
     $cluster  = Ubmod_Model_Cluster::getById($params->getClusterId());
     $interval = Ubmod_Model_Interval::getByParams($params);
@@ -113,32 +113,30 @@ class Ubmod_Model_Chart
    *
    * @return array
    */
-  public static function getCpuConsumption($params)
+  public static function getCpuConsumption(Ubmod_Model_QueryParams $params)
   {
-    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
-
-    $sql = "
-      SELECT
-        ROUND(COALESCE(SUM(cput), 0) / 86400, 1) AS cput,
-        dim_cpus.display_name                    AS label
-      FROM fact_job
-      JOIN dim_date USING (dim_date_id)
-      JOIN dim_cpus USING (dim_cpus_id)
-      WHERE
-            dim_cluster_id = :cluster_id
-        AND $timeClause
-      GROUP BY dim_cpus.display_name
-      ORDER BY dim_cpus.view_order
-    ";
+    $qb = new Ubmod_DataWarehouse_QueryBuilder();
+    $qb->setFactTable('fact_job');
+    $qb->addDimensionTable('dim_cpus');
+    $qb->addSelectExpressions(array(
+      'cput'  => 'ROUND(COALESCE(SUM(cput), 0) / 86400, 1)',
+      'label' => 'dim_cpus.display_name',
+      'sort'  => 'dim_cpus.view_order',
+    ));
+    $qb->setQueryParams($params);
+    $qb->setGroupBy('label');
+    $qb->setOrderBy('sort');
+    list($sql, $dbParams) = $qb->buildQuery();
 
     $dbh = Ubmod_DbService::dbh();
     $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute(array(':cluster_id' => $params->getClusterId()));
+    $r = $stmt->execute($dbParams);
     if (!$r) {
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
     }
+
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
@@ -152,32 +150,30 @@ class Ubmod_Model_Chart
    *
    * @return array
    */
-  public static function getWaitTime($params)
+  public static function getWaitTime(Ubmod_Model_QueryParams $params)
   {
-    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
-
-    $sql = "
-      SELECT
-        ROUND(COALESCE(AVG(wait), 0) / 3600, 1) AS avg_wait,
-        dim_cpus.display_name                   AS label
-      FROM fact_job
-      JOIN dim_date USING (dim_date_id)
-      JOIN dim_cpus USING (dim_cpus_id)
-      WHERE
-            dim_cluster_id = :cluster_id
-        AND $timeClause
-      GROUP BY dim_cpus.display_name
-      ORDER BY dim_cpus.view_order
-    ";
+    $qb = new Ubmod_DataWarehouse_QueryBuilder();
+    $qb->setFactTable('fact_job');
+    $qb->addDimensionTable('dim_cpus');
+    $qb->addSelectExpressions(array(
+      'avg_wait' => 'ROUND(COALESCE(AVG(wait), 0) / 3600, 1)',
+      'label'    => 'dim_cpus.display_name',
+      'sort'     => 'dim_cpus.view_order',
+    ));
+    $qb->setQueryParams($params);
+    $qb->setGroupBy('label');
+    $qb->setOrderBy('sort');
+    list($sql, $dbParams) = $qb->buildQuery();
 
     $dbh = Ubmod_DbService::dbh();
     $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute(array(':cluster_id' => $params->getClusterId()));
+    $r = $stmt->execute($dbParams);
     if (!$r) {
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
     }
+
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
@@ -216,7 +212,8 @@ class Ubmod_Model_Chart
    *
    * @return void
    */
-  public static function renderCpuConsumptionPeriod($params)
+  public static function renderCpuConsumptionPeriod(
+    Ubmod_Model_QueryParams $params)
   {
     $cputForLabel = array();
     foreach (self::getCpuConsumption($params) as $cpu) {
@@ -250,7 +247,8 @@ class Ubmod_Model_Chart
    *
    * @return void
    */
-  public static function renderCpuConsumptionMonthly($params)
+  public static function renderCpuConsumptionMonthly(
+    Ubmod_Model_QueryParams $params)
   {
     $cpuLabels  = self::getCpuIntervalLabels();
     $months     = Ubmod_Model_Interval::getMonths($params);
@@ -299,9 +297,11 @@ class Ubmod_Model_Chart
   /**
    * Create a wait time period chart and send it to the browser.
    *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
    * @return void
    */
-  public static function renderWaitTimePeriod($params)
+  public static function renderWaitTimePeriod(Ubmod_Model_QueryParams $params)
   {
     $waitForLabel = array();
     foreach (self::getWaitTime($params) as $cpu) {
@@ -335,7 +335,8 @@ class Ubmod_Model_Chart
    *
    * @return void
    */
-  public static function renderWaitTimeMonthly($params)
+  public static function renderWaitTimeMonthly(
+    Ubmod_Model_QueryParams $params)
   {
     $cpuLabels  = self::getCpuIntervalLabels();
     $months     = Ubmod_Model_Interval::getMonths($params);
@@ -388,7 +389,7 @@ class Ubmod_Model_Chart
    *
    * @return void
    */
-  public static function renderUserPie($params)
+  public static function renderUserPie(Ubmod_Model_QueryParams $params)
   {
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(1);
@@ -433,9 +434,11 @@ class Ubmod_Model_Chart
   /**
    * Create a user utilization bar chart and send it to the browser.
    *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
    * @return void
    */
-  public static function renderUserBar($params)
+  public static function renderUserBar(Ubmod_Model_QueryParams $params)
   {
     $params->setLimitRowCount(21);
     $params->setOrderByColumn('wallt');
@@ -462,9 +465,11 @@ class Ubmod_Model_Chart
   /**
    * Create a group utilization pie chart and send it to the browser.
    *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
    * @return void
    */
-  public static function renderGroupPie($params)
+  public static function renderGroupPie(Ubmod_Model_QueryParams $params)
   {
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(1);
@@ -509,9 +514,11 @@ class Ubmod_Model_Chart
   /**
    * Create a group utilization bar chart and send it to the browser.
    *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
    * @return void
    */
-  public static function renderGroupBar($params)
+  public static function renderGroupBar(Ubmod_Model_QueryParams $params)
   {
     $params->setLimitRowCount(21);
     $params->setOrderByColumn('wallt');
@@ -538,9 +545,12 @@ class Ubmod_Model_Chart
   /**
    * Create a group utilization stacked area chart and send it to the browser.
    *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
    * @return void
    */
-  public static function renderGroupStackedArea($params)
+  public static function renderGroupStackedArea(
+    Ubmod_Model_QueryParams $params)
   {
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(1);
@@ -624,9 +634,12 @@ class Ubmod_Model_Chart
   /**
    * Create a user utilization stacked area chart and send it to the browser.
    *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
    * @return void
    */
-  public static function renderUserStackedArea($params)
+  public static function renderUserStackedArea(
+    Ubmod_Model_QueryParams $params)
   {
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(1);
@@ -710,9 +723,11 @@ class Ubmod_Model_Chart
   /**
    * Render a bar chart.
    *
+   * @param array $params
+   *
    * @return void
    */
-  private static function renderBarChart($params)
+  private static function renderBarChart(array $params)
   {
     if (count($params['series']) == 0) {
       self::renderNoDataImage($params);
@@ -798,9 +813,11 @@ class Ubmod_Model_Chart
   /**
    * Render a pie chart.
    *
+   * @param array $params
+   *
    * @return void
    */
-  private static function renderPieChart($params)
+  private static function renderPieChart(array $params)
   {
     if (count($params['series']) == 0) {
       self::renderNoDataImage($params);
@@ -869,9 +886,11 @@ class Ubmod_Model_Chart
   /**
    * Render a stacked area chart chart.
    *
+   * @param array $params
+   *
    * @return void
    */
-  private static function renderStackedAreaChart($params)
+  private static function renderStackedAreaChart(array $params)
   {
     if (count($params['series']) == 0) {
       self::renderNoDataImage($params);
@@ -976,9 +995,11 @@ class Ubmod_Model_Chart
   /**
    * Render an image stating no data is found.
    *
+   * @param array $params
+   *
    * @return void
    */
-  private static function renderNoDataImage($params)
+  private static function renderNoDataImage(array $params)
   {
     $center = $params['width'] / 2;
     $middle = $params['height'] / 2;

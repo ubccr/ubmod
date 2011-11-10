@@ -109,53 +109,45 @@ class Ubmod_Model_Cluster
    */
   public static function getActivity($params)
   {
-    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
-
-    $sql = "
-      SELECT
-        dim_cluster_id                AS cluster_id,
-        dim_cluster.name              AS host,
-        COALESCE(
-          dim_cluster.display_name,
-          dim_cluster.name
-        )                             AS display_name,
-        COUNT(*)                      AS jobs,
-        COUNT(DISTINCT dim_user_id)   AS user_count,
-        COUNT(DISTINCT dim_group_id)  AS group_count,
-        ROUND(SUM(wallt) / 86400, 1)  AS wallt,
-        ROUND(AVG(wallt) / 86400, 1)  AS avg_wallt,
-        ROUND(MAX(wallt) / 86400, 1)  AS max_wallt,
-        ROUND(SUM(cput)  / 86400, 1)  AS cput,
-        ROUND(AVG(cput)  / 86400, 1)  AS avg_cput,
-        ROUND(MAX(cput)  / 86400, 1)  AS max_cput,
-        ROUND(AVG(mem)   / 1024,  1)  AS avg_mem,
-        ROUND(MAX(mem)   / 1024,  1)  AS max_mem,
-        ROUND(AVG(vmem)  / 1024,  1)  AS avg_vmem,
-        ROUND(MAX(vmem)  / 1024,  1)  AS max_vmem,
-        ROUND(AVG(wait)  / 3600,  1)  AS avg_wait,
-        ROUND(AVG(exect) / 3600,  1)  AS avg_exect,
-        ROUND(MAX(nodes),         1)  AS max_nodes,
-        ROUND(AVG(nodes),         1)  AS avg_nodes,
-        ROUND(MAX(cpus),          1)  AS max_cpus,
-        ROUND(AVG(cpus),          1)  AS avg_cpus
-      FROM fact_job
-      JOIN dim_cluster USING (dim_cluster_id)
-      JOIN dim_date    USING (dim_date_id)
-      JOIN dim_user    USING (dim_user_id)
-      JOIN dim_group   USING (dim_group_id)
-      WHERE
-            dim_cluster_id = :cluster_id
-        AND $timeClause
-    ";
+    $qb = new Ubmod_DataWarehouse_QueryBuilder();
+    $qb->setFactTable('fact_job');
+    $qb->addDimensionTable('dim_cluster');
+    $qb->addSelectExpressions(array(
+      'cluster_id'   => 'dim_cluster_id',
+      'host'         => 'name',
+      'display_name' => 'COALESCE(display_name, name)',
+      'jobs'         => 'COUNT(*)',
+      'user_count'   => 'COUNT(DISTINCT dim_user_id)',
+      'group_count'  => 'COUNT(DISTINCT dim_group_id)',
+      'wallt'        => 'ROUND(SUM(wallt) / 86400, 1)',
+      'avg_wallt'    => 'ROUND(AVG(wallt) / 86400, 1)',
+      'max_wallt'    => 'ROUND(MAX(wallt) / 86400, 1)',
+      'cput'         => 'ROUND(SUM(cput)  / 86400, 1)',
+      'avg_cput'     => 'ROUND(AVG(cput)  / 86400, 1)',
+      'max_cput'     => 'ROUND(MAX(cput)  / 86400, 1)',
+      'avg_mem'      => 'ROUND(AVG(mem)   / 1024,  1)',
+      'max_mem'      => 'ROUND(MAX(mem)   / 1024,  1)',
+      'avg_vmem'     => 'ROUND(AVG(vmem)  / 1024,  1)',
+      'max_vmem'     => 'ROUND(MAX(vmem)  / 1024,  1)',
+      'avg_wait'     => 'ROUND(AVG(wait)  / 3600,  1)',
+      'avg_exect'    => 'ROUND(AVG(exect) / 3600,  1)',
+      'max_nodes'    => 'ROUND(MAX(nodes),         1)',
+      'avg_nodes'    => 'ROUND(AVG(nodes),         1)',
+      'max_cpus'     => 'ROUND(MAX(cpus),          1)',
+      'avg_cpus'     => 'ROUND(AVG(cpus),          1)',
+    ));
+    $qb->setQueryParams($params);
+    list($sql, $dbParams) = $qb->buildQuery();
 
     $dbh = Ubmod_DbService::dbh();
     $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute(array(':cluster_id' => $params->getClusterId()));
+    $r = $stmt->execute($dbParams);
     if (!$r) {
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
     }
+
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 }

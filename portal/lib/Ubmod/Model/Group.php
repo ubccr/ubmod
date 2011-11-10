@@ -57,24 +57,14 @@ class Ubmod_Model_Group
    */
   public static function getActivityCount(Ubmod_Model_QueryParams $params)
   {
-    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
-
-    $sql = "
-      SELECT COUNT(DISTINCT dim_group_id)
-      FROM fact_job
-      JOIN dim_group USING (dim_group_id)
-      JOIN dim_date  USING (dim_date_id)
-      WHERE
-            dim_cluster_id = :cluster_id
-        AND $timeClause
-    ";
-
-    $dbParams = array(':cluster_id' => $params->getClusterId());
-
-    if ($params->hasFilter()) {
-      $sql .= ' AND name LIKE :filter';
-      $dbParams[':filter'] = '%' . $params->getFilter() . '%';
-    }
+    $qb = new Ubmod_DataWarehouse_QueryBuilder();
+    $qb->setFactTable('fact_job');
+    $qb->addDimensionTable('dim_group');
+    $qb->addSelectExpression('COUNT(DISTINCT dim_group_id)', 'count');
+    $qb->setFilterExpression('name');
+    $qb->setQueryParams($params);
+    $qb->clearLimit();
+    list($sql, $dbParams) = $qb->buildQuery();
 
     $dbh = Ubmod_DbService::dbh();
     $sql = Ubmod_DataWarehouse::optimize($sql);
@@ -84,9 +74,9 @@ class Ubmod_Model_Group
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
     }
-    $result = $stmt->fetch();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    return $result[0];
+    return $result['count'];
   }
 
   /**
@@ -98,53 +88,23 @@ class Ubmod_Model_Group
    */
   public static function getActivity(Ubmod_Model_QueryParams $params)
   {
-    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
-
-    $sql = "
-      SELECT
-        dim_group_id                 AS group_id,
-        COALESCE(display_name, name) AS group_name,
-        COUNT(*)                     AS jobs,
-        ROUND(SUM(wallt) / 86400, 1) AS wallt,
-        ROUND(SUM(cput)  / 86400, 1) AS cput,
-        ROUND(AVG(mem)   / 1024,  1) AS avg_mem,
-        ROUND(AVG(wait)  / 3600,  1) AS avg_wait,
-        ROUND(AVG(cpus),          1) AS avg_cpus
-      FROM fact_job
-      JOIN dim_group USING (dim_group_id)
-      JOIN dim_date  USING (dim_date_id)
-      WHERE
-            dim_cluster_id = :cluster_id
-        AND $timeClause
-    ";
-
-    $dbParams = array(':cluster_id' => $params->getClusterId());
-
-    if ($params->hasFilter()) {
-      $sql .= ' AND name LIKE :filter';
-      $dbParams[':filter'] = '%' . $params->getFilter() . '%';
-    }
-
-    $sql .= ' GROUP BY group_id';
-
-    $sortFields = array('group_name', 'jobs', 'avg_cpus', 'avg_wait', 'wallt',
-      'avg_mem');
-
-
-    if ($params->hasOrderByColumn()) {
-      $column = $params->getOrderByColumn();
-      if (!in_array($column, $sortFields)) { $column = 'wallt'; }
-      $dir = $params->isOrderByDescending() ? 'DESC' : 'ASC';
-      $sql .= sprintf(' ORDER BY %s %s', $column, $dir);
-    }
-
-
-    if ($params->hasLimitRowCount()) {
-      $sql .= sprintf(' LIMIT %d', $params->getLimitRowCount());
-      if ($params->hasLimitOffset()) {
-        $sql .= sprintf(' OFFSET %d', $params->getLimitOffset());
-      }
-    }
+    $qb = new Ubmod_DataWarehouse_QueryBuilder();
+    $qb->setFactTable('fact_job');
+    $qb->addDimensionTable('dim_group');
+    $qb->addSelectExpressions(array(
+      'group_id'     => 'dim_group_id',
+      'group_name'   => 'COALESCE(display_name, name)',
+      'jobs'         => 'COUNT(*)',
+      'wallt'        => 'ROUND(SUM(wallt) / 86400, 1)',
+      'cput'         => 'ROUND(SUM(cput)  / 86400, 1)',
+      'avg_mem'      => 'ROUND(AVG(mem)   / 1024,  1)',
+      'avg_wait'     => 'ROUND(AVG(wait)  / 3600,  1)',
+      'avg_cpus'     => 'ROUND(AVG(cpus),          1)',
+    ));
+    $qb->setFilterExpression('name');
+    $qb->setQueryParams($params);
+    $qb->setGroupBy('group_id');
+    list($sql, $dbParams) = $qb->buildQuery();
 
     $dbh = Ubmod_DbService::dbh();
     $sql = Ubmod_DataWarehouse::optimize($sql);
@@ -167,48 +127,33 @@ class Ubmod_Model_Group
    */
   public static function getActivityById(Ubmod_Model_QueryParams $params)
   {
-    $timeClause = Ubmod_Model_Interval::getWhereClause($params);
-
-    $sql = "
-      SELECT
-        dim_group_id                 AS group_id,
-        COALESCE(
-          dim_group.display_name,
-          dim_group.name
-        )                            AS group_name,
-        COUNT(*)                     AS jobs,
-        COUNT(DISTINCT dim_user_id)  AS user_count,
-        ROUND(SUM(wallt) / 86400, 1) AS wallt,
-        ROUND(AVG(wallt) / 86400, 1) AS avg_wallt,
-        ROUND(MAX(wallt) / 86400, 1) AS max_wallt,
-        ROUND(SUM(cput)  / 86400, 1) AS cput,
-        ROUND(AVG(cput)  / 86400, 1) AS avg_cput,
-        ROUND(MAX(cput)  / 86400, 1) AS max_cput,
-        ROUND(AVG(mem)   / 1024,  1) AS avg_mem,
-        ROUND(MAX(mem)   / 1024,  1) AS max_mem,
-        ROUND(AVG(vmem)  / 1024,  1) AS avg_vmem,
-        ROUND(MAX(vmem)  / 1024,  1) AS max_vmem,
-        ROUND(AVG(wait)  / 3600,  1) AS avg_wait,
-        ROUND(AVG(exect) / 3600,  1) AS avg_exect,
-        ROUND(MAX(nodes),         1) AS max_nodes,
-        ROUND(AVG(nodes),         1) AS avg_nodes,
-        ROUND(MAX(cpus),          1) AS max_cpus,
-        ROUND(AVG(cpus),          1) AS avg_cpus
-      FROM fact_job
-      JOIN dim_group USING (dim_group_id)
-      JOIN dim_date  USING (dim_date_id)
-      JOIN dim_user  USING (dim_user_id)
-      WHERE
-            dim_group_id   = :group_id
-        AND dim_cluster_id = :cluster_id
-        AND $timeClause
-      GROUP BY group_id
-    ";
-
-    $dbParams = array(
-      ':cluster_id' => $params->getClusterId(),
-      ':group_id'   => $params->getGroupId(),
-    );
+    $qb = new Ubmod_DataWarehouse_QueryBuilder();
+    $qb->setFactTable('fact_job');
+    $qb->addDimensionTable('dim_group');
+    $qb->addSelectExpressions(array(
+      'group_id'     => 'dim_group_id',
+      'group_name'   => 'COALESCE(display_name, name)',
+      'jobs'         => 'COUNT(*)',
+      'user_count'   => 'COUNT(DISTINCT dim_user_id)',
+      'wallt'        => 'ROUND(SUM(wallt) / 86400, 1)',
+      'avg_wallt'    => 'ROUND(AVG(wallt) / 86400, 1)',
+      'max_wallt'    => 'ROUND(MAX(wallt) / 86400, 1)',
+      'cput'         => 'ROUND(SUM(cput)  / 86400, 1)',
+      'avg_cput'     => 'ROUND(AVG(cput)  / 86400, 1)',
+      'max_cput'     => 'ROUND(MAX(cput)  / 86400, 1)',
+      'avg_mem'      => 'ROUND(AVG(mem)   / 1024,  1)',
+      'max_mem'      => 'ROUND(MAX(mem)   / 1024,  1)',
+      'avg_vmem'     => 'ROUND(AVG(vmem)  / 1024,  1)',
+      'max_vmem'     => 'ROUND(MAX(vmem)  / 1024,  1)',
+      'avg_wait'     => 'ROUND(AVG(wait)  / 3600,  1)',
+      'avg_exect'    => 'ROUND(AVG(exect) / 3600,  1)',
+      'max_nodes'    => 'ROUND(MAX(nodes),         1)',
+      'avg_nodes'    => 'ROUND(AVG(nodes),         1)',
+      'max_cpus'     => 'ROUND(MAX(cpus),          1)',
+      'avg_cpus'     => 'ROUND(AVG(cpus),          1)',
+    ));
+    $qb->setQueryParams($params);
+    list($sql, $dbParams) = $qb->buildQuery();
 
     $dbh = Ubmod_DbService::dbh();
     $sql = Ubmod_DataWarehouse::optimize($sql);
