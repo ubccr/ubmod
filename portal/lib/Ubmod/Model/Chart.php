@@ -909,6 +909,14 @@ class Ubmod_Model_Chart
    * Render a pie chart.
    *
    * @param array $params
+   *   - int    width      The chart image width.
+   *   - int    height     The chart image height.
+   *   - string title      The chart title.
+   *   - string subtitle   The chart subtitle (optional).
+   *   - array  labels     The pie slice labels.
+   *   - array  series     The values of each pie slice.
+   *   - int    maxSlices  The maximum number of slices to use.
+   *   - string otherLabel The label used for excess slices.
    *
    * @return void
    */
@@ -1021,6 +1029,15 @@ class Ubmod_Model_Chart
    * Render a bar chart.
    *
    * @param array $params
+   *   - int    width         The chart image width.
+   *   - int    height        The chart image height.
+   *   - string title         The chart title.
+   *   - string subtitle      The chart subtitle (optional).
+   *   - array  xLabel        The x-axis label (optional).
+   *   - array  yLabel        The y-axis label.
+   *   - array  labels        The bar labels.
+   *   - array  series        The values of each bar.
+   *   - bool   displayLabels Display a label on each bar?
    *
    * @return void
    */
@@ -1112,6 +1129,19 @@ class Ubmod_Model_Chart
    * Render a stacked area chart chart.
    *
    * @param array $params
+   *   - int    width         The chart image width.
+   *   - int    height        The chart image height excluding legend.
+   *   - string title         The chart title.
+   *   - string subtitle      The chart subtitle (optional).
+   *   - array  xLabel        The x-axis label (optional).
+   *   - array  yLabel        The y-axis label.
+   *   - array  labels        The bar labels.
+   *   - array  series        The values of each bar.
+   *   - bool   displayLabels Display a label on each bar?
+   *   - int    legendMode    Display a vertical or horizontal legend?
+   *                          Use either LEGEND_VERTICAL or
+   *                          LEGEND_HORIZONTAL. Defaults to vertical
+   *                          (optional).
    *
    * @return void
    */
@@ -1222,6 +1252,10 @@ class Ubmod_Model_Chart
    * Render an image stating no data is found.
    *
    * @param array $params
+   *   - int    width    The chart image width.
+   *   - int    height   The chart image height.
+   *   - string title    The chart title.
+   *   - string subtitle The chart subtitle (optional).
    *
    * @return void
    */
