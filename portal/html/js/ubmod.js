@@ -316,7 +316,7 @@ Ext.Loader.onReady(function () {
                 // aren't considered changed until new dates have been
                 // set.
                 this.fireEvent('restparamschanged');
-                this.fireEvent('daterangechanged', start, end)
+                this.fireEvent('daterangechanged', start, end);
             }
 
             this.fireEvent('intervalchanged', interval);
