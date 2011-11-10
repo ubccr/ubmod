@@ -430,6 +430,7 @@ sub _get_cpu_min_max_label {
     my ( $self, $min, $max ) = @_;
 
     if ( !defined $max ) {
+        $min--;
         return ">$min";
     }
     elsif ( $min == $max ) {
