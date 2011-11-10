@@ -130,18 +130,25 @@ Ext.Loader.onReady(function () {
 
         constructor: function (config) {
             config = config || {};
-            this.addEvents({ fieldchanged: true });
+            this.addEvents({
+                fieldchanged: true,
+                intervalchanged: true
+            });
             Ubmod.model.App.superclass.constructor.call(this, config);
         },
 
         /**
          * Fires the 'fieldchanged' event when a field is set
+         *
          * @see Ext.data.Model
          */
         set: function (field, value) {
             Ubmod.model.App.superclass.set.call(this, field, value);
             if (!Ext.isObject(field)) {
                 this.fireEvent('fieldchanged', field, value);
+                if (field === 'interval') {
+                    this.fireEvent('intervalchanged', field, value);
+                }
             }
         },
 
@@ -165,6 +172,50 @@ Ext.Loader.onReady(function () {
          */
         getClusterId: function () {
             return this.get('cluster').get('cluster_id');
+        },
+
+        /**
+         * @return {string} The currently selected start date
+         */
+        getStartDate: function () {
+            return this.get('interval').get('start');
+        },
+
+        /**
+         * @return {string} The currently selected end date
+         */
+        getEndDate: function () {
+            return this.get('interval').get('end');
+        },
+
+        /**
+         * @param {string} start The new start date
+         */
+        setStartDate: function (start) {
+            var interval = this.get('interval');
+            interval.set('start', start);
+            this.fireEvent('intervalchanged', 'interval', interval);
+        },
+
+        /**
+         * @param {string} end The new end date
+         */
+        setEndDate: function (end) {
+            var interval = this.get('interval');
+            interval.get('interval').set('end', end);
+            this.fireEvent('intervalchanged', 'interval', interval);
+        },
+
+        /**
+         * @return {object} The parameters needed for REST requests
+         */
+        getRestParams: function () {
+            return {
+                'interval_id': this.getIntervalId(),
+                'cluster_id': this.getClusterId(),
+                'start_date': this.getStartDate(),
+                'end_date': this.getEndDate()
+            };
         }
     });
 
@@ -392,13 +443,28 @@ Ext.Loader.onReady(function () {
                 this.model.set('cluster', records[0]);
             }, this);
 
+            this.startDate = Ext.create('Ext.form.field.Date');
+            this.endDate   = Ext.create('Ext.form.field.Date');
+
+            this.model.on('intervalchanged', function (field, value) {
+                this.startDate.setReadOnly(true);
+                this.endDate.setReadOnly(true);
+                this.startDate.setValue(value.get('start'));
+                this.endDate.setValue(value.get('end'));
+            }, this);
+
             this.renderTo = Ext.get('toolbar');
             this.items = [
+                'Cluster:',
+                this.clusterCombo,
+                { xtype: 'tbspacer', width: 20 },
                 'Period:',
                 this.intervalCombo,
                 { xtype: 'tbspacer', width: 20 },
-                'Cluster:',
-                this.clusterCombo
+                'Date Range:',
+                this.startDate,
+                'to',
+                this.endDate
             ];
 
             Ubmod.widget.Toolbar.superclass.initComponent.call(this);
@@ -440,11 +506,7 @@ Ext.Loader.onReady(function () {
         },
 
         initComponent: function () {
-            var listener = function (field) {
-                if (field === 'interval' || field === 'cluster') {
-                    this.reload();
-                }
-            };
+            var listener = function (field) { this.reload(); };
             this.model.on('fieldchanged', listener, this);
             this.on('destroy', function () {
                 this.model.removeListener('fieldchanged', listener, this);
@@ -453,6 +515,9 @@ Ext.Loader.onReady(function () {
             Ubmod.widget.StatsPanel.superclass.initComponent.call(this);
 
             this.grid.on('itemdblclick', function (grid, record) {
+                var params = Ext.merge(this.model.getRestParams(), {
+                    id: record.get(this.recordFormat.id)
+                });
                 this.detailTabs.push({
                     id: record.get(this.recordFormat.id),
                     tab: this.add({
@@ -461,11 +526,7 @@ Ext.Loader.onReady(function () {
                         loader: {
                             url: this.recordFormat.detailsUrl,
                             autoLoad: true,
-                            params: {
-                                id: record.get(this.recordFormat.id),
-                                interval_id: this.model.getIntervalId(),
-                                cluster_id: this.model.getClusterId()
-                            }
+                            params: params
                         }
                     }).show()
                 });
@@ -484,20 +545,15 @@ Ext.Loader.onReady(function () {
         reload: function () {
             if (!this.model.isReady()) { return; }
 
-            Ext.merge(this.store.proxy.extraParams, {
-                interval_id: this.model.getIntervalId(),
-                cluster_id: this.model.getClusterId()
-            });
+            var params = this.model.getRestParams();
+            Ext.merge(this.store.proxy.extraParams, params);
             this.store.load();
 
             Ext.each(this.detailTabs, function (detail) {
+                var detailParams = Ext.merge({ id: detail.id }, params);
                 detail.tab.loader.load({
                     url: this.detailsUrl,
-                    params: {
-                        id: detail.id,
-                        interval_id: this.model.getIntervalId(),
-                        cluster_id: this.model.getClusterId()
-                    }
+                    params: detailParams
                 });
             }, this);
         }
@@ -619,11 +675,7 @@ Ext.Loader.onReady(function () {
         },
 
         initComponent: function () {
-            var listener = function (field) {
-                if (field === 'interval' || field === 'cluster') {
-                    this.reload();
-                }
-            };
+            var listener = function (field) { this.reload(); };
             this.model.on('fieldchanged', listener, this);
             this.on('destroy', function () {
                 this.model.removeListener('fieldchanged', listener, this);
@@ -642,10 +694,7 @@ Ext.Loader.onReady(function () {
             Ext.get(this.element).load({
                 loadMask: 'Loading...',
                 url: this.url,
-                params: {
-                    interval_id: this.model.getIntervalId(),
-                    cluster_id: this.model.getClusterId()
-                }
+                params: this.model.getRestParams()
             });
         }
     });
@@ -662,12 +711,10 @@ Ext.Loader.onReady(function () {
                 model = Ext.create('Ubmod.model.App');
                 widgets = [];
 
-                model.on('fieldchanged', function (field, value) {
-                    if (field === 'interval') {
-                        Ext.get('date-display').update(
-                            value.get('start') + ' thru ' + value.get('end')
-                        );
-                    }
+                model.on('intervalchanged', function (field, value) {
+                    Ext.get('date-display').update(
+                        value.get('start') + ' thru ' + value.get('end')
+                    );
                 });
 
                 // Listen for clicks on menu links.
