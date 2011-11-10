@@ -53,6 +53,9 @@ sub main {
             log_msg("Processing standard input");
             process_fh( $shredder, *STDIN );
         }
+        else {
+            die usage();
+        }
 
         log_msg("Done shredding!");
     }
