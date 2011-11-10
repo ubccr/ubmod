@@ -56,11 +56,13 @@ sub main {
 
         log_msg("Done shredding!");
     }
-    elsif ($update) {
+
+    if ($update) {
         my $aggregator = Ubmod::Aggregator->new($Dbh);
         $aggregator->aggregate();
     }
-    else {
+
+    if ( !$update && !$shred ) {
         die usage();
     }
 }
