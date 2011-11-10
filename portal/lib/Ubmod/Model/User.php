@@ -49,24 +49,7 @@ class Ubmod_Model_User
    */
   public static function getTagsCount(Ubmod_Model_QueryParams $params)
   {
-    $sql = 'SELECT COUNT(*) FROM dim_user';
-
-    $dbParams = array();
-    if ($params->hasFilter()) {
-      $sql .= ' WHERE name LIKE :filter';
-      $dbParams[':filter'] = '%' . $params->getFilter() . '%';
-    }
-
-    $dbh = Ubmod_DbService::dbh();
-    $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute($dbParams);
-    if (!$r) {
-      $err = $stmt->errorInfo();
-      throw new Exception($err[2]);
-    }
-    $result = $stmt->fetch();
-
-    return $result[0];
+    return count(self::getTagsUnlimited($params));
   }
 
   /**
@@ -78,6 +61,45 @@ class Ubmod_Model_User
    */
   public static function getTags(Ubmod_Model_QueryParams $params)
   {
+    $users = self::getTagsUnlimited($params);
+
+    $sortFields = array('name', 'group', 'tags');
+
+    if ($params->hasOrderByColumn()) {
+      $column = $params->getOrderByColumn();
+      $dir    = $params->isOrderByDescending() ? 'DESC' : 'ASC';
+
+      if (!in_array($column, $sortFields)) {
+        $column = 'name';
+        $dir    = 'ASC';
+      }
+
+      usort($users, function($a, $b) use($column, $dir) {
+        if ($dir === 'ASC') {
+          return strcasecmp($a[$column], $b[$column]);
+        } else {
+          return strcasecmp($b[$column], $a[$column]);
+        }
+      });
+    }
+
+    if ($params->hasLimitRowCount()) {
+      $users = array_slice($users, $params->getLimitOffset(),
+        $params->getLimitRowCount());
+    }
+
+    return $users;
+  }
+
+  /**
+   * Returns an array of users and their tags.
+   *
+   * Doesn't apply any sorting or limiting.
+   *
+   * @return array
+   */
+  private static function getTagsUnlimited(Ubmod_Model_QueryParams $params)
+  {
     $sql = "
       SELECT
         dim_user_id          AS user_id,
@@ -87,31 +109,9 @@ class Ubmod_Model_User
       FROM dim_user
     ";
 
-    $dbParams = array();
-    if ($params->hasFilter()) {
-      $sql .= ' WHERE name LIKE :filter';
-      $dbParams[':filter'] = '%' . $params->getFilter() . '%';
-    }
-
-    $sortFields = array('name', 'tags');
-
-    if ($params->hasOrderByColumn()) {
-      $column = $params->getOrderByColumn();
-      if (!in_array($column, $sortFields)) { $column = 'name'; }
-      $dir = $params->isOrderByDescending() ? 'DESC' : 'ASC';
-      $sql .= sprintf(' ORDER BY %s %s', $column, $dir);
-    }
-
-    if ($params->hasLimitRowCount()) {
-      $sql .= sprintf(' LIMIT %d', $params->getLimitRowCount());
-      if ($params->hasLimitOffset()) {
-        $sql .= sprintf(' OFFSET %d', $params->getLimitOffset());
-      }
-    }
-
     $dbh = Ubmod_DbService::dbh();
     $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute($dbParams);
+    $r = $stmt->execute();
     if (!$r) {
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
@@ -122,6 +122,20 @@ class Ubmod_Model_User
       $group = self::getGroup($row['user_id']);
       $row['group'] = $group['name'];
       $users[] = $row;
+    }
+
+    if ($params->hasFilter()) {
+      $filter   = $params->getFilter();
+      $filtered = array();
+
+      foreach ($users as $user) {
+        if (   strpos($user['name'],  $filter) !== false
+            || strpos($user['group'], $filter) !== false) {
+          $filtered[] = $user;
+        }
+      }
+
+      $users = $filtered;
     }
 
     return $users;
@@ -228,10 +242,10 @@ class Ubmod_Model_User
   }
 
   /**
-   * Find the group for a user.
+   * Find a user's current group.
    *
-   * Return group information for the group that for which the specified
-   * user has most recently submitted a job.
+   * Returns group information for the group that the specified user has
+   * most recently submitted a job.
    *
    * @param int $userId The user dimension primary key.
    *
@@ -239,16 +253,36 @@ class Ubmod_Model_User
    */
   public static function getGroup($userId)
   {
+    $groups = self::getGroups($userId);
+    return $groups[0];
+  }
+
+  /**
+   * Find all of a user's groups.
+   *
+   * Return group information for all groups that for which the specified
+   * user has most recently submitted a job.
+   *
+   * Ordered from most recent to least recent.
+   *
+   * @param int $userId The user dimension primary key.
+   *
+   * @return array
+   */
+  public static function getGroups($userId)
+  {
     $sql = '
       SELECT
-        MAX(`dim_date`.`date`) AS `max_date`,
+        dim_group_id       AS group_id,
+        MAX(dim_date.date) AS last_date,
         name,
         display_name
       FROM fact_job
       JOIN dim_group USING (dim_group_id)
-      JOIN dim_date USING (dim_date_id)
+      JOIN dim_date  USING (dim_date_id)
       WHERE dim_user_id = :dim_user_id
-      ORDER BY `max_date` DESC
+      GROUP BY dim_group_id
+      ORDER BY last_date DESC
     ';
 
     $sql = Ubmod_DataWarehouse::optimize($sql);
@@ -261,6 +295,6 @@ class Ubmod_Model_User
       throw new Exception($err[2]);
     }
 
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 }
