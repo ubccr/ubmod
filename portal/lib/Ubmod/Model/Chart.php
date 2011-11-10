@@ -441,7 +441,7 @@ class Ubmod_Model_Chart
 
     if ($other > 0) {
       $percentage = round($other / $total * 100);
-      if ($percentage < 1) { $percentage = '>1'; }
+      if ($percentage < 1) { $percentage = '<1'; }
       $users[] = "Remaining\nUsers ($percentage%)";
       $time[]  = $other;
     }
@@ -534,7 +534,7 @@ class Ubmod_Model_Chart
 
     if ($other > 0) {
       $percentage = round($other / $total * 100);
-      if ($percentage < 1) { $percentage = '>1'; }
+      if ($percentage < 1) { $percentage = '<1'; }
       $groups[] = "Remaining\nGroups ($percentage%)";
       $time[]   = $other;
     }
