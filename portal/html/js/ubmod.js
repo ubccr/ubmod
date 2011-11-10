@@ -438,7 +438,7 @@ Ext.Loader.onReady(function () {
                 dataIndex: 'jobs',
                 xtype: 'numbercolumn',
                 format: '0,000',
-                width: 100,
+                width: 96,
                 align: 'right'
             }, {
                 header: 'Avg. Job Size (cpus)',
