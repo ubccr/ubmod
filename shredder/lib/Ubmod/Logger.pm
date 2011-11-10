@@ -9,24 +9,24 @@ sub new {
     return bless $self, $class;
 }
 
-sub log {
-    my ( $self, $message, $level ) = @_;
-    print DateTime->now()->iso8601() . " [$level] $message\n";
-}
-
 sub info {
     my ( $self, $message ) = @_;
-    $self->log( $message, 'info' ) if $self->{verbose};
+    $self->_log( $message, 'info' ) if $self->{verbose};
 }
 
 sub warn {
     my ( $self, $message ) = @_;
-    $self->log( $message, 'warn' );
+    $self->_log( $message, 'warn' );
 }
 
 sub fatal {
     my ( $self, $message ) = @_;
-    $self->log( $message, 'fatal' );
+    $self->_log( $message, 'fatal' );
+}
+
+sub _log {
+    my ( $self, $message, $level ) = @_;
+    print DateTime->now()->iso8601() . " [$level] $message\n";
 }
 
 1;
