@@ -32,7 +32,7 @@
  */
 
 /**
- * Time interval model.
+ * Data Warehouse Dimension.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
@@ -41,86 +41,89 @@
  */
 
 /**
- * Time interval Model
+ * Dimension table representation.
  *
  * @package Ubmod
- **/
-class Ubmod_Model_Interval
+ */
+class Ubmod_DataWarehouse_Dimension extends Ubmod_DataWarehouse_Table
 {
 
   /**
-   * Return time interval data given a interval id.
+   * The roll-up dimensions of this dimension.
    *
-   * @param int id The interval id
-   * @return array
+   * @var array
    */
-  public static function getById($id)
+  private $_rollUps = array();
+
+  /**
+   * Constructor
+   *
+   * @param array $config The configuration arguments.
+   *
+   * @return Ubmod_DataWarehouse_Dimension
+   */
+  public function __construct($config)
   {
-    $sql = '
-      SELECT
-        time_interval_id               AS interval_id,
-        display_name                   AS time_interval,
-        DATE_FORMAT(start, "%m/%d/%Y") as start,
-        DATE_FORMAT(end,   "%m/%d/%Y") as end
-      FROM time_interval
-      WHERE time_interval_id = ?
-    ';
-    $dbh = Ubmod_DbService::dbh();
-    $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute(array($id));
-    if (!$r) {
-      $err = $stmt->errorInfo();
-      throw new Exception($err[2]);
+    $columns = array();
+
+    // Primary Key
+    $columns[] = $config['name'] . '_id';
+
+    foreach ($config['attributes'] as $attr) {
+      $columns[] = $attr;
     }
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+
+    parent::__construct(array(
+      'name'    => $config['name'],
+      'columns' => $columns,
+    ));
   }
 
   /**
-   * Returns an array of all time intervals.
+   * Returns the primary key.
    *
-   * @return array
-   */
-  public static function getAll()
-  {
-    $dbh = Ubmod_DbService::dbh();
-    $sql = '
-      SELECT
-        time_interval_id               AS interval_id,
-        display_name                   AS time_interval,
-        DATE_FORMAT(start, "%m/%d/%Y") AS start,
-        DATE_FORMAT(end,   "%m/%d/%Y") AS end
-        FROM time_interval
-    ';
-    $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute();
-    if (!$r) {
-      $err = $stmt->errorInfo();
-      throw new Exception($err[2]);
-    }
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-  }
-
-  /**
-   * Returns the corresponding where clause for use in a SQL query
-   *
-   * @param intervalId int The interval database table primary key
    * @return string
    */
-  public static function whereClause($intervalId)
+  public function getPrimaryKey()
   {
-    $sql = '
-      SELECT where_clause
-      FROM time_interval
-      WHERE time_interval_id = :time_interval_id
-    ';
-    $dbh = Ubmod_DbService::dbh();
-    $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute(array(':time_interval_id' => $intervalId));
-    if (!$r) {
-      $err = $stmt->errorInfo();
-      throw new Exception($err[2]);
+    return $this->_columns[0];
+  }
+
+  /**
+   * Add a roll-up to this dimension.
+   *
+   * @param Ubmod_DataWarehouse_Dimension $dimension The roll-up.
+   *
+   * @return void
+   */
+  public function addRollUp($dimension)
+  {
+    $this->_rollUps[] = $dimension;
+  }
+
+  /**
+   * Find the smallest roll-up of this dimension with the given columns.
+   *
+   * Returns null if a suitable roll-up cannot be found.
+   *
+   * @param array $columns The columns that must be in the dimension.
+   *
+   * @return Ubmod_DataWarehouse_Dimension
+   */
+  public function findRollUpWith($columns)
+  {
+
+    // XXX this is not optimal when dimensions the roll-ups don't have
+    // mutually exclusive attributes
+
+    foreach ($this->_rollUps as $rollUp) {
+      if ($rollUp->hasColumns($columns)) {
+
+        // XXX this should probably be recursive
+        return $rollUp;
+      }
     }
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $row['where_clause'];
+
+    return null;
   }
 }

@@ -1,17 +1,17 @@
 package Ubmod::Aggregator;
 use strict;
 use warnings;
+use List::Util qw(max);
 use DateTime;
 
 sub new {
     my ( $class, %options ) = @_;
 
-    my $self = \%options;
+    my $self = {%options};
 
     if ( !defined $self->{end_date} ) {
         $self->{end_date} = DateTime->now()->subtract( days => 1 );
     }
-    $self->{end_date}->set( hour => 23, minute => 59, second => 59 );
 
     return bless $self, $class;
 }
@@ -19,394 +19,187 @@ sub new {
 sub aggregate {
     my ($self) = @_;
 
-    my $clusters  = $self->_update_clusters();
-    my $queues    = $self->_update_queues($clusters);
-    my $groups    = $self->_update_groups($clusters);
-    my $users     = $self->_update_users( $clusters, $groups, $queues );
-    my $intervals = $self->_update_intervals();
+    # Udpate dimensions
+    $self->_update_clusters();
+    $self->_update_queues();
+    $self->_update_groups();
+    $self->_update_users();
+    $self->_update_dates();
+    $self->_update_cpus();
 
-    $self->_truncate_activity();
+    # Time intervals
+    $self->_update_time_intervals();
 
-    $self->_update_cluster_activity( $clusters, $intervals );
-    $self->_update_queue_activity( $queues, $clusters, $intervals );
-    $self->_update_group_activity( $groups, $clusters, $intervals );
-    $self->_update_user_activity( $users, $clusters, $intervals );
+    # Update roll-up dimensions
+    $self->_update_roll_up_dimensions();
 
-    $self->_update_cpu_consumption( $clusters, $intervals );
-    $self->_update_actual_wait_time( $clusters, $intervals );
+    # Update facts
+    $self->_update_jobs();
+
+    # Update aggregates
+    $self->_update_job_aggregates();
 }
 
 sub _update_clusters {
     my ($self) = @_;
 
-    my %clusters = map { $_->{cluster} => $_ } @{ $self->_select_clusters() };
+    $self->{logger}->info('Updating cluster dimension');
 
-    foreach my $cluster ( @{ $self->_select_event_clusters() } ) {
-        my $name = $cluster->{cluster};
+    my %clusters = %{ $self->_select_clusters() };
+    my @names    = @{ $self->_select_distinct_from_event('cluster') };
+
+    foreach my $name (@names) {
         if ( !defined $clusters{$name} ) {
             $self->{logger}->info("Adding new cluster: $name");
-            my $id = $self->_insert_cluster( { cluster => $name } );
+            my $id = $self->_insert_cluster( { name => $name } );
             $self->{logger}
                 ->info("Successfully inserted new cluster with id: $id");
-            $cluster->{cluster_id} = $id;
-            $clusters{$name} = $cluster;
         }
         else {
             $self->{logger}->info("Cluster '$name' already exists.");
         }
     }
-
-    return \%clusters;
 }
 
 sub _update_queues {
-    my ( $self, $clusters ) = @_;
+    my ($self) = @_;
 
-    my %queues = map { $_->{queue} => $_ } @{ $self->_select_queues() };
+    $self->{logger}->info('Updating queue dimension');
 
-    foreach my $queue ( @{ $self->_select_event_queues() } ) {
-        my $name = $queue->{queue};
+    my %queues = %{ $self->_select_queues() };
+    my @names  = @{ $self->_select_distinct_from_event('queue') };
+
+    foreach my $name (@names) {
         if ( !defined $queues{$name} ) {
             $self->{logger}->info("Adding new queue: $name");
-            my $id = $self->_insert_queue( { queue => $name } );
+            my $id = $self->_insert_queue( { name => $name } );
             $self->{logger}
                 ->info("Successfully inserted new queue with id: $id");
-            $queue->{queue_id} = $id;
-            $queues{$name} = $queue;
         }
         else {
             $self->{logger}->info("Queue '$name' already exists.");
-            $queue->{queue_id} = $queues{$name}->{queue_id};
-        }
-
-        if ( my $cluster = $clusters->{ $queue->{cluster} } ) {
-            my $params = {
-                queue_id   => $queue->{queue_id},
-                cluster_id => $cluster->{cluster_id},
-            };
-            $self->_delete_queue_cluster($params);
-            $self->_insert_queue_cluster($params);
         }
     }
-
-    return \%queues;
 }
 
 sub _update_groups {
-    my ( $self, $clusters ) = @_;
+    my ($self) = @_;
 
-    my %groups = map { $_->{group_name} => $_ } @{ $self->_select_groups() };
+    $self->{logger}->info('Updating group dimension');
 
-    foreach my $group ( @{ $self->_select_event_groups() } ) {
-        my $name = $group->{group};
+    my %groups = %{ $self->_select_groups() };
+    my @names  = @{ $self->_select_distinct_from_event('group') };
+
+    foreach my $name (@names) {
         if ( !defined $groups{$name} ) {
             $self->{logger}->info("Adding new group: $name");
-            my $id = $self->_insert_group( { group_name => $name } );
+            my $id = $self->_insert_group( { name => $name } );
             $self->{logger}
                 ->info("Successfully inserted new group with id: $id");
-            $group->{group_id} = $id;
-            $groups{$name} = $group;
         }
         else {
             $self->{logger}->info("Group '$name' already exists.");
-            $group->{group_id} = $groups{$name}->{group_id};
-        }
-
-        if ( my $cluster = $clusters->{ $group->{cluster} } ) {
-            my $params = {
-                group_id   => $group->{group_id},
-                cluster_id => $cluster->{cluster_id},
-            };
-            $self->_delete_group_cluster($params);
-            $self->_insert_group_cluster($params);
         }
     }
-
-    return \%groups;
 }
 
 sub _update_users {
-    my ( $self, $clusters, $groups, $queues ) = @_;
+    my ($self) = @_;
 
-    my %users = map { $_->{user} => $_ } @{ $self->_select_users() };
+    $self->{logger}->info('Updating user dimension');
 
-    foreach my $user ( @{ $self->_select_event_users() } ) {
-        my $name = $user->{user};
+    my %users = %{ $self->_select_users() };
+    my @names = @{ $self->_select_distinct_from_event('user') };
+
+    foreach my $name (@names) {
         if ( !defined $users{$name} ) {
             $self->{logger}->info("Adding new user: $name");
-            my $id = $self->_insert_user( { user => $name } );
+            my $id = $self->_insert_user( { name => $name } );
             $self->{logger}
                 ->info("Successfully inserted new user with id: $id");
-            $user->{user_id} = $id;
-            $users{$name} = $user;
         }
         else {
             $self->{logger}->info("User '$name' already exists.");
-            $user->{user_id} = $users{$name}->{user_id};
-        }
-
-        my $params = { user_id => $user->{user_id} };
-
-        if ( my $cluster = $clusters->{ $user->{cluster} } ) {
-            $params->{cluster_id} = $cluster->{cluster_id};
-            $self->_delete_user_cluster($params);
-            $self->_insert_user_cluster($params);
-        }
-
-        if ( my $group = $groups->{ $user->{group} } ) {
-            $params->{group_id} = $group->{group_id};
-            $self->_delete_user_group($params);
-            $self->_insert_user_group($params);
-        }
-
-        if ( my $queue = $queues->{ $user->{queue} } ) {
-            $params->{queue_id} = $queue->{queue_id};
-            $self->_delete_user_queue($params);
-            $self->_insert_user_queue($params);
         }
     }
-
-    return \%users;
 }
 
-sub _update_intervals {
+sub _update_dates {
+    my ($self) = @_;
+
+    $self->{logger}->info('Updating date dimension');
+
+    $self->_truncate('dim_date');
+
+    my $min_date = $self->_get_min_date();
+    my $max_date = $self->_get_max_date();
+
+    $self->{logger}->info("Oldest day: $min_date");
+    $self->{logger}->info("Most recent day: $max_date");
+
+    return $self->_insert_dates( $min_date, $max_date );
+}
+
+sub _update_cpus {
+    my ($self) = @_;
+
+    $self->{logger}->info('Updating cpu dimension');
+
+    $self->_truncate('dim_cpus');
+
+    my $sql = q{SELECT MAX(`cpus`) FROM `event`};
+    my ($max) = $self->{dbh}->selectrow_array($sql);
+
+    $self->_insert_cpus($max);
+}
+
+sub _update_time_intervals {
     my ($self) = @_;
 
     my $end_date = $self->{end_date};
+    my $min_date = $self->_get_min_date();
+    my $max_date = $self->_get_max_date();
 
-    $self->_truncate_interval();
+    $self->_truncate('time_interval');
 
     my @labels = (
-        [ 'Last 7 days',   7 ],
-        [ 'Last 30 days',  30 ],
-        [ 'Last 90 days',  90 ],
-        [ 'Last 365 days', 365 ],
+        [ 'Last 7 days',   7,   'last_7_days = 1' ],
+        [ 'Last 30 days',  30,  'last_30_days = 1' ],
+        [ 'Last 90 days',  90,  'last_90_days = 1' ],
+        [ 'Last 365 days', 365, 'last_365_days = 1' ],
     );
 
-    my %intervals;
     foreach my $item (@labels) {
-        my ( $label, $days ) = @$item;
+        my ( $label, $days, $clause ) = @$item;
 
-        my $start_date = $end_date->clone()->subtract( days => $days );
-        $start_date->set( hour => 0, minute => 0, second => 0 );
+        my $start_date = $end_date->clone()->subtract( days => $days - 1 );
 
         my $interval = {
-            label => $label,
-            start => $start_date->iso8601(),
-            end   => $end_date->iso8601(),
+            label        => $label,
+            start        => $start_date->iso8601(),
+            end          => $end_date->iso8601(),
+            where_clause => $clause,
         };
-        my $id = $self->_insert_interval($interval);
-        $interval->{interval_id} = $id;
-        $intervals{$label} = $interval;
+        $self->_insert_time_interval($interval);
     }
 
-    return \%intervals;
-}
+    foreach my $year ( @{ $self->_select_years() } ) {
+        my $interval = {
+            label        => $year,
+            start        => "$year-01-01",
+            end          => "$year-12-31",
+            where_clause => "year = $year",
+        };
 
-sub _update_cluster_activity {
-    my ( $self, $clusters, $intervals ) = @_;
-
-    $self->_truncate_cluster_activity();
-
-    foreach my $interval ( values %$intervals ) {
-        my $activities = $self->_select_cluster_activity($interval);
-
-        foreach my $activity (@$activities) {
-            my $id      = $self->_insert_activity($activity);
-            my $cluster = $clusters->{ $activity->{cluster} };
-            if ( !defined $cluster ) {
-                $self->{logger}->info("Skipping cluster activity.");
-                next;
-            }
-
-            $self->_insert_cluster_activity(
-                {   user_count  => $activity->{user_count},
-                    group_count => $activity->{group_count},
-                    interval_id => $interval->{interval_id},
-                    cluster_id  => $cluster->{cluster_id},
-                    activity_id => $id,
-                }
-            );
+        if ( $min_date->year() == $year ) {
+            $interval->{start} = $min_date->iso8601();
         }
-    }
-}
 
-sub _update_queue_activity {
-    my ( $self, $queues, $clusters, $intervals ) = @_;
-
-    $self->_truncate_queue_activity();
-
-    foreach my $interval ( values %$intervals ) {
-        my $activities = $self->_select_queue_activity($interval);
-
-        foreach my $activity (@$activities) {
-            my $id      = $self->_insert_activity($activity);
-            my $cluster = $clusters->{ $activity->{cluster} };
-            my $queue   = $queues->{ $activity->{queue} };
-            if ( !defined $cluster || !defined $queue ) {
-                $self->{logger}->info("Skipping queue activity.");
-                next;
-            }
-
-            $self->_insert_queue_activity(
-                {   user_count  => $activity->{user_count},
-                    group_count => $activity->{group_count},
-                    interval_id => $interval->{interval_id},
-                    cluster_id  => $cluster->{cluster_id},
-                    queue_id    => $queue->{queue_id},
-                    activity_id => $id,
-                }
-            );
+        if ( $max_date->year() == $year ) {
+            $interval->{end} = $max_date->iso8601();
         }
-    }
-}
 
-sub _update_group_activity {
-    my ( $self, $groups, $clusters, $intervals ) = @_;
-
-    $self->_truncate_group_activity();
-
-    foreach my $interval ( values %$intervals ) {
-        my $activities = $self->_select_group_activity($interval);
-
-        foreach my $activity (@$activities) {
-            my $id      = $self->_insert_activity($activity);
-            my $cluster = $clusters->{ $activity->{cluster} };
-            my $group   = $groups->{ $activity->{group} };
-            if ( !defined $cluster || !defined $group ) {
-                $self->{logger}->info("Skipping group activity.");
-                next;
-            }
-
-            $self->_insert_group_activity(
-                {   user_count  => $activity->{user_count},
-                    interval_id => $interval->{interval_id},
-                    cluster_id  => $cluster->{cluster_id},
-                    group_id    => $group->{group_id},
-                    activity_id => $id,
-                }
-            );
-        }
-    }
-}
-
-sub _update_user_activity {
-    my ( $self, $users, $clusters, $intervals ) = @_;
-
-    $self->_truncate_user_activity();
-
-    foreach my $interval ( values %$intervals ) {
-        my $activities = $self->_select_user_activity($interval);
-
-        foreach my $activity (@$activities) {
-            my $id      = $self->_insert_activity($activity);
-            my $cluster = $clusters->{ $activity->{cluster} };
-            my $user    = $users->{ $activity->{user} };
-            if ( !defined $cluster || !defined $user ) {
-                $self->{logger}->info("Skipping user activity.");
-                next;
-            }
-
-            $self->_insert_user_activity(
-                {   interval_id => $interval->{interval_id},
-                    cluster_id  => $cluster->{cluster_id},
-                    user_id     => $user->{user_id},
-                    activity_id => $id,
-                }
-            );
-        }
-    }
-}
-
-sub _update_cpu_consumption {
-    my ( $self, $clusters, $intervals ) = @_;
-
-    $self->_truncate_cpu_consumption();
-
-    my $cpus = $self->_get_cpu_min_max();
-
-    foreach my $cluster ( values %$clusters ) {
-        foreach my $interval ( values %$intervals ) {
-            my $counter = 0;
-            foreach my $min_max (@$cpus) {
-                my ( $min, $max ) = @$min_max;
-                my $consumption = $self->_select_cpu_consumption(
-                    {   cluster => $cluster->{cluster},
-                        start   => $interval->{start},
-                        end     => $interval->{end},
-                        min     => $min,
-                        max     => $max,
-                    }
-                );
-
-                my $label = $self->_get_cpu_min_max_label( $min, $max );
-
-                if ( !defined $consumption->{cput} ) {
-                    $self->{logger}->warn( "No cput found for cpus $label"
-                            . " for time period $interval->{start}"
-                            . " - $interval->{end}"
-                            . " for cluster $cluster->{cluster}" );
-                    $consumption->{cput} = 0;
-                }
-
-                $self->_insert_cpu_consumption(
-                    {   interval_id => $interval->{interval_id},
-                        cluster_id  => $cluster->{cluster_id},
-                        label       => $label,
-                        view_order  => $counter,
-                        cput        => $consumption->{cput},
-                    }
-                );
-
-                $counter++;
-            }
-        }
-    }
-}
-
-sub _update_actual_wait_time {
-    my ( $self, $clusters, $intervals ) = @_;
-
-    $self->_truncate_actual_wait_time();
-
-    my $cpus = $self->_get_cpu_min_max();
-
-    foreach my $cluster ( values %$clusters ) {
-        foreach my $interval ( values %$intervals ) {
-            my $counter = 0;
-            foreach my $min_max (@$cpus) {
-                my ( $min, $max ) = @$min_max;
-                my $wait_time = $self->_select_actual_wait_time(
-                    {   cluster => $cluster->{cluster},
-                        start   => $interval->{start},
-                        end     => $interval->{end},
-                        min     => $min,
-                        max     => $max,
-                    }
-                );
-
-                my $label = $self->_get_cpu_min_max_label( $min, $max );
-
-                if ( !defined $wait_time->{avg_wait} ) {
-                    $self->{logger}->warn( "No avg_wait found for cpus $label"
-                            . " for time period $interval->{start}"
-                            . " - $interval->{end}"
-                            . " for cluster $cluster->{cluster}" );
-                    $wait_time->{avg_wait} = 0;
-                }
-
-                $self->_insert_actual_wait_time(
-                    {   interval_id => $interval->{interval_id},
-                        cluster_id  => $cluster->{cluster_id},
-                        label       => $label,
-                        view_order  => $counter,
-                        avg_wait    => $wait_time->{avg_wait},
-                    }
-                );
-
-                $counter++;
-            }
-        }
+        $self->_insert_time_interval($interval);
     }
 }
 
@@ -441,289 +234,129 @@ sub _get_cpu_min_max_label {
     }
 }
 
+sub _get_min_date {
+    my ($self) = @_;
+
+    if ( !exists $self->{min_date} ) {
+        $self->_cache_min_and_max_dates();
+    }
+
+    return $self->{min_date};
+}
+
+sub _get_max_date {
+    my ($self) = @_;
+
+    if ( !exists $self->{max_date} ) {
+        $self->_cache_min_and_max_dates();
+    }
+
+    return $self->{max_date};
+}
+
+sub _cache_min_and_max_dates {
+    my ($self) = @_;
+
+    my ( $min_date, $max_date ) = $self->_select_min_and_max_dates();
+
+    if ( !$min_date || !$max_date ) {
+        $self->{logger}->fatal('No dates found');
+        return;
+    }
+
+    if ( $min_date =~ /^(\d{4})-(\d{1,2})-(\d{1,2})$/ ) {
+        $self->{min_date}
+            = DateTime->new( year => $1, month => $2, day => $3 );
+    }
+    else {
+        $self->{logger}->fatal("Invalid date format: '$min_date'");
+        return;
+    }
+
+    if ( $max_date =~ /^(\d{4})-(\d{1,2})-(\d{1,2})$/ ) {
+        $self->{max_date}
+            = DateTime->new( year => $1, month => $2, day => $3 );
+    }
+    else {
+        $self->{logger}->fatal("Invalid date format: '$max_date'");
+        return;
+    }
+}
+
 # Database methods
 
-sub _select_clusters {
+sub _select_min_and_max_dates {
     my ($self) = @_;
 
     my $sql = q{
-        SELECT cluster_id, host AS cluster, display_name
-        FROM cluster
+        SELECT
+            DATE(MIN(`date_key`)),
+            DATE(MAX(`date_key`))
+        FROM `event`
     };
-    return $self->{dbh}->selectall_arrayref( $sql, { Slice => {} } );
+
+    return $self->{dbh}->selectrow_array($sql);
+}
+
+sub _select_clusters {
+    my ($self) = @_;
+    my $sql = q{SELECT * FROM `dim_cluster`};
+    return $self->{dbh}->selectall_hashref( $sql, 'name' );
 }
 
 sub _select_queues {
     my ($self) = @_;
-
-    return $self->{dbh}
-        ->selectall_arrayref( q{ SELECT * FROM queue }, { Slice => {} } );
+    my $sql = q{SELECT * FROM `dim_queue`};
+    return $self->{dbh}->selectall_hashref( $sql, 'name' );
 }
 
 sub _select_groups {
     my ($self) = @_;
-
-    return $self->{dbh}
-        ->selectall_arrayref( q{ SELECT * FROM research_group },
-        { Slice => {} } );
+    my $sql = q{SELECT * FROM `dim_group`};
+    return $self->{dbh}->selectall_hashref( $sql, 'name' );
 }
 
 sub _select_users {
     my ($self) = @_;
-
-    return $self->{dbh}
-        ->selectall_arrayref( q{ SELECT * FROM user }, { Slice => {} } );
+    my $sql = q{SELECT * FROM `dim_user`};
+    return $self->{dbh}->selectall_hashref( $sql, 'name' );
 }
 
-sub _select_event_clusters {
+sub _select_years {
     my ($self) = @_;
 
-    return $self->{dbh}->selectall_arrayref(
-        q{ SELECT DISTINCT cluster FROM event WHERE cluster IS NOT NULL },
-        { Slice => {} } );
-}
-
-sub _select_event_queues {
-    my ($self) = @_;
-
-    return $self->{dbh}->selectall_arrayref(
-        q{
-            SELECT cluster, queue
-            FROM event
-            WHERE cluster IS NOT NULL AND queue IS NOT NULL
-            GROUP BY cluster, queue
-        },
-        { Slice => {} }
-    );
-}
-
-sub _select_event_groups {
-    my ($self) = @_;
-
-    return $self->{dbh}->selectall_arrayref(
-        q{
-            SELECT cluster, `group`
-            FROM event
-            WHERE cluster IS NOT NULL AND `group` IS NOT NULL
-            GROUP BY cluster, `group`
-        },
-        { Slice => {} }
-    );
-}
-
-sub _select_event_users {
-    my ($self) = @_;
-
-    return $self->{dbh}->selectall_arrayref(
-        q{
-            SELECT cluster, user, queue, `group`
-            FROM event
-            WHERE cluster IS NOT NULL AND user IS NOT NULL
-            GROUP BY cluster, user, queue, `group`
-        },
-        { Slice => {} }
-    );
-}
-
-sub _select_cluster_activity {
-    my ( $self, $interval ) = @_;
-
-    return $self->{dbh}->selectall_arrayref(
-        q{
-            SELECT
-                cluster,
-                queue,
-                user,
-                `group`,
-                COUNT(DISTINCT(user)) AS user_count,
-                COUNT(DISTINCT(`group`)) AS group_count,
-                COUNT(*) as jobs,
-                SUM(wallt) AS wallt,
-                ROUND(AVG(wallt)) AS avg_wallt,
-                MAX(wallt) AS max_wallt,
-                SUM(cput) AS cput,
-                ROUND(AVG(cput)) AS avg_cput,
-                MAX(cput) AS max_cput,
-                ROUND(AVG(mem)) AS avg_mem,
-                MAX(mem) AS max_mem,
-                ROUND(AVG(vmem)) AS avg_vmem,
-                MAX(vmem) AS max_vmem,
-                ROUND(AVG(wait)) AS avg_wait,
-                ROUND(AVG(exect)) AS avg_exect,
-                ROUND(AVG(nodes)) AS avg_nodes,
-                MAX(nodes) AS max_nodes,
-                ROUND(AVG(cpus)) AS avg_cpus,
-                MAX(cpus) AS max_cpus
-            FROM event e
-            WHERE
-                date_key BETWEEN ? AND ?
-            GROUP BY cluster
-        },
-        { Slice => {} },
-        @$interval{qw( start end )}
-    );
-}
-
-sub _select_queue_activity {
-    my ( $self, $interval ) = @_;
-
-    return $self->{dbh}->selectall_arrayref(
-        q{
-            SELECT
-                cluster,
-                queue,
-                user,
-                `group`,
-                COUNT(DISTINCT(user)) AS user_count,
-                COUNT(DISTINCT(`group`)) AS group_count,
-                COUNT(*) as jobs,
-                SUM(wallt) AS wallt,
-                ROUND(AVG(wallt)) AS avg_wallt,
-                MAX(wallt) AS max_wallt,
-                SUM(cput) AS cput,
-                ROUND(AVG(cput)) AS avg_cput,
-                MAX(cput) AS max_cput,
-                ROUND(AVG(mem)) AS avg_mem,
-                MAX(mem) AS max_mem,
-                ROUND(AVG(vmem)) AS avg_vmem,
-                MAX(vmem) AS max_vmem,
-                ROUND(AVG(wait)) AS avg_wait,
-                ROUND(AVG(exect)) AS avg_exect,
-                ROUND(AVG(nodes)) AS avg_nodes,
-                MAX(nodes) AS max_nodes,
-                ROUND(AVG(cpus)) AS avg_cpus,
-                MAX(cpus) AS max_cpus
-            FROM event e
-            WHERE date_key BETWEEN ? AND ?
-            AND cluster IS NOT NULL AND queue IS NOT NULL
-            GROUP BY cluster, queue
-        },
-        { Slice => {} },
-        @$interval{qw( start end )}
-    );
-}
-
-sub _select_group_activity {
-    my ( $self, $interval ) = @_;
-
-    return $self->{dbh}->selectall_arrayref(
-        q{
-            SELECT
-                cluster,
-                queue,
-                user,
-                `group`,
-                COUNT(DISTINCT(user)) AS user_count,
-                COUNT(DISTINCT(`group`)) AS group_count,
-                COUNT(*) as jobs,
-                SUM(wallt) AS wallt,
-                ROUND(AVG(wallt)) AS avg_wallt,
-                MAX(wallt) AS max_wallt,
-                SUM(cput) AS cput,
-                ROUND(AVG(cput)) AS avg_cput,
-                MAX(cput) AS max_cput,
-                ROUND(AVG(mem)) AS avg_mem,
-                MAX(mem) AS max_mem,
-                ROUND(AVG(vmem)) AS avg_vmem,
-                MAX(vmem) AS max_vmem,
-                ROUND(AVG(wait)) AS avg_wait,
-                ROUND(AVG(exect)) AS avg_exect,
-                ROUND(AVG(nodes)) AS avg_nodes,
-                MAX(nodes) AS max_nodes,
-                ROUND(AVG(cpus)) AS avg_cpus,
-                MAX(cpus) AS max_cpus
-            FROM event e
-            WHERE date_key BETWEEN ? AND ?
-            GROUP BY cluster, `group`
-        },
-        { Slice => {} },
-        @$interval{qw( start end )}
-    );
-}
-
-sub _select_user_activity {
-    my ( $self, $interval ) = @_;
-
-    return $self->{dbh}->selectall_arrayref(
-        q{
-            SELECT
-                cluster,
-                queue,
-                user,
-                `group`,
-                COUNT(DISTINCT(user)) AS user_count,
-                COUNT(DISTINCT(`group`)) AS group_count,
-                COUNT(*) as jobs,
-                SUM(wallt) AS wallt,
-                ROUND(AVG(wallt)) AS avg_wallt,
-                MAX(wallt) AS max_wallt,
-                SUM(cput) AS cput,
-                ROUND(AVG(cput)) AS avg_cput,
-                MAX(cput) AS max_cput,
-                ROUND(AVG(mem)) AS avg_mem,
-                MAX(mem) AS max_mem,
-                ROUND(AVG(vmem)) AS avg_vmem,
-                MAX(vmem) AS max_vmem,
-                ROUND(AVG(wait)) AS avg_wait,
-                ROUND(AVG(exect)) AS avg_exect,
-                ROUND(AVG(nodes)) AS avg_nodes,
-                MAX(nodes) AS max_nodes,
-                ROUND(AVG(cpus)) AS avg_cpus,
-                MAX(cpus) AS max_cpus
-            FROM event e
-            WHERE date_key BETWEEN ? AND ?
-            GROUP BY cluster, user
-        },
-        { Slice => {} },
-        @$interval{qw( start end )}
-    );
-}
-
-sub _select_cpu_consumption {
-    my ( $self, $params ) = @_;
-
-    my $sql = q{
-        SELECT SUM(cput) AS cput
-        FROM event
-        WHERE cluster = ?
-        AND date_key BETWEEN ? AND ?
-        AND cpus >= ?
+    my $sql = qq{
+        SELECT DISTINCT year
+        FROM dim_date
+        ORDER BY year DESC
     };
-    my @params = @$params{qw( cluster start end min )};
 
-    if ( defined $params->{max} ) {
-        $sql .= q{ AND cpus <= ? };
-        push @params, $params->{max};
-    }
+    my $rows = $self->{dbh}->selectall_arrayref( $sql, { Slice => {} } );
+    my @years = map { $_->{year} } @$rows;
 
-    return $self->{dbh}->selectrow_hashref( $sql, { Slice => {} }, @params );
+    return \@years;
 }
 
-sub _select_actual_wait_time {
-    my ( $self, $params ) = @_;
+sub _select_distinct_from_event {
+    my ( $self, $column ) = @_;
 
-    my $sql = q{
-        SELECT ROUND(AVG(wait)) AS avg_wait
+    my $sql = qq{
+        SELECT DISTINCT `$column`
         FROM event
-        WHERE cluster = ?
-        AND date_key BETWEEN ? AND ?
-        AND cpus >= ?
+        WHERE `$column` IS NOT NULL
     };
-    my @params = @$params{qw( cluster start end min )};
+    my $rows = $self->{dbh}->selectall_arrayref( $sql, { Slice => {} } );
+    my @fields = map { $_->{$column} } @$rows;
 
-    if ( defined $params->{max} ) {
-        $sql .= q{ AND cpus <= ? };
-        push @params, $params->{max};
-    }
-
-    return $self->{dbh}->selectrow_hashref( $sql, { Slice => {} }, @params );
+    return \@fields;
 }
 
 sub _insert_cluster {
     my ( $self, $cluster ) = @_;
 
-    my $sth = $self->{dbh}->prepare(q{ INSERT INTO cluster SET host = ? });
-    $sth->execute( $cluster->{cluster} );
+    my $sql = q{INSERT INTO `dim_cluster` SET `name` = ?};
+    my $sth = $self->{dbh}->prepare($sql);
+    $sth->execute( $cluster->{name} );
 
     return $self->{dbh}->{mysql_insertid};
 }
@@ -731,8 +364,9 @@ sub _insert_cluster {
 sub _insert_queue {
     my ( $self, $queue ) = @_;
 
-    my $sth = $self->{dbh}->prepare(q{ INSERT INTO queue SET queue = ? });
-    $sth->execute( $queue->{queue} );
+    my $sql = q{INSERT INTO `dim_queue` SET `name` = ?};
+    my $sth = $self->{dbh}->prepare($sql);
+    $sth->execute( $queue->{name} );
 
     return $self->{dbh}->{mysql_insertid};
 }
@@ -740,9 +374,9 @@ sub _insert_queue {
 sub _insert_group {
     my ( $self, $group ) = @_;
 
-    my $sth = $self->{dbh}
-        ->prepare(q{ INSERT INTO research_group SET group_name = ? });
-    $sth->execute( $group->{group_name} );
+    my $sql = q{INSERT INTO `dim_group` SET `name` = ?};
+    my $sth = $self->{dbh}->prepare($sql);
+    $sth->execute( $group->{name} );
 
     return $self->{dbh}->{mysql_insertid};
 }
@@ -750,356 +384,124 @@ sub _insert_group {
 sub _insert_user {
     my ( $self, $user ) = @_;
 
-    my $sth = $self->{dbh}->prepare(q{ INSERT INTO user SET user = ? });
-    $sth->execute( $user->{user} );
+    my $sql = q{INSERT INTO `dim_user` SET `name` = ?};
+    my $sth = $self->{dbh}->prepare($sql);
+    $sth->execute( $user->{name} );
 
     return $self->{dbh}->{mysql_insertid};
 }
 
-sub _insert_interval {
+sub _insert_time_interval {
     my ( $self, $interval ) = @_;
 
-    my $sth = $self->{dbh}->prepare(
-        q{
-            INSERT INTO time_interval SET
-                time_interval = ?,
-                start = ?,
-                end = ?
-        }
-    );
-    $sth->execute( @$interval{qw( label start end )} );
+    my $sql = q{
+        INSERT INTO `time_interval` SET
+            `display_name` = ?,
+            `start`        = ?,
+            `end`          = ?,
+            `where_clause` = ?
+    };
+    my $sth = $self->{dbh}->prepare($sql);
+    $sth->execute( @$interval{qw( label start end where_clause )} );
 
     return $self->{dbh}->{mysql_insertid};
 }
 
-sub _insert_activity {
-    my ( $self, $activity ) = @_;
+sub _insert_dates {
+    my ( $self, $first_date, $last_date ) = @_;
 
-    my $sth = $self->{dbh}->prepare(
-        q{
-            INSERT INTO activity SET
-                jobs = ?,
-                wallt = ?,
-                avg_wallt = ?,
-                max_wallt = ?,
-                cput = ?,
-                avg_cput = ?,
-                max_cput = ?,
-                avg_mem = ?,
-                max_mem = ?,
-                avg_vmem = ?,
-                max_vmem = ?,
-                avg_wait = ?,
-                avg_exect = ?,
-                avg_nodes = ?,
-                max_nodes = ?,
-                avg_cpus = ?,
-                max_cpus = ?
+    my $sql = q{
+        INSERT INTO `dim_date` SET
+            `date`          = ?,
+            `week`          = ?,
+            `month`         = ?,
+            `year`          = ?,
+            `last_7_days`   = ?,
+            `last_30_days`  = ?,
+            `last_90_days`  = ?,
+            `last_365_days` = ?
+    };
+    my $sth = $self->{dbh}->prepare($sql);
+
+    my $end     = $self->{end_date};
+    my $current = $first_date->clone();
+
+    while ( DateTime->compare( $current, $last_date ) <= 0 ) {
+        my $delta   = $end->delta_days($current);
+        my $days    = $delta->in_units('days');
+        my $non_neg = DateTime->compare( $current, $end ) != 1;
+
+        # XXX ISO week numbers start on Monday
+        my $r = $sth->execute(
+            $current->ymd,   $current->week_number,
+            $current->month, $current->year,
+            $non_neg && $days < 7,  $non_neg && $days < 30,
+            $non_neg && $days < 90, $non_neg && $days < 365,
+        );
+        if ( !$r ) {
+            $self->{logger}->fatal( $sth->errstr() );
+            return;
         }
-    );
-    $sth->execute(
-        @$activity{
-            qw(
-                jobs
-                wallt
-                avg_wallt
-                max_wallt
-                cput
-                avg_cput
-                max_cput
-                avg_mem
-                max_mem
-                avg_vmem
-                max_vmem
-                avg_wait
-                avg_exect
-                avg_nodes
-                max_nodes
-                avg_cpus
-                max_cpus
-                )
-            }
-    );
 
-    return $self->{dbh}->{mysql_insertid};
+        $current->add( days => 1 );
+    }
 }
 
-sub _insert_cluster_activity {
-    my ( $self, $activity ) = @_;
+sub _insert_cpus {
+    my ( $self, $global_max ) = @_;
 
-    my $sth = $self->{dbh}->prepare(
-        q{
-            INSERT INTO cluster_activity SET
-                user_count = ?,
-                group_count = ?,
-                cluster_id = ?,
-                activity_id = ?,
-                interval_id = ?
+    my $sql = q{
+        INSERT INTO `dim_cpus` SET
+            `cpu_count`    = ?,
+            `display_name` = ?,
+            `view_order`   = ?
+    };
+    my $sth = $self->{dbh}->prepare($sql);
+
+    my @min_max = @{ $self->_get_cpu_min_max() };
+
+    # Make sure all cpu intervals are included
+    $global_max = max( $global_max, $min_max[-1][0] );
+
+    foreach my $i ( 0 .. $#min_max ) {
+        my ( $min, $max ) = @{ $min_max[$i] };
+
+        my $label = $self->_get_cpu_min_max_label( $min, $max );
+
+        # The last interval needs a max
+        $max ||= $global_max;
+
+        foreach my $cpu ( $min .. $max ) {
+            my $r = $sth->execute( $cpu, $label, $i );
+            if ( !$r ) {
+                $self->{logger}->fatal( $sth->errstr() );
+                return;
+            }
         }
-    );
-    $sth->execute(
-        @$activity{
-            qw(
-                user_count
-                group_count
-                cluster_id
-                activity_id
-                interval_id
-                )
-            }
-    );
+    }
 }
 
-sub _insert_queue_activity {
-    my ( $self, $activity ) = @_;
-
-    my $sth = $self->{dbh}->prepare(
-        q{
-            INSERT INTO queue_activity SET
-                user_count = ?,
-                group_count = ?,
-                cluster_id = ?,
-                activity_id = ?,
-                queue_id = ?,
-                interval_id = ?
-        }
-    );
-    $sth->execute(
-        @$activity{
-            qw(
-                user_count
-                group_count
-                cluster_id
-                activity_id
-                queue_id
-                interval_id
-                )
-            }
-    );
-}
-
-sub _insert_group_activity {
-    my ( $self, $activity ) = @_;
-
-    my $sth = $self->{dbh}->prepare(
-        q{
-            INSERT INTO group_activity SET
-                user_count = ?,
-                cluster_id = ?,
-                activity_id = ?,
-                group_id = ?,
-                interval_id = ?
-        }
-    );
-    $sth->execute(
-        @$activity{
-            qw(
-                user_count
-                cluster_id
-                activity_id
-                group_id
-                interval_id
-                )
-            }
-    );
-}
-
-sub _insert_user_activity {
-    my ( $self, $activity ) = @_;
-
-    my $sth = $self->{dbh}->prepare(
-        q{
-            INSERT INTO user_activity SET
-                cluster_id = ?,
-                activity_id = ?,
-                user_id = ?,
-                interval_id = ?
-        }
-    );
-    $sth->execute(
-        @$activity{
-            qw(
-                cluster_id
-                activity_id
-                user_id
-                interval_id
-                )
-            }
-    );
-}
-
-sub _insert_cpu_consumption {
-    my ( $self, $activity ) = @_;
-
-    my $sth = $self->{dbh}->prepare(
-        q{
-            INSERT INTO cpu_consumption SET
-                interval_id = ?,
-                cluster_id = ?,
-                label = ?,
-                view_order = ?,
-                cput = ?
-        }
-    );
-    $sth->execute(
-        @$activity{
-            qw(
-                interval_id
-                cluster_id
-                label
-                view_order
-                cput
-                )
-            }
-    );
-}
-
-sub _insert_actual_wait_time {
-    my ( $self, $activity ) = @_;
-
-    my $sth = $self->{dbh}->prepare(
-        q{
-            INSERT INTO actual_wait_time SET
-                interval_id = ?,
-                cluster_id = ?,
-                label = ?,
-                view_order = ?,
-                avg_wait = ?
-        }
-    );
-    $sth->execute(
-        @$activity{
-            qw(
-                interval_id
-                cluster_id
-                label
-                view_order
-                avg_wait
-                )
-            }
-    );
-}
-
-sub _insert_queue_cluster {
-    my ( $self, $keys ) = @_;
-
-    $self->{dbh}
-        ->do( q{ INSERT INTO queue_cluster SET queue_id = ?, cluster_id = ? },
-        undef, @$keys{qw( queue_id cluster_id )} );
-}
-
-sub _insert_group_cluster {
-    my ( $self, $keys ) = @_;
-
-    $self->{dbh}
-        ->do( q{ INSERT INTO group_cluster SET group_id = ?, cluster_id = ? },
-        undef, @$keys{qw( group_id cluster_id )} );
-}
-
-sub _insert_user_cluster {
-    my ( $self, $keys ) = @_;
-
-    $self->{dbh}
-        ->do( q{ INSERT INTO user_cluster SET user_id = ?, cluster_id = ? },
-        undef, @$keys{qw( user_id cluster_id )} );
-}
-
-sub _insert_user_group {
-    my ( $self, $keys ) = @_;
-
-    $self->{dbh}
-        ->do( q{ INSERT INTO user_group SET user_id = ?, group_id = ? },
-        undef, @$keys{qw( user_id group_id )} );
-}
-
-sub _insert_user_queue {
-    my ( $self, $keys ) = @_;
-
-    $self->{dbh}
-        ->do( q{ INSERT INTO user_queue SET user_id = ?, queue_id = ? },
-        undef, @$keys{qw( user_id queue_id )} );
-}
-
-sub _delete_queue_cluster {
-    my ( $self, $keys ) = @_;
-
-    $self->{dbh}->do(
-        q{ DELETE FROM queue_cluster WHERE queue_id = ? AND cluster_id = ? },
-        undef, @$keys{qw( queue_id cluster_id )}
-    );
-}
-
-sub _delete_group_cluster {
-    my ( $self, $keys ) = @_;
-
-    $self->{dbh}->do(
-        q{ DELETE FROM group_cluster WHERE group_id = ? AND cluster_id = ? },
-        undef, @$keys{qw( group_id cluster_id )}
-    );
-}
-
-sub _delete_user_cluster {
-    my ( $self, $keys ) = @_;
-
-    $self->{dbh}->do(
-        q{ DELETE FROM user_cluster WHERE user_id = ? AND cluster_id = ? },
-        undef, @$keys{qw( user_id cluster_id )} );
-}
-
-sub _delete_user_group {
-    my ( $self, $keys ) = @_;
-
-    $self->{dbh}
-        ->do( q{ DELETE FROM user_group WHERE user_id = ? AND group_id = ? },
-        undef, @$keys{qw( user_id group_id )} );
-}
-
-sub _delete_user_queue {
-    my ( $self, $keys ) = @_;
-
-    $self->{dbh}
-        ->do( q{ DELETE FROM user_queue WHERE user_id = ? AND queue_id = ? },
-        undef, @$keys{qw( user_id queue_id )} );
-}
-
-sub _truncate_activity {
+sub _update_jobs {
     my ($self) = @_;
-    $self->{dbh}->do(q{ TRUNCATE activity });
+    $self->{logger}->info('Updating job facts');
+    $self->{dbh}->do(q{CALL UpdateJobFacts()});
 }
 
-sub _truncate_cluster_activity {
+sub _update_roll_up_dimensions {
     my ($self) = @_;
-    $self->{dbh}->do(q{ TRUNCATE cluster_activity });
+    $self->{logger}->info('Updating roll-up dimensions');
+    $self->{dbh}->do(q{CALL UpdateRollUpDimensions()});
 }
 
-sub _truncate_queue_activity {
+sub _update_job_aggregates {
     my ($self) = @_;
-    $self->{dbh}->do(q{ TRUNCATE queue_activity });
+    $self->{logger}->info('Updating job aggregates');
+    $self->{dbh}->do(q{CALL UpdateJobAggregates()});
 }
 
-sub _truncate_group_activity {
-    my ($self) = @_;
-    $self->{dbh}->do(q{ TRUNCATE group_activity });
-}
-
-sub _truncate_user_activity {
-    my ($self) = @_;
-    $self->{dbh}->do(q{ TRUNCATE user_activity });
-}
-
-sub _truncate_interval {
-    my ($self) = @_;
-    $self->{dbh}->do(q{ TRUNCATE time_interval });
-}
-
-sub _truncate_cpu_consumption {
-    my ($self) = @_;
-    $self->{dbh}->do(q{ TRUNCATE cpu_consumption });
-}
-
-sub _truncate_actual_wait_time {
-    my ($self) = @_;
-    $self->{dbh}->do(q{ TRUNCATE actual_wait_time });
+sub _truncate {
+    my ( $self, $table ) = @_;
+    $self->{dbh}->do(qq{TRUNCATE `$table`});
 }
 
 1;

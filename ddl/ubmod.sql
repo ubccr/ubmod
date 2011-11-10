@@ -33,41 +33,24 @@
  * ubmod.sql
  * ====================================
  * Original Author: Andrew E. Bruno (CCR);
+ * Author: Jeffrey T. Palmer (CCR);
  * Contributor(s): -;
  *
  */
- drop table if exists `pbs_event` ;
- drop table if exists `sge_event` ;
- drop table if exists `event` ;
- drop table if exists `research_group` ;
- drop table if exists `user` ;
- drop table if exists `host_log` ;
- drop table if exists `time_interval` ;
- drop table if exists `cluster` ;
- drop table if exists `activity` ;
- drop table if exists `cluster_activity` ;
- drop table if exists `user_activity` ;
- drop table if exists `group_activity` ;
- drop table if exists `queue` ;
- drop table if exists `queue_activity` ;
- drop table if exists `queue_cluster` ;
- drop table if exists `user_cluster` ;
- drop table if exists `group_cluster` ;
- drop table if exists `user_group` ;
- drop table if exists `user_queue` ;
- drop table if exists `cpu_consumption` ;
- drop table if exists `actual_wait_time` ;
 
+--
+-- Resource manager events
+--
 
--- pbs_event
-create table `pbs_event` (
-  `pbs_event_id`              bigint unsigned auto_increment not null,
+DROP TABLE IF EXISTS `pbs_event`;
+CREATE TABLE `pbs_event` (
+  `pbs_event_id`              bigint unsigned AUTO_INCREMENT NOT NULL,
   `date_key`                  datetime,
-  `job_id`                    int unsigned not null,
+  `job_id`                    int unsigned NOT NULL,
   `job_array_index`           int unsigned,
-  `host`                      varchar(255) not null,
+  `host`                      varchar(255) NOT NULL,
   `queue`                     varchar(255),
-  `type`                      char(1) not null,
+  `type`                      char(1) NOT NULL,
   `user`                      varchar(255),
   `group`                     varchar(255),
   `ctime`                     int,
@@ -101,58 +84,58 @@ create table `pbs_event` (
   `resource_list_nodect`      int unsigned,
   `resource_list_mem`         bigint unsigned,
   `resource_list_pmem`        bigint unsigned,
-  constraint `pk_Pbs_event` primary key (`pbs_event_id`)
-) ;
+  PRIMARY KEY (`pbs_event_id`)
+) ENGINE=MyISAM;
 
--- sge_event
-create table `sge_event` (
-  `sge_event_id`              bigint unsigned auto_increment not null,
-  `cluster`                   varchar(255),
-  `qname`                     varchar(255),
-  `hostname`                  varchar(255) not null,
-  `group`                     varchar(255),
-  `owner`                     varchar(255),
-  `job_name`                  varchar(255),
-  `job_number`                int unsigned not null,
-  `account`                   varchar(255),
-  `priority`                  tinyint,
-  `submission_time`           int,
-  `start_time`                int,
-  `end_time`                  int,
-  `failed`                    int,
-  `exit_status`               int,
-  `ru_wallclock`              int,
-  `ru_utime`                  DECIMAL(32,6),
-  `ru_stime`                  DECIMAL(32,6),
-  `ru_maxrss`                 int,
-  `ru_ixrss`                  int,
-  `ru_ismrss`                 int,
-  `ru_idrss`                  int,
-  `ru_isrss`                  int,
-  `ru_minflt`                 int,
-  `ru_majflt`                 int,
-  `ru_nswap`                  int,
-  `ru_inblock`                int,
-  `ru_oublock`                int,
-  `ru_msgsnd`                 int,
-  `ru_msgrcv`                 int,
-  `ru_nsignals`               int,
-  `ru_nvcsw`                  int,
-  `ru_nivcsw`                 int,
-  `project`                   varchar(255),
-  `department`                varchar(255),
-  `granted_pe`                varchar(255),
-  `slots`                     int,
-  `task_number`               int,
-  `cpu`                       DECIMAL(32,6),
-  `mem`                       DECIMAL(32,6),
-  `io`                        DECIMAL(32,6),
-  `category`                  text,
-  `iow`                       DECIMAL(32,6),
-  `pe_taskid`                 int,
-  `maxvmem`                   bigint,
-  `arid`                      int,
-  `ar_submission_time`        int,
+DROP TABLE IF EXISTS `sge_event`;
+CREATE TABLE `sge_event` (
+  `sge_event_id`                   bigint unsigned AUTO_INCREMENT NOT NULL,
+  `cluster`                        varchar(255),
+  `qname`                          varchar(255),
+  `hostname`                       varchar(255) NOT NULL,
+  `group`                          varchar(255),
+  `owner`                          varchar(255),
+  `job_name`                       varchar(255),
+  `job_number`                     int unsigned NOT NULL,
+  `account`                        varchar(255),
+  `priority`                       tinyint,
+  `submission_time`                int,
+  `start_time`                     int,
+  `end_time`                       int,
+  `failed`                         int,
+  `exit_status`                    int,
+  `ru_wallclock`                   int,
+  `ru_utime`                       DECIMAL(32,6),
+  `ru_stime`                       DECIMAL(32,6),
+  `ru_maxrss`                      int,
+  `ru_ixrss`                       int,
+  `ru_ismrss`                      int,
+  `ru_idrss`                       int,
+  `ru_isrss`                       int,
+  `ru_minflt`                      int,
+  `ru_majflt`                      int,
+  `ru_nswap`                       int,
+  `ru_inblock`                     int,
+  `ru_oublock`                     int,
+  `ru_msgsnd`                      int,
+  `ru_msgrcv`                      int,
+  `ru_nsignals`                    int,
+  `ru_nvcsw`                       int,
+  `ru_nivcsw`                      int,
+  `project`                        varchar(255),
+  `department`                     varchar(255),
+  `granted_pe`                     varchar(255),
+  `slots`                          int,
+  `task_number`                    int,
+  `cpu`                            DECIMAL(32,6),
+  `mem`                            DECIMAL(32,6),
+  `io`                             DECIMAL(32,6),
+  `category`                       text,
+  `iow`                            DECIMAL(32,6),
+  `pe_taskid`                      int,
+  `maxvmem`                        bigint,
+  `arid`                           int,
+  `ar_submission_time`             int,
   `resource_list_arch`             varchar(255),
   `resource_list_qname`            varchar(255),
   `resource_list_hostname`         varchar(255),
@@ -178,205 +161,453 @@ create table `sge_event` (
   `resource_list_h_vmem`           bigint,
   `resource_list_s_fsize`          bigint,
   `resource_list_h_fsize`          bigint,
-  constraint `pk_Sge_event` primary key (`sge_event_id`)
-) ;
+  PRIMARY KEY (`sge_event_id`)
+) ENGINE=MyISAM;
 
--- event
-create table `event` (
-  `event_id`                  bigint unsigned auto_increment not null,
-  `date_key`                  datetime not null,
-  `job_id`                    int unsigned not null,
+--
+-- Generic events
+--
+
+DROP TABLE IF EXISTS `event`;
+CREATE TABLE `event` (
+  `event_id`                  bigint unsigned AUTO_INCREMENT NOT NULL,
+  `date_key`                  datetime NOT NULL,
+  `job_id`                    int unsigned NOT NULL,
   `job_array_index`           int unsigned,
   `job_name`                  varchar(255),
-  `cluster`                   varchar(255) not null,
-  `queue`                     varchar(255) not null,
-  `user`                      varchar(255) not null,
-  `group`                     varchar(255) not null,
+  `cluster`                   varchar(255) NOT NULL,
+  `queue`                     varchar(255) NOT NULL,
+  `user`                      varchar(255) NOT NULL,
+  `group`                     varchar(255) NOT NULL,
   `account`                   varchar(255),
-  `start_time`                datetime not null,
-  `end_time`                  datetime not null,
-  `submission_time`           datetime not null,
-  `wallt`                     bigint unsigned not null,
-  `cput`                      bigint unsigned not null,
-  `mem`                       bigint unsigned not null,
-  `vmem`                      bigint unsigned not null,
-  `wait`                      bigint unsigned not null,
-  `exect`                     bigint unsigned not null,
-  `nodes`                     int unsigned not null,
-  `cpus`                      int unsigned not null,
-  constraint `pk_Event` primary key (`event_id`)
-) ;
+  `start_time`                datetime NOT NULL,
+  `end_time`                  datetime NOT NULL,
+  `submission_time`           datetime NOT NULL,
+  `wallt`                     bigint unsigned NOT NULL,
+  `cput`                      bigint unsigned NOT NULL,
+  `mem`                       bigint unsigned NOT NULL,
+  `vmem`                      bigint unsigned NOT NULL,
+  `wait`                      bigint unsigned NOT NULL,
+  `exect`                     bigint unsigned NOT NULL,
+  `nodes`                     int unsigned NOT NULL,
+  `cpus`                      int unsigned NOT NULL,
+  PRIMARY KEY (`event_id`)
+) ENGINE=MyISAM;
 
--- host_log
-create table `host_log` (
-  `event_id`                  bigint unsigned not null,
-  `host`                      varchar(255) not null,
-  `cpu`                       tinyint unsigned not null,
-  constraint `pk_Host_log` primary key (`event_id`,`host`,`cpu`)
-) ;
+--
+-- Time intervals
+--
 
--- research_group
-create table `research_group` (
-  `group_id`                  int unsigned auto_increment not null,
-  `group_name`                varchar(255) not null,
-  `pi_name`                   varchar(255),
-  constraint `pk_Research_group` primary key (`group_id`)
-) ;
+DROP TABLE IF EXISTS `time_interval`;
+CREATE TABLE `time_interval` (
+  `time_interval_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `display_name`     varchar(255) NOT NULL,
+  `start`            date         NOT NULL,
+  `end`              date         NOT NULL,
+  `where_clause`     varchar(255) NOT NULL,
+  PRIMARY KEY (`time_interval_id`)
+) ENGINE=MyISAM;
 
--- user
-create table `user` (
-  `user_id`                   int unsigned auto_increment not null,
-  `user`                      varchar(255) not null,
-  `display_name`              varchar(255),
-  constraint `pk_User` primary key (`user_id`)
-) ;
+--
+-- Dimensions
+--
 
--- time_interval
-create table `time_interval` (
-  `interval_id`               int unsigned auto_increment not null,
-  `time_interval`             varchar(255) not null,
-  `start`                     datetime not null,
-  `end`                       datetime not null,
-  constraint `pk_Time_interval` primary key (`interval_id`)
-) ;
+DROP TABLE IF EXISTS `dim_date`;
+CREATE TABLE `dim_date` (
+  `dim_date_id`   int unsigned NOT NULL AUTO_INCREMENT,
+  `date`          date,
+  `week`          tinyint unsigned,
+  `month`         tinyint unsigned,
+  `year`          int     unsigned,
+  `last_7_days`   tinyint unsigned,
+  `last_30_days`  tinyint unsigned,
+  `last_90_days`  tinyint unsigned,
+  `last_365_days` tinyint unsigned,
+  PRIMARY KEY (`dim_date_id`),
+  KEY (`date`),
+  KEY (`week`),
+  KEY (`month`),
+  KEY (`year`),
+  KEY (`last_7_days`),
+  KEY (`last_30_days`),
+  KEY (`last_90_days`),
+  KEY (`last_365_days`)
+) ENGINE=MyISAM;
 
--- cluster
-create table `cluster` (
-  `cluster_id`                int unsigned auto_increment not null,
-  `host`                      varchar(255) not null,
-  `display_name`              varchar(255),
-  constraint `pk_Cluster` primary key (`cluster_id`)
-) ;
+DROP TABLE IF EXISTS `dim_cluster`;
+CREATE TABLE `dim_cluster` (
+  `dim_cluster_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `name`           varchar(255) NOT NULL,
+  `display_name`   varchar(255),
+  PRIMARY KEY (`dim_cluster_id`),
+  KEY (`name`)
+) ENGINE=MyISAM;
 
--- activity
-create table `activity` (
-  `activity_id`               int unsigned auto_increment not null,
-  `jobs`                      int unsigned,
-  `wallt`                     bigint unsigned,
-  `avg_wallt`                 bigint unsigned,
-  `max_wallt`                 bigint unsigned,
-  `cput`                      bigint unsigned,
-  `avg_cput`                  bigint unsigned,
-  `max_cput`                  bigint unsigned,
-  `avg_mem`                   int unsigned,
-  `max_mem`                   int unsigned,
-  `avg_vmem`                  bigint unsigned,
-  `max_vmem`                  bigint unsigned,
-  `avg_wait`                  bigint unsigned,
-  `avg_exect`                 bigint unsigned,
-  `avg_nodes`                 int unsigned,
-  `max_nodes`                 int unsigned,
-  `avg_cpus`                  int unsigned,
-  `max_cpus`                  int unsigned,
-  constraint `pk_Activity` primary key (`activity_id`)
-) ;
+DROP TABLE IF EXISTS `dim_queue`;
+CREATE TABLE `dim_queue` (
+  `dim_queue_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `name`         varchar(255) NOT NULL,
+  `display_name` varchar(255),
+  PRIMARY KEY (`dim_queue_id`),
+  KEY (`name`)
+) ENGINE=MyISAM;
 
--- cluster_activity
-create table `cluster_activity` (
-  `cluster_id`                int unsigned not null,
-  `activity_id`               int unsigned not null,
-  `interval_id`               int unsigned not null,
-  `user_count`                int unsigned,
-  `group_count`               int unsigned,
-  constraint `pk_Cluster_activity` primary key (`cluster_id`,`activity_id`)
-) ;
+DROP TABLE IF EXISTS `dim_user`;
+CREATE TABLE `dim_user` (
+  `dim_user_id`  int unsigned NOT NULL AUTO_INCREMENT,
+  `name`         varchar(255) NOT NULL,
+  `display_name` varchar(255),
+  PRIMARY KEY (`dim_user_id`),
+  KEY (`name`)
+) ENGINE=MyISAM;
 
--- user_activity
-create table `user_activity` (
-  `user_id`                   int unsigned not null,
-  `activity_id`               int unsigned not null,
-  `cluster_id`                int unsigned not null,
-  `interval_id`               int unsigned not null,
-  constraint `pk_User_activity` primary key (`user_id`,`activity_id`)
-) ;
+DROP TABLE IF EXISTS `dim_group`;
+CREATE TABLE `dim_group` (
+  `dim_group_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `name`         varchar(255) NOT NULL,
+  `display_name` varchar(255),
+  PRIMARY KEY (`dim_group_id`),
+  KEY (`name`)
+) ENGINE=MyISAM;
 
--- group_activity
-create table `group_activity` (
-  `group_id`                  int unsigned not null,
-  `activity_id`               int unsigned not null,
-  `cluster_id`                int unsigned not null,
-  `interval_id`               int unsigned not null,
-  `user_count`                int unsigned,
-  constraint `pk_Group_activity` primary key (`group_id`,`activity_id`)
-) ;
+DROP TABLE IF EXISTS `dim_cpus`;
+CREATE TABLE `dim_cpus` (
+  `dim_cpus_id`  int unsigned NOT NULL AUTO_INCREMENT,
+  `cpu_count`    int unsigned NOT NULL,
+  `display_name` varchar(255),
+  `view_order`   int unsigned,
+  PRIMARY KEY (`dim_cpus_id`),
+  KEY (`cpu_count`),
+  KEY (`display_name`),
+  KEY (`view_order`)
+) ENGINE=MyISAM;
 
--- queue
-create table `queue` (
-  `queue_id`                  int unsigned auto_increment not null,
-  `queue`                     varchar(255) not null,
-  constraint `pk_Queue` primary key (`queue_id`)
-) ;
+--
+-- Roll-Up Dimensions
+--
 
--- queue_activity
-create table `queue_activity` (
-  `queue_id`                  int unsigned not null,
-  `activity_id`               int unsigned not null,
-  `interval_id`               int unsigned not null,
-  `cluster_id`                int unsigned not null,
-  `user_count`                int unsigned,
-  `group_count`               int unsigned,
-  constraint `pk_Queue_activity` primary key (`queue_id`,`activity_id`)
-) ;
+DROP TABLE IF EXISTS `dim_timespan`;
+CREATE TABLE `dim_timespan` (
+  `dim_timespan_id` int     unsigned NOT NULL AUTO_INCREMENT,
+  `month`           tinyint unsigned,
+  `year`            int     unsigned,
+  `last_7_days`     tinyint unsigned NOT NULL,
+  `last_30_days`    tinyint unsigned NOT NULL,
+  `last_90_days`    tinyint unsigned NOT NULL,
+  `last_365_days`   tinyint unsigned NOT NULL,
+  PRIMARY KEY (`dim_timespan_id`),
+  KEY (`month`),
+  KEY (`year`),
+  KEY (`last_7_days`),
+  KEY (`last_30_days`),
+  KEY (`last_90_days`),
+  KEY (`last_365_days`)
+) ENGINE=MyISAM;
 
--- queue_cluster
-create table `queue_cluster` (
-  `queue_id`                  int unsigned not null,
-  `cluster_id`                int unsigned not null,
-  constraint `pk_Queue_cluster` primary key (`queue_id`,`cluster_id`)
-) ;
+DROP TABLE IF EXISTS `dim_cpus_interval`;
+CREATE TABLE `dim_cpus_interval` (
+  `dim_cpus_interval_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `display_name`         varchar(255),
+  `view_order`           int unsigned,
+  PRIMARY KEY (`dim_cpus_interval_id`),
+  KEY (`display_name`),
+  KEY (`view_order`)
+) ENGINE=MyISAM;
 
--- user_cluster
-create table `user_cluster` (
-  `user_id`                   int unsigned not null,
-  `cluster_id`                int unsigned not null,
-  constraint `pk_User_cluster` primary key (`user_id`,`cluster_id`)
-) ;
+--
+-- Facts
+--
 
--- group_cluster
-create table `group_cluster` (
-  `group_id`                  int unsigned not null,
-  `cluster_id`                int unsigned not null,
-  constraint `pk_Group_cluster` primary key (`group_id`,`cluster_id`)
-) ;
+DROP TABLE IF EXISTS `fact_job`;
+CREATE TABLE `fact_job` (
+  `fact_job_id`    int    unsigned NOT NULL AUTO_INCREMENT,
+  `dim_date_id`    int    unsigned NOT NULL,
+  `dim_cluster_id` int    unsigned NOT NULL,
+  `dim_queue_id`   int    unsigned NOT NULL,
+  `dim_user_id`    int    unsigned NOT NULL,
+  `dim_group_id`   int    unsigned NOT NULL,
+  `dim_cpus_id`    int    unsigned NOT NULL,
+  `wallt`          bigint unsigned NOT NULL,
+  `cput`           bigint unsigned NOT NULL,
+  `mem`            bigint unsigned NOT NULL,
+  `vmem`           bigint unsigned NOT NULL,
+  `wait`           bigint unsigned NOT NULL,
+  `exect`          bigint unsigned NOT NULL,
+  `nodes`          int    unsigned NOT NULL,
+  `cpus`           int    unsigned NOT NULL,
+  PRIMARY KEY (`fact_job_id`),
+  KEY (`dim_date_id`,`dim_cluster_id`,`dim_queue_id`,`dim_user_id`,`dim_group_id`,`dim_cpus_id`)
+) ENGINE=MyISAM;
 
--- user_group
-create table `user_group` (
-  `user_id`                   int unsigned not null,
-  `group_id`                  int unsigned not null,
-  constraint `pk_User_group` primary key (`user_id`,`group_id`)
-) ;
+--
+-- Aggregates
+--
 
--- user_queue
-create table `user_queue` (
-  `user_id`                   int unsigned not null,
-  `queue_id`                  int unsigned not null,
-  constraint `pk_User_queue` primary key (`user_id`,`queue_id`)
-) ;
+DROP TABLE IF EXISTS `agg_job_by_timespan`;
+CREATE TABLE `agg_job_by_timespan` (
+  `agg_job_by_timespan_id` int    unsigned NOT NULL AUTO_INCREMENT,
+  `dim_cluster_id`         int    unsigned NOT NULL,
+  `dim_timespan_id`        int    unsigned NOT NULL,
+  `dim_queue_id`           int    unsigned NOT NULL,
+  `dim_user_id`            int    unsigned NOT NULL,
+  `dim_group_id`           int    unsigned NOT NULL,
+  `fact_job_count`         int    unsigned NOT NULL,
+  `wallt_sum`              bigint unsigned NOT NULL,
+  `wallt_max`              bigint unsigned NOT NULL,
+  `cput_sum`               bigint unsigned NOT NULL,
+  `cput_max`               bigint unsigned NOT NULL,
+  `mem_sum`                bigint unsigned NOT NULL,
+  `mem_max`                bigint unsigned NOT NULL,
+  `vmem_sum`               bigint unsigned NOT NULL,
+  `vmem_max`               bigint unsigned NOT NULL,
+  `wait_sum`               bigint unsigned NOT NULL,
+  `exect_sum`              bigint unsigned NOT NULL,
+  `nodes_sum`              bigint unsigned NOT NULL,
+  `nodes_max`              int    unsigned NOT NULL,
+  `cpus_sum`               bigint unsigned NOT NULL,
+  `cpus_max`               int    unsigned NOT NULL,
+  PRIMARY KEY (`agg_job_by_timespan_id`),
+  KEY (`dim_cluster_id`,`dim_timespan_id`,`dim_queue_id`,`dim_user_id`,`dim_group_id`)
+) ENGINE=MyISAM;
 
--- cpu_consumption
-create table `cpu_consumption` (
-  `cluster_id`                int unsigned not null,
-  `interval_id`               int unsigned not null,
-  `label`                     varchar(255) not null,
-  `cput`                      bigint unsigned,
-  `view_order`                tinyint unsigned,
-  constraint `pk_Cpu_consumption` primary key (`cluster_id`,`interval_id`,`label`)
-) ;
+DROP TABLE IF EXISTS `agg_job_by_cpus`;
+CREATE TABLE `agg_job_by_cpus` (
+  `agg_job_by_cpus_id`   int    unsigned NOT NULL AUTO_INCREMENT,
+  `dim_cluster_id`       int    unsigned NOT NULL,
+  `dim_timespan_id`      int    unsigned NOT NULL,
+  `dim_cpus_interval_id` int    unsigned NOT NULL,
+  `fact_job_count`       int    unsigned NOT NULL,
+  `cput_sum`             bigint unsigned NOT NULL,
+  `wait_sum`             bigint unsigned NOT NULL,
+  PRIMARY KEY (`agg_job_by_cpus_id`),
+  KEY (`dim_cluster_id`,`dim_timespan_id`,`dim_cpus_interval_id`)
+) ENGINE=MyISAM;
 
--- actual_wait_time
-create table `actual_wait_time` (
-  `cluster_id`                int unsigned not null,
-  `interval_id`               int unsigned not null,
-  `label`                     varchar(255) not null,
-  `avg_wait`                  bigint unsigned,
-  `view_order`                tinyint unsigned,
-  constraint `pk_Actual_wait_time` primary key (`cluster_id`,`interval_id`,`label`)
-) ;
+--
+-- Stored procedures
+--
 
-create index `date_key_x` on `event`  (`date_key`) ;
-create index `job_id_x` on `event`  (`job_id`) ;
-create index `queue_x` on `event`  (`queue`) ;
-create index `user_x` on `event`  (`user`) ;
-create index `group_x` on `event`  (`group`) ;
-create index `cluster_x` on `event`  (`cluster`) ;
+DELIMITER //
 
+--
+-- Roll-up dimensions
+--
+
+DROP PROCEDURE IF EXISTS UpdateRollUpDimensions//
+CREATE PROCEDURE UpdateRollUpDimensions()
+BEGIN
+  CALL UpdateTimespanDimension();
+  CALL UpdateCpusIntervalDimension();
+END//
+
+DROP PROCEDURE IF EXISTS UpdateTimespanDimension//
+CREATE PROCEDURE UpdateTimespanDimension()
+BEGIN
+  TRUNCATE `dim_timespan`;
+
+  INSERT INTO `dim_timespan` (
+    `month`,
+    `year`,
+    `last_7_days`,
+    `last_30_days`,
+    `last_90_days`,
+    `last_365_days`
+  )
+  SELECT DISTINCT
+    `month`,
+    `year`,
+    `last_7_days`,
+    `last_30_days`,
+    `last_90_days`,
+    `last_365_days`
+  FROM `dim_date`;
+END//
+
+DROP PROCEDURE IF EXISTS UpdateCpusIntervalDimension//
+CREATE PROCEDURE UpdateCpusIntervalDimension()
+BEGIN
+  TRUNCATE `dim_cpus_interval`;
+
+  INSERT INTO `dim_cpus_interval` (
+    `display_name`,
+    `view_order`
+  )
+  SELECT DISTINCT
+    `display_name`,
+    `view_order`
+  FROM `dim_cpus`;
+END//
+
+--
+-- Facts
+--
+
+DROP PROCEDURE IF EXISTS UpdateJobFacts//
+CREATE PROCEDURE UpdateJobFacts()
+BEGIN
+  TRUNCATE `fact_job`;
+
+  INSERT INTO `fact_job` (
+    `dim_date_id`,
+    `dim_cluster_id`,
+    `dim_queue_id`,
+    `dim_user_id`,
+    `dim_group_id`,
+    `dim_cpus_id`,
+    `wallt`,
+    `cput`,
+    `mem`,
+    `vmem`,
+    `wait`,
+    `exect`,
+    `nodes`,
+    `cpus`
+  )
+  SELECT
+    `dim_date`.`dim_date_id`,
+    `dim_cluster`.`dim_cluster_id`,
+    `dim_queue`.`dim_queue_id`,
+    `dim_user`.`dim_user_id`,
+    `dim_group`.`dim_group_id`,
+    `dim_cpus`.`dim_cpus_id`,
+    `event`.`wallt`,
+    `event`.`cput`,
+    `event`.`mem`,
+    `event`.`vmem`,
+    `event`.`wait`,
+    `event`.`exect`,
+    `event`.`nodes`,
+    `event`.`cpus`
+  FROM `event`
+  JOIN `dim_date`    ON DATE(`event`.`date_key`) = `dim_date`.`date`
+  JOIN `dim_cluster` ON `event`.`cluster`        = `dim_cluster`.`name`
+  JOIN `dim_queue`   ON `event`.`queue`          = `dim_queue`.`name`
+  JOIN `dim_user`    ON `event`.`user`           = `dim_user`.`name`
+  JOIN `dim_group`   ON `event`.`group`          = `dim_group`.`name`
+  JOIN `dim_cpus`    ON `event`.`cpus`           = `dim_cpus`.`cpu_count`;
+END//
+
+--
+-- Aggregates
+--
+
+DROP PROCEDURE IF EXISTS UpdateJobAggregates//
+CREATE PROCEDURE UpdateJobAggregates()
+BEGIN
+  CALL UpdateJobAggregateByTimespan();
+  CALL UpdateJobAggregateByCpus();
+END//
+
+DROP PROCEDURE IF EXISTS UpdateJobAggregateByTimespan//
+CREATE PROCEDURE UpdateJobAggregateByTimespan()
+BEGIN
+  TRUNCATE `agg_job_by_timespan`;
+
+  INSERT INTO `agg_job_by_timespan` (
+    `dim_cluster_id`,
+    `dim_timespan_id`,
+    `dim_queue_id`,
+    `dim_user_id`,
+    `dim_group_id`,
+    `fact_job_count`,
+    `wallt_sum`,
+    `wallt_max`,
+    `cput_sum`,
+    `cput_max`,
+    `mem_sum`,
+    `mem_max`,
+    `vmem_sum`,
+    `vmem_max`,
+    `wait_sum`,
+    `exect_sum`,
+    `nodes_sum`,
+    `nodes_max`,
+    `cpus_sum`,
+    `cpus_max`
+  )
+  SELECT
+    `fact_job`.`dim_cluster_id`,
+    `dim_timespan`.`dim_timespan_id`,
+    `fact_job`.`dim_queue_id`,
+    `fact_job`.`dim_user_id`,
+    `fact_job`.`dim_group_id`,
+    COUNT(*),
+    SUM(`wallt`),
+    MAX(`wallt`),
+    SUM(`cput`),
+    MAX(`cput`),
+    SUM(`mem`),
+    MAX(`mem`),
+    SUM(`vmem`),
+    MAX(`vmem`),
+    SUM(`wait`),
+    SUM(`exect`),
+    SUM(`nodes`),
+    MAX(`nodes`),
+    SUM(`cpus`),
+    MAX(`cpus`)
+  FROM `fact_job`
+  JOIN `dim_date` ON `fact_job`.`dim_date_id` = `dim_date`.`dim_date_id`
+  JOIN `dim_timespan` ON
+        `dim_date`.`month`         = `dim_timespan`.`month`
+    AND `dim_date`.`year`          = `dim_timespan`.`year`
+    AND `dim_date`.`last_7_days`   = `dim_timespan`.`last_7_days`
+    AND `dim_date`.`last_30_days`  = `dim_timespan`.`last_30_days`
+    AND `dim_date`.`last_90_days`  = `dim_timespan`.`last_90_days`
+    AND `dim_date`.`last_365_days` = `dim_timespan`.`last_365_days`
+  GROUP BY
+    `dim_timespan`.`month`,
+    `dim_timespan`.`year`,
+    `dim_timespan`.`last_7_days`,
+    `dim_timespan`.`last_30_days`,
+    `dim_timespan`.`last_90_days`,
+    `dim_timespan`.`last_365_days`,
+    `fact_job`.`dim_cluster_id`,
+    `fact_job`.`dim_queue_id`,
+    `fact_job`.`dim_user_id`,
+    `fact_job`.`dim_group_id`;
+END//
+
+DROP PROCEDURE IF EXISTS UpdateJobAggregateByCpus//
+CREATE PROCEDURE UpdateJobAggregateByCpus()
+BEGIN
+  TRUNCATE agg_job_by_cpus;
+
+  INSERT INTO `agg_job_by_cpus` (
+    `dim_timespan_id`,
+    `dim_cluster_id`,
+    `dim_cpus_interval_id`,
+    `fact_job_count`,
+    `cput_sum`,
+    `wait_sum`
+  )
+  SELECT
+    `dim_timespan`.`dim_timespan_id`,
+    `fact_job`.`dim_cluster_id`,
+    `dim_cpus_interval`.`dim_cpus_interval_id`,
+    COUNT(*),
+    SUM(`cput`),
+    SUM(`wait`)
+  FROM `fact_job`
+  JOIN `dim_date` ON `fact_job`.`dim_date_id` = `dim_date`.`dim_date_id`
+  JOIN `dim_timespan` ON
+        `dim_date`.`month`         = `dim_timespan`.`month`
+    AND `dim_date`.`year`          = `dim_timespan`.`year`
+    AND `dim_date`.`last_7_days`   = `dim_timespan`.`last_7_days`
+    AND `dim_date`.`last_30_days`  = `dim_timespan`.`last_30_days`
+    AND `dim_date`.`last_90_days`  = `dim_timespan`.`last_90_days`
+    AND `dim_date`.`last_365_days` = `dim_timespan`.`last_365_days`
+  JOIN `dim_cpus`          ON `fact_job`.`dim_cpus_id`       = `dim_cpus`.`dim_cpus_id`
+  JOIN `dim_cpus_interval` ON `dim_cpus`.`display_name` = `dim_cpus_interval`.`display_name`
+  GROUP BY
+    `dim_timespan`.`month`,
+    `dim_timespan`.`year`,
+    `dim_timespan`.`last_7_days`,
+    `dim_timespan`.`last_30_days`,
+    `dim_timespan`.`last_90_days`,
+    `dim_timespan`.`last_365_days`,
+    `fact_job`.`dim_cluster_id`,
+    `dim_cpus_interval`.`display_name`;
+END//
+
+DELIMITER ;

@@ -39,6 +39,11 @@ define("CONFIG_DIR", BASE_DIR . "/config");
 define("CONFIG_FILE", CONFIG_DIR . "/settings.ini");
 
 /**
+ * Data warehouse configuration file path.
+ */
+define("DW_CONFIG_FILE", CONFIG_DIR . "/datawarehouse.json");
+
+/**
  * Directory containing fonts.
  */
 define("FONT_DIR", LIB_DIR . "/pChart/fonts");

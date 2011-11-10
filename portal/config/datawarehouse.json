@@ -1,0 +1,120 @@
+{
+  "dimensions": [
+    {
+      "name": "dim_date",
+      "attributes": [
+        "date",
+        "week",
+        "month",
+        "year",
+        "last_7_days",
+        "last_30_days",
+        "last_90_days",
+        "last_365_days"
+      ]
+    }, {
+      "name": "dim_cluster",
+      "attributes": [
+        "cluster"
+      ]
+    }, {
+      "name": "dim_queue",
+      "attributes": [
+        "queue"
+      ]
+    }, {
+      "name": "dim_user",
+      "attributes": [
+        "user"
+      ]
+    }, {
+      "name": "dim_group",
+      "attributes": [
+        "group"
+      ]
+    }, {
+      "name": "dim_cpus",
+      "attributes": [
+        "cpu_count",
+        "display_name",
+        "view_order"
+      ]
+    }, {
+      "name": "dim_timespan",
+      "base": "dim_date",
+      "attributes": [
+        "month",
+        "year",
+        "last_7_days",
+        "last_30_days",
+        "last_90_days",
+        "last_365_days"
+      ]
+    }, {
+      "name": "dim_cpus_interval",
+      "base": "dim_cpus",
+      "attributes": [
+        "display_name",
+        "view_order"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "name": "fact_job",
+      "facts": [
+        "wallt",
+        "cput",
+        "mem",
+        "vmem",
+        "wait",
+        "exect",
+        "nodes",
+        "cpus"
+      ],
+      "dimensions": [
+        "dim_day",
+        "dim_cluster",
+        "dim_queue",
+        "dim_user",
+        "dim_group",
+        "dim_cpus"
+      ]
+    }
+  ],
+  "aggregates": [
+    {
+      "name": "agg_job_by_timespan",
+      "base": "fact_job",
+      "dimensions": [
+        "dim_cluster",
+        "dim_timespan",
+        "dim_queue",
+        "dim_user",
+        "dim_group"
+      ],
+      "facts": [
+        { "base": "wallt", "type": [ "sum", "max" ] },
+        { "base": "cput",  "type": [ "sum", "max" ] },
+        { "base": "mem",   "type": [ "sum", "max" ] },
+        { "base": "vmem",  "type": [ "sum", "max" ] },
+        { "base": "wait",  "type": "sum" },
+        { "base": "exect", "type": "sum" },
+        { "base": "nodes", "type": [ "sum", "max" ] },
+        { "base": "cpus",  "type": [ "sum", "max" ] }
+      ]
+    }, {
+      "name": "agg_job_by_cpus",
+      "base": "fact_job",
+      "dimensions": [
+        "dim_cluster",
+        "dim_timespan",
+        "dim_cpus_interval"
+      ],
+      "facts": [
+        { "base": "cput", "type": "sum" },
+        { "base": "wait", "type": "sum" }
+      ]
+    }
+  ]
+}

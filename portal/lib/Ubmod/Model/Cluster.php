@@ -57,9 +57,20 @@ class Ubmod_Model_Cluster
   public static function getById($id)
   {
     $dbh = Ubmod_DbService::dbh();
-    $sql = 'SELECT * FROM cluster WHERE cluster_id = ?';
+    $sql = '
+      SELECT
+        dim_cluster_id               AS cluster_id,
+        name                         AS host,
+        COALESCE(display_name, name) AS display_name
+      FROM dim_cluster
+      WHERE dim_cluster_id = ?
+    ';
     $stmt = $dbh->prepare($sql);
-    $stmt->execute(array($id));
+    $r = $stmt->execute(array($id));
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
@@ -70,15 +81,21 @@ class Ubmod_Model_Cluster
    */
   public static function getAll()
   {
+    $sql = '
+      SELECT
+        dim_cluster_id               AS cluster_id,
+        name                         AS host,
+        COALESCE(display_name, name) AS display_name
+      FROM dim_cluster
+      ORDER BY display_name
+    ';
     $dbh = Ubmod_DbService::dbh();
-    $sql = 'SELECT
-        c.cluster_id,
-        IFNULL(c.display_name, c.host) AS display_name,
-        c.host
-      FROM cluster c
-      ORDER BY display_name';
     $stmt = $dbh->prepare($sql);
-    $stmt->execute();
+    $r = $stmt->execute();
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
@@ -90,40 +107,52 @@ class Ubmod_Model_Cluster
    */
   public static function getActivity($params)
   {
+    $timeClause = Ubmod_Model_Interval::whereClause($params['interval_id']);
+
+    $sql = "
+      SELECT
+        dim_cluster.name              AS host,
+        COALESCE(
+          dim_cluster.display_name,
+          dim_cluster.name
+        )                             AS display_name,
+        COUNT(*)                      AS jobs,
+        COUNT(DISTINCT dim_user_id)   AS user_count,
+        COUNT(DISTINCT dim_group_id)  AS group_count,
+        ROUND(SUM(wallt) / 86400, 1)  AS wallt,
+        ROUND(AVG(wallt) / 86400, 1)  AS avg_wallt,
+        ROUND(MAX(wallt) / 86400, 1)  AS max_wallt,
+        ROUND(SUM(cput)  / 86400, 1)  AS cput,
+        ROUND(AVG(cput)  / 86400, 1)  AS avg_cput,
+        ROUND(MAX(cput)  / 86400, 1)  AS max_cput,
+        ROUND(AVG(mem)   / 1024,  1)  AS avg_mem,
+        ROUND(MAX(mem)   / 1024,  1)  AS max_mem,
+        ROUND(AVG(vmem)  / 1024,  1)  AS avg_vmem,
+        ROUND(MAX(vmem)  / 1024,  1)  AS max_vmem,
+        ROUND(AVG(wait)  / 3600,  1)  AS avg_wait,
+        ROUND(AVG(exect) / 3600,  1)  AS avg_exect,
+        ROUND(MAX(nodes),         1)  AS max_nodes,
+        ROUND(AVG(nodes),         1)  AS avg_nodes,
+        ROUND(MAX(cpus),          1)  AS max_cpus,
+        ROUND(AVG(cpus),          1)  AS avg_cpus
+      FROM fact_job
+      JOIN dim_cluster USING (dim_cluster_id)
+      JOIN dim_date    USING (dim_date_id)
+      JOIN dim_user    USING (dim_user_id)
+      JOIN dim_group   USING (dim_group_id)
+      WHERE
+            dim_cluster_id = :cluster_id
+        AND $timeClause
+    ";
+
     $dbh = Ubmod_DbService::dbh();
-    $sql = 'SELECT
-        c.cluster_id,
-        c.host,
-        IFNULL(c.display_name, c.host) AS display_name,
-        ca.user_count,
-        ca.group_count,
-        IFNULL(a.jobs, 0) AS jobs,
-        IFNULL(a.wallt, 0) AS wallt,
-        IFNULL(ROUND(a.avg_wallt/86400, 1), 0) AS avg_wallt,
-        IFNULL(ROUND(a.max_wallt/86400, 1), 0) AS max_wallt,
-        IFNULL(a.cput, 0) AS cput,
-        IFNULL(ROUND(a.avg_cput/3600, 1),0) AS avg_cput,
-        IFNULL(a.max_cput, 0) AS max_cput,
-        IFNULL(ROUND(a.avg_mem/1024, 1), 0) AS avg_mem,
-        IFNULL(a.max_mem, 0) AS max_mem,
-        IFNULL(a.avg_vmem, 0) AS avg_vmem,
-        IFNULL(a.max_vmem, 0) AS max_vmem,
-        IFNULL(ROUND(a.avg_wait/3600, 1), 0) AS avg_wait,
-        IFNULL(ROUND(a.avg_exect/3600, 1), 0) AS avg_exect,
-        IFNULL(a.avg_nodes, 0) AS avg_nodes,
-        IFNULL(a.max_nodes, 0) AS max_nodes,
-        IFNULL(a.avg_cpus, 0) AS avg_cpus,
-        IFNULL(a.max_cpus, 0) AS max_cpus
-      FROM cluster_activity ca
-      JOIN activity a ON ca.activity_id = a.activity_id
-      JOIN cluster c ON ca.cluster_id = c.cluster_id
-      WHERE ca.cluster_id = :cluster_id
-      AND ca.interval_id = :interval_id';
+    $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
-    $stmt->execute(array(
-      ':cluster_id'  => $params['cluster_id'],
-      ':interval_id' => $params['interval_id'],
-    ));
+    $r = $stmt->execute(array(':cluster_id' => $params['cluster_id']));
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 }

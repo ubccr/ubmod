@@ -32,7 +32,7 @@
  */
 
 /**
- * Time interval model.
+ * Data Warehouse Fact Table
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
@@ -41,86 +41,75 @@
  */
 
 /**
- * Time interval Model
+ * Data warehouse table representation.
  *
  * @package Ubmod
- **/
-class Ubmod_Model_Interval
+ */
+class Ubmod_DataWarehouse_Fact extends Ubmod_DataWarehouse_Table
 {
 
   /**
-   * Return time interval data given a interval id.
+   * The fact's dimensions.
    *
-   * @param int id The interval id
-   * @return array
+   * @var array
    */
-  public static function getById($id)
+  protected $_dimensions = array();
+
+  /**
+   * Constructor
+   *
+   * @return Ubmod_DataWarehouse_Fact
+   */
+  public function __construct($config)
   {
-    $sql = '
-      SELECT
-        time_interval_id               AS interval_id,
-        display_name                   AS time_interval,
-        DATE_FORMAT(start, "%m/%d/%Y") as start,
-        DATE_FORMAT(end,   "%m/%d/%Y") as end
-      FROM time_interval
-      WHERE time_interval_id = ?
-    ';
-    $dbh = Ubmod_DbService::dbh();
-    $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute(array($id));
-    if (!$r) {
-      $err = $stmt->errorInfo();
-      throw new Exception($err[2]);
+    $columns = array();
+
+    // Foreign Keys
+    foreach ($config['dimensions'] as $dimension) {
+      $columns[] = $dimension . '_id';
     }
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+
+    foreach ($config['facts'] as $fact) {
+      $columns[] = $fact;
+    }
+
+    parent::__construct(array(
+      'name'    => $config['name'],
+      'columns' => $columns,
+    ));
   }
 
   /**
-   * Returns an array of all time intervals.
+   * Determine if this fact has a given dimension
    *
-   * @return array
+   * @return bool
    */
-  public static function getAll()
+  public function hasDimension(Ubmod_DataWarehouse_Dimension $dimension)
   {
-    $dbh = Ubmod_DbService::dbh();
-    $sql = '
-      SELECT
-        time_interval_id               AS interval_id,
-        display_name                   AS time_interval,
-        DATE_FORMAT(start, "%m/%d/%Y") AS start,
-        DATE_FORMAT(end,   "%m/%d/%Y") AS end
-        FROM time_interval
-    ';
-    $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute();
-    if (!$r) {
-      $err = $stmt->errorInfo();
-      throw new Exception($err[2]);
+    $key = $dimension->getPrimaryKey();
+
+    foreach ($this->_columns as $column) {
+      if ($column === $key) {
+        return true;
+      }
     }
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return false;
   }
 
   /**
-   * Returns the corresponding where clause for use in a SQL query
+   * Determine if this fact has all the given dimensions
    *
-   * @param intervalId int The interval database table primary key
-   * @return string
+   * @return bool
    */
-  public static function whereClause($intervalId)
+  public function hasDimensions(array $dimensions)
   {
-    $sql = '
-      SELECT where_clause
-      FROM time_interval
-      WHERE time_interval_id = :time_interval_id
-    ';
-    $dbh = Ubmod_DbService::dbh();
-    $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute(array(':time_interval_id' => $intervalId));
-    if (!$r) {
-      $err = $stmt->errorInfo();
-      throw new Exception($err[2]);
+    foreach ($dimensions as $dimension) {
+      if (!$this->hasDimension($dimension)) {
+        return false;
+      }
     }
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $row['where_clause'];
+
+    return true;
   }
 }

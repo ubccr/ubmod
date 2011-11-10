@@ -54,53 +54,122 @@ class Ubmod_Model_Chart
 {
 
   /**
+   * Returns the subtitle used on various charts
+   *
+   * @param params array The needed parameters
+   * @return string
+   */
+  private static function getSubTitle($params)
+  {
+    $cluster  = Ubmod_Model_Cluster::getById($params['cluster_id']);
+    $interval = Ubmod_Model_Interval::getById($params['interval_id']);
+
+    return 'Cluster: ' . $cluster['host'] . ' From: ' . $interval['start']
+      . ' To: ' . $interval['end'];
+  }
+
+  /**
    * Returns CPU consumption data to be displayed in a chart.
    *
+   * Note: if no data is found for a given cpu interval, that interval
+   * is ommitted from the returned array.
+   *
+   * @param params array The needed parameters
    * @return array
    */
   public static function getCpuConsumption($params)
   {
-    $dbh = Ubmod_DbService::dbh();
-    $sql = 'SELECT
-        cput / 86400 AS cput,
-        label,
-        view_order
-      FROM cpu_consumption
+    $timeClause = Ubmod_Model_Interval::whereClause($params['interval_id']);
+
+    $sql = "
+      SELECT
+        ROUND(COALESCE(SUM(cput), 0) / 86400) AS cput,
+        dim_cpus.display_name                 AS label
+      FROM fact_job
+      JOIN dim_date USING (dim_date_id)
+      JOIN dim_cpus USING (dim_cpus_id)
       WHERE
-        cluster_id = :cluster_id
-        AND interval_id = :interval_id
-      ORDER BY view_order';
+            dim_cluster_id = :cluster_id
+        AND $timeClause
+      GROUP BY dim_cpus.display_name
+      ORDER BY dim_cpus.view_order
+    ";
+
+    $dbh = Ubmod_DbService::dbh();
+    $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
-    $stmt->execute(array(
-      ':cluster_id'  => $params['cluster_id'],
-      ':interval_id' => $params['interval_id'],
-    ));
+    $r = $stmt->execute(array(':cluster_id' => $params['cluster_id']));
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
   /**
    * Returns wait time data to be displayed in a chart.
    *
+   * Note: if no data is found for a given cpu interval, that interval
+   * is ommitted from the returned array.
+   *
+   * @param params array The needed parameters
    * @return array
    */
   public static function getWaitTime($params)
   {
-    $dbh = Ubmod_DbService::dbh();
-    $sql = 'SELECT
-        ROUND(avg_wait / 3600, 2) AS avg_wait,
-        label,
-        view_order
-      FROM actual_wait_time
+    $timeClause = Ubmod_Model_Interval::whereClause($params['interval_id']);
+
+    $sql = "
+      SELECT
+        ROUND(COALESCE(AVG(wait), 0) / 3600) AS avg_wait,
+        dim_cpus.display_name                AS label
+      FROM fact_job
+      JOIN dim_date USING (dim_date_id)
+      JOIN dim_cpus USING (dim_cpus_id)
       WHERE
-        cluster_id = :cluster_id
-        AND interval_id = :interval_id
-      ORDER BY view_order';
+            dim_cluster_id = :cluster_id
+        AND $timeClause
+      GROUP BY dim_cpus.display_name
+      ORDER BY dim_cpus.view_order
+    ";
+
+    $dbh = Ubmod_DbService::dbh();
+    $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
-    $stmt->execute(array(
-      ':cluster_id'  => $params['cluster_id'],
-      ':interval_id' => $params['interval_id'],
-    ));
+    $r = $stmt->execute(array(':cluster_id' => $params['cluster_id']));
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /**
+   * Returns the CPU interval labels
+   *
+   * These are used as labels on the x-axis of some charts
+   *
+   * @return array
+   */
+  private static function getCpuIntervalLabels()
+  {
+    $sql = '
+      SELECT display_name AS label
+      FROM dim_cpus_interval
+      ORDER BY view_order
+    ';
+    $dbh = Ubmod_DbService::dbh();
+    $stmt = $dbh->prepare($sql);
+    $r = $stmt->execute();
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
+    $labels = array();
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      $labels[] = $row['label'];
+    }
+    return $labels;
   }
 
   /**
@@ -110,24 +179,23 @@ class Ubmod_Model_Chart
    */
   public static function renderCpuConsumption($params)
   {
-    $cpus = array();
-    $time = array();
+    $cputForLabel = array();
     foreach (self::getCpuConsumption($params) as $cpu) {
-      $cpus[] = $cpu['label'];
-      $time[] = (int) $cpu['cput'];
+      $cputForLabel[$cpu['label']] = $cpu['cput'];
     }
 
-    $cluster  = Ubmod_Model_Cluster::getById($params['cluster_id']);
-    $interval = Ubmod_Model_Interval::getById($params['interval_id']);
-
-    $subTitle = 'Cluster: ' . $cluster['host'] . ' From: ' . $interval['start']
-      . ' To: ' . $interval['end'];
+    $cpus = array();
+    $time = array();
+    foreach (self::getCpuIntervalLabels() as $label) {
+      $cpus[] = $label;
+      $time[] = isset($cputForLabel[$label]) ? $cputForLabel[$label] : 0;
+    }
 
     self::renderBarChart(array(
       'width'         => 700,
       'height'        => 400,
       'title'         => 'CPU Consumption vs. Job Size',
-      'subTitle'      => $subTitle,
+      'subTitle'      => self::getSubTitle($params),
       'yLabel'        => 'Delivered CPU time [cpu days]',
       'xLabel'        => 'Number of CPUs/Job',
       'labels'        => $cpus,
@@ -143,24 +211,23 @@ class Ubmod_Model_Chart
    */
   public static function renderWaitTime($params)
   {
-    $cpus = array();
-    $time = array();
+    $waitForLabel = array();
     foreach (self::getWaitTime($params) as $cpu) {
-      $cpus[] = $cpu['label'];
-      $time[] = $cpu['avg_wait'];
+      $waitForLabel[$cpu['label']] = $cpu['avg_wait'];
     }
 
-    $cluster  = Ubmod_Model_Cluster::getById($params['cluster_id']);
-    $interval = Ubmod_Model_Interval::getById($params['interval_id']);
-
-    $subTitle = 'Cluster: ' . $cluster['host'] . ' From: ' . $interval['start']
-      . ' To: ' . $interval['end'];
+    $cpus = array();
+    $time = array();
+    foreach (self::getCpuIntervalLabels() as $label) {
+      $cpus[] = $label;
+      $time[] = isset($waitForLabel[$label]) ? $waitForLabel[$label] : 0;
+    }
 
     self::renderBarChart(array(
       'width'         => 700,
       'height'        => 400,
       'title'         => 'Job Wait vs. Job Size',
-      'subTitle'      => $subTitle,
+      'subTitle'      => self::getSubTitle($params),
       'yLabel'        => 'Avg. Wait Time [hours]',
       'xLabel'        => 'Number of CPUs/Job',
       'labels'        => $cpus,
@@ -211,11 +278,12 @@ class Ubmod_Model_Chart
     }
 
     self::renderPieChart(array(
-      'width'  => 400,
-      'height' => 350,
-      'title'  => 'User Utilization',
-      'labels' => $users,
-      'series' => $time,
+      'width'    => 400,
+      'height'   => 350,
+      'title'    => 'User Utilization',
+      'subTitle' => self::getSubTitle($params),
+      'labels'   => $users,
+      'series'   => $time,
     ));
   }
 
@@ -243,12 +311,13 @@ class Ubmod_Model_Chart
     }
 
     self::renderBarChart(array(
-      'width'  => 400,
-      'height' => 350,
-      'title'  => 'User Utilization',
-      'yLabel' => 'Wall time [days]',
-      'labels' => $users,
-      'series' => $time,
+      'width'    => 400,
+      'height'   => 350,
+      'title'    => 'User Utilization',
+      'subTitle' => self::getSubTitle($params),
+      'yLabel'   => 'Wall time [days]',
+      'labels'   => $users,
+      'series'   => $time,
     ));
   }
 
@@ -294,11 +363,12 @@ class Ubmod_Model_Chart
     }
 
     self::renderPieChart(array(
-      'width'  => 400,
-      'height' => 350,
-      'title'  => 'Group Utilization',
-      'labels' => $groups,
-      'series' => $time,
+      'width'    => 400,
+      'height'   => 350,
+      'title'    => 'Group Utilization',
+      'subTitle' => self::getSubTitle($params),
+      'labels'   => $groups,
+      'series'   => $time,
     ));
   }
 
@@ -326,12 +396,13 @@ class Ubmod_Model_Chart
     }
 
     self::renderBarChart(array(
-      'width'  => 400,
-      'height' => 350,
-      'title'  => 'Group Utilization',
-      'yLabel' => 'Wall time [days]',
-      'labels' => $groups,
-      'series' => $time,
+      'width'    => 400,
+      'height'   => 350,
+      'title'    => 'Group Utilization',
+      'subTitle' => self::getSubTitle($params),
+      'yLabel'   => 'Wall time [days]',
+      'labels'   => $groups,
+      'series'   => $time,
     ));
   }
 
@@ -482,6 +553,13 @@ class Ubmod_Model_Chart
       'FontSize' => 12,
       'Align'    => TEXT_ALIGN_TOPMIDDLE,
     ));
+
+    if (isset($params['subTitle'])) {
+      $chart->drawText($center, 16, $params['subTitle'], array(
+        'Align'    => TEXT_ALIGN_TOPMIDDLE,
+        'FontSize' => 8,
+      ));
+    }
 
     $chart->stroke();
     exit(0);

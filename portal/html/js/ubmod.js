@@ -328,8 +328,8 @@ Ext.Loader.onReady(function () {
             this.store.load({
                 scope: this,
                 callback: function (records) {
-                    // Default to the last record (longest interval).
-                    var i = records.length - 1;
+                    // Default to the fourth record (Last 365 days).
+                    var i = 3;
                     this.setValue(records[i].get(this.valueField));
                     this.fireEvent('select', this, [records[i]]);
                 }

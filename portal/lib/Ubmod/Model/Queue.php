@@ -55,10 +55,20 @@ class Ubmod_Model_Queue
    */
   public static function getAll()
   {
+    $sql = '
+      SELECT
+        dim_queue_id AS queue_id,
+        name         AS queue
+      FROM dim_queue
+      ORDER BY queue
+    ';
     $dbh = Ubmod_DbService::dbh();
-    $sql = 'SELECT * FROM queue ORDER BY queue';
     $stmt = $dbh->prepare($sql);
-    $stmt->execute();
+    $r = $stmt->execute();
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
@@ -70,29 +80,33 @@ class Ubmod_Model_Queue
    */
   public static function getActivityCount($params)
   {
-    $dbh = Ubmod_DbService::dbh();
+    $timeClause = Ubmod_Model_Interval::whereClause($params['interval_id']);
 
-    $sql = 'SELECT COUNT(*)
-      FROM queue q
-      JOIN queue_activity qa
-        ON q.queue_id = qa.queue_id
-        AND qa.interval_id = :interval_id
-        AND qa.cluster_id = :cluster_id
-      JOIN activity a
-        ON qa.activity_id = a.activity_id';
+    $sql = "
+      SELECT COUNT(DISTINCT dim_queue_id)
+      FROM fact_job
+      JOIN dim_queue USING (dim_queue_id)
+      JOIN dim_date  USING (dim_date_id)
+      WHERE
+            dim_cluster_id = :cluster_id
+        AND $timeClause
+    ";
 
-    $dbParams = array(
-      ':interval_id' => $params['interval_id'],
-      ':cluster_id'  => $params['cluster_id'],
-    );
+    $dbParams = array(':cluster_id' => $params['cluster_id']);
 
     if (isset($params['filter']) && $params['filter'] != '') {
-      $sql .= ' WHERE q.queue LIKE :filter';
+      $sql .= ' AND name LIKE :filter';
       $dbParams[':filter'] = '%' . $params['filter'] . '%';
     }
 
+    $dbh = Ubmod_DbService::dbh();
+    $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
-    $stmt->execute($dbParams);
+    $r = $stmt->execute($dbParams);
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
     $result = $stmt->fetch();
     return $result[0];
   }
@@ -105,34 +119,34 @@ class Ubmod_Model_Queue
    */
   public static function getActivities($params)
   {
-    $dbh = Ubmod_DbService::dbh();
+    $timeClause = Ubmod_Model_Interval::whereClause($params['interval_id']);
 
-    $sql = 'SELECT
-        q.queue_id,
-        q.queue,
-        IFNULL(a.jobs, 0) AS jobs,
-        IFNULL(ROUND(a.cput/cast(86400 AS DECIMAL), 2), 0) AS cput,
-        IFNULL(ROUND(a.wallt/cast(86400 AS DECIMAL), 2), 0) AS wallt,
-        IFNULL(ROUND(a.avg_wait/cast(3600 AS DECIMAL), 2), 0) AS avg_wait,
-        IFNULL(a.avg_cpus, 0) AS avg_cpus,
-        IFNULL(ROUND(a.avg_mem/1024,1), 0) AS avg_mem
-      FROM queue q
-      JOIN queue_activity qa
-        ON q.queue_id = qa.queue_id
-        AND qa.interval_id = :interval_id
-        AND qa.cluster_id = :cluster_id
-      JOIN activity a
-        ON qa.activity_id = a.activity_id';
+    $sql = "
+      SELECT
+        dim_queue_id                 AS queue_id,
+        name                         AS queue,
+        COUNT(*)                     AS jobs,
+        ROUND(SUM(wallt) / 86400, 1) AS wallt,
+        ROUND(SUM(cput)  / 86400, 1) AS cput,
+        ROUND(AVG(mem)   / 1024,  1) AS avg_mem,
+        ROUND(AVG(wait)  / 3600,  1) AS avg_wait,
+        ROUND(AVG(cpus),          1) AS avg_cpus
+      FROM fact_job
+      JOIN dim_queue USING (dim_queue_id)
+      JOIN dim_date  USING (dim_date_id)
+      WHERE
+            dim_cluster_id = :cluster_id
+        AND $timeClause
+    ";
 
-    $dbParams = array(
-      ':interval_id' => $params['interval_id'],
-      ':cluster_id'  => $params['cluster_id'],
-    );
+    $dbParams = array(':cluster_id' => $params['cluster_id']);
 
     if (isset($params['filter']) && $params['filter'] != '') {
-      $sql .= ' WHERE q.queue LIKE :filter';
+      $sql .= ' AND name LIKE :filter';
       $dbParams[':filter'] = '%' . $params['filter'] . '%';
     }
+
+    $sql .= ' GROUP BY queue_id';
 
     $sortFields
       = array('queue', 'jobs', 'avg_cpus', 'avg_wait', 'wallt', 'avg_mem');
@@ -148,8 +162,14 @@ class Ubmod_Model_Queue
       $sql .= sprintf(' LIMIT %d, %d', $params['start'], $params['limit']);
     }
 
+    $dbh = Ubmod_DbService::dbh();
+    $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
-    $stmt->execute($dbParams);
+    $r = $stmt->execute($dbParams);
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
@@ -161,48 +181,54 @@ class Ubmod_Model_Queue
    */
   public static function getActivityById($params)
   {
-    $dbh = Ubmod_DbService::dbh();
+    $timeClause = Ubmod_Model_Interval::whereClause($params['interval_id']);
 
-    $sql = 'SELECT
-        q.queue_id,
-        q.queue,
-        qa.user_count,
-        IFNULL(a.jobs, 0) AS jobs,
-        IFNULL(a.wallt, 0) AS wallt,
-        IFNULL(ROUND(a.avg_wallt/86400, 1), 0) AS avg_wallt,
-        IFNULL(ROUND(a.max_wallt/86400, 1), 0) AS max_wallt,
-        IFNULL(a.cput, 0) AS cput,
-        IFNULL(ROUND(a.avg_cput/3600, 1),0) AS avg_cput,
-        IFNULL(a.max_cput, 0) AS max_cput,
-        IFNULL(ROUND(a.avg_mem/1024, 1), 0) AS avg_mem,
-        IFNULL(a.max_mem, 0) AS max_mem,
-        IFNULL(a.avg_vmem, 0) AS avg_vmem,
-        IFNULL(a.max_vmem, 0) AS max_vmem,
-        IFNULL(ROUND(a.avg_wait/3600, 1), 0) AS avg_wait,
-        IFNULL(ROUND(a.avg_exect/3600, 1), 0) AS avg_exect,
-        IFNULL(a.avg_nodes, 0) AS avg_nodes,
-        IFNULL(a.max_nodes, 0) AS max_nodes,
-        IFNULL(a.avg_cpus, 0) AS avg_cpus,
-        IFNULL(a.max_cpus, 0) AS max_cpus
-      FROM queue q
-      JOIN
-        queue_activity qa
-        ON q.queue_id = qa.queue_id
-        AND qa.cluster_id = :cluster_id
-        AND qa.interval_id = :interval_id
-      JOIN
-        activity a
-        ON qa.activity_id = a.activity_id
-      WHERE q.queue_id = :queue_id';
+    $sql = "
+      SELECT
+        dim_queue_id                 AS queue_id,
+        dim_queue.name               AS queue,
+        COUNT(*)                     AS jobs,
+        COUNT(DISTINCT dim_user_id)  AS user_count,
+        ROUND(SUM(wallt) / 86400, 1) AS wallt,
+        ROUND(AVG(wallt) / 86400, 1) AS avg_wallt,
+        ROUND(MAX(wallt) / 86400, 1) AS max_wallt,
+        ROUND(SUM(cput)  / 86400, 1) AS cput,
+        ROUND(AVG(cput)  / 86400, 1) AS avg_cput,
+        ROUND(MAX(cput)  / 86400, 1) AS max_cput,
+        ROUND(AVG(mem)   / 1024,  1) AS avg_mem,
+        ROUND(MAX(mem)   / 1024,  1) AS max_mem,
+        ROUND(AVG(vmem)  / 1024,  1) AS avg_vmem,
+        ROUND(MAX(vmem)  / 1024,  1) AS max_vmem,
+        ROUND(AVG(wait)  / 3600,  1) AS avg_wait,
+        ROUND(AVG(exect) / 3600,  1) AS avg_exect,
+        ROUND(MAX(nodes),         1) AS max_nodes,
+        ROUND(AVG(nodes),         1) AS avg_nodes,
+        ROUND(MAX(cpus),          1) AS max_cpus,
+        ROUND(AVG(cpus),          1) AS avg_cpus
+      FROM fact_job
+      JOIN dim_queue USING (dim_queue_id)
+      JOIN dim_date  USING (dim_date_id)
+      JOIN dim_user  USING (dim_user_id)
+      WHERE
+            dim_queue_id   = :queue_id
+        AND dim_cluster_id = :cluster_id
+        AND $timeClause
+      GROUP BY queue_id
+    ";
 
     $dbParams = array(
-      ':interval_id' => $params['interval_id'],
-      ':cluster_id'  => $params['cluster_id'],
-      ':queue_id'    => $params['id'],
+      ':cluster_id' => $params['cluster_id'],
+      ':queue_id'   => $params['id'],
     );
 
+    $dbh = Ubmod_DbService::dbh();
+    $sql = Ubmod_DataWarehouse::optimize($sql);
     $stmt = $dbh->prepare($sql);
-    $stmt->execute($dbParams);
+    $r = $stmt->execute($dbParams);
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 }
