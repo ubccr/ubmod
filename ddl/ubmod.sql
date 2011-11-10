@@ -202,8 +202,8 @@ DROP TABLE IF EXISTS `time_interval`;
 CREATE TABLE `time_interval` (
   `time_interval_id` int unsigned NOT NULL AUTO_INCREMENT,
   `display_name`     varchar(255) NOT NULL,
-  `start`            date         NOT NULL,
-  `end`              date         NOT NULL,
+  `start`            date,
+  `end`              date,
   `where_clause`     varchar(255) NOT NULL,
   PRIMARY KEY (`time_interval_id`)
 ) ENGINE=MyISAM;

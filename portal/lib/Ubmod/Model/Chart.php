@@ -64,8 +64,10 @@ class Ubmod_Model_Chart
     $cluster  = Ubmod_Model_Cluster::getById($params['cluster_id']);
     $interval = Ubmod_Model_Interval::getById($params['interval_id']);
 
-    return 'Cluster: ' . $cluster['host'] . ' From: ' . $interval['start']
-      . ' To: ' . $interval['end'];
+    $start = $interval['start'] ? $interval['start'] : $params['start_date'];
+    $end   = $interval['end']   ? $interval['end']   : $params['end_date'];
+
+    return 'Cluster: ' . $cluster['host'] . " From: $start To: $end";
   }
 
   /**
@@ -79,7 +81,7 @@ class Ubmod_Model_Chart
    */
   public static function getCpuConsumption($params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params['interval_id']);
+    $timeClause = Ubmod_Model_Interval::whereClause($params);
 
     $sql = "
       SELECT
@@ -117,7 +119,7 @@ class Ubmod_Model_Chart
    */
   public static function getWaitTime($params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params['interval_id']);
+    $timeClause = Ubmod_Model_Interval::whereClause($params);
 
     $sql = "
       SELECT
@@ -243,12 +245,8 @@ class Ubmod_Model_Chart
    */
   public static function renderUserPie($params)
   {
-    $dbParams = array(
-      'interval_id' => $params['interval_id'],
-      'cluster_id'  => $params['cluster_id'],
-      'sort'        => 'wallt',
-      'dir'         => 'DESC',
-    );
+    $params['sort'] = 'wallt';
+    $params['dir']  = 'DESC';
 
     $total = 0;
     $other = 0;
@@ -257,7 +255,7 @@ class Ubmod_Model_Chart
 
     $users = array();
     $time  = array();
-    foreach (Ubmod_Model_User::getActivities($dbParams) as $user) {
+    foreach (Ubmod_Model_User::getActivities($params) as $user) {
       if ($count < $max) {
         $users[] = $user['user'];
         $time[]  = $user['wallt'];
@@ -294,18 +292,14 @@ class Ubmod_Model_Chart
    */
   public static function renderUserBar($params)
   {
-    $dbParams = array(
-      'interval_id' => $params['interval_id'],
-      'cluster_id'  => $params['cluster_id'],
-      'start'       => 0,
-      'limit'       => 21,
-      'sort'        => 'wallt',
-      'dir'         => 'DESC',
-    );
+    $params['start'] = 0;
+    $params['limit'] = 21;
+    $params['sort']  = 'wallt';
+    $params['dir']   = 'DESC';
 
     $users = array();
     $time  = array();
-    foreach (Ubmod_Model_User::getActivities($dbParams) as $user) {
+    foreach (Ubmod_Model_User::getActivities($params) as $user) {
       $users[] = $user['user'];
       $time[]  = $user['wallt'];
     }
@@ -328,12 +322,8 @@ class Ubmod_Model_Chart
    */
   public static function renderGroupPie($params)
   {
-    $dbParams = array(
-      'interval_id' => $params['interval_id'],
-      'cluster_id'  => $params['cluster_id'],
-      'sort'        => 'wallt',
-      'dir'         => 'DESC',
-    );
+    $params['sort'] = 'wallt';
+    $params['dir']  = 'DESC';
 
     $total = 0;
     $other = 0;
@@ -342,7 +332,7 @@ class Ubmod_Model_Chart
 
     $groups = array();
     $time   = array();
-    foreach (Ubmod_Model_Group::getActivities($dbParams) as $group) {
+    foreach (Ubmod_Model_Group::getActivities($params) as $group) {
       if ($count < $max) {
         $groups[] = $group['group_name'];
         $time[]   = $group['wallt'];
@@ -379,18 +369,14 @@ class Ubmod_Model_Chart
    */
   public static function renderGroupBar($params)
   {
-    $dbParams = array(
-      'interval_id' => $params['interval_id'],
-      'cluster_id'  => $params['cluster_id'],
-      'start'       => 0,
-      'limit'       => 21,
-      'sort'        => 'wallt',
-      'dir'         => 'DESC',
-    );
+    $params['start'] = 0;
+    $params['limit'] = 21;
+    $params['sort']  = 'wallt';
+    $params['dir']   = 'DESC';
 
     $groups = array();
     $time   = array();
-    foreach (Ubmod_Model_Group::getActivities($dbParams) as $group) {
+    foreach (Ubmod_Model_Group::getActivities($params) as $group) {
       $groups[] = $group['group_name'];
       $time[]   = $group['wallt'];
     }

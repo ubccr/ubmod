@@ -66,8 +66,20 @@ class Ubmod_Controller_WaitTime extends Ubmod_BaseController
   public function executeChart()
   {
     $post = $this->getPostData();
-    $this->chart
-      = '/chart/wait-time?interval_id=' . $post['interval_id']
+
+    $interval = Ubmod_Model_Interval::getById($post['interval_id']);
+
+    $queryString = 'interval_id=' . $interval['interval_id']
       . '&amp;cluster_id=' . $post['cluster_id'] . '&amp;t=' . time();
+
+    if ($interval['custom']) {
+      $queryString .= '&amp;start_date=' . urlencode($post['start_date']);
+      $queryString .= '&amp;end_date=' . urlencode($post['end_date']);
+    }
+
+    // Append time to prevent browser caching
+    $queryString .= '&amp;t=' . time();
+
+    $this->chart = '/chart/wait-time?' . $queryString;
   }
 }

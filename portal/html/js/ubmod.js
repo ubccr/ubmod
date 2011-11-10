@@ -52,7 +52,11 @@ Ext.Loader.onReady(function () {
             'time_interval',
             'start',
             'end'
-        ]
+        ],
+
+        isCustomDateRange: function () {
+            return this.get('start') === null || this.get('end') === null;
+        }
     });
 
     /**
@@ -125,30 +129,55 @@ Ext.Loader.onReady(function () {
         extend: 'Ext.data.Model',
         fields: [
             { name: 'interval', type: 'Ubmod.model.Interval' },
-            { name: 'cluster', type: 'Ubmod.model.Cluster' }
+            { name: 'cluster', type: 'Ubmod.model.Cluster' },
+            { name: 'startDate', type: 'string' },
+            { name: 'endDate', type: 'string' }
         ],
 
         constructor: function (config) {
             config = config || {};
             this.addEvents({
-                fieldchanged: true,
-                intervalchanged: true
+                restparamschanged: true,
+                intervalchanged: true,
+                daterangechanged: true
             });
             Ubmod.model.App.superclass.constructor.call(this, config);
         },
 
         /**
-         * Fires the 'fieldchanged' event when a field is set
+         * Override the set method to fire events
          *
          * @see Ext.data.Model
          */
         set: function (field, value) {
             Ubmod.model.App.superclass.set.call(this, field, value);
+
+            // @see Ext.data.Model.set for implementation details
             if (!Ext.isObject(field)) {
-                this.fireEvent('fieldchanged', field, value);
-                if (field === 'interval') {
-                    this.fireEvent('intervalchanged', field, value);
+
+                // Ingore individual dates
+                if (field === 'startDate' || field === 'endDate') {
+                    return;
                 }
+
+                if (field === 'interval') {
+                    this.fireEvent('intervalchanged', value);
+
+                    if (value.isCustomDateRange()) {
+
+                        // Prevent restparamschanged event
+                        return;
+
+                    } else {
+                        this.set('startDate', value.get('start'));
+                        this.set('endDate', value.get('end'));
+
+                        this.fireEvent('daterangechanged', value.get('start'),
+                                value.get('end'));
+                    }
+                }
+
+                this.fireEvent('restparamschanged');
             }
         },
 
@@ -178,44 +207,65 @@ Ext.Loader.onReady(function () {
          * @return {string} The currently selected start date
          */
         getStartDate: function () {
-            return this.get('interval').get('start');
+            return this.get('startDate');
         },
 
         /**
          * @return {string} The currently selected end date
          */
         getEndDate: function () {
-            return this.get('interval').get('end');
+            return this.get('endDate');
         },
 
         /**
-         * @param {string} start The new start date
+         * Set both the start and end date
+         *
+         * Fires the restparamschanged event
+         *
+         * @param {Date} startDate The new start date
+         * @param {Date} endDate The new end date
          */
-        setStartDate: function (start) {
-            var interval = this.get('interval');
-            interval.set('start', start);
-            this.fireEvent('intervalchanged', 'interval', interval);
+        setDates: function (startDate, endDate) {
+            var startYear = startDate.getFullYear(),
+                startMonth = startDate.getMonth() + 1,
+                startDay = startDate.getDate(),
+                endYear = endDate.getFullYear(),
+                endMonth = endDate.getMonth() + 1,
+                endDay = endDate.getDate(),
+                startDate = startMonth + '/' + startDay + '/' + startYear,
+                endDate = endMonth + '/' + endDay + '/' + endYear;
+
+            this.set('startDate', startDate);
+            this.set('endDate', endDate);
+
+            this.fireEvent('restparamschanged');
         },
 
         /**
-         * @param {string} end The new end date
+         * @param {Date} endDate The new end date
          */
-        setEndDate: function (end) {
-            var interval = this.get('interval');
-            interval.get('interval').set('end', end);
-            this.fireEvent('intervalchanged', 'interval', interval);
+        setEndDate: function (endDate) {
         },
 
         /**
          * @return {object} The parameters needed for REST requests
          */
         getRestParams: function () {
-            return {
+            var interval, params;
+
+            interval = this.get('interval');
+
+            params = {
                 'interval_id': this.getIntervalId(),
                 'cluster_id': this.getClusterId(),
-                'start_date': this.getStartDate(),
-                'end_date': this.getEndDate()
             };
+
+            if (interval.isCustomDateRange()) {
+                params.start_date = this.getStartDate();
+                params.end_date   = this.getEndDate();
+            }
+
+            return params;
         }
     });
 
@@ -379,8 +429,8 @@ Ext.Loader.onReady(function () {
             this.store.load({
                 scope: this,
                 callback: function (records) {
-                    // Default to the fourth record (Last 365 days).
-                    var i = 3;
+                    // Default to the fifth record (Last 365 days).
+                    var i = 4;
                     this.setValue(records[i].get(this.valueField));
                     this.fireEvent('select', this, [records[i]]);
                 }
@@ -446,11 +496,28 @@ Ext.Loader.onReady(function () {
             this.startDate = Ext.create('Ext.form.field.Date');
             this.endDate   = Ext.create('Ext.form.field.Date');
 
-            this.model.on('intervalchanged', function (field, value) {
-                this.startDate.setReadOnly(true);
-                this.endDate.setReadOnly(true);
-                this.startDate.setValue(value.get('start'));
-                this.endDate.setValue(value.get('end'));
+            this.updateButton = Ext.create('Ext.Button', {
+                text: 'Update',
+                hidden: true
+            });
+
+            this.updateButton.on('click', function () {
+                this.model.setDates(this.startDate.getValue(),
+                    this.endDate.getValue());
+            }, this);
+
+            this.model.on('intervalchanged', function (interval) {
+                if (interval.isCustomDateRange()) {
+                    this.startDate.setReadOnly(false);
+                    this.endDate.setReadOnly(false);
+                    this.updateButton.show();
+                } else {
+                    this.updateButton.hide();
+                    this.startDate.setReadOnly(true);
+                    this.endDate.setReadOnly(true);
+                    this.startDate.setValue(interval.get('start'));
+                    this.endDate.setValue(interval.get('end'));
+                }
             }, this);
 
             this.renderTo = Ext.get('toolbar');
@@ -464,7 +531,8 @@ Ext.Loader.onReady(function () {
                 'Date Range:',
                 this.startDate,
                 'to',
-                this.endDate
+                this.endDate,
+                this.updateButton
             ];
 
             Ubmod.widget.Toolbar.superclass.initComponent.call(this);
@@ -506,10 +574,10 @@ Ext.Loader.onReady(function () {
         },
 
         initComponent: function () {
-            var listener = function (field) { this.reload(); };
-            this.model.on('fieldchanged', listener, this);
+            var listener = function () { this.reload(); };
+            this.model.on('restparamschanged', listener, this);
             this.on('destroy', function () {
-                this.model.removeListener('fieldchanged', listener, this);
+                this.model.removeListener('restparamschanged', listener, this);
             }, this);
 
             Ubmod.widget.StatsPanel.superclass.initComponent.call(this);
@@ -675,10 +743,10 @@ Ext.Loader.onReady(function () {
         },
 
         initComponent: function () {
-            var listener = function (field) { this.reload(); };
-            this.model.on('fieldchanged', listener, this);
+            var listener = function () { this.reload(); };
+            this.model.on('restparamschanged', listener, this);
             this.on('destroy', function () {
-                this.model.removeListener('fieldchanged', listener, this);
+                this.model.removeListener('restparamschanged', listener, this);
             }, this);
 
             Ubmod.widget.Partial.superclass.initComponent.call(this);
@@ -711,10 +779,8 @@ Ext.Loader.onReady(function () {
                 model = Ext.create('Ubmod.model.App');
                 widgets = [];
 
-                model.on('intervalchanged', function (field, value) {
-                    Ext.get('date-display').update(
-                        value.get('start') + ' thru ' + value.get('end')
-                    );
+                model.on('daterangechanged', function (start, end) {
+                    Ext.get('date-display').update(start + ' thru ' + end);
                 });
 
                 // Listen for clicks on menu links.

@@ -156,11 +156,17 @@ sub _update_cpus {
 sub _update_time_intervals {
     my ($self) = @_;
 
+    $self->_truncate('time_interval');
+
+    $self->_insert_time_interval(
+        {   label        => 'Custom Date Range',
+            where_clause => "date >= '%s' AND date <= '%s'",
+        }
+    );
+
     my $end_date = $self->{end_date};
     my $min_date = $self->_get_min_date();
     my $max_date = $self->_get_max_date();
-
-    $self->_truncate('time_interval');
 
     my @labels = (
         [ 'Last 7 days',   7,   'last_7_days = 1' ],

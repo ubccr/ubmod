@@ -68,22 +68,22 @@ class Ubmod_Controller_Dashboard extends Ubmod_BaseController
     $post = $this->getPostData();
 
     $this->interval = Ubmod_Model_Interval::getById($post['interval_id']);
-    $this->cluster = Ubmod_Model_Cluster::getActivity($post);
+    $this->cluster  = Ubmod_Model_Cluster::getActivity($post);
 
-    $this->userPieChart
-      = '/chart/user-pie?interval_id=' . $post['interval_id']
-      . '&amp;cluster_id=' . $post['cluster_id'] . '&amp;t=' . time();
+    $queryString = 'interval_id=' . $this->interval['interval_id']
+      . '&amp;cluster_id=' . $this->cluster['cluster_id'];
 
-    $this->userBarChart
-      = '/chart/user-bar?interval_id=' . $post['interval_id']
-      . '&amp;cluster_id=' . $post['cluster_id'] . '&amp;t=' . time();
+    if ($this->interval['custom']) {
+      $queryString .= '&amp;start_date=' . urlencode($post['start_date']);
+      $queryString .= '&amp;end_date=' . urlencode($post['end_date']);
+    }
 
-    $this->groupPieChart
-      = '/chart/group-pie?interval_id=' . $post['interval_id']
-      . '&amp;cluster_id=' . $post['cluster_id'] . '&amp;t=' . time();
+    // Append time to prevent browser caching
+    $queryString .= '&amp;t=' . time();
 
-    $this->groupBarChart
-      = '/chart/group-bar?interval_id=' . $post['interval_id']
-      . '&amp;cluster_id=' . $post['cluster_id'] . '&amp;t=' . time();
+    $this->userPieChart  = '/chart/user-pie?'  . $queryString;
+    $this->userBarChart  = '/chart/user-bar?'  . $queryString;
+    $this->groupPieChart = '/chart/group-pie?' . $queryString;
+    $this->groupBarChart = '/chart/group-bar?' . $queryString;
   }
 }

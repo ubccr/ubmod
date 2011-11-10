@@ -81,7 +81,7 @@ class Ubmod_Model_User
    */
   public static function getActivityCount($params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params['interval_id']);
+    $timeClause = Ubmod_Model_Interval::whereClause($params);
 
     $sql = "
       SELECT COUNT(DISTINCT dim_user_id)
@@ -120,7 +120,7 @@ class Ubmod_Model_User
    */
   public static function getActivities($params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params['interval_id']);
+    $timeClause = Ubmod_Model_Interval::whereClause($params);
 
     $sql = "
       SELECT
@@ -183,7 +183,7 @@ class Ubmod_Model_User
    */
   public static function getActivityById($params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params['interval_id']);
+    $timeClause = Ubmod_Model_Interval::whereClause($params);
 
     $sql = "
       SELECT

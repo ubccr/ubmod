@@ -107,10 +107,11 @@ class Ubmod_Model_Cluster
    */
   public static function getActivity($params)
   {
-    $timeClause = Ubmod_Model_Interval::whereClause($params['interval_id']);
+    $timeClause = Ubmod_Model_Interval::whereClause($params);
 
     $sql = "
       SELECT
+        dim_cluster_id                AS cluster_id,
         dim_cluster.name              AS host,
         COALESCE(
           dim_cluster.display_name,

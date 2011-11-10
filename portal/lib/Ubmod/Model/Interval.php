@@ -60,8 +60,9 @@ class Ubmod_Model_Interval
       SELECT
         time_interval_id               AS interval_id,
         display_name                   AS time_interval,
-        DATE_FORMAT(start, "%m/%d/%Y") as start,
-        DATE_FORMAT(end,   "%m/%d/%Y") as end
+        start IS NULL                  AS custom,
+        DATE_FORMAT(start, "%m/%d/%Y") AS start,
+        DATE_FORMAT(end,   "%m/%d/%Y") AS end
       FROM time_interval
       WHERE time_interval_id = ?
     ';
@@ -103,24 +104,51 @@ class Ubmod_Model_Interval
   /**
    * Returns the corresponding where clause for use in a SQL query
    *
-   * @param intervalId int The interval database table primary key
+   * @param array $params The needed parameters.  These include the
+   *   interval_id, start_date and end_date.
+   *
    * @return string
    */
-  public static function whereClause($intervalId)
+  public static function whereClause($params)
   {
     $sql = '
-      SELECT where_clause
+      SELECT where_clause, start, end
       FROM time_interval
       WHERE time_interval_id = :time_interval_id
     ';
     $dbh = Ubmod_DbService::dbh();
     $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute(array(':time_interval_id' => $intervalId));
+    $r = $stmt->execute(array(':time_interval_id' => $params['interval_id']));
     if (!$r) {
       $err = $stmt->errorInfo();
       throw new Exception($err[2]);
     }
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $row['where_clause'];
+
+    // Custom date range
+    if ($row['start'] === null || $row['end'] === null) {
+      error_log(print_r($params, 1));
+      $start = self::convertDate($params['start_date']);
+      $end   = self::convertDate($params['end_date']);
+      return sprintf($row['where_clause'], $start, $end);
+    } else {
+      return $row['where_clause'];
+    }
+  }
+
+  /**
+   * Convert a date string from MM/DD/YYYY to YYYY-MM-DD
+   *
+   * @param string $date A date in MM/DD/YYYY format
+   *
+   * @return string
+   */
+  private static function convertDate($date)
+  {
+    if (preg_match('# ^ (\d?\d) / (\d?\d) / (\d{4}) $ #x', $date, $matches)) {
+      return sprintf('%04d-%02d-%02d', $matches[3], $matches[1], $matches[2]);
+    } else {
+      throw new Exception("Invalid date format: '$date'");
+    }
   }
 }
