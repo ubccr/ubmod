@@ -2,12 +2,12 @@
 <script type="text/javascript">
 Ext.onReady(function(){
     var statsGrid = new StatsGrid({
-        dataUrl: '/data/activity/queue',
-        root: 'queue',
+        dataUrl: '/api/rest/json/queue/list',
+        root: 'queues',
         id: 'queue_id',
         display: 'queue',
         label: 'Queue',
-        displayUrl: '/partial/show/queue'
+        displayUrl: '/queue/details'
     });
 });
 </script> 

@@ -25,4 +25,14 @@ class UBMoD_Controller_Queue extends UBMoD_Controller_Base
   {
 
   }
+
+  /**
+   * Execute the details action.
+   *
+   * @return void
+   */
+  public function executeDetails()
+  {
+    $this->queue = UBMoD_Model_Queue::getActivityById($this->getPostData());
+  }
 }
