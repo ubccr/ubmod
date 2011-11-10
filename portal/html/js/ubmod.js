@@ -398,6 +398,16 @@ Ext.Loader.onReady(function () {
                 this.setSize(this.getWidth(), this.getHeight());
             });
 
+            // XXX Reverse sort direction so that the first click on a
+            // grid header results in sorting in the descending order.
+            this.store.on('beforeload', function (store, options) {
+                if (store.sorters.getCount() > 0) {
+                    options.sorters[0].direction =
+                        options.sorters[0].direction === 'DESC' ?
+                        'ASC' : 'DESC';
+                }
+            }, this);
+
             this.reload();
         },
 
