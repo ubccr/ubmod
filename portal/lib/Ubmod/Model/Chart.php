@@ -135,7 +135,7 @@ class Ubmod_Model_Chart
   }
 
   /**
-   * Returns CPU consumption data to be displayed in a chart.
+   * Returns wall time data to be displayed in a chart.
    *
    * Note: if no data is found for a given cpu interval, that interval
    * is ommitted from the returned array.
@@ -144,13 +144,13 @@ class Ubmod_Model_Chart
    *
    * @return array
    */
-  private static function getCpuConsumption(Ubmod_Model_QueryParams $params)
+  private static function getWallTime(Ubmod_Model_QueryParams $params)
   {
     $qb = new Ubmod_DataWarehouse_QueryBuilder();
     $qb->setFactTable('fact_job');
     $qb->addDimensionTable('dim_cpus');
     $qb->addSelectExpressions(array(
-      'cput'  => 'ROUND(COALESCE(SUM(cput), 0) / 86400, 1)',
+      'wallt' => 'ROUND(COALESCE(SUM(wallt), 0) / 86400, 1)',
       'label' => 'dim_cpus.display_name',
       'sort'  => 'dim_cpus.view_order',
     ));
@@ -237,33 +237,33 @@ class Ubmod_Model_Chart
   }
 
   /**
-   * Create a CPU consumption chart period and send it to the browser.
+   * Create a wall time period chart and send it to the browser.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
    * @return void
    */
-  public static function renderCpuConsumptionPeriod(
+  public static function renderWallTimePeriod(
     Ubmod_Model_QueryParams $params)
   {
-    $cputForLabel = array();
-    foreach (self::getCpuConsumption($params) as $cpu) {
-      $cputForLabel[$cpu['label']] = $cpu['cput'];
+    $walltForLabel = array();
+    foreach (self::getWallTime($params) as $cpu) {
+      $walltForLabel[$cpu['label']] = $cpu['wallt'];
     }
 
     $cpus = array();
     $time = array();
     foreach (self::getCpuIntervalLabels() as $label) {
       $cpus[] = $label;
-      $time[] = isset($cputForLabel[$label]) ? $cputForLabel[$label] : 0;
+      $time[] = isset($walltForLabel[$label]) ? $walltForLabel[$label] : 0;
     }
 
     self::renderBarChart(array(
       'width'         => 700,
       'height'        => 400,
-      'title'         => 'CPU Consumption vs. Job Size',
+      'title'         => 'Wall Time vs. Job Size',
       'subtitle'      => self::getSubtitle($params),
-      'yLabel'        => 'Delivered CPU Time (CPU Days)',
+      'yLabel'        => 'Wall Time (Days)',
       'xLabel'        => 'Number of CPUs/Job',
       'labels'        => $cpus,
       'series'        => $time,
@@ -306,26 +306,26 @@ class Ubmod_Model_Chart
   }
 
   /**
-   * Create a CPU consumption monthly chart and send it to the browser.
+   * Create a wall time monthly chart and send it to the browser.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
    * @return void
    */
-  public static function renderCpuConsumptionMonthly(
+  public static function renderWallTimeMonthly(
     Ubmod_Model_QueryParams $params)
   {
     $cpuLabels  = self::getCpuIntervalLabels();
     $months     = Ubmod_Model_TimeInterval::getMonths($params);
     $monthNames = array();
 
-    // array( cpuLabel => array( month => cput, ... ), ... )
+    // array( cpuLabel => array( month => wallt, ... ), ... )
     $serieForCpus = array();
 
     foreach ($months as $monthKey => $month) {
 
-      // array( cpuLabel => avg_cput, ... )
-      $cputForLabel = array();
+      // array( cpuLabel => avg_wallt, ... )
+      $walltForLabel = array();
 
       $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
       $monthNames[] = date("M 'y", $time);
@@ -335,23 +335,23 @@ class Ubmod_Model_Chart
       $monthParams->setYear($month['year']);
       $monthParams->setMonth($month['month']);
 
-      foreach (self::getCpuConsumption($monthParams) as $cpu) {
-        $cputForLabel[$cpu['label']] = $cpu['cput'];
+      foreach (self::getWallTime($monthParams) as $cpu) {
+        $walltForLabel[$cpu['label']] = $cpu['wallt'];
       }
 
       foreach ($cpuLabels as $label) {
         $cpuLabel = "$label CPUs/Job";
         $serieForCpus[$cpuLabel][$monthKey]
-          = isset($cputForLabel[$label]) ? $cputForLabel[$label] : 0;
+          = isset($walltForLabel[$label]) ? $walltForLabel[$label] : 0;
       }
     }
 
     self::renderStackedAreaChart(array(
       'width'      => 700,
       'height'     => 400,
-      'title'      => 'CPU Consumption vs. Job Size (Monthly)',
+      'title'      => 'Wall Time vs. Job Size (Monthly)',
       'subtitle'   => self::getSubtitle($params),
-      'yLabel'     => 'Delivered CPU Time (CPU Days)',
+      'yLabel'     => 'Wall Time (Days)',
       'xLabel'     => 'Month',
       'labels'     => $monthNames,
       'series'     => $serieForCpus,

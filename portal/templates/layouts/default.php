@@ -25,7 +25,7 @@
           <ul id="menu-list">
             <li<?php if ($controller == "dashboard") { echo ' class="menu-active"'; } ?>><a href="/dashboard">Dashboard</a></li>
             <li<?php if ($controller == "wait-time") { echo ' class="menu-active"'; } ?>><a href="/wait-time">Wait Time</a></li>
-            <li<?php if ($controller == "cpu-consumption") { echo ' class="menu-active"'; } ?>><a href="/cpu-consumption">CPU Consumption</a></li>
+            <li<?php if ($controller == "cpu-consumption") { echo ' class="menu-active"'; } ?>><a href="/wall-time">Wall Time</a></li>
             <li<?php if ($controller == "user") { echo ' class="menu-active"'; } ?>><a href="/user">User Detail</a></li>
             <li<?php if ($controller == "group") { echo ' class="menu-active"'; } ?>><a href="/group">Group Detail</a></li>
             <li<?php if ($controller == "queue") { echo ' class="menu-active"'; } ?>><a href="/queue">Queue Detail</a></li>

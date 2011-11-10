@@ -24,7 +24,7 @@
  */
 
 /**
- * CPU Consumption controller.
+ * Wall time controller.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
@@ -33,11 +33,11 @@
  */
 
 /**
- * CPU Consumption controller.
+ * Wall time controller.
  *
  * @package Ubmod
  */
-class Ubmod_Controller_CpuConsumption extends Ubmod_BaseController
+class Ubmod_Controller_WallTime extends Ubmod_BaseController
 {
 
   /**
@@ -63,7 +63,7 @@ class Ubmod_Controller_CpuConsumption extends Ubmod_BaseController
 
     $queryString = Ubmod_Model_Chart::getQueryString($params);
 
-    $this->periodChart  = '/chart/cpu-consumption-period?'  . $queryString;
-    $this->monthlyChart = '/chart/cpu-consumption-monthly?' . $queryString;
+    $this->periodChart  = '/chart/wall-time-period?'  . $queryString;
+    $this->monthlyChart = '/chart/wall-time-monthly?' . $queryString;
   }
 }

@@ -41,25 +41,25 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
 {
 
   /**
-   * Execute the cpu consumption period action.
+   * Execute the wall time period action.
    *
    * @return void
    */
-  public function executeCpuConsumptionPeriod()
+  public function executeWallTimePeriod()
   {
     $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    Ubmod_Model_Chart::renderCpuConsumptionPeriod($params);
+    Ubmod_Model_Chart::renderWallTimePeriod($params);
   }
 
   /**
-   * Execute the cpu consumption monthly action.
+   * Execute the wall time monthly action.
    *
    * @return void
    */
-  public function executeCpuConsumptionMonthly()
+  public function executeWallTimeMonthly()
   {
     $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    Ubmod_Model_Chart::renderCpuConsumptionMonthly($params);
+    Ubmod_Model_Chart::renderWallTimeMonthly($params);
   }
 
   /**
