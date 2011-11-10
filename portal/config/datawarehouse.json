@@ -16,23 +16,27 @@
     }, {
       "name": "dim_cluster",
       "attributes": [
-        "cluster"
+        "name",
+        "display_name"
       ]
     }, {
       "name": "dim_queue",
       "attributes": [
-        "queue"
+        "name",
+        "display_name"
       ]
     }, {
       "name": "dim_user",
       "attributes": [
-        "user",
+        "name",
+        "display_name",
         "tags"
       ]
     }, {
       "name": "dim_group",
       "attributes": [
-        "group"
+        "name",
+        "display_name"
       ]
     }, {
       "name": "dim_tags",
