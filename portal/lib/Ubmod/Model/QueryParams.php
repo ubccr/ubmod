@@ -211,6 +211,13 @@ class Ubmod_Model_QueryParams
   protected $_tag = null;
 
   /**
+   * Tag key.
+   *
+   * @var string
+   */
+  protected $_tagKey = null;
+
+  /**
    * Model name for use with the query builder.
    *
    * @var string
@@ -321,6 +328,10 @@ class Ubmod_Model_QueryParams
 
     if (isset($params['tag']) && $params['tag'] !== '') {
       $query->setTag($params['tag']);
+    }
+
+    if (isset($params['tag_key']) && $params['tag_key'] !== '') {
+      $query->setTagKey($params['tag_key']);
     }
 
     if (isset($params['model']) && $params['model'] !== '') {
@@ -1040,6 +1051,38 @@ class Ubmod_Model_QueryParams
   public function hasTag()
   {
     return $this->_tag !== null;
+  }
+
+  /**
+   * Set the tag key.
+   *
+   * @param string $tag The tag key.
+   *
+   * @return void
+   */
+  public function setTagKey($tag)
+  {
+    $this->_tagKey = $tag;
+  }
+
+  /**
+   * Get the tag key.
+   *
+   * @return string The tag key.
+   */
+  public function getTagKey()
+  {
+    return $this->_tagKey;
+  }
+
+  /**
+   * Check if the tag key is set.
+   *
+   * @return bool True if the tag key is set.
+   */
+  public function hasTagKey()
+  {
+    return $this->_tagKey !== null;
   }
 
   /**

@@ -83,6 +83,10 @@ class Ubmod_Model_Chart
       $query['tag'] = $params->getTag();
     }
 
+    if ($params->hasTagKey()) {
+      $query['tag_key'] = $params->getTagKey();
+    }
+
     // Append time to prevent browser caching
     $query['t'] = time();
 
@@ -125,6 +129,10 @@ class Ubmod_Model_Chart
 
     if ($params->hasTag()) {
       $parts[] = 'Tag: ' . $params->getTag();
+    }
+
+    if ($params->hasTagKey()) {
+      $parts[] = 'Tag Key: ' . $params->getTagKey();
     }
 
     return implode(', ', $parts);
@@ -548,6 +556,74 @@ class Ubmod_Model_Chart
   }
 
   /**
+   * Create a tag utilization pie chart and send it to the browser.
+   *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
+   * @return void
+   */
+  public static function renderTagPie(Ubmod_Model_QueryParams $params)
+  {
+    $params->setOrderByColumn('wallt');
+    $params->setOrderByDescending(TRUE);
+
+    $total = 0;
+    $other = 0;
+    $count = 0;
+    $max   = 11;
+
+    $tags = array();
+    $time   = array();
+    foreach (Ubmod_Model_Tag::getActivityList($params) as $tag) {
+      if ($tag['wallt'] == 0) { continue; }
+
+      if ($count < $max) {
+        $tags[] = $tag['tag_value'];
+        $time[] = $tag['wallt'];
+      } else {
+        $other += $tag['wallt'];
+      }
+      $total += $tag['wallt'];
+      $count++;
+    }
+
+    if ($total > 0) {
+      while (list($i, $t) = each($time)) {
+        $percentage = round($t / $total * 100);
+
+        // Don't include tags with a small percentage. Add them to the
+        // remaining tags. This improves the display of the pie chart
+        // labels.
+        if ($percentage <= 2) {
+          unset($tags[$i]);
+          unset($time[$i]);
+          $other += $t;
+        } else {
+          $tags[$i] .= " ($percentage%)";
+        }
+      }
+
+      // Don't include the remaining tags if the percentage is too
+      // small. This prevents problems when rendering the pie chart.
+      if ($other / $total > 0.0028) {
+        $percentage = round($other / $total * 100);
+        if ($percentage < 1) { $percentage = '<1'; }
+        $tags[] = "Remaining\nTags ($percentage%)";
+        $time[] = $other;
+      }
+    }
+
+    self::renderPieChart(array(
+      'width'    => 400,
+      'height'   => 350,
+      'title'    => 'Tag Utilization',
+      'subtitle' => self::getSubtitle($params),
+      'labels'   => $tags,
+      'series'   => $time,
+    ));
+  }
+
+  /**
    * Create a user utilization bar chart and send it to the browser.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
@@ -611,6 +687,40 @@ class Ubmod_Model_Chart
       'subtitle' => self::getSubtitle($params),
       'yLabel'   => 'Wall Time (Days)',
       'labels'   => $groups,
+      'series'   => $time,
+    ));
+  }
+
+  /**
+   * Create a tag utilization bar chart and send it to the browser.
+   *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
+   * @return void
+   */
+  public static function renderTagBar(Ubmod_Model_QueryParams $params)
+  {
+    $params->setModel('tag');
+    $params->setLimitRowCount(21);
+    $params->setOrderByColumn('wallt');
+    $params->setOrderByDescending(TRUE);
+
+    $tags = array();
+    $time = array();
+    foreach (Ubmod_Model_Tag::getActivityList($params) as $tag) {
+      if ($tag['wallt'] == 0) { continue; }
+
+      $tags[] = $tag['tag_value'];
+      $time[] = $tag['wallt'];
+    }
+
+    self::renderBarChart(array(
+      'width'    => 400,
+      'height'   => 350,
+      'title'    => 'Tag Utilization',
+      'subtitle' => self::getSubtitle($params),
+      'yLabel'   => 'Wall Time (Days)',
+      'labels'   => $tags,
       'series'   => $time,
     ));
   }
@@ -803,6 +913,102 @@ class Ubmod_Model_Chart
       'xLabel'     => 'Month',
       'labels'     => $monthNames,
       'series'     => $serieForGroup,
+      'legendMode' => LEGEND_VERTICAL,
+    ));
+  }
+
+  /**
+   * Create a tag utilization stacked area chart and send it to the browser.
+   *
+   * @param Ubmod_Model_QueryParams $params The query parameters.
+   *
+   * @return void
+   */
+  public static function renderTagStackedArea(
+    Ubmod_Model_QueryParams $params)
+  {
+    $params->setModel('tag');
+    $params->setOrderByColumn('wallt');
+    $params->setOrderByDescending(TRUE);
+
+    $months = Ubmod_Model_TimeInterval::getMonths($params);
+
+    $maxTags    = 11;
+    $otherTag   = 'Remaining Tags';
+    $tags       = array();
+    $monthNames = array();
+    $haveOther  = false;
+
+    // array( monthKey => array( tag => wallt, ... ), ... )
+    $serieForMonth = array();
+
+    foreach ($months as $monthKey => $month) {
+
+      $tagCount = 0;
+      $tagWallt = array();
+      $otherWallt = 0;
+
+      $time = mktime(0, 0, 0, $month['month'], 1, $month['year']);
+      $monthNames[] = date("M 'y", $time);
+
+      $monthParams = clone $params;
+      $monthParams->clearTimeInterval();
+      $monthParams->setYear($month['year']);
+      $monthParams->setMonth($month['month']);
+
+      foreach (Ubmod_Model_Tag::getActivityList($monthParams) as $tag) {
+        if ($tag['wallt'] == 0) { continue; }
+
+        if ($tagCount < $maxTags) {
+          $tagWallt[$tag['tag_value']] = $tag['wallt'];
+        } else {
+          $otherWallt += $tag['wallt'];
+        }
+        $tagCount++;
+      }
+
+      // Don't include "other tags" here
+      $tags = array_merge($tags, array_keys($tagWallt));
+
+      if ($otherWallt > 0) {
+        $haveOther = true;
+        $tagWallt[$otherTag] = $otherWallt;
+      }
+
+      $serieForMonth[$monthKey] = $tagWallt;
+    }
+
+    $tags = array_unique($tags);
+
+    // The "other tags" should be listed last
+    if ($haveOther) {
+      $tags[] = $otherTag;
+    }
+
+    // array( tag => array( wallt, ... ), ... )
+    $serieForTag = array();
+
+    foreach ($tags as $tag) {
+      $serie = array();
+      foreach ($months as $monthKey => $month) {
+        if (isset($serieForMonth[$monthKey][$tag])) {
+          $serie[] = $serieForMonth[$monthKey][$tag];
+        } else {
+          $serie[] = 0;
+        }
+      }
+      $serieForTag[$tag] = $serie;
+    }
+
+    self::renderStackedAreaChart(array(
+      'width'      => 400,
+      'height'     => 350,
+      'title'      => 'Monthly Tag Utilization',
+      'subtitle'   => self::getSubtitle($params),
+      'yLabel'     => 'Wall Time (Days)',
+      'xLabel'     => 'Month',
+      'labels'     => $monthNames,
+      'series'     => $serieForTag,
       'legendMode' => LEGEND_VERTICAL,
     ));
   }

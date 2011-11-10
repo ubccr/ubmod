@@ -29,7 +29,8 @@
             <li<?php if ($controller == "user") { echo ' class="menu-active"'; } ?>><a href="/user">User Detail</a></li>
             <li<?php if ($controller == "group") { echo ' class="menu-active"'; } ?>><a href="/group">Group Detail</a></li>
             <li<?php if ($controller == "queue") { echo ' class="menu-active"'; } ?>><a href="/queue">Queue Detail</a></li>
-            <li<?php if ($controller == "tag") { echo ' class="menu-active"'; } ?>><a href="/tag">Tags</a></li>
+            <li<?php if ($controller == "tag") { echo ' class="menu-active"'; } ?>><a href="/tag">User Tags</a></li>
+            <li<?php if ($controller == "tag") { echo ' class="menu-active"'; } ?>><a href="/tag/keys">Tag Reports</a></li>
             <li<?php if ($controller == "about") {echo ' class="menu-active"'; } ?>><a href="/about">About UBMoD</a></li>
           </ul>
         </div></div>

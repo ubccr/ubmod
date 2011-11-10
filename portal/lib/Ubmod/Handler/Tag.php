@@ -101,6 +101,44 @@ class Ubmod_Handler_Tag
   }
 
   /**
+   * Help for the "keyList" action.
+   *
+   * @return void
+   */
+  public function keyListHelp()
+  {
+    $desc = 'Returns a list of tag keys. Results will be an array where'
+      . ' individual records will consist of (name).';
+    $options = array(
+      'query' => 'Return tag keys that begin with this string.',
+    );
+    return Ubmod_RestResponse::factory(TRUE, $desc, $options);
+  }
+
+  /**
+   * Returns a list of tag keys.
+   *
+   * @param array $arguments
+   * @param array $postData
+   *
+   * @return Ubmod_RestResponse
+   */
+  public function keyListAction(array $arguments, array $postData = NULL)
+  {
+    $tagKeys = Ubmod_Model_Tag::getKeysMatching($arguments['query']);
+
+    $keys = array();
+    foreach ($tagKeys as $key) {
+      $keys[] = array('name' => $key);
+    }
+
+    return Ubmod_RestResponse::factory(TRUE, NULL, array(
+      'total' => count($keys),
+      'keys'  => $keys,
+    ));
+  }
+
+  /**
    * Help for the "activity" action.
    *
    * @return void

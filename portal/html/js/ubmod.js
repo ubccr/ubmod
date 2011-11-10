@@ -221,6 +221,16 @@ Ext.Loader.onReady(function () {
     });
 
     /**
+     * Tag key model.
+     */
+    Ext.define('Ubmod.model.TagKey', {
+        extend: 'Ext.data.Model',
+        fields: [
+            'name'
+        ]
+    });
+
+    /**
      * Application model.
      *
      * Stores the state of the application and provides an event to
@@ -663,6 +673,26 @@ Ext.Loader.onReady(function () {
                     simpleSortMode: true,
                     url: '/api/rest/json/tag/list',
                     reader: { type: 'json', root: 'tags' }
+                }
+            });
+            this.callParent([config]);
+        }
+    });
+
+    /**
+     * Tag key store.
+     */
+    Ext.define('Ubmod.store.TagKey', {
+        extend: 'Ext.data.Store',
+        constructor: function (config) {
+            config = config || {};
+            Ext.apply(config, {
+                model: 'Ubmod.model.TagKey',
+                proxy: {
+                    type: 'ajax',
+                    simpleSortMode: true,
+                    url: '/api/rest/json/tag/keyList',
+                    reader: { type: 'json', root: 'keys' }
                 }
             });
             this.callParent([config]);
@@ -1144,6 +1174,8 @@ Ext.Loader.onReady(function () {
         },
 
         reload: function () {
+            if (!this.model.isReady()) { return; }
+
             var params = this.model.getRestParams();
             Ext.merge(this.tagActivity.proxy.extraParams, params);
             this.tagActivity.load();
@@ -1219,6 +1251,11 @@ Ext.Loader.onReady(function () {
 
                 if (tag === '') {
                     Ext.Msg.alert('Error', 'Please enter a tag');
+                    return;
+                } else if (tag.indexOf('=') === -1) {
+                    Ext.Msg.alert('Error', 'Tags must be key value pairs' +
+                        ' joined with an equals sign (e.g.' +
+                        ' department=chemistry).');
                     return;
                 }
 
@@ -1379,6 +1416,53 @@ Ext.Loader.onReady(function () {
     });
 
     /**
+     * Panel used to display charts determined by tag keys.
+     */
+    Ext.define('Ubmod.widget.TagKeyPanel', {
+        extend: 'Ext.Container',
+
+        constructor: function (config) {
+            config = config || {};
+
+            this.model = config.model;
+
+            this.callParent([config]);
+        },
+
+        initComponent: function () {
+            this.tagKeyInput = Ext.create('Ubmod.widget.TagKeyInput', {
+                margin: '0 0 0 5'
+            });
+
+            this.tagKeyInput.on('select', this.reload, this);
+
+            this.report = Ext.create('Ubmod.widget.Partial', {
+                model: this.model,
+                url: '/tag/keyDetails'
+            });
+
+            this.items = [
+                {
+                    xtype: 'container',
+                    layout: { type: 'hbox', align: 'middle' },
+                    items: [
+                        { xtype: 'component', html: 'Tag Key:' },
+                        this.tagKeyInput
+                    ]
+                },
+                this.report
+            ];
+
+            this.callParent(arguments);
+        },
+
+        reload: function () {
+            this.report.params = { tag_key: this.tagKeyInput.getValue() };
+            this.report.reload();
+        }
+    });
+
+    /**
      * Tag auto-completing combo box.
      */
     Ext.define('Ubmod.widget.TagInput', {
@@ -1390,6 +1474,28 @@ Ext.Loader.onReady(function () {
             Ext.apply(config, {
                 store: 'tagStore',
                 displayField: 'name',
+                hideLabel: true,
+                emptyText: 'Tag...',
+                minChars: 1
+            });
+
+            this.callParent([config]);
+        }
+    });
+
+    /**
+     * Tag key auto-completing combo box.
+     */
+    Ext.define('Ubmod.widget.TagKeyInput', {
+        extend: 'Ext.form.field.ComboBox',
+
+        constructor: function (config) {
+            config = config || {};
+
+            Ext.apply(config, {
+                store: Ext.create('Ubmod.store.TagKey'),
+                displayField: 'name',
+                emptyText: 'Tag Key...',
                 hideLabel: true,
                 minChars: 1
             });
@@ -1650,6 +1756,23 @@ Ext.Loader.onReady(function () {
 
                 config.model = model;
                 panel = Ext.create('Ubmod.widget.TagPanel', config);
+                widgets.push(panel);
+
+                return panel;
+            },
+
+            /**
+             * Creates a tag key report panel.
+             *
+             * @param {Object} config Constructor arguments.
+             *
+             * @return {Ubmod.widget.TagKeyPanel}
+             */
+            createTagKeyPanel: function (config) {
+                var panel;
+
+                config.model = model;
+                panel = Ext.create('Ubmod.widget.TagKeyPanel', config);
                 widgets.push(panel);
 
                 return panel;

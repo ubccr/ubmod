@@ -142,6 +142,8 @@ class Ubmod_Model_User
    */
   public static function addTag($tag, array $userIds)
   {
+    $tag = Ubmod_Model_Tag::normalize($tag);
+
     $selectSql = "
       SELECT COALESCE(tags, '[]') AS tags
       FROM dim_user
@@ -202,6 +204,11 @@ class Ubmod_Model_User
   public static function updateTags($userId, array $tags)
   {
     $tags = array_unique($tags);
+
+    foreach ($tags as &$tag) {
+      $tag = Ubmod_Model_Tag::normalize($tag);
+    }
+
     natcasesort($tags);
     $tags = array_values($tags);
 

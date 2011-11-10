@@ -59,6 +59,16 @@ class Ubmod_Controller_Tag extends Ubmod_BaseController
   }
 
   /**
+   * Execute the "keys" action.
+   *
+   * @return void
+   */
+  public function executeKeys()
+  {
+
+  }
+
+  /**
    * Execute the "details" action.
    *
    * @return void
@@ -75,5 +85,23 @@ class Ubmod_Controller_Tag extends Ubmod_BaseController
     $this->pieChart  = '/chart/user-pie?'  . $queryString;
     $this->barChart  = '/chart/user-bar?'  . $queryString;
     $this->areaChart = '/chart/user-area?' . $queryString;
+  }
+
+  /**
+   * Execute the "keyDetails" action.
+   *
+   * @return void
+   */
+  public function executeKeyDetails()
+  {
+    $params = Ubmod_Model_QueryParams::factory($this->getPostData());
+
+    $this->tagKey   = $params->getTagKey();
+    $this->interval = Ubmod_Model_TimeInterval::getByParams($params);
+    $queryString    = Ubmod_Model_Chart::getQueryString($params);
+
+    $this->pieChart  = '/chart/tag-pie?'  . $queryString;
+    $this->barChart  = '/chart/tag-bar?'  . $queryString;
+    $this->areaChart = '/chart/tag-area?' . $queryString;
   }
 }

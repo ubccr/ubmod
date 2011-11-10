@@ -157,4 +157,37 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
     $params = Ubmod_Model_QueryParams::factory($this->getGetData());
     Ubmod_Model_Chart::renderGroupStackedArea($params);
   }
+
+  /**
+   * Execute the tag pie chart action.
+   *
+   * @return void
+   */
+  public function executeTagPie()
+  {
+    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
+    Ubmod_Model_Chart::renderTagPie($params);
+  }
+
+  /**
+   * Execute the tag bar chart action.
+   *
+   * @return void
+   */
+  public function executeTagBar()
+  {
+    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
+    Ubmod_Model_Chart::renderTagBar($params);
+  }
+
+  /**
+   * Execute the tag stacked area chart action.
+   *
+   * @return void
+   */
+  public function executeTagArea()
+  {
+    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
+    Ubmod_Model_Chart::renderTagStackedArea($params);
+  }
 }
