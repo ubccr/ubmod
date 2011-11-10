@@ -428,18 +428,22 @@ class Ubmod_Model_Chart
 
     while (list($i, $t) = each($time)) {
       $percentage = round($t / $total * 100);
-      if ($percentage > 2) {
-        $users[$i] .= " ($percentage%)";
-      } else {
 
-        // Don't include users with a small percentage.
-        $other += $t;
+      // Don't include users with a small percentage. Add them to the
+      // remaining users. This improves the display of the pie chart
+      // labels.
+      if ($percentage <= 2) {
         unset($users[$i]);
         unset($time[$i]);
+        $other += $t;
+      } else {
+        $users[$i] .= " ($percentage%)";
       }
     }
 
-    if ($other > 0) {
+    // Don't include the remaining users if the percentage is too small.
+    // This prevents problems when rendering the pie chart.
+    if ($other / $total > 0.0022) {
       $percentage = round($other / $total * 100);
       if ($percentage < 1) { $percentage = '<1'; }
       $users[] = "Remaining\nUsers ($percentage%)";
@@ -521,18 +525,22 @@ class Ubmod_Model_Chart
 
     while (list($i, $t) = each($time)) {
       $percentage = round($t / $total * 100);
-      if ($percentage > 2) {
-        $groups[$i] .= " ($percentage%)";
-      } else {
 
-        // Don't include groups with a small percentage.
-        $other += $t;
+      // Don't include groups with a small percentage. Add them to the
+      // remaining groups. This improves the display of the pie chart
+      // labels.
+      if ($percentage <= 2) {
         unset($groups[$i]);
         unset($time[$i]);
+        $other += $t;
+      } else {
+        $groups[$i] .= " ($percentage%)";
       }
     }
 
-    if ($other > 0) {
+    // Don't include the remaining groups if the percentage is too
+    // small. This prevents problems when rendering the pie chart.
+    if ($other / $total > 0.0022) {
       $percentage = round($other / $total * 100);
       if ($percentage < 1) { $percentage = '<1'; }
       $groups[] = "Remaining\nGroups ($percentage%)";
