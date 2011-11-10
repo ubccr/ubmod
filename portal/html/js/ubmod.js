@@ -121,6 +121,19 @@ Ext.Loader.onReady(function () {
             if (!Ext.isObject(field)) {
                 this.fireEvent('fieldchanged', field, value);
             }
+        },
+
+        isReady: function () {
+            return this.get('interval') !== undefined &&
+                this.get('cluster') !== undefined;
+        },
+
+        getIntervalId: function () {
+            return this.get('interval').get('interval_id');
+        },
+
+        getClusterId: function () {
+            return this.get('cluster').get('cluster_id');
         }
     });
 
@@ -359,8 +372,6 @@ Ext.Loader.onReady(function () {
             Ubmod.widget.StatsPanel.superclass.initComponent.call(this);
 
             this.grid.on('itemdblclick', function (grid, record) {
-                var interval = this.model.get('interval'),
-                    cluster = this.model.get('cluster');
                 this.detailTabs.push({
                     id: record.get(this.recordFormat.id),
                     tab: this.add({
@@ -371,8 +382,8 @@ Ext.Loader.onReady(function () {
                             autoLoad: true,
                             params: {
                                 id: record.get(this.recordFormat.id),
-                                interval_id: interval.get('interval_id'),
-                                cluster_id: cluster.get('cluster_id')
+                                interval_id: this.model.getIntervalId(),
+                                cluster_id: this.model.getClusterId()
                             }
                         }
                     }).show()
@@ -383,26 +394,24 @@ Ext.Loader.onReady(function () {
         },
 
         reload: function () {
-            var interval = this.model.get('interval'),
-                cluster = this.model.get('cluster');
-            if (interval !== undefined && cluster !== undefined) {
-                Ext.merge(this.store.proxy.extraParams, {
-                    interval_id: interval.get('interval_id'),
-                    cluster_id: cluster.get('cluster_id')
-                });
-                this.store.load();
+            if (!this.model.isReady()) { return; }
 
-                Ext.each(this.detailTabs, function (detail) {
-                    detail.tab.loader.load({
-                        url: this.detailsUrl,
-                        params: {
-                            id: detail.id,
-                            interval_id: interval.get('interval_id'),
-                            cluster_id: cluster.get('cluster_id')
-                        }
-                    });
-                }, this);
-            }
+            Ext.merge(this.store.proxy.extraParams, {
+                interval_id: this.model.getIntervalId(),
+                cluster_id: this.model.getClusterId()
+            });
+            this.store.load();
+
+            Ext.each(this.detailTabs, function (detail) {
+                detail.tab.loader.load({
+                    url: this.detailsUrl,
+                    params: {
+                        id: detail.id,
+                        interval_id: this.model.getIntervalId(),
+                        cluster_id: this.model.getClusterId()
+                    }
+                });
+            }, this);
         }
     });
 
@@ -521,17 +530,14 @@ Ext.Loader.onReady(function () {
         },
 
         reload: function () {
-            var interval = this.model.get('interval'),
-                cluster = this.model.get('cluster');
-            if (interval !== undefined && cluster !== undefined) {
-                Ext.get(this.element).load({
-                    url: this.url,
-                    params: {
-                        interval_id: interval.get('interval_id'),
-                        cluster_id: cluster.get('cluster_id')
-                    }
-                });
-            }
+            if (!this.model.isReady()) { return; }
+            Ext.get(this.element).load({
+                url: this.url,
+                params: {
+                    interval_id: this.model.getIntervalId(),
+                    cluster_id: this.model.getClusterId()
+                }
+            });
         }
     });
 
