@@ -922,13 +922,13 @@ Ext.Loader.onReady(function () {
         extend: 'Ext.panel.Panel',
         constructor: function (config) {
             config = config || {};
-            Ext.apply(config, {
-            });
             Ubmod.widget.TagReport.superclass.constructor.call(this, config);
         },
 
         initComponent: function () {
-            var toolbar, tagInput, updateButton;
+            var toolbar, tagInput, updateButton, detailsPanel;
+
+            detailsPanel = Ext.create('Ext.panel.Panel', { height: 200 });
 
             tagInput = Ext.create('Ext.form.field.ComboBox', {
                 store: Ext.create('Ubmod.store.Tag'),
@@ -939,10 +939,19 @@ Ext.Loader.onReady(function () {
             });
             updateButton = Ext.create('Ext.Button', { text: 'View Report' });
 
+            updateButton.on('click', function () {
+                var partial = Ubmod.app.createPartial({
+                    url: '/tag/details',
+                    params: { tag: tagInput.getValue() }
+                });
+                detailsPanel.add(partial);
+            }, this);
+
             toolbar = Ext.create('Ext.toolbar.Toolbar', {
                 items: ['Tag:', tagInput, updateButton]
             });
 
+            this.items       = [detailsPanel];
             this.dockedItems = [toolbar];
 
             Ubmod.widget.TagReport.superclass.initComponent.call(this);
@@ -1035,22 +1044,31 @@ Ext.Loader.onReady(function () {
 
         constructor: function (config) {
             config = config || {};
-            this.model = config.model;
-            this.url = config.url;
-            this.element = config.element;
+
+            this.model  = config.model;
+            this.url    = config.url;
+            this.params = config.params || {};
+
             Ubmod.widget.Partial.superclass.constructor.call(this, config);
         },
 
         initComponent: function () {
-            var listener = function () { this.reload(); };
-            this.model.on('restparamschanged', listener, this);
+            var reload = function () { this.reload(); };
+
+            // Add a listener to update the partial when the model
+            // parameters have changed. Remove it 
+            this.model.on('restparamschanged', reload, this);
+
             this.on('destroy', function () {
-                this.model.removeListener('restparamschanged', listener, this);
+                this.model.removeListener('restparamschanged', reload, this);
             }, this);
 
-            Ubmod.widget.Partial.superclass.initComponent.call(this);
+            // Don't load the initial partial until after the component
+            // has been rendered. This ensures the component element has
+            // been added to the DOM.
+            this.on('afterrender', reload, this);
 
-            this.reload();
+            Ubmod.widget.Partial.superclass.initComponent.call(this);
         },
 
         /**
@@ -1058,10 +1076,11 @@ Ext.Loader.onReady(function () {
          */
         reload: function () {
             if (!this.model.isReady()) { return; }
-            Ext.get(this.element).load({
+
+            Ext.get(this.getEl()).load({
                 loadMask: 'Loading...',
                 url: this.url,
-                params: this.model.getRestParams()
+                params: Ext.apply(this.params, this.model.getRestParams())
             });
         }
     });
@@ -1073,6 +1092,13 @@ Ext.Loader.onReady(function () {
         var model, widgets;
 
         return {
+
+            /**
+             * Initiliaze the application.
+             *
+             * Creates the app model, adds listeners to that model and
+             * the menu links. Also creates the toolbar.
+             */
             init: function () {
 
                 model = Ext.create('Ubmod.model.App');
@@ -1114,29 +1140,56 @@ Ext.Loader.onReady(function () {
             },
 
             /**
-             * Add an element that should be updated whenever the time
-             * interval or cluster is changed
+             * Create an element that should be updated whenever the
+             * time interval or cluster is changed.
+             *
+             * @param {object} config
+             *
+             * @return {Ubmod.widget.Partial}
              */
-            addPartial: function (config) {
+            createPartial: function (config) {
+                var partial;
+
                 config.model = model;
-                widgets.push(Ext.create('Ubmod.widget.Partial', config));
+                partial = Ext.create('Ubmod.widget.Partial', config);
+                widgets.push(partial);
+
+                return partial;
             },
 
             /**
-             * Add a stats panel that should be updated whenever the time
-             * interval or cluster is changed
+             * Create a stats panel that should be updated whenever the
+             * time interval or cluster is changed.
+             *
+             * @param {object} config
+             *
+             * @return {Ubmod.widget.StatsPanel}
              */
-            addStatsPanel: function (config) {
+            createStatsPanel: function (config) {
+                var panel;
+
                 config.model = model;
-                widgets.push(Ext.create('Ubmod.widget.StatsPanel', config));
+                panel = Ext.create('Ubmod.widget.StatsPanel', config);
+                widgets.push(panel);
+
+                return panel;
             },
 
-
             /**
-             * Add a tag management panel
+             * Create a tag management panel.
+             *
+             * @param {object} config
+             *
+             * @return {Ubmod.widget.TagPanel}
              */
-            addTagPanel: function (config) {
-                widgets.push(Ext.create('Ubmod.widget.TagPanel', config));
+            createTagPanel: function (config) {
+                var panel;
+
+                config.model = model;
+                panel = Ext.create('Ubmod.widget.TagPanel', config);
+                widgets.push(panel);
+
+                return panel;
             }
         };
     }());

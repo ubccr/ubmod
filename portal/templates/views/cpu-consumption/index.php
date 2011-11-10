@@ -1,7 +1,7 @@
 <script type="text/javascript">
 Ext.onReady(function() {
-    Ubmod.app.addPartial({
-        element: 'dash-chart',
+    Ubmod.app.createPartial({
+        renderTo: 'dash-chart',
         url: '/cpu-consumption/chart'
     });
 });

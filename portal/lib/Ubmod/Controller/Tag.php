@@ -49,12 +49,22 @@ class Ubmod_Controller_Tag extends Ubmod_BaseController
 {
 
   /**
-   * Execute the index action.
+   * Execute the "index" action.
    *
    * @return void
    */
   public function executeIndex()
   {
 
+  }
+
+  /**
+   * Execute the "details" action.
+   *
+   * @return void
+   */
+  public function executeDetails()
+  {
+    $this->tag = Ubmod_Model_Tag::getActivity($this->getPostData());
   }
 }

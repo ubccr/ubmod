@@ -110,4 +110,62 @@ class Ubmod_Model_Tag
 
     return $tags;
   }
+
+  /**
+   * Returns activity data for a given tag.
+   *
+   * @param array $params The query parameters.
+   *
+   * @return array
+   */
+  public static function getActivity($params)
+  {
+    $timeClause = Ubmod_Model_Interval::whereClause($params);
+
+    $sql = "
+      SELECT
+        COUNT(*)                      AS jobs,
+        ROUND(SUM(wallt) / 86400, 1)  AS wallt,
+        ROUND(AVG(wallt) / 86400, 1)  AS avg_wallt,
+        ROUND(MAX(wallt) / 86400, 1)  AS max_wallt,
+        ROUND(SUM(cput)  / 86400, 1)  AS cput,
+        ROUND(AVG(cput)  / 86400, 1)  AS avg_cput,
+        ROUND(MAX(cput)  / 86400, 1)  AS max_cput,
+        ROUND(AVG(mem)   / 1024,  1)  AS avg_mem,
+        ROUND(MAX(mem)   / 1024,  1)  AS max_mem,
+        ROUND(AVG(vmem)  / 1024,  1)  AS avg_vmem,
+        ROUND(MAX(vmem)  / 1024,  1)  AS max_vmem,
+        ROUND(AVG(wait)  / 3600,  1)  AS avg_wait,
+        ROUND(AVG(exect) / 3600,  1)  AS avg_exect,
+        ROUND(MAX(nodes),         1)  AS max_nodes,
+        ROUND(AVG(nodes),         1)  AS avg_nodes,
+        ROUND(MAX(cpus),          1)  AS max_cpus,
+        ROUND(AVG(cpus),          1)  AS avg_cpus
+      FROM fact_job
+      JOIN dim_cluster USING (dim_cluster_id)
+      JOIN dim_date    USING (dim_date_id)
+      JOIN dim_user    USING (dim_user_id)
+      WHERE
+            dim_cluster_id = :cluster_id
+        AND $timeClause
+        AND tags LIKE :tag
+    ";
+
+    $dbh = Ubmod_DbService::dbh();
+    $sql = Ubmod_DataWarehouse::optimize($sql);
+    $stmt = $dbh->prepare($sql);
+    $r = $stmt->execute(array(
+      ':cluster_id' => $params['cluster_id'],
+      ':tag'        => '%' . json_encode($params['tag']) . '%',
+    ));
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
+    $tag = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $tag['name'] = $params['tag'];
+
+    return $tag;
+  }
 }
