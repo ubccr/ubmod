@@ -292,19 +292,26 @@ Ext.Loader.onReady(function () {
          *   interval.
          */
         setInterval: function (interval) {
+            var start, end;
+
             this.set('interval', interval);
 
             // If the new interval is not a custom date range, update
             // the start and end dates so that they may be used when
             // a custom date range is selected.
             if (!interval.isCustomDateRange()) {
-                this.set('startDate', interval.get('start'));
-                this.set('endDate', interval.get('end'));
+                start = interval.get('start');
+                end   = interval.get('end');
 
-                // The event is only fired for non-custom date ranges
-                // beacuse the parameters for custom date ranges aren't
-                // considered changed until new dates have been set.
+                this.set('startDate', start);
+                this.set('endDate',   end);
+
+                // These events are only fired for non-custom date
+                // ranges beacuse the parameters for custom date ranges
+                // aren't considered changed until new dates have been
+                // set.
                 this.fireEvent('restparamschanged');
+                this.fireEvent('daterangechanged', start, end)
             }
 
             this.fireEvent('intervalchanged', interval);
