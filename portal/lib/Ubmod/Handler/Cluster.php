@@ -29,13 +29,13 @@ class Ubmod_Handler_Cluster
   public function listHelp()
   {
     $desc = '';
-    return RestResponse::factory(TRUE, $desc);
+    return Ubmod_RestResponse::factory(TRUE, $desc);
   }
 
   public function listAction(array $arguments, array $postData = NULL)
   {
     $clusters = Ubmod_Model_Cluster::getAll();
-    return RestResponse::factory(TRUE, NULL, array(
+    return Ubmod_RestResponse::factory(TRUE, NULL, array(
       'data'  => $clusters,
       'total' => count($clusters),
     ));

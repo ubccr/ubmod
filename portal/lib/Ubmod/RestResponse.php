@@ -15,7 +15,7 @@
 // http://www.iana.org/assignments/media-types/application/
 // ================================================================================
 
-class RestResponse
+class Ubmod_RestResponse
 {
   //
   private $_success = TRUE;
@@ -40,7 +40,7 @@ class RestResponse
                                  array $results = array(),
                                  array $headers = array())
   {
-    return new RestResponse($success, $msg, $results, $headers);
+    return new Ubmod_RestResponse($success, $msg, $results, $headers);
   }  // factory
 
   // --------------------------------------------------------------------------------
@@ -239,6 +239,6 @@ class RestResponse
   public function results() { return $this->_results; }
   public function headers() { return $this->_headers; }
 
-}  // class RestResponse
+}  // class Ubmod_RestResponse
 
 ?>

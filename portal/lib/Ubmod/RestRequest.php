@@ -23,8 +23,8 @@
 //
 // In order for an entity to be valid, a class must be defined to serve as a
 // handler for that entity (e.g., "Ubmod_Handler_Chromosome" will handle a
-// "chromosome" entity).  The controller will instantiate RestRequest to process
-// an API request.  RestRequest will perform validation on the request URL,
+// "chromosome" entity).  The controller will instantiate Ubmod_RestRequest to process
+// an API request.  Ubmod_RestRequest will perform validation on the request URL,
 // parse it, and attempt to load a handler for the entity.  If a handler is not
 // found, an "invalid url" message is returned.  This allows the API to be
 // extended simply by the addition of a handler class.
@@ -50,10 +50,7 @@
 //
 // ================================================================================
 
-require_once("iRestRequestHandler.php");
-require_once("RestResponse.php");
-
-class RestRequest
+class Ubmod_RestRequest
 {
   // Full API call url sent to the server including the query string
   private $_fullApiCall = NULL;
@@ -92,7 +89,7 @@ class RestRequest
   private $_response = NULL;
 
   // --------------------------------------------------------------------------------
-  // Factory pattern.  Generate RestRequest objects based on the API call.
+  // Factory pattern.  Generate Ubmod_RestRequest objects based on the API call.
   //
   // @param $requestUrl The full url of the request, including any path
   //   information preceeding the api URL as well as any query string
@@ -108,7 +105,7 @@ class RestRequest
   //   using the "[]" construct (e.g. redfly_id[]).
   // @param $postData The contents of the form POST, if any, as parsed by PHP.
   //
-  // @returns RestRequest object
+  // @returns Ubmod_RestRequest object
   // --------------------------------------------------------------------------------
 
   public static function factory($requestUrl,
@@ -117,11 +114,11 @@ class RestRequest
                                  $getData = NULL,
                                  $postData = NULL)
   {
-    return new RestRequest($requestUrl, $pathInfo, $queryString, $getData, $postData);
+    return new Ubmod_RestRequest($requestUrl, $pathInfo, $queryString, $getData, $postData);
   }  // factory()
 
   // --------------------------------------------------------------------------------
-  // Construct a new instance of a RestRequest object.  The constructor is
+  // Construct a new instance of a Ubmod_RestRequest object.  The constructor is
   // private and is meant to be called by the factory() pattern.
   //
   // @param $requestUrl The full url of the request, including any path
@@ -135,7 +132,7 @@ class RestRequest
   // @param $queryString The http query string, if any.
   // @param $postData The contents of the form POST, if any.
   //
-  // @returns RestRequest object
+  // @returns Ubmod_RestRequest object
   // --------------------------------------------------------------------------------
 
   private function __construct($requestUrl,
@@ -232,7 +229,7 @@ class RestRequest
   private function verifyReturnFormat()
   {
     $formatMethod = $this->_returnFormat . "Format";
-    return method_exists('RestResponse', $formatMethod);
+    return method_exists('Ubmod_RestResponse', $formatMethod);
   }  // verifyReturnFormat()
 
   // --------------------------------------------------------------------------------
@@ -247,7 +244,6 @@ class RestRequest
   // Load the request handler and create an instance via it's factory() method.
   //
   // @throws Exception If the request handler was not found
-  // @throws Exception If the request handler does not implement iRestRequestHandler
   // --------------------------------------------------------------------------------
 
   private function loadHandler()
@@ -264,20 +260,12 @@ class RestRequest
     $handlerFactory = $handlerClassName . "::factory()";
     eval("\$this->_handler = $handlerFactory;");
 
-    /*
-    if ( ! in_array("iRestRequestHandler",  class_implements($handlerClassName) ) )
-    {
-      $msg = "$handlerClassName does not implement iRestRequestHandler";
-      throw new Exception($msg);
-    }
-    */
-
   }  // loadHandler()
 
   // --------------------------------------------------------------------------------
   // Process the request.
   //
-  // @returns A RestResponse object
+  // @returns A Ubmod_RestResponse object
   // --------------------------------------------------------------------------------
 
   public function process()
@@ -292,7 +280,7 @@ class RestRequest
         eval($evalStr);
       } else {
         $this->_response =
-          RestResponse::factory(TRUE, "No help available for action '" . $this->_action . "'");
+          Ubmod_RestResponse::factory(TRUE, "No help available for action '" . $this->_action . "'");
       }
       return $this->_response;
     }  // if ( $this->_displayHelp )
@@ -369,6 +357,6 @@ class RestRequest
     return $this->formatResponse();
   }  // __toString()
 
-}  // class RestRequest
+}  // class Ubmod_RestRequest
 
 ?>

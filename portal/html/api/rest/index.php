@@ -19,7 +19,7 @@ $postData    = $_POST;
 
 try
 {
-  $request = RestRequest::factory($requestUrl, $pathInfo, $queryString,
+  $request = Ubmod_RestRequest::factory($requestUrl, $pathInfo, $queryString,
     $getData, $postData);
   $request->process();
   $response = $request->formatResponse();
@@ -30,7 +30,7 @@ try
   }
   print $response;
 } catch ( Exception $e ) {
-  $response = RestResponse::factory(FALSE, $e->getMessage());
+  $response = Ubmod_RestResponse::factory(FALSE, $e->getMessage());
   print "<pre>" . print_r($response, 1) . "</pre>";
 }
 

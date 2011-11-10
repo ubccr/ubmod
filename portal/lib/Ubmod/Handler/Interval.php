@@ -29,13 +29,13 @@ class Ubmod_Handler_Interval
   public function listHelp()
   {
     $desc = '';
-    return RestResponse::factory(TRUE, $desc);
+    return Ubmod_RestResponse::factory(TRUE, $desc);
   }
 
   public function listAction(array $arguments, array $postData = NULL)
   {
     $intervals = Ubmod_Model_Interval::getAll();
-    return RestResponse::factory(TRUE, NULL, array(
+    return Ubmod_RestResponse::factory(TRUE, NULL, array(
       'data'  => $intervals,
       'total' => count($intervals),
     ));

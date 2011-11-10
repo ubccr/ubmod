@@ -24,12 +24,12 @@ class Ubmod_Handler_User
   public function listHelp()
   {
     $desc = '';
-    return RestResponse::factory(TRUE, $desc);
+    return Ubmod_RestResponse::factory(TRUE, $desc);
   }
 
   public function listAction(array $arguments, array $postData = NULL)
   {
-    return RestResponse::factory(TRUE, NULL, array(
+    return Ubmod_RestResponse::factory(TRUE, NULL, array(
       'total' => Ubmod_Model_User::getActivityCount($postData),
       'users' => Ubmod_Model_User::getActivities($postData),
     ));
