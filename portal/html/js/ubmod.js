@@ -453,9 +453,13 @@ Ext.Loader.onReady(function () {
                 proxy: {
                     type: 'ajax',
                     simpleSortMode: true,
-                    url: '/api/rest/json/user/activity',
-                    reader: { type: 'json', root: 'users' },
-                    extraParams: { sort: 'wallt', dir: 'DESC' }
+                    url: '/api/rest/json/job/activity',
+                    reader: { type: 'json', root: 'activity' },
+                    extraParams: {
+                        model: 'user',
+                        sort: 'wallt',
+                        dir: 'DESC'
+                    }
                 }
             });
             this.callParent([config]);
@@ -531,9 +535,13 @@ Ext.Loader.onReady(function () {
                 proxy: {
                     type: 'ajax',
                     simpleSortMode: true,
-                    url: '/api/rest/json/group/activity',
-                    reader: { type: 'json', root: 'groups' },
-                    extraParams: { sort: 'wallt', dir: 'DESC' }
+                    url: '/api/rest/json/job/activity',
+                    reader: { type: 'json', root: 'activity' },
+                    extraParams: {
+                        model: 'group',
+                        sort: 'wallt',
+                        dir: 'DESC'
+                    }
                 }
             });
             this.callParent([config]);
@@ -555,9 +563,13 @@ Ext.Loader.onReady(function () {
                 proxy: {
                     type: 'ajax',
                     simpleSortMode: true,
-                    url: '/api/rest/json/queue/activity',
-                    reader: { type: 'json', root: 'queues' },
-                    extraParams: { sort: 'wallt', dir: 'DESC' }
+                    url: '/api/rest/json/job/activity',
+                    reader: { type: 'json', root: 'activity' },
+                    extraParams: {
+                        model: 'queue',
+                        sort: 'wallt',
+                        dir: 'DESC'
+                    }
                 }
             });
             this.callParent([config]);

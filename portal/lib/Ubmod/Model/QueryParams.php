@@ -169,6 +169,13 @@ class Ubmod_Model_QueryParams
   protected $_filter = null;
 
   /**
+   * GROUP BY column.
+   *
+   * @var string
+   */
+  protected $_groupByColumn = null;
+
+  /**
    * ORDER BY column.
    *
    * @var string
@@ -202,6 +209,13 @@ class Ubmod_Model_QueryParams
    * @var string
    */
   protected $_tag = null;
+
+  /**
+   * Model name for use with the query builder.
+   *
+   * @var string
+   */
+  protected $_model = null;
 
   /**
    * Private constructor.
@@ -287,6 +301,10 @@ class Ubmod_Model_QueryParams
       $query->setFilter($params['filter']);
     }
 
+    if (isset($params['group_by'])) {
+      $query->setGroupByColumn($params['group_by']);
+    }
+
     if (isset($params['sort'])) {
       $query->setOrderByColumn($params['sort']);
     }
@@ -305,6 +323,10 @@ class Ubmod_Model_QueryParams
 
     if (isset($params['tag'])) {
       $query->setTag($params['tag']);
+    }
+
+    if (isset($params['model'])) {
+      $query->setModel($params['model']);
     }
 
     return $query;
@@ -809,6 +831,38 @@ class Ubmod_Model_QueryParams
   }
 
   /**
+   * Set the GROUP BY column.
+   *
+   * @param string $groupByColumn The GROUP BY column.
+   *
+   * @return void
+   */
+  public function setGroupByColumn($groupByColumn)
+  {
+    $this->_groupByColumn = $groupByColumn;
+  }
+
+  /**
+   * Get the GROUP BY column.
+   *
+   * @return string The GROUP BY column.
+   */
+  public function getGroupByColumn()
+  {
+    return $this->_groupByColumn;
+  }
+
+  /**
+   * Check if the GROUP BY column is set.
+   *
+   * @return bool True if the the GROUP BY column is set.
+   */
+  public function hasGroupByColumn()
+  {
+    return $this->_groupByColumn !== null;
+  }
+
+  /**
    * Set the ORDER BY column.
    *
    * @param string $orderByColumn The ORDER BY column.
@@ -956,6 +1010,38 @@ class Ubmod_Model_QueryParams
   public function hasTag()
   {
     return $this->_tag !== null;
+  }
+
+  /**
+   * Set the model.
+   *
+   * @param string $model The model.
+   *
+   * @return void
+   */
+  public function setModel($model)
+  {
+    $this->_model = $model;
+  }
+
+  /**
+   * Get the model.
+   *
+   * @return string The model.
+   */
+  public function getModel()
+  {
+    return $this->_model;
+  }
+
+  /**
+   * Check if the model is set.
+   *
+   * @return bool True if the model is set.
+   */
+  public function hasModel()
+  {
+    return $this->_model !== null;
   }
 
   /**

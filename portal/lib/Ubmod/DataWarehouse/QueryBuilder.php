@@ -137,7 +137,9 @@ class Ubmod_DataWarehouse_QueryBuilder
   public function addSelectExpression($expression, $alias = null)
   {
     if ($alias === null) {
-      $alias = "'$expression'";
+      $alias = "`$expression`";
+    } else {
+      $alias = "`$alias`";
     }
 
     $this->_selectExpressions[$alias] = $expression;
@@ -330,6 +332,63 @@ class Ubmod_DataWarehouse_QueryBuilder
       }
     }
 
+    // If the parameters include a model add a predetermined set of
+    // parameters that result in each row of the query results to
+    // represent a instance of that model.
+    if ($params->hasModel()) {
+      $model = $params->getModel();
+      if ($model === 'user') {
+        $this->addDimensionTable('dim_user');
+        $this->setGroupBy('dim_user_id');
+        $this->setFilterExpression('dim_user.name');
+        $this->addSelectExpressions(array(
+          'user_id'      => 'dim_user_id',
+          'user'         => 'dim_user.name',
+          'display_name' => 'COALESCE(dim_user.display_name, dim_user.name)',
+        ));
+      } elseif ($model === 'group') {
+        $this->addDimensionTable('dim_group');
+        $this->setGroupBy('dim_group_id');
+        $this->setFilterExpression('dim_group.name');
+        $this->addSelectExpressions(array(
+          'group_id'     => 'dim_group_id',
+          'group_name'   => 'dim_group.name',
+          'display_name' => 'COALESCE(dim_group.display_name,'
+                          . ' dim_group.name)',
+          'user_count'   => 'COUNT(DISTINCT dim_user_id)',
+        ));
+      } elseif ($model === 'queue') {
+        $this->addDimensionTable('dim_queue');
+        $this->setGroupBy('dim_queue_id');
+        $this->setFilterExpression('dim_queue.name');
+        $this->addSelectExpressions(array(
+          'queue_id'     => 'dim_queue_id',
+          'queue'        => 'dim_queue.name',
+          'display_name' => 'COALESCE(dim_queue.display_name,'
+                          . ' dim_queue.name)',
+          'user_count'   => 'COUNT(DISTINCT dim_user_id)',
+          'group_count'  => 'COUNT(DISTINCT dim_group_id)',
+        ));
+      } elseif ($model === 'cluster') {
+        $this->addDimensionTable('dim_cluster');
+        $this->setGroupBy('dim_cluster_id');
+        $this->setFilterExpression('dim_cluster.name');
+        $this->addSelectExpressions(array(
+          'cluster_id'   => 'dim_cluster_id',
+          'cluster'      => 'dim_cluster.name',
+          'display_name' => 'COALESCE(dim_cluster.display_name,'
+                          . ' dim_cluster.name)',
+          'user_count'   => 'COUNT(DISTINCT dim_user_id)',
+          'group_count'  => 'COUNT(DISTINCT dim_group_id)',
+          'queue_count'  => 'COUNT(DISTINCT dim_queue_id)',
+        ));
+      }
+    }
+
+    if ($params->hasGroupByColumn()) {
+      $this->_groupBy = $params->getGroupByColumn();
+    }
+
     if ($params->hasFilter() && $this->_filterExpression !== null) {
       $this->addWhereClause($this->_filterExpression, 'LIKE',
         '%' . $params->getFilter() . '%');
@@ -343,7 +402,9 @@ class Ubmod_DataWarehouse_QueryBuilder
 
     if ($params->hasOrderByColumn()) {
       $column = $params->getOrderByColumn();
-      if (isset($this->_selectExpressions[$column])) {
+
+      # FIXME shouldn't check _selectExpressions directly
+      if (isset($this->_selectExpressions["`$column`"])) {
         $this->_orderBy = $column;
         $this->_orderByDesc = $params->isOrderByDescending();
       }
@@ -373,40 +434,11 @@ class Ubmod_DataWarehouse_QueryBuilder
 
     $sql = 'SELECT ' . implode(', ', $selectExpressions);
 
-    $sql .= ' FROM ' . $this->_factTable;
+    $sql .= ' FROM ' . $this->_getTableReferences();
 
-    foreach ($this->_dimensionTables as $dimension) {
-      $sql .= " JOIN $dimension USING (${dimension}_id)";
-    }
+    list($where, $params) = $this->_getWhereClause();
 
-    $params = array();
-
-    if (count($this->_whereClauses) > 0) {
-      $whereClauses = array();
-
-      foreach ($this->_whereClauses as $clause) {
-        list($column, $oper, $value) = $clause;
-
-        $key = ":$column";
-
-        if ($value !== null) {
-
-          // Prevent duplicate keys
-          $origKey = $key;
-          $count = 0;
-          do {
-            $count++;
-            $key = $origKey . $count;
-          } while (isset($params[$key]));
-
-          $params[$key] = $value;
-        }
-
-        $whereClauses[] = "$column $oper $key";
-      }
-
-      $sql .= ' WHERE ' . implode(' AND ', $whereClauses);
-    }
+    $sql .= $where;
 
     if ($this->_groupBy !== null) {
       $sql .= ' GROUP BY ' . $this->_groupBy;
@@ -427,6 +459,96 @@ class Ubmod_DataWarehouse_QueryBuilder
     }
 
     $sql = Ubmod_DataWarehouse::optimize($sql);
+
+    return array($sql, $params);
+  }
+
+  /**
+   * Create a SQL query to count the number of rows that would be
+   * returned by the corresponding query, if no LIMIT is applied.
+   *
+   * The query SELECTs a single expression aliased to "count".
+   *
+   * @return array The first element is a SQL string, the second element
+   *   is an array of bind parameters.
+   */
+  public function buildCountQuery()
+  {
+    $sql = 'SELECT ';
+
+    if ($this->_groupBy !== null) {
+      $sql .= 'COUNT(DISTINCT ' . $this->_groupBy . ')';
+    } else {
+      $sql .= 'COUNT(*)';
+    }
+    $sql .= ' AS count ';
+
+    $sql .= ' FROM ' . $this->_getTableReferences();
+
+    list($where, $params) = $this->_getWhereClause();
+
+    $sql .= $where;
+
+    $sql = Ubmod_DataWarehouse::optimize($sql);
+
+    return array($sql, $params);
+  }
+
+  /**
+   * Returns a SQL fragment containing the table references to be
+   * included in the query.
+   *
+   * @return string
+   */
+  private function _getTableReferences()
+  {
+    $sql = $this->_factTable;
+
+    foreach ($this->_dimensionTables as $dimension) {
+      $sql .= " JOIN $dimension USING (${dimension}_id)";
+    }
+
+    return $sql;
+  }
+
+  /**
+   * Returns the WHERE clause to be used in the query. Also returns an
+   * array of bind parameters.
+   *
+   * @return array The first element is a SQL string, the second element
+   *   is an array of bind parameters.
+   */
+  private function _getWhereClause()
+  {
+    if (count($this->_whereClauses) === 0) {
+      return array('', array());
+    }
+
+    $params       = array();
+    $whereClauses = array();
+
+    foreach ($this->_whereClauses as $clause) {
+      list($column, $oper, $value) = $clause;
+
+      $key = str_replace('.', '_', ":$column");
+
+      if ($value !== null) {
+
+        // Prevent duplicate parameter keys
+        $origKey = $key;
+        $count = 0;
+        do {
+          $count++;
+          $key = $origKey . $count;
+        } while (isset($params[$key]));
+
+        $params[$key] = $value;
+      }
+
+      $whereClauses[] = "$column $oper $key";
+    }
+
+    $sql = ' WHERE ' . implode(' AND ', $whereClauses);
 
     return array($sql, $params);
   }

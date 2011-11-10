@@ -389,6 +389,7 @@ class Ubmod_Model_Chart
    */
   public static function renderUserPie(Ubmod_Model_QueryParams $params)
   {
+    $params->setModel('user');
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(1);
 
@@ -399,7 +400,7 @@ class Ubmod_Model_Chart
 
     $users = array();
     $time  = array();
-    foreach (Ubmod_Model_User::getActivity($params) as $user) {
+    foreach (Ubmod_Model_Job::getActivity($params) as $user) {
       if ($count < $max) {
         $users[] = $user['user'];
         $time[]  = $user['wallt'];
@@ -438,13 +439,14 @@ class Ubmod_Model_Chart
    */
   public static function renderUserBar(Ubmod_Model_QueryParams $params)
   {
+    $params->setModel('user');
     $params->setLimitRowCount(21);
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(1);
 
     $users = array();
     $time  = array();
-    foreach (Ubmod_Model_User::getActivity($params) as $user) {
+    foreach (Ubmod_Model_Job::getActivity($params) as $user) {
       $users[] = $user['user'];
       $time[]  = $user['wallt'];
     }
@@ -469,6 +471,7 @@ class Ubmod_Model_Chart
    */
   public static function renderGroupPie(Ubmod_Model_QueryParams $params)
   {
+    $params->setModel('group');
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(1);
 
@@ -479,7 +482,7 @@ class Ubmod_Model_Chart
 
     $groups = array();
     $time   = array();
-    foreach (Ubmod_Model_Group::getActivity($params) as $group) {
+    foreach (Ubmod_Model_Job::getActivity($params) as $group) {
       if ($count < $max) {
         $groups[] = $group['group_name'];
         $time[]   = $group['wallt'];
@@ -518,13 +521,14 @@ class Ubmod_Model_Chart
    */
   public static function renderGroupBar(Ubmod_Model_QueryParams $params)
   {
+    $params->setModel('group');
     $params->setLimitRowCount(21);
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(1);
 
     $groups = array();
     $time   = array();
-    foreach (Ubmod_Model_Group::getActivity($params) as $group) {
+    foreach (Ubmod_Model_Job::getActivity($params) as $group) {
       $groups[] = $group['group_name'];
       $time[]   = $group['wallt'];
     }
@@ -550,6 +554,7 @@ class Ubmod_Model_Chart
   public static function renderGroupStackedArea(
     Ubmod_Model_QueryParams $params)
   {
+    $params->setModel('group');
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(1);
 
@@ -577,7 +582,7 @@ class Ubmod_Model_Chart
       $monthParams->setYear($month['year']);
       $monthParams->setMonth($month['month']);
 
-      foreach (Ubmod_Model_Group::getActivity($monthParams) as $group) {
+      foreach (Ubmod_Model_Job::getActivity($monthParams) as $group) {
         if ($groupCount < $maxGroups) {
           $groupWallt[$group['group_name']] = $group['wallt'];
         } else {
@@ -639,6 +644,7 @@ class Ubmod_Model_Chart
   public static function renderUserStackedArea(
     Ubmod_Model_QueryParams $params)
   {
+    $params->setModel('user');
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(1);
 
@@ -666,7 +672,7 @@ class Ubmod_Model_Chart
       $monthParams->setYear($month['year']);
       $monthParams->setMonth($month['month']);
 
-      foreach (Ubmod_Model_User::getActivity($monthParams) as $user) {
+      foreach (Ubmod_Model_Job::getActivity($monthParams) as $user) {
         if ($userCount < $maxUsers) {
           $userWallt[$user['user']] = $user['wallt'];
         } else {
