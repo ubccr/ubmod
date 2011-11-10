@@ -64,7 +64,7 @@ class UBMoD_Controller_Front
         require TEMPLATE_DIR . '/layouts/default.php';
       }
     } catch (Exception $e) {
-      echo '<pre>' . $e->getMessage() . '</pre>';
+      error_log($e->getMessage());
     }
   }
 
