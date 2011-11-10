@@ -266,48 +266,43 @@ Ext.Loader.onReady(function () {
         },
 
         /**
-         * Override the set method to fire events.
-         *
-         * @see Ext.data.Model
+         * @return {Boolean} True if both fields are defined.
          */
-        set: function (field, value) {
-            this.callParent([field, value]);
+        isReady: function () {
+            return this.get('interval') && this.get('cluster');
+        },
 
-            // @see Ext.data.Model.set for implementation details
-            if (!Ext.isObject(field)) {
+        /**
+         * Set the current time interval.
+         *
+         * @param {Ubmod.model.TimeInterval} interval The new time
+         *   interval.
+         */
+        setInterval: function (interval) {
+            this.set('interval', interval);
 
-                // Ignore individual dates
-                if (field === 'startDate' || field === 'endDate') {
-                    return;
-                }
+            // If the new interval is not a custom date range, update
+            // the start and end dates so that they may be used when
+            // a custom date range is selected.
+            if (!interval.isCustomDateRange()) {
+                this.set('startDate', interval.get('start'));
+                this.set('endDate', interval.get('end'));
 
-                if (field === 'interval') {
-                    this.fireEvent('intervalchanged', value);
-
-                    if (value.isCustomDateRange()) {
-
-                        // Prevent restparamschanged event
-                        return;
-
-                    } else {
-                        this.set('startDate', value.get('start'));
-                        this.set('endDate', value.get('end'));
-
-                        this.fireEvent('daterangechanged', value.get('start'),
-                                value.get('end'));
-                    }
-                }
-
+                // The event is only fired for non-custom date ranges
+                // beacuse the parameters for custom date ranges aren't
+                // considered changed until new dates have been set.
                 this.fireEvent('restparamschanged');
             }
         },
 
         /**
-         * @return {Boolean} True if both fields are defined.
+         * Set the current cluster.
+         *
+         * @param {Ubmod.model.Cluster} cluster The new cluster.
          */
-        isReady: function () {
-            return this.get('interval') !== undefined &&
-                this.get('cluster') !== undefined;
+        setCluster: function (cluster) {
+            this.set('cluster', cluster);
+            this.fireEvent('restparamschanged');
         },
 
         /**
@@ -382,6 +377,7 @@ Ext.Loader.onReady(function () {
          */
         setTag: function (tag) {
             this.set('tag', tag);
+            this.fireEvent('restparamschanged');
         },
 
         /**
@@ -746,12 +742,12 @@ Ext.Loader.onReady(function () {
         initComponent: function () {
             this.intervalCombo = Ext.create('Ubmod.widget.TimeInterval');
             this.intervalCombo.on('select', function (combo, records) {
-                this.model.set('interval', records[0]);
+                this.model.setInterval(records[0]);
             }, this);
 
             this.clusterCombo = Ext.create('Ubmod.widget.Cluster');
             this.clusterCombo.on('select', function (combo, records) {
-                this.model.set('cluster', records[0]);
+                this.model.setCluster(records[0]);
             }, this);
 
             this.startDate    = Ext.create('Ext.form.field.Date');
