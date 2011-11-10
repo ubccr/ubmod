@@ -141,20 +141,11 @@ sub process_directory {
     my @files;
     if ( my $date = get_event_max_date() ) {
         $Logger->info("Shredding files dated after $date.");
-        @files = @{ get_file_names($date) };
+        @files = @{ get_file_names( $dir, $date ) };
     }
     else {
         $Logger->info('Empty database, shredding all files.');
-
-        my $dh;
-        if ( !opendir $dh, $dir ) {
-            $Logger->fatal("Could not open dir '$dir': $!");
-            exit 1;
-        }
-        @files = sort readdir($dh);
-
-        # Skip hidden files
-        @files = grep { !/^\./ } @files;
+        @files = @{ get_file_names($dir) };
     }
 
     # Prepend directory path
@@ -283,7 +274,7 @@ sub get_event_max_date {
 }
 
 sub get_file_names {
-    my ($date) = @_;
+    my ( $dir, $date ) = @_;
 
     my $today = DateTime->now();
     $today->set(
@@ -292,28 +283,55 @@ sub get_file_names {
         second => 0,
     );
 
-    my $current;
-    if ( $date =~ /^(\d{4})-(\d{2})-(\d{2})$/ ) {
-        $current = DateTime->new(
+    if ( !defined $date ) {
+
+        # If no date is specified return all files in the directory
+        # excluding the file for today.
+
+        my $dh;
+        if ( !opendir $dh, $dir ) {
+            $Logger->fatal("Could not open dir '$dir': $!");
+            exit 1;
+        }
+        my @files = sort readdir($dh);
+
+        # Skip hidden files
+        @files = grep { !/^\./ } @files;
+
+        # Remove file for today
+        my $today_file = $today->strftime('%Y%m%d');
+        @files = grep { $_ ne $today_file } @files;
+
+        return \@files;
+    }
+    elsif ( $date =~ /^(\d{4})-(\d{2})-(\d{2})$/ ) {
+
+        # If a date is specified return all files in the directory dated
+        # after that date and before today.
+
+        my $current = DateTime->new(
             year  => $1,
             month => $2,
             day   => $3,
         );
         $current->add( days => 1 );
+
+        my @files;
+
+        while ( DateTime->compare( $current, $today ) < 0 ) {
+            push @files, $current->strftime('%Y%m%d');
+            $current->add( days => 1 );
+        }
+
+        # Remove nonexistent files
+        @files = grep { -f File::Spec->catfile( $dir, $_ ) } @files;
+
+        return \@files;
     }
     else {
         $Logger->fatal("Invalid date format: '$date'");
         exit 1;
     }
-
-    my @files;
-
-    while ( DateTime->compare( $current, $today ) < 0 ) {
-        push @files, $current->strftime('%Y%m%d');
-        $current->add( days => 1 );
-    }
-
-    return \@files;
 }
 
 sub transform_data {
