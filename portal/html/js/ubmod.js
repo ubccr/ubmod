@@ -229,7 +229,8 @@ Ext.Loader.onReady(function () {
             { name: 'interval',  type: 'Ubmod.model.TimeInterval' },
             { name: 'cluster',   type: 'Ubmod.model.Cluster' },
             { name: 'startDate', type: 'string' },
-            { name: 'endDate',   type: 'string' }
+            { name: 'endDate',   type: 'string' },
+            { name: 'tag',       type: 'string' }
         ],
 
         constructor: function (config) {
@@ -344,6 +345,24 @@ Ext.Loader.onReady(function () {
         },
 
         /**
+         * Get the currently selected tag.
+         *
+         * @return {String} The current tag.
+         */
+        getTag: function () {
+            return this.get('tag');
+        },
+
+        /**
+         * Set the current tag.
+         *
+         * @param {String} tag The new tag.
+         */
+        setTag: function (tag) {
+            this.set('tag', tag);
+        },
+
+        /**
          * @return {Object} The parameters defining the currently
          *   selected time interval.
          */
@@ -368,7 +387,10 @@ Ext.Loader.onReady(function () {
          * @return {Object} The parameters needed for REST requests.
          */
         getRestParams: function () {
-            var params = { 'cluster_id': this.getClusterId() };
+            var params = {
+                'cluster_id': this.getClusterId(),
+                'tag':        this.getTag()
+            };
 
             Ext.apply(params, this.getIntervalRestParams());
 
@@ -687,7 +709,7 @@ Ext.Loader.onReady(function () {
     });
 
     /**
-     * Toolbar for time period and cluster.
+     * Toolbar used to select filters that are applied to queries.
      */
     Ext.define('Ubmod.widget.Toolbar', {
         extend: 'Ext.toolbar.Toolbar',
@@ -743,6 +765,19 @@ Ext.Loader.onReady(function () {
                 ]
             });
 
+            this.tagInput = Ext.create('Ubmod.widget.TagInput', {
+                enableKeyEvents: true
+            });
+            this.tagInput.on('select', function (input) {
+                this.model.setTag(input.getValue());
+            }, this);
+            this.tagInput.on('keyup', function (input, e) {
+                var value = input.getRawValue();
+                if (e.getKey() === e.BACKSPACE && value.length === 0) {
+                    this.model.setTag('');
+                }
+            }, this);
+
             this.renderTo = Ext.get('toolbar');
             this.items = [
                 'Cluster:',
@@ -751,7 +786,9 @@ Ext.Loader.onReady(function () {
                 'Period:',
                 this.intervalCombo,
                 { xtype: 'tbspacer', width: 20 },
-                this.dateRange
+                this.dateRange,
+                'Tag:',
+                this.tagInput
             ];
 
             this.callParent(arguments);
@@ -1337,7 +1374,6 @@ Ext.Loader.onReady(function () {
                 store: Ext.create('Ubmod.store.Tag'),
                 displayField: 'name',
                 hideLabel: true,
-                hideTrigger: true,
                 minChars: 1
             });
 
