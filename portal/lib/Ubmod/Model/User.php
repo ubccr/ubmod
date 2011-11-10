@@ -139,13 +139,13 @@ class Ubmod_Model_User
     $users = $stmt->fetchAll();
 
     if ($params->hasFilter()) {
-      $filter   = $params->getFilter();
+      $filter   = strtolower($params->getFilter());
       $filtered = array();
 
       foreach ($users as $user) {
-        if (   strpos($user['name'],         $filter) !== false
-            || strpos($user['display_name'], $filter) !== false
-            || strpos($user['group'],        $filter) !== false) {
+        if (   strpos(strtolower($user['name']),         $filter) !== false
+            || strpos(strtolower($user['display_name']), $filter) !== false
+            || strpos(strtolower($user['group']),        $filter) !== false) {
           $filtered[] = $user;
         }
       }

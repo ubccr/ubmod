@@ -258,12 +258,12 @@ class Ubmod_Model_Tag
 
     // Filter tags by keyword
     if ($params->hasFilter()) {
-      $filter = $params->getFilter();
+      $filter = strtolower($params->getFilter());
 
       $filtered = array();
 
       foreach ($tags as $tag) {
-        if (strpos($tag, $filter) !== false) {
+        if (strpos(strtolower($tag), $filter) !== false) {
           $filtered[] = $tag;
         }
       }
