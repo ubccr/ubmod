@@ -41,8 +41,8 @@ Ext.onReady(function () {
         <a id="swap-link" class="editLink" href="#">Bar</a></td>
     </tr>
     <tr>
-      <td><img class="pie" src="<?php echo $userPieChart ?>" /><img class="bar" style="display:none;" src="<?php echo $userBarChart ?>" /></td>
-      <td><img class="pie" src="<?php echo $groupPieChart ?>" /><img class="bar" style="display:none;" src="<?php echo $groupBarChart ?>" /></td>
+      <td style="vertical-align:top;"><img class="pie" src="<?php echo $userPieChart ?>" /><img class="bar" style="display:none;" src="<?php echo $userBarChart ?>" /></td>
+      <td style="vertical-align:top;"><img class="pie" src="<?php echo $groupPieChart ?>" /><img class="bar" style="display:none;" src="<?php echo $groupBarChart ?>" /></td>
     </tr>
     <?php if ($interval['multi_month']): ?>
       <tr>
