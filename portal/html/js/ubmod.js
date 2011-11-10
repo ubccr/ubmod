@@ -475,12 +475,18 @@ Ext.Loader.onReady(function () {
                     var href = this.getAttribute('href');
                     this.on('click', function (evt, el) {
 
-                        // Destroy any existing widgets.
-                        Ext.each(widgets, function () { this.destroy(); });
-                        widgets = [];
-
                         // Load the new content.
-                        Ext.get('content').load({ url: href, scripts: true });
+                        Ext.get('content').load({
+                            url: href,
+                            scripts: true,
+                            success: function () {
+                                // Destroy any existing widgets.
+                                Ext.each(widgets, function () {
+                                    this.destroy();
+                                });
+                                widgets = [];
+                            }
+                        });
 
                         // Update menu CSS classes.
                         Ext.select('#menu-list li').each(function () {
