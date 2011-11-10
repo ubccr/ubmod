@@ -343,6 +343,7 @@ Ext.Loader.onReady(function () {
             this.detailTabs = [];
 
             this.grid = Ext.create('Ubmod.widget.Grid', {
+                resizable: { pinned: true, handles: 's' },
                 title: config.gridTitle,
                 store: this.store,
                 label: this.recordFormat.label,
@@ -351,8 +352,7 @@ Ext.Loader.onReady(function () {
 
             Ext.apply(config, {
                 plain: true,
-                items: this.grid,
-                resizable: { pinned: true, handles: 's' }
+                items: this.grid
             });
 
             Ubmod.widget.StatsPanel.superclass.constructor.call(this, config);
