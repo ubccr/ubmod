@@ -1,5 +1,6 @@
 .svn
 CVS
+/apidocs
 /default.ini
 /portal/config/settings.ini
 /portal/html/js/ext-all.js
