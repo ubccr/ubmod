@@ -103,7 +103,10 @@ class Ubmod_Model_Chart
 
     if ($params->hasClusterId()) {
       $cluster = Ubmod_Model_Cluster::getById($params->getClusterId());
-      $name = $cluster['display_name'];
+      $name
+        = $cluster['display_name']
+        ? $cluster['display_name']
+        : $cluster['name'];
       $parts[] = "Cluster: $name";
     } else {
       $parts[] = "All Clusters";
