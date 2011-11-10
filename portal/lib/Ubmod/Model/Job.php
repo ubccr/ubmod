@@ -138,7 +138,12 @@ class Ubmod_Model_Job
   public static function getActivity(Ubmod_Model_QueryParams $params)
   {
     $activity = self::getActivityList($params);
-    return $activity[0];
+
+    if (count($activity) > 0) {
+      return $activity[0];
+    } else {
+      return null;
+    }
   }
 
   /**
