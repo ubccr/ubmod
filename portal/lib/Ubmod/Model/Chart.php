@@ -443,7 +443,7 @@ class Ubmod_Model_Chart
 
     // Don't include the remaining users if the percentage is too small.
     // This prevents problems when rendering the pie chart.
-    if ($other / $total > 0.0022) {
+    if ($other / $total > 0.0028) {
       $percentage = round($other / $total * 100);
       if ($percentage < 1) { $percentage = '<1'; }
       $users[] = "Remaining\nUsers ($percentage%)";
@@ -540,7 +540,7 @@ class Ubmod_Model_Chart
 
     // Don't include the remaining groups if the percentage is too
     // small. This prevents problems when rendering the pie chart.
-    if ($other / $total > 0.0022) {
+    if ($other / $total > 0.0028) {
       $percentage = round($other / $total * 100);
       if ($percentage < 1) { $percentage = '<1'; }
       $groups[] = "Remaining\nGroups ($percentage%)";
