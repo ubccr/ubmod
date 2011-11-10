@@ -154,7 +154,7 @@ class Ubmod_Model_Tag
       $filtered = array();
 
       foreach ($tags as $tag) {
-        if (!strpos($tag, $filter)) {
+        if (strpos($tag, $filter) !== false) {
           $filtered[] = $tag;
         }
       }
