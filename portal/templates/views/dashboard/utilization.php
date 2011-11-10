@@ -1,5 +1,5 @@
 <div class="labelHeading" style="font-weight: bold">
-Utilization for period from: <?php echo $interval['start'] ?> to: <?php echo $interval['end'] ?>
+Utilization for cluster: <?php echo $cluster['display_name'] ?> for period from: <?php echo $interval['start'] ?> to: <?php echo $interval['end'] ?>
 </div>
 <div>
 <table>

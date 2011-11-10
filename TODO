@@ -8,7 +8,3 @@ UBMoD - TODO
 - Write better install docs
 
 - Create standalone demo web application
-
-- RFE: Add cluster name for data in Dashboard view.  The "Utilization for
-  period...." title bar within the Dashboard view does not include the name of
-  the cluster for which the data is presented.
