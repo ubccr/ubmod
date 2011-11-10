@@ -405,7 +405,9 @@ Specify input file.
 
 =item B<-d>, B<--dir> I<directory>
 
-Specify accounting log directory.
+Specify accounting log directory. This option assumes that file names in
+the directory are formatted as YYYYMMDD. The file for the current day
+will be ignored.
 
 =item B<->
 
