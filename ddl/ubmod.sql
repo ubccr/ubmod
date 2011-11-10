@@ -611,22 +611,15 @@ BEGIN
   JOIN `dim_date` ON `fact_job`.`dim_date_id` = `dim_date`.`dim_date_id`
   JOIN `dim_timespan` ON
         `dim_date`.`month`         = `dim_timespan`.`month`
-    AND `dim_date`.`quarter`       = `dim_timespan`.`quarter`
-    AND `dim_date`.`year`          = `dim_timespan`.`year`
     AND `dim_date`.`last_7_days`   = `dim_timespan`.`last_7_days`
     AND `dim_date`.`last_30_days`  = `dim_timespan`.`last_30_days`
     AND `dim_date`.`last_90_days`  = `dim_timespan`.`last_90_days`
     AND `dim_date`.`last_365_days` = `dim_timespan`.`last_365_days`
   GROUP BY
-    `dim_timespan`.`month`,
-    `dim_timespan`.`quarter`,
-    `dim_timespan`.`year`,
-    `dim_timespan`.`last_7_days`,
-    `dim_timespan`.`last_30_days`,
-    `dim_timespan`.`last_90_days`,
-    `dim_timespan`.`last_365_days`,
+    `dim_timespan`.`dim_timespan_id`,
     `fact_job`.`dim_cluster_id`,
     `fact_job`.`dim_queue_id`,
+    `fact_job`.`dim_user_id`,
     `fact_job`.`dim_group_id`,
     `fact_job`.`dim_cpus_id`;
 END//
