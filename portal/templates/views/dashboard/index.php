@@ -27,13 +27,16 @@ Ext.onReady(function () {
     /*
     var url = "/dashboard/utilization";
     var toolbar = new PBSToolbar({el: 'dash-chart', displayUrl: url});
-     */
     Ext.get('dash-chart').load({
         url: '/dashboard/utilization',
             params: {
                 cluster_id: 1,
                 interval_id: 3
             }
+    });
+     */
+    Ext.onReady(function () {
+        Ubmod.app.setPage('dashboard');
     });
 });
 </script>

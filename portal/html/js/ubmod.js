@@ -223,7 +223,7 @@ Ext.Loader.onReady(function () {
         extend: 'Ext.toolbar.Toolbar',
         constructor: function (config) {
             config = config || {}
-            this.addEvents({ load: true, select: true });
+            this.addEvents({ load: true, change: true });
             Ubmod.widget.Cluster.superclass.constructor.call(this, config);
         },
         initComponent: function () {
@@ -248,7 +248,7 @@ Ext.Loader.onReady(function () {
                 select: {
                     fn: function () {
                         console.log('select');
-                        this.fireEvent('select');
+                        this.fireEvent('change');
                     },
                     scope: this
                 }
@@ -275,12 +275,31 @@ Ext.Loader.onReady(function () {
 
         return {
             init: function () {
+                Ext.select('#menu-list a').each(function (el) {
+                    var url = this.getAttribute('href');
+                    this.on('click', function (evt, el) {
+                        Ext.get('content').load({ url: url });
+                        Ext.select('#menu-list li').each(function () {
+                            this.removeCls('menu-active');
+                        });
+                        Ext.get(el).parent().addCls('menu-active');
+
+                    }, this, { stopEvent: true });
+                });
+
                 toolbar = Ext.create('Ubmod.widget.Toolbar', {
                     listeners: {
-                        load: function () { console.log('toolbar load'); },
-                        select: function () { console.log('toolbar select'); }
+                        load: function () {
+                            console.log('toolbar load: ' + currentPage);
+                        },
+                        change: function () {
+                            console.log('toolbar change: ' + currentPage);
+                        }
                     }
                 });
+            },
+            setPage: function (page) {
+                currentPage = page;
             }
         };
     }();

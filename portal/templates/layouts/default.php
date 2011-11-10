@@ -30,7 +30,7 @@
                 <li<?php if ($controller == "about") {echo ' class="menu-active"'; } ?>><a href="/about">About UBMoD</a></li>
             </ul>
         </div></div></td>
-        <td valign="top"><div class="content"><?php echo $content ?></div></td>
+        <td valign="top"><div id="content" class="content"><?php echo $content ?></div></td>
     </tr></table>
 </div>
 <div class="footer"><div class="footer-text">
