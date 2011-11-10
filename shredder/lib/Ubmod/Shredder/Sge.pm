@@ -83,7 +83,7 @@ my @resource_attributes = qw(
 my %resource_attributes = map { $_ => 1 } @resource_attributes;
 
 # These resource attributes may require formatting
-my %resource_formats = (
+my %attribute_formats = (
     s_data  => 'memory',
     h_data  => 'memory',
     s_stack => 'memory',
@@ -221,8 +221,8 @@ sub _parse_resource_list_options {
             next;
         }
 
-        if ( defined( $resource_formats{$key} ) ) {
-            my $parser = '_parse_' . $resource_formats{$key};
+        if ( defined( $attribute_formats{$key} ) ) {
+            my $parser = '_parse_' . $attribute_formats{$key};
             $value = $self->$parser($value);
         }
 
