@@ -422,59 +422,24 @@ class Ubmod_Model_Chart
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(TRUE);
 
-    $total = 0;
-    $other = 0;
-    $count = 0;
-    $max   = 11;
-
     $users = array();
     $time  = array();
     foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
       if ($user['wallt'] == 0) { continue; }
 
-      if ($count < $max) {
-        $users[] = $user['user'];
-        $time[]  = $user['wallt'];
-      } else {
-        $other += $user['wallt'];
-      }
-      $total += $user['wallt'];
-      $count++;
-    }
-
-    if ($total > 0) {
-      while (list($i, $t) = each($time)) {
-        $percentage = round($t / $total * 100);
-
-        // Don't include users with a small percentage. Add them to the
-        // remaining users. This improves the display of the pie chart
-        // labels.
-        if ($percentage <= 2) {
-          unset($users[$i]);
-          unset($time[$i]);
-          $other += $t;
-        } else {
-          $users[$i] .= " ($percentage%)";
-        }
-      }
-
-      // Don't include the remaining users if the percentage is too
-      // small. This prevents problems when rendering the pie chart.
-      if ($other / $total > 0.0028) {
-        $percentage = round($other / $total * 100);
-        if ($percentage < 1) { $percentage = '<1'; }
-        $users[] = "Remaining\nUsers ($percentage%)";
-        $time[]  = $other;
-      }
+      $users[] = $user['user'];
+      $time[]  = $user['wallt'];
     }
 
     self::renderPieChart(array(
-      'width'    => 400,
-      'height'   => 350,
-      'title'    => 'User Utilization',
-      'subtitle' => self::getSubtitle($params),
-      'labels'   => $users,
-      'series'   => $time,
+      'width'      => 400,
+      'height'     => 350,
+      'title'      => 'User Utilization',
+      'subtitle'   => self::getSubtitle($params),
+      'labels'     => $users,
+      'series'     => $time,
+      'maxSlices'  => 11,
+      'otherLabel' => "Remaining\nUsers",
     ));
   }
 
@@ -491,59 +456,24 @@ class Ubmod_Model_Chart
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(TRUE);
 
-    $total = 0;
-    $other = 0;
-    $count = 0;
-    $max   = 11;
-
     $groups = array();
     $time   = array();
     foreach (Ubmod_Model_Job::getActivityList($params) as $group) {
       if ($group['wallt'] == 0) { continue; }
 
-      if ($count < $max) {
-        $groups[] = $group['group_name'];
-        $time[]   = $group['wallt'];
-      } else {
-        $other += $group['wallt'];
-      }
-      $total += $group['wallt'];
-      $count++;
-    }
-
-    if ($total > 0) {
-      while (list($i, $t) = each($time)) {
-        $percentage = round($t / $total * 100);
-
-        // Don't include groups with a small percentage. Add them to the
-        // remaining groups. This improves the display of the pie chart
-        // labels.
-        if ($percentage <= 2) {
-          unset($groups[$i]);
-          unset($time[$i]);
-          $other += $t;
-        } else {
-          $groups[$i] .= " ($percentage%)";
-        }
-      }
-
-      // Don't include the remaining groups if the percentage is too
-      // small. This prevents problems when rendering the pie chart.
-      if ($other / $total > 0.0028) {
-        $percentage = round($other / $total * 100);
-        if ($percentage < 1) { $percentage = '<1'; }
-        $groups[] = "Remaining\nGroups ($percentage%)";
-        $time[]   = $other;
-      }
+      $groups[] = $group['group_name'];
+      $time[]   = $group['wallt'];
     }
 
     self::renderPieChart(array(
-      'width'    => 400,
-      'height'   => 350,
-      'title'    => 'Group Utilization',
-      'subtitle' => self::getSubtitle($params),
-      'labels'   => $groups,
-      'series'   => $time,
+      'width'      => 400,
+      'height'     => 350,
+      'title'      => 'Group Utilization',
+      'subtitle'   => self::getSubtitle($params),
+      'labels'     => $groups,
+      'series'     => $time,
+      'maxSlices'  => 11,
+      'otherLabel' => "Remaining\nGroups",
     ));
   }
 
@@ -559,59 +489,24 @@ class Ubmod_Model_Chart
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(TRUE);
 
-    $total = 0;
-    $other = 0;
-    $count = 0;
-    $max   = 11;
-
     $tags = array();
     $time   = array();
     foreach (Ubmod_Model_Tag::getActivityList($params) as $tag) {
       if ($tag['wallt'] == 0) { continue; }
 
-      if ($count < $max) {
-        $tags[] = $tag['tag_value'];
-        $time[] = $tag['wallt'];
-      } else {
-        $other += $tag['wallt'];
-      }
-      $total += $tag['wallt'];
-      $count++;
-    }
-
-    if ($total > 0) {
-      while (list($i, $t) = each($time)) {
-        $percentage = round($t / $total * 100);
-
-        // Don't include tags with a small percentage. Add them to the
-        // remaining tags. This improves the display of the pie chart
-        // labels.
-        if ($percentage <= 2) {
-          unset($tags[$i]);
-          unset($time[$i]);
-          $other += $t;
-        } else {
-          $tags[$i] .= " ($percentage%)";
-        }
-      }
-
-      // Don't include the remaining tags if the percentage is too
-      // small. This prevents problems when rendering the pie chart.
-      if ($other / $total > 0.0028) {
-        $percentage = round($other / $total * 100);
-        if ($percentage < 1) { $percentage = '<1'; }
-        $tags[] = "Remaining\nTags ($percentage%)";
-        $time[] = $other;
-      }
+      $tags[] = $tag['tag_value'];
+      $time[] = $tag['wallt'];
     }
 
     self::renderPieChart(array(
-      'width'    => 400,
-      'height'   => 350,
-      'title'    => 'Tag Utilization',
-      'subtitle' => self::getSubtitle($params),
-      'labels'   => $tags,
-      'series'   => $time,
+      'width'      => 400,
+      'height'     => 350,
+      'title'      => 'Tag Utilization',
+      'subtitle'   => self::getSubtitle($params),
+      'labels'     => $tags,
+      'series'     => $time,
+      'maxSlices'  => 11,
+      'otherLabel' => "Remaining\nTags",
     ));
   }
 
@@ -1018,14 +913,60 @@ class Ubmod_Model_Chart
       self::renderNoDataImage($params);
     }
 
+    $total  = 0;
+    $other  = 0;
+    $count  = 0;
+    $series = array();
+    $labels = array();
+
+    // Calculate total and "other" values, copy data into $series and
+    // $labels arrays.
+    foreach ($params['series'] as $i => $value) {
+      if ($count < $params['maxSlices']) {
+        $series[] = $value;
+        $labels[] = $params['labels'][$i];
+      } else {
+        $other += $value;
+      }
+
+      $total += $value;
+      $count++;
+    }
+
+    if ($total > 0) {
+      while (list($i, $t) = each($series)) {
+        $percentage = round($t / $total * 100);
+
+        // Don't include slices with a small percentage. Add them to the
+        // "other" slice. This improves the display of the pie chart
+        // labels.
+        if ($percentage <= 2) {
+          unset($labels[$i]);
+          unset($series[$i]);
+          $other += $t;
+        } else {
+          $labels[$i] .= " ($percentage%)";
+        }
+      }
+
+      // Don't include the remaining users if the percentage is too
+      // small. This prevents problems when rendering the pie chart.
+      if ($other / $total > 0.0028) {
+        $percentage = round($other / $total * 100);
+        if ($percentage < 1) { $percentage = '<1'; }
+        $labels[] = "{$params['otherLabel']} ($percentage%)";
+        $series[] = $other;
+      }
+    }
+
     $center = $params['width'] / 2;
     $middle = $params['height'] / 2;
     $radius = 85;
 
     $data = new pData();
 
-    $data->addPoints($params['series'], 'series');
-    $data->addPoints($params['labels'], 'labels');
+    $data->addPoints($series, 'series');
+    $data->addPoints($labels, 'labels');
     $data->setAbscissa('labels');
 
     $chart = new pImage($params['width'], $params['height'], $data);
