@@ -11,7 +11,7 @@
 require_once('pChart/class/pDraw.class.php');
 require_once('pChart/class/pImage.class.php');
 require_once('pChart/class/pData.class.php');
-require_once('pChart/class/pCache.class.php');
+require_once('pChart/class/pPie.class.php');
 
 /**
  * Chart model.
@@ -142,6 +142,46 @@ class UBMoD_Model_Chart
    */
   public static function renderUserPie($params)
   {
+    $dbParams = array(
+      'interval_id' => $params['interval_id'],
+      'cluster_id'  => $params['cluster_id'],
+      'sort'        => 'wallt',
+      'dir'         => 'DESC',
+    );
+
+    $total = 0;
+    $other = 0;
+    $count = 0;
+    $max = 11;
+    $users = array();
+    $time  = array();
+    foreach (UBMoD_Model_User::getActivities($dbParams) as $point) {
+      if ($count < $max) {
+        $users[] = $point['user'];
+        $time[]  = $point['wallt'];
+      } else {
+        $other += $point['wallt'];
+      }
+      $total += $point['wallt'];
+      $count++;
+    }
+
+    if ($other > 0) {
+      $users[] = "Remaining\nUsers";
+      $time[]  = $other;
+    }
+
+    foreach (range(0, count($users)) as $i) {
+      $users[$i] .= sprintf(' (%d%%)', $time[$i] / $total * 100);
+    }
+
+    self::renderPieChart(array(
+      'width'    => 400,
+      'height'   => 350,
+      'title'    => 'User Utilization',
+      'labels'   => $users,
+      'series'   => $time,
+    ));
   }
 
   /**
@@ -183,6 +223,46 @@ class UBMoD_Model_Chart
    */
   public static function renderGroupPie($params)
   {
+    $dbParams = array(
+      'interval_id' => $params['interval_id'],
+      'cluster_id'  => $params['cluster_id'],
+      'sort'        => 'wallt',
+      'dir'         => 'DESC',
+    );
+
+    $total = 0;
+    $other = 0;
+    $count = 0;
+    $max = 11;
+    $groups = array();
+    $time  = array();
+    foreach (UBMoD_Model_Group::getActivities($dbParams) as $point) {
+      if ($count < $max) {
+        $groups[] = $point['group_name'];
+        $time[]  = $point['wallt'];
+      } else {
+        $other += $point['wallt'];
+      }
+      $total += $point['wallt'];
+      $count++;
+    }
+
+    if ($other > 0) {
+      $groups[] = "Remaining\nGroups";
+      $time[]  = $other;
+    }
+
+    foreach (range(0, count($groups)) as $i) {
+      $groups[$i] .= sprintf(' (%d%%)', $time[$i] / $total * 100);
+    }
+
+    self::renderPieChart(array(
+      'width'    => 400,
+      'height'   => 350,
+      'title'    => 'Group Utilization',
+      'labels'   => $groups,
+      'series'   => $time,
+    ));
   }
 
   /**
@@ -292,6 +372,57 @@ class UBMoD_Model_Chart
       'DisplayG'      => 0,
       'DisplayB'      => 0,
       'DisplayShadow' => TRUE,
+    ));
+
+    $chart->stroke();
+    exit(0);
+  }
+
+  /**
+   * Render a pie chart.
+   *
+   * @return void
+   */
+  private static function renderPieChart($params)
+  {
+    $center = $params['width'] / 2;
+    $radius = 85;
+
+    $data = new pData();
+
+    $data->addPoints($params['series'], 'series');
+    $data->addPoints($params['labels'], 'labels');
+    $data->setAbscissa('labels');
+
+    $chart = new pImage($params['width'], $params['height'], $data);
+
+    $chart->setFontProperties(array(
+      'FontName' => FONT_DIR . '/verdana.ttf',
+      'FontSize' => 8,
+    ));
+
+    $chart->setShadow(TRUE, array(
+      'X'     => 1,
+      'Y'     => 1,
+      'R'     => 0,
+      'G'     => 0,
+      'B'     => 0,
+      'Alpha' => 20,
+    ));
+
+    $pie = new pPie($chart, $data);
+
+    $pie->draw2DPie($center, $radius + 60, array(
+      'Radius'        => 80,
+      'DrawLabels'    => TRUE,
+      'LabelStacked'  => TRUE,
+      'Border'        => TRUE,
+      'SecondPass'    => TRUE,
+    ));
+
+    $chart->drawText($center, 0, $params['title'], array(
+      'FontSize' => 12,
+      'Align'    => TEXT_ALIGN_TOPMIDDLE,
     ));
 
     $chart->stroke();
