@@ -1,0 +1,63 @@
+===============================================================================
+UBMoD - Installation
+===============================================================================
+
+This document will attempt to ouline a basic install of UBMoD. As UBMoD is
+still actively being developed these instructions may be incomplete and are
+subject to change in future releases. Any feedback is welcome.
+
+The latest version of this document can be found online at:
+  http://ubmod.sourceforge.net/install.html
+
+This installation document assumes you are running a Linux based system and
+already have MySQL version 5 or greater installed and running. UBMoD requires
+PHP version 5.3 or greater and Perl 5.8 or greater. Download UBMoD
+
+* Download the latest pre-built release (ubmod-x.x.x-bin.tar.gz)
+
+    $ tar -xvzf ubmod-x.x.x-bin.tar.gz
+    $ cd ubmod-x.x.x
+
+* Set up the MySQL database
+
+    mysql> create database ubmod;
+    mysql> grant all on ubmod.* to ubmoduser@localhost identified by 'password';
+    mysql> quit;
+
+    $ mysql -u ubmoduser -p ubmod < ./ddl/ubmod.sql
+
+* Create the UBMoD config file
+
+    - Create the file /etc/ubmod.conf with your site specific settings. An
+      example can be found in the docs directory of the UBMoD distribution
+
+    db.host=localhost
+    db.port=3306
+    db.name=ubmod
+    db.user=ubmoduser
+    db.password=password
+
+* Load in accounting log data from TORQUE
+
+    $ java -jar ubmod-shredder-exe.jar -v -s -H your.host.org -d /var/spool/pbs/server_priv/accounting
+
+* Aggregate accounting log data
+
+    $ java -jar ubmod-shredder-exe.jar -v -u
+
+* Set up the web application
+
+    - UBMoD is packaged as a WAR file which can be used with any servlet container.
+      This example uses tomcat. * Note this is a basic example of setting up tomcat
+      for use with UBMoD for demo purposes only and not intended for production
+      use.
+
+    $ cd /usr/local
+    $ tar -xvzf apache-tomcat-x.x.x.tar.gz
+    $ ln -s apache-tomcat-x.x.x tomcat
+    $ cd tomcat
+    $ rm -Rf ./webapps/*
+    $ cp /path/to/ubmod/ubmod-portal.war ./webapps/ROOT.war
+    $ ./bin/startup.sh
+
+* Point your browser to http://localhost:8080/
