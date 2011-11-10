@@ -16,7 +16,6 @@ PCHART_DIR="pChart$PCHART_VERSION"
 cd $ASSET_DIR
 
 unzip $EXT_ARCHIVE
-cp -rf $EXT_DIR/ext-all.js ../html/js
 cp -rf $EXT_DIR/ext-all-debug.js ../html/js
 rm -rf ../html/resources
 cp -rf $EXT_DIR/resources ../html
