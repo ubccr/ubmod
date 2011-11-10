@@ -61,7 +61,7 @@ class Ubmod_Model_User
 
     $dbParams = array();
     if ($params->hasFilter()) {
-      $sql .= ' AND name LIKE :filter';
+      $sql .= ' WHERE name LIKE :filter';
       $dbParams[':filter'] = '%' . $params->getFilter() . '%';
     }
 
@@ -96,7 +96,7 @@ class Ubmod_Model_User
 
     $dbParams = array();
     if ($params->hasFilter()) {
-      $sql .= ' AND name LIKE :filter';
+      $sql .= ' WHERE name LIKE :filter';
       $dbParams[':filter'] = '%' . $params->getFilter() . '%';
     }
 
