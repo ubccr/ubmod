@@ -10,8 +10,7 @@
 
 require_once 'constants.php';
 
-ini_alter('include_path', ini_get('include_path') . ':' . BASE_DIR . '/lib');
-
+ini_alter('include_path', ini_get('include_path') . ':' . LIB_DIR);
 
 /**
  * Autoload implementation.
