@@ -177,7 +177,7 @@ Ext.Loader.onReady(function () {
             // @see Ext.data.Model.set for implementation details
             if (!Ext.isObject(field)) {
 
-                // Ingore individual dates
+                // Ignore individual dates
                 if (field === 'startDate' || field === 'endDate') {
                     return;
                 }
