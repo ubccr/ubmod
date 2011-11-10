@@ -1144,6 +1144,10 @@ __END__
 
 Ubmod::Aggregator - Populate database with aggregate accounting log data
 
+=head1 VERSION
+
+Version: $Id$
+
 =head1 SYNOPSIS
 
     my $aggregator = Ubmod::Aggregator->new(

@@ -184,6 +184,10 @@ __END__
 
 Ubmod::Shredder::Pbs - Parse PBS/TORQUE format accounting logs
 
+=head1 VERSION
+
+Version: $Id$
+
 =head1 SYNOPSIS
 
     my $shredder = Ubmod::Shredder::Pbs->new();

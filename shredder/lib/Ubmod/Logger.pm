@@ -38,6 +38,10 @@ __END__
 
 Ubmod::Logger - UBMoD logging module
 
+=head1 VERSION
+
+Version: $Id$
+
 =head1 SYNOPSIS
 
     my $logger = Ubmod::Logger->new($verbose);

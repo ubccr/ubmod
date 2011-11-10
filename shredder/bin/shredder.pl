@@ -383,6 +383,10 @@ __END__
 
 shredder.pl - UBMoD shredder script
 
+=head1 VERSION
+
+Version: $Id$
+
 =head1 SYNOPSIS
 
   ./shredder.pl -s -H your.host.org -d /var/spool/pbs/server_priv/accounting
