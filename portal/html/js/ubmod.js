@@ -388,8 +388,8 @@ Ext.Loader.onReady(function () {
          */
         getRestParams: function () {
             var params = {
-                'cluster_id': this.getClusterId(),
-                'tag':        this.getTag()
+                cluster_id: this.getClusterId(),
+                tag:        this.getTag()
             };
 
             Ext.apply(params, this.getIntervalRestParams());
