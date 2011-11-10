@@ -1270,11 +1270,21 @@ Ext.Loader.onReady(function () {
                 menuDisabled: true,
                 width: 128
             }, {
+                header: 'Name',
+                dataIndex: 'display_name',
+                menuDisabled: true,
+                width: 128
+            }, {
+                header: 'Group',
+                dataIndex: 'group',
+                menuDisabled: true,
+                width: 128
+            }, {
                 header: 'Tags',
                 dataIndex: 'tags',
                 renderer: tagRenderer,
                 menuDisabled: true,
-                width: 574
+                width: 318
             }];
 
             pagingToolbar = Ext.create('Ubmod.widget.PagingToolbar', {

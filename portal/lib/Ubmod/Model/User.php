@@ -82,7 +82,8 @@ class Ubmod_Model_User
       SELECT
         dim_user_id          AS user_id,
         COALESCE(tags, '[]') AS tags,
-        name
+        name,
+        display_name
       FROM dim_user
     ";
 
@@ -118,6 +119,8 @@ class Ubmod_Model_User
     $users = array();
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
       $row['tags'] = json_decode($row['tags'], 1);
+      $group = self::getGroup($row['user_id']);
+      $row['group'] = $group['name'];
       $users[] = $row;
     }
 
@@ -222,5 +225,42 @@ class Ubmod_Model_User
     }
 
     return $tags;
+  }
+
+  /**
+   * Find the group for a user.
+   *
+   * Return group information for the group that for which the specified
+   * user has most recently submitted a job.
+   *
+   * @param int $userId The user dimension primary key.
+   *
+   * @return array Array containing the group name and display name.
+   */
+  public static function getGroup($userId)
+  {
+    $sql = '
+      SELECT
+        MAX(`dim_date`.`date`) AS `max_date`,
+        name,
+        display_name
+      FROM fact_job
+      JOIN dim_group USING (dim_group_id)
+      JOIN dim_date USING (dim_date_id)
+      WHERE dim_user_id = :dim_user_id
+      ORDER BY `max_date` DESC
+    ';
+
+    $sql = Ubmod_DataWarehouse::optimize($sql);
+
+    $dbh = Ubmod_DbService::dbh();
+    $stmt = $dbh->prepare($sql);
+    $r = $stmt->execute(array(':dim_user_id' => $userId));
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 }
