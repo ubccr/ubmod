@@ -424,7 +424,7 @@ Ext.Loader.onReady(function () {
             this.label = config.label;
             this.labelKey = config.labelKey;
 
-            Ext.apply(config, { height: 400 });
+            Ext.apply(config, { autoHeight: true });
 
             Ubmod.widget.Grid.superclass.constructor.call(this, config);
         },
