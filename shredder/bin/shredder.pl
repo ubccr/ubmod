@@ -5,6 +5,7 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use DBI;
 use Getopt::Long;
+use File::Spec;
 use Config::Tiny;
 use Ubmod::Shredder::Pbs;
 
@@ -36,12 +37,16 @@ sub main {
 
         $shredder->set_host($host) if $host;
 
+        log_msg("Shredding.");
+
         if ($dir) {
-            process_dir( $shredder, $dir );
+            process_directory( $shredder, $dir );
         }
         elsif ($file) {
             process_file( $shredder, $file );
         }
+
+        log_msg("Done shredding!");
     }
     elsif ($update) {
 
@@ -91,18 +96,44 @@ EOT
 
 sub process_directory {
     my ( $shredder, $dir ) = @_;
+
+    log_msg("Processing directory: $dir");
+
+    -d $dir or die "Cannot access '$dir': No such directory\n";
+
+    opendir my ($dh), $dir or die "Could not open die '$dir': $!";
+
+    my $count = 0;
+
+    while ( my $file = readdir($dh) ) {
+        next if $file =~ /^\./;
+        $count
+            += process_file( $shredder, File::Spec->catfile( $dir, $file ) );
+    }
+
+    log_msg("Total shredded: $count");
 }
 
 sub process_file {
     my ( $shredder, $file ) = @_;
 
+    log_msg("Processing file: $file");
+
+    -f $file or die "Cannot access '$file': No such file\n";
+
     open my ($fh), '<', $file or die "Could not open file '$file': $!";
 
     $shredder->set_fh($fh);
 
+    my $count = 0;
     while ( my $event = $shredder->shred() ) {
         insert_event($event);
+        $count++;
     }
+
+    log_msg("Shredded $count records.");
+
+    return $count;
 }
 
 sub db_connect {
@@ -214,6 +245,11 @@ sub get_event_max_date {
     my $sth = $Dbh->prepare(q{ SELECT MAX(date_key) FROM event });
     $sth->execute();
     return $sth->fetchrow_arrayref->[0];
+}
+
+sub log_msg {
+    my ($msg) = @_;
+    print $msg, "\n";
 }
 
 main(@ARGV) unless caller();
