@@ -2,6 +2,8 @@ package Ubmod::Shredder::Pbs;
 use strict;
 use warnings;
 
+use base qw(Ubmod::BaseShredder);
+
 my $pattern = qr|
     ^
     (\d{2}/\d{2}/\d{4}\s\d{2}:\d{2}:\d{2})    # Date and time
@@ -52,7 +54,7 @@ my %map = (
 
 sub new {
     my ($class) = @_;
-    my $self = {};
+    my $self = $class->SUPER::new();
     return bless $self, $class;
 }
 
@@ -117,21 +119,6 @@ sub get_transform_query {
     };
 
     return $sql;
-}
-
-sub set_host {
-    my ( $self, $host ) = @_;
-    $self->{host} = $host;
-}
-
-sub get_host {
-    my ($self) = @_;
-    return $self->{host};
-}
-
-sub has_host {
-    my ($self) = @_;
-    return exists $self->{host};
 }
 
 sub _parse_time {

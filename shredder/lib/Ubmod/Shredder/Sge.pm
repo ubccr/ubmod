@@ -2,6 +2,8 @@ package Ubmod::Shredder::Sge;
 use strict;
 use warnings;
 
+use base qw(Ubmod::BaseShredder);
+
 # Entries in the accouting log file
 my @entry_names = qw(
     qname
@@ -124,7 +126,7 @@ my %map = (
 
 sub new {
     my ($class) = @_;
-    my $self = {};
+    my $self = $class->SUPER::new();
     return bless $self, $class;
 }
 
@@ -169,16 +171,6 @@ sub get_transform_query {
     };
 
     return $sql;
-}
-
-sub set_host {
-    my ( $self, $host ) = @_;
-    $self->{host} = $host;
-}
-
-sub get_host {
-    my ($self) = @_;
-    return $self->{host};
 }
 
 sub _set_resource_lists {
