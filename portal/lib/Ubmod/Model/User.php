@@ -333,6 +333,8 @@ class Ubmod_Model_User
         continue;
       }
 
+      sort($tags);
+
       $r = $updateStmt->execute(array(
         ':tags'        => json_encode($tags),
         ':dim_user_id' => $userId,
@@ -361,6 +363,8 @@ class Ubmod_Model_User
       SET tags = :tags
       WHERE dim_user_id = :dim_user_id
     ";
+
+    sort($tags);
 
     $dbh = Ubmod_DbService::dbh();
     $stmt = $dbh->prepare($sql);
