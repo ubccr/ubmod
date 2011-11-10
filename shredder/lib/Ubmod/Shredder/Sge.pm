@@ -75,6 +75,22 @@ my %map = (
     cpu             => 'resources_used_cput',
 );
 
+# Mapping from SGE resource attributes to PBS resource attributes
+my %resource_map = (
+    s_rt    => 'resource_list_walltime',
+    h_rt    => 'resource_list_walltime',
+    s_cpu   => 'resource_list_cput',
+    h_cpu   => 'resource_list_cput',
+    s_data  => 'resource_list_mem',
+    h_data  => 'resource_list_mem',
+    s_stack => 'resource_list_mem',
+    h_stack => 'resource_list_mem',
+    s_rss   => 'resource_list_mem',
+    h_rss   => 'resource_list_mem',
+    s_vmem  => 'resource_list_mem',
+    h_vmem  => 'resource_list_mem',
+);
+
 sub new {
     my ($class) = @_;
     my $self = {};
@@ -100,17 +116,80 @@ sub shred {
         resources_used_nodes => 1,
     );
 
+    $self->_set_resource_lists( \%event, $entries{category} );
+
     while ( my ( $key, $value ) = each(%entries) ) {
+
+        # Skip entries that aren't included in the field map
+        next unless defined $map{$key};
 
         if ( defined( $formats{$key} ) ) {
             my $parser = '_parse_' . $formats{$key};
             $value = $self->$parser($value);
         }
 
-        $event{ $map{$key} } = $value if defined $map{$key};
+        $event{ $map{$key} } = $value;
     }
 
     return \%event;
+}
+
+sub _set_resource_lists {
+    my ( $self, $event, $category ) = @_;
+
+    return if $category eq '';
+
+    # Split on flags, but don't remove the flags
+    my @parts = split /\s+?(?=-\w+)/, $category;
+
+    foreach my $part (@parts) {
+        my ( $flag, $value ) = split /\s+/, $part, 2;
+
+        my $resources;
+
+        if ( $flag eq '-l' ) {
+            $resources = $self->_parse_resource_list_options($value);
+        }
+        elsif ( $flag eq '-pe' ) {
+            $resources = $self->_parse_parallel_environment_options($value);
+        }
+
+        next unless ref $resources;
+
+        # Merge resources into the event
+        @$event{ keys %$resources } = values %$resources;
+    }
+}
+
+sub _parse_resource_list_options {
+    my ( $self, $options ) = @_;
+
+    my %resources;
+
+    my @options = split /,/, $options;
+
+    foreach my $option (@options) {
+        my ( $key, $value ) = split /=/, $option, 2;
+
+        # Skip options that aren't included in the resource map
+        next unless defined $resource_map{$key};
+
+        push @{ $resources{ $resource_map{$key} } }, $option;
+    }
+
+    foreach my $key ( keys %resources ) {
+        $resources{$key} = join ',', @{ $resources{$key} };
+    }
+
+    return \%resources;
+}
+
+sub _parse_parallel_environment_options {
+    my ( $self, $options ) = @_;
+
+    my ( $env, $slots ) = split /\s+/, $options;
+
+    return { resource_list_ncpus => $slots };
 }
 
 sub _from_unixtime {

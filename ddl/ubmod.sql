@@ -89,11 +89,11 @@ create table event (
   resource_list_procs       text,
   resource_list_neednodes   text,
   resource_list_pcput       bigint unsigned,
-  resource_list_cput        bigint unsigned,
-  resource_list_walltime    bigint unsigned,
-  resource_list_ncpus       tinyint unsigned,
+  resource_list_cput        text,
+  resource_list_walltime    text,
+  resource_list_ncpus       text,
   resource_list_nodect      int unsigned,
-  resource_list_mem         bigint unsigned,
+  resource_list_mem         text,
   resource_list_pmem        bigint unsigned,
   constraint pk_Event primary key (event_id)
 ) ;
