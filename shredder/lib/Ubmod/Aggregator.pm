@@ -167,11 +167,12 @@ sub update_users {
 sub update_intervals {
     my ( $self, $end_date ) = @_;
 
+    $self->truncate_interval();
+
     my @labels = (
         [ 'Week',    7 ],
         [ 'Month',   30 ],
-        [ 'Quarter', 84 ],
-        #[ 'Quarter', 91 ],
+        [ 'Quarter', 84 ],    # [ 'Quarter', 91 ],
         [ 'Year',    365 ],
     );
 
