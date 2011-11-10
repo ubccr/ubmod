@@ -290,17 +290,18 @@ Ext.Loader.onReady(function () {
 
         constructor: function (config) {
             config = config || {};
-            Ext.apply(config, { editable: false });
+            Ext.apply(config, {
+                editable: false,
+                store: Ext.create('Ubmod.store.Interval'),
+                displayField: 'time_interval',
+                valueField: 'interval_id',
+                queryMode: 'local',
+                emptyText: 'Interval...'
+            });
             Ubmod.widget.Interval.superclass.constructor.call(this, config);
         },
 
         initComponent: function () {
-            this.store = Ext.create('Ubmod.store.Interval');
-            this.displayField = 'time_interval';
-            this.valueField = 'interval_id';
-            this.queryMode = 'local';
-            this.emptyText = 'Interval...';
-
             Ubmod.widget.Interval.superclass.initComponent.call(this);
 
             this.store.load({
@@ -321,17 +322,18 @@ Ext.Loader.onReady(function () {
 
         constructor: function (config) {
             config = config || {};
-            Ext.apply(config, { editable: false });
+            Ext.apply(config, {
+                editable: false,
+                store: Ext.create('Ubmod.store.Cluster'),
+                displayField: 'display_name',
+                valueField: 'cluster_id',
+                queryMode: 'local',
+                emptyText: 'Cluster...'
+            });
             Ubmod.widget.Cluster.superclass.constructor.call(this, config);
         },
 
         initComponent: function () {
-            this.store = Ext.create('Ubmod.store.Cluster');
-            this.displayField = 'display_name';
-            this.valueField = 'cluster_id';
-            this.queryMode = 'local';
-            this.emptyText = 'Cluster...';
-
             Ubmod.widget.Cluster.superclass.initComponent.call(this);
 
             this.store.load({
