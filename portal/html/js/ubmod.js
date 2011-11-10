@@ -343,6 +343,7 @@ Ext.Loader.onReady(function () {
             this.detailTabs = [];
 
             this.grid = Ext.create('Ubmod.widget.Grid', {
+                padding: '0 0 6 0',
                 resizable: { pinned: true, handles: 's' },
                 title: config.gridTitle,
                 store: this.store,
