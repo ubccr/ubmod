@@ -416,6 +416,8 @@ class Ubmod_Model_Chart
     $users = array();
     $time  = array();
     foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
+      if ($user['wallt'] == 0) { continue; }
+
       if ($count < $max) {
         $users[] = $user['user'];
         $time[]  = $user['wallt'];
@@ -426,28 +428,30 @@ class Ubmod_Model_Chart
       $count++;
     }
 
-    while (list($i, $t) = each($time)) {
-      $percentage = round($t / $total * 100);
+    if ($total > 0) {
+      while (list($i, $t) = each($time)) {
+        $percentage = round($t / $total * 100);
 
-      // Don't include users with a small percentage. Add them to the
-      // remaining users. This improves the display of the pie chart
-      // labels.
-      if ($percentage <= 2) {
-        unset($users[$i]);
-        unset($time[$i]);
-        $other += $t;
-      } else {
-        $users[$i] .= " ($percentage%)";
+        // Don't include users with a small percentage. Add them to the
+        // remaining users. This improves the display of the pie chart
+        // labels.
+        if ($percentage <= 2) {
+          unset($users[$i]);
+          unset($time[$i]);
+          $other += $t;
+        } else {
+          $users[$i] .= " ($percentage%)";
+        }
       }
-    }
 
-    // Don't include the remaining users if the percentage is too small.
-    // This prevents problems when rendering the pie chart.
-    if ($other / $total > 0.0028) {
-      $percentage = round($other / $total * 100);
-      if ($percentage < 1) { $percentage = '<1'; }
-      $users[] = "Remaining\nUsers ($percentage%)";
-      $time[]  = $other;
+      // Don't include the remaining users if the percentage is too
+      // small. This prevents problems when rendering the pie chart.
+      if ($other / $total > 0.0028) {
+        $percentage = round($other / $total * 100);
+        if ($percentage < 1) { $percentage = '<1'; }
+        $users[] = "Remaining\nUsers ($percentage%)";
+        $time[]  = $other;
+      }
     }
 
     self::renderPieChart(array(
@@ -477,6 +481,8 @@ class Ubmod_Model_Chart
     $users = array();
     $time  = array();
     foreach (Ubmod_Model_Job::getActivityList($params) as $user) {
+      if ($user['wallt'] == 0) { continue; }
+
       $users[] = $user['user'];
       $time[]  = $user['wallt'];
     }
@@ -513,6 +519,8 @@ class Ubmod_Model_Chart
     $groups = array();
     $time   = array();
     foreach (Ubmod_Model_Job::getActivityList($params) as $group) {
+      if ($group['wallt'] == 0) { continue; }
+
       if ($count < $max) {
         $groups[] = $group['group_name'];
         $time[]   = $group['wallt'];
@@ -523,28 +531,30 @@ class Ubmod_Model_Chart
       $count++;
     }
 
-    while (list($i, $t) = each($time)) {
-      $percentage = round($t / $total * 100);
+    if ($total > 0) {
+      while (list($i, $t) = each($time)) {
+        $percentage = round($t / $total * 100);
 
-      // Don't include groups with a small percentage. Add them to the
-      // remaining groups. This improves the display of the pie chart
-      // labels.
-      if ($percentage <= 2) {
-        unset($groups[$i]);
-        unset($time[$i]);
-        $other += $t;
-      } else {
-        $groups[$i] .= " ($percentage%)";
+        // Don't include groups with a small percentage. Add them to the
+        // remaining groups. This improves the display of the pie chart
+        // labels.
+        if ($percentage <= 2) {
+          unset($groups[$i]);
+          unset($time[$i]);
+          $other += $t;
+        } else {
+          $groups[$i] .= " ($percentage%)";
+        }
       }
-    }
 
-    // Don't include the remaining groups if the percentage is too
-    // small. This prevents problems when rendering the pie chart.
-    if ($other / $total > 0.0028) {
-      $percentage = round($other / $total * 100);
-      if ($percentage < 1) { $percentage = '<1'; }
-      $groups[] = "Remaining\nGroups ($percentage%)";
-      $time[]   = $other;
+      // Don't include the remaining groups if the percentage is too
+      // small. This prevents problems when rendering the pie chart.
+      if ($other / $total > 0.0028) {
+        $percentage = round($other / $total * 100);
+        if ($percentage < 1) { $percentage = '<1'; }
+        $groups[] = "Remaining\nGroups ($percentage%)";
+        $time[]   = $other;
+      }
     }
 
     self::renderPieChart(array(
@@ -574,6 +584,8 @@ class Ubmod_Model_Chart
     $groups = array();
     $time   = array();
     foreach (Ubmod_Model_Job::getActivityList($params) as $group) {
+      if ($group['wallt'] == 0) { continue; }
+
       $groups[] = $group['group_name'];
       $time[]   = $group['wallt'];
     }
@@ -629,6 +641,8 @@ class Ubmod_Model_Chart
       $monthParams->setMonth($month['month']);
 
       foreach (Ubmod_Model_Job::getActivityList($monthParams) as $group) {
+        if ($group['wallt'] == 0) { continue; }
+
         if ($groupCount < $maxGroups) {
           $groupWallt[$group['group_name']] = $group['wallt'];
         } else {
@@ -723,6 +737,8 @@ class Ubmod_Model_Chart
       $monthParams->setMonth($month['month']);
 
       foreach (Ubmod_Model_Job::getActivityList($monthParams) as $user) {
+        if ($user['wallt'] == 0) { continue; }
+
         if ($userCount < $maxUsers) {
           $userWallt[$user['user']] = $user['wallt'];
         } else {
