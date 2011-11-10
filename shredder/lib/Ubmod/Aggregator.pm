@@ -1175,12 +1175,12 @@ which can then be viewed using the UBMoD portal.
         end_date => $end_date,
     );
 
-Both the $dbh and $logger parameters are requried.  $dbh should be a
-DBI handle to a MySQL database prepared with the UBMoD schema.  $logger
-should be an instance of Ubmod::Logger.  The $end_date option is
-optional.  If supplied, it must be a DateTime instance indicating the
-end date of the time intervals used during aggregation.  By default
-yesterday is used as the $end_date.
+Both the C<$dbh> and C<$logger> parameters are requried.  C<$dbh> should
+be a DBI handle to a MySQL database prepared with the UBMoD schema.
+C<$logger> should be an instance of C<Ubmod::Logger>.  The C<$end_date>
+option is optional.  If supplied, it must be a C<DateTime> instance
+indicating the end date of the time intervals used during aggregation.
+By default yesterday is used as the C<$end_date>.
 
 =head1 METHODS
 
