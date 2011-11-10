@@ -170,7 +170,7 @@ var StatsGrid = function(config){
         pageSize: 25,
         displayInfo: true,
         displayMsg: 'Displaying '+config.label+' {0} - {1} of {2}',
-        emptyMsg: "No "+config.display+"'s to display"
+        emptyMsg: "No "+config.label+"'s to display"
     });
     paging.add('-', 'Search: ');
     var filter = Ext.get(paging.addDom({
