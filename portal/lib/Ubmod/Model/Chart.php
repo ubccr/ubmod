@@ -572,6 +572,7 @@ class Ubmod_Model_Chart
     $otherGroup = 'Remaining Groups';
     $groups     = array();
     $monthNames = array();
+    $haveOther  = false;
 
     // array( monthKey => array( group => wallt, ... ), ... )
     $serieForMonth = array();
@@ -603,6 +604,7 @@ class Ubmod_Model_Chart
       $groups = array_merge($groups, array_keys($groupWallt));
 
       if ($otherWallt > 0) {
+        $haveOther = true;
         $groupWallt[$otherGroup] = $otherWallt;
       }
 
@@ -612,7 +614,9 @@ class Ubmod_Model_Chart
     $groups = array_unique($groups);
 
     // The "other groups" should be listed last
-    $groups[] = $otherGroup;
+    if ($haveOther) {
+      $groups[] = $otherGroup;
+    }
 
     // array( group => array( wallt, ... ), ... )
     $serieForGroup = array();
@@ -662,6 +666,7 @@ class Ubmod_Model_Chart
     $otherUser  = 'Remaining Users';
     $users      = array();
     $monthNames = array();
+    $haveOther  = false;
 
     // array( monthKey => array( user => wallt, ... ), ... )
     $serieForMonth = array();
@@ -693,6 +698,7 @@ class Ubmod_Model_Chart
       $users = array_merge($users, array_keys($userWallt));
 
       if ($otherWallt > 0) {
+        $haveOther = true;
         $userWallt[$otherUser] = $otherWallt;
       }
 
@@ -702,7 +708,9 @@ class Ubmod_Model_Chart
     $users = array_unique($users);
 
     // The "other users" should be listed last
-    $users[] = $otherUser;
+    if ($haveOther) {
+      $users[] = $otherUser;
+    }
 
     // array( user => array( wallt, ... ), ... )
     $serieForUser = array();
