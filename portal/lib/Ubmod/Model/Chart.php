@@ -406,7 +406,7 @@ class Ubmod_Model_Chart
   {
     $params->setModel('user');
     $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(1);
+    $params->setOrderByDescending(TRUE);
 
     $total = 0;
     $other = 0;
@@ -468,7 +468,7 @@ class Ubmod_Model_Chart
     $params->setModel('user');
     $params->setLimitRowCount(21);
     $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(1);
+    $params->setOrderByDescending(TRUE);
 
     $users = array();
     $time  = array();
@@ -499,7 +499,7 @@ class Ubmod_Model_Chart
   {
     $params->setModel('group');
     $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(1);
+    $params->setOrderByDescending(TRUE);
 
     $total = 0;
     $other = 0;
@@ -561,7 +561,7 @@ class Ubmod_Model_Chart
     $params->setModel('group');
     $params->setLimitRowCount(21);
     $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(1);
+    $params->setOrderByDescending(TRUE);
 
     $groups = array();
     $time   = array();
@@ -593,7 +593,7 @@ class Ubmod_Model_Chart
   {
     $params->setModel('group');
     $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(1);
+    $params->setOrderByDescending(TRUE);
 
     $months = Ubmod_Model_TimeInterval::getMonths($params);
 
@@ -687,7 +687,7 @@ class Ubmod_Model_Chart
   {
     $params->setModel('user');
     $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(1);
+    $params->setOrderByDescending(TRUE);
 
     $months = Ubmod_Model_TimeInterval::getMonths($params);
 
