@@ -6,13 +6,17 @@ use base qw(Ubmod::BaseShredder);
 
 my $pattern = qr|
     ^
-    (\d{2}/\d{2}/\d{4}\s\d{2}:\d{2}:\d{2})    # Date and time
+    (
+        \d{2}/\d{2}/\d{4}    # Date
+        \s
+        \d{2}:\d{2}:\d{2}    # Time
+    )
     ;
-    (\w)                                      # Event type
+    ( \w )                   # Event type
     ;
-    ([^;]+)                                   # Job ID
+    ( [^;]+ )                # Job ID
     ;
-    (.*)                                      # Params
+    ( .* )                   # Params
 |x;
 
 # These entries need to be parsed and formatted
