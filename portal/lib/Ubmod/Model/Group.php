@@ -55,7 +55,7 @@ class Ubmod_Model_Group
     );
 
     if (isset($params['filter']) && $params['filter'] != '') {
-      $sql .= ' WHERE g.group LIKE :filter';
+      $sql .= ' WHERE g.group_name LIKE :filter';
       $dbParams[':filter'] = '%' . $params['filter'] . '%';
     }
 
