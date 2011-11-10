@@ -44,7 +44,7 @@
  * User Model.
  *
  * @package Ubmod
- **/
+ */
 class Ubmod_Model_User
 {
 

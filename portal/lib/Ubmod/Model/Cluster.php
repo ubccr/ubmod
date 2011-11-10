@@ -44,7 +44,7 @@
  * Cluster Model
  *
  * @package Ubmod
- **/
+ */
 class Ubmod_Model_Cluster
 {
 
