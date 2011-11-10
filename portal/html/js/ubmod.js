@@ -169,6 +169,27 @@ Ext.Loader.onReady(function () {
     });
 
     /**
+     * Data store that reverses sorting
+     */
+    Ext.define('Ubmod.data.ReverseSortStore', {
+        extend: 'Ext.data.Store',
+
+        sort: function (sorters, direction, where, doSort) {
+            if (Ext.isObject(sorters) && sorters.direction !== undefined) {
+                sorters.direction =
+                    sorters.direction === 'ASC' ? 'DESC' : 'ASC';
+            } else if (Ext.isArray(sorters) && sorters.length > 0) {
+                sorters[0].direction =
+                    sorters[0].direction === 'ASC' ? 'DESC' : 'ASC';
+            } else if (Ext.isString(sorters)) {
+                direction = direction === 'ASC' ? 'DESC' : 'ASC';
+            }
+            return Ubmod.data.ReverseSortStore.superclass.sort.call(this,
+                sorters, direction, where, doSort);
+        }
+    });
+
+    /**
      * Time interval data store
      */
     Ext.define('Ubmod.store.Interval', {
@@ -214,7 +235,7 @@ Ext.Loader.onReady(function () {
      * User activity data store
      */
     Ext.define('Ubmod.store.User', {
-        extend: 'Ext.data.Store',
+        extend: 'Ubmod.data.ReverseSortStore',
 
         constructor: function (config) {
             config = config || {};
@@ -238,7 +259,7 @@ Ext.Loader.onReady(function () {
      * Group activity data store
      */
     Ext.define('Ubmod.store.Group', {
-        extend: 'Ext.data.Store',
+        extend: 'Ubmod.data.ReverseSortStore',
 
         constructor: function (config) {
             config = config || {};
@@ -262,7 +283,7 @@ Ext.Loader.onReady(function () {
      * Queue activity data store
      */
     Ext.define('Ubmod.store.Queue', {
-        extend: 'Ext.data.Store',
+        extend: 'Ubmod.data.ReverseSortStore',
 
         constructor: function (config) {
             config = config || {};
@@ -451,16 +472,6 @@ Ext.Loader.onReady(function () {
             // XXX Force the tab panel to recalculate it's layout when
             // the grid is resized.
             this.grid.on('resize', this.doLayout, this);
-
-            // XXX Reverse sort direction so that the first click on a
-            // grid header results in sorting in the descending order.
-            this.store.on('beforeload', function (store, options) {
-                if (store.sorters.getCount() > 0) {
-                    options.sorters[0].direction =
-                        options.sorters[0].direction === 'DESC' ?
-                        'ASC' : 'DESC';
-                }
-            }, this);
 
             this.reload();
         },
