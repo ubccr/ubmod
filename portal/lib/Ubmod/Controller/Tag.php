@@ -67,8 +67,9 @@ class Ubmod_Controller_Tag extends Ubmod_BaseController
   {
     $params = Ubmod_Model_QueryParams::factory($this->getPostData());
 
-    $this->tag   = Ubmod_Model_Tag::getActivityByName($params);
-    $queryString = Ubmod_Model_Chart::getQueryString($params);
+    $this->interval = Ubmod_Model_TimeInterval::getByParams($params);
+    $this->tag      = Ubmod_Model_Tag::getActivityByName($params);
+    $queryString    = Ubmod_Model_Chart::getQueryString($params);
 
     $this->pieChart  = '/chart/user-pie?'  . $queryString;
     $this->barChart  = '/chart/user-bar?'  . $queryString;

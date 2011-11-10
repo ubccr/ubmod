@@ -29,7 +29,9 @@
       </table>
       <div style="margin-top:10px;"><img src="<?php echo $pieChart ?>" /></div>
       <div style="margin-top:10px;"><img src="<?php echo $barChart ?>" /></div>
-      <div style="margin-top:10px;"><img src="<?php echo $areaChart ?>" /></div>
+      <?php if ($interval['multi_month']): ?>
+        <div style="margin-top:10px;"><img src="<?php echo $areaChart ?>" /></div>
+      <?php endif; ?>
     </div>
   <?php else: ?>
     No job data found for this tag in given time period.
