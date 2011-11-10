@@ -103,19 +103,31 @@ class Ubmod_Model_Chart
    */
   private static function getSubtitle(Ubmod_Model_QueryParams $params)
   {
-    $interval = Ubmod_Model_TimeInterval::getByParams($params);
-
-    $start = $interval['start'];
-    $end   = $interval['end'];
+    $parts = array();
 
     if ($params->hasClusterId()) {
       $cluster = Ubmod_Model_Cluster::getById($params->getClusterId());
-      $host = $cluster['host'];
+      $name = $cluster['display_name'];
+      $parts[] = "Cluster: $name";
     } else {
-      return "All Clusters, From: $start To: $end";
+      $parts[] = "All Clusters";
     }
 
-    return "Cluster: $host, From: $start To: $end";
+    if ($params->hasTimeIntervalId()) {
+      $interval = Ubmod_Model_TimeInterval::getByParams($params);
+      $parts[] = "From: {$interval['start']} To: {$interval['end']}";
+    }
+
+    if ($params->hasGroupId()) {
+      $group = Ubmod_Model_Job::getEntity('group', $params);
+      $parts[] = 'Group: ' . $group['group_name'];
+    }
+
+    if ($params->hasTag()) {
+      $parts[] = 'Tag: ' . $params->getTag();
+    }
+
+    return implode(', ', $parts);
   }
 
   /**
