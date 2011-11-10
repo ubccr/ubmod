@@ -155,43 +155,43 @@ sub insert_event {
     $sth->execute(
         @$event{
             qw{
-                date_key
-                job_id
-                job_array_index
-                host
-                type
-                user
-                group
-                queue
-                ctime
-                qtime
-                start
-                end
-                etime
-                exit_status
-                session
-                requestor
-                jobname
-                account
-                exec_host
-                resources_used_vmem
-                resources_used_mem
-                resources_used_walltime
-                resources_used_nodes
-                resources_used_cpus
-                resources_used_cput
-                resource_list_nodes
-                resource_list_procs
-                resource_list_neednodes
-                resource_list_pcput
-                resource_list_cput
-                resource_list_walltime
-                resource_list_ncpus
-                resource_list_nodect
-                resource_list_mem
-                resource_list_pmem
-            }
-        }
+              date_key
+              job_id
+              job_array_index
+              host
+              type
+              user
+              group
+              queue
+              ctime
+              qtime
+              start
+              end
+              etime
+              exit_status
+              session
+              requestor
+              jobname
+              account
+              exec_host
+              resources_used_vmem
+              resources_used_mem
+              resources_used_walltime
+              resources_used_nodes
+              resources_used_cpus
+              resources_used_cput
+              resource_list_nodes
+              resource_list_procs
+              resource_list_neednodes
+              resource_list_pcput
+              resource_list_cput
+              resource_list_walltime
+              resource_list_ncpus
+              resource_list_nodect
+              resource_list_mem
+              resource_list_pmem
+              }
+          }
     );
 
     return $Dbh->{mysql_insertid};
@@ -211,9 +211,7 @@ sub insert_host_log {
 }
 
 sub get_event_max_date {
-    my $sth = $Dbh->prepare(
-        q{ SELECT MAX(date_key) FROM event }
-    );
+    my $sth = $Dbh->prepare( q{ SELECT MAX(date_key) FROM event } );
     $sth->execute();
     return $sth->fetchrow_arrayref->[0];
 }
