@@ -194,7 +194,7 @@ class Ubmod_Handler_User
    */
   public function updateTagsAction(array $arguments, array $postData = NULL)
   {
-    $tags   = $postData['tags'];
+    $tags   = isset($postData['tags']) ? $postData['tags'] : array();
     $userId = $postData['userId'];
 
     return Ubmod_RestResponse::factory(TRUE, NULL, array(
