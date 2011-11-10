@@ -182,7 +182,7 @@ Ext.Loader.onReady(function () {
             store.load({
                 scope: this,
                 callback: function (records) {
-                    this.setValue(records[0].get(this.valueField));
+                    this.setValue(records[3].get(this.valueField));
                     this.fireEvent('load');
                 }
             });
