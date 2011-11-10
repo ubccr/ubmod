@@ -248,7 +248,7 @@ class Ubmod_Model_Tag
     if ($params->hasOrderByColumn()) {
       $column = $params->getOrderByColumn();
 
-      if (!in_array($column, $columnFields)) {
+      if (!in_array($column, $sortFields)) {
         $column  = 'wallt';
       }
       $dir = $params->isOrderByDescending() ? 'DESC' : 'ASC';
