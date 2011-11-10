@@ -41,6 +41,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc /usr/share/doc/%{name}-%{version}/AUTHORS
 %doc /usr/share/doc/%{name}-%{version}/ChangeLog
 %doc /usr/share/doc/%{name}-%{version}/INSTALL
+%doc /usr/share/doc/%{name}-%{version}/LICENSE
 %doc /usr/share/doc/%{name}-%{version}/NOTICE
 %doc /usr/share/doc/%{name}-%{version}/TODO
 %doc /usr/share/doc/%{name}-%{version}/README

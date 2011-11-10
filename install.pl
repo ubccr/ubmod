@@ -175,6 +175,7 @@ sub file_map {
         AUTHORS            => "$dirs->{doc}/AUTHORS",
         ChangeLog          => "$dirs->{doc}/ChangeLog",
         INSTALL            => "$dirs->{doc}/INSTALL",
+        LICENSE            => "$dirs->{doc}/LICENSE",
         NOTICE             => "$dirs->{doc}/NOTICE",
         TODO               => "$dirs->{doc}/TODO",
         README             => "$dirs->{doc}/README",
