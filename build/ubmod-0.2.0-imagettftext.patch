@@ -1,0 +1,197 @@
+diff -r -N -u ../ubmod-0.2.0.orig/portal/lib/imagettftext_patch.php ./portal/lib/imagettftext_patch.php
+--- ../ubmod-0.2.0.orig/portal/lib/imagettftext_patch.php	1969-12-31 19:00:00.000000000 -0500
++++ ./portal/lib/imagettftext_patch.php	2011-11-08 11:31:08.200164506 -0500
+@@ -0,0 +1,160 @@
++<?php
++
++/**
++ * Replacement for imagettftext.
++ *
++ * The version of this function included with PHP 5.3.4 contains a bug
++ * that results in misalignment and misplacement of rotated text.
++ *
++ * @see imagettftext
++ */
++function imagettftext_patched($image, $size, $angle, $x, $y, $color, $font,
++  $text)
++{
++
++  // Determine non-rotated text size.
++  $bbox = imagettfbbox($size, 0, $font, $text);
++
++  $top    = $bbox[5];
++  $bottom = $bbox[1];
++
++  $left   = $bbox[0];
++  $right  = $bbox[2];
++
++  // Add some padding (+6) to the width and height. This prevents any
++  // text near the edge from being cut off.
++  $width  = $right  - $left + 6;
++  $height = $bottom - $top  + 6;
++
++  // Create a temporary image.
++  $temp = imagecreatetruecolor($width, $height);
++
++  // Update alpha blending.
++  imagealphablending($temp, false);
++  imagesavealpha($temp, true);
++
++  // Using the same color as the text (but transparent) gives much
++  // better results. This was determined by trial and error.
++  $r = ($color >> 16) & 0xFF;
++  $g = ($color >> 8)  & 0xFF;
++  $b = $color         & 0xFF;
++  $transparent = imagecolorallocatealpha($temp, $r, $g, $b, 127);
++
++  // Make the background transparent
++  imagefilledrectangle($temp, 0, 0, $width, $height, $transparent);
++
++  // Render non-rotated text. The (+1) here compensates for the padding
++  // added to the width and height.
++  imagettftext($temp, $size, 0, -$left + 3, -$top + 3, $color, $font, $text);
++
++  // Rotate the text.
++  $rotated = imagerotate($temp, $angle, $transparent, 0);
++
++  // Update alpha blending and transparent color of the rotated image.
++  imagealphablending($rotated, false);
++  imagesavealpha($rotated, true);
++  imagecolortransparent($rotated, $transparent);
++
++  // Determine the offset of the rotated text.
++  $rbox = rotatebbox_patchhelper($angle, $bbox);
++  $aabb = aabb_patchhelper($rbox);
++
++  // Add offset and padding compensation (-3).
++  $rx = $x + $aabb['min_x'] - 3;
++  $ry = $y + $aabb['min_y'] - 3;
++
++  $rWidth  = imagesx($rotated);
++  $rHeight = imagesy($rotated);
++
++  // Copied the rotated text.
++  imagecopy($image, $rotated, $rx, $ry, 0, 0, $rWidth, $rHeight);
++}
++
++/**
++ * Replacement for imagettfbbox.
++ *
++ * The version of this function included with PHP 5.3.4 contains a bug
++ * that results in misalignment and misplacement of rotated text.
++ *
++ * @see imagettfbbox
++ */
++function imagettfbbox_patched($size, $angle, $font, $text)
++{
++  $bbox = imagettfbbox($size, 0, $font, $text);
++
++  return rotatebbox_patchhelper($angle, $bbox);
++}
++
++/**
++ * Rotate a bounding box counter-clockwise by the given angle.
++ *
++ * Uses screen coordinates where the positive Y and X axes are down and
++ * to the right.
++ *
++ * @param float $angle The angle in degrees.
++ * @param array $bbox A bounding box in the format returned by
++ *   imagettfbbox.
++ *
++ * @return array A bounding box in the format returned by imagettfbbox.
++ */
++function rotatebbox_patchhelper($angle, $bbox)
++{
++  $a = deg2rad($angle);
++
++  $cos = cos($a);
++  $sin = sin($a);
++
++  $rbox = array();
++
++  foreach (range(0, 3) as $i) {
++    $xi = $i * 2;
++    $yi = $i * 2 + 1;
++
++    $x = $bbox[$xi];
++    $y = $bbox[$yi];
++
++    $rbox[$xi] = $x * $cos + $y * $sin;
++    $rbox[$yi] = $y * $cos - $x * $sin;
++  }
++
++  return $rbox;
++}
++
++/**
++ * Determine the axis aligned bounding box given a bounding box that may
++ * or may not be axis aligned.
++ *
++ * @param array $bbox A bounding box in the format returned by
++ *   imagettfbbox.
++ *
++ * @return array
++ *   - float min_x Upper left corner, X position.
++ *   - float min_y Upper left corner, Y position.
++ *   - float max_x Lower right corner, X position.
++ *   - float max_y Lower right corner, Y position.
++ */
++function aabb_patchhelper($bbox)
++{
++  $aabb = array();
++
++  foreach (range(0, 3) as $i) {
++    $x = $bbox[$i * 2];
++    $y = $bbox[$i * 2 + 1];
++
++    if (!isset($aabb['min_x']) || $x < $aabb['min_x']) {
++      $aabb['min_x'] = $x;
++    }
++    if (!isset($aabb['min_y']) || $y < $aabb['min_y']) {
++      $aabb['min_y'] = $y;
++    }
++    if (!isset($aabb['max_x']) || $x > $aabb['max_x']) {
++      $aabb['max_x'] = $x;
++    }
++    if (!isset($aabb['max_y']) || $y > $aabb['max_y']) {
++      $aabb['max_y'] = $y;
++    }
++  }
++
++  return $aabb;
++}
++
+diff -r -N -u ../ubmod-0.2.0.orig/portal/lib/pChart/class/pDraw.class.php ./portal/lib/pChart/class/pDraw.class.php
+--- ../ubmod-0.2.0.orig/portal/lib/pChart/class/pDraw.class.php	2011-11-04 09:29:26.000000000 -0400
++++ ./portal/lib/pChart/class/pDraw.class.php	2011-11-08 11:31:07.888673424 -0500
+@@ -13,6 +13,8 @@
+      You can find the whole class documentation on the pChart web site.
+  */
+ 
++require_once dirname(__FILE__) . '/../../imagettftext_patch.php';
++
+  define("DIRECTION_VERTICAL"		, 690001);
+  define("DIRECTION_HORIZONTAL"		, 690002);
+ 
+@@ -1016,11 +1018,11 @@
+      if ( $this->Shadow && $this->ShadowX != 0 && $this->ShadowY != 0 )
+       {
+        $C_ShadowColor = $this->allocateColor($this->Picture,$this->ShadowR,$this->ShadowG,$this->ShadowB,$this->Shadowa);
+-       imagettftext($this->Picture,$FontSize,$Angle,$X+$this->ShadowX,$Y+$this->ShadowY,$C_ShadowColor,$FontName,$Text);
++       imagettftext_patched($this->Picture,$FontSize,$Angle,$X+$this->ShadowX,$Y+$this->ShadowY,$C_ShadowColor,$FontName,$Text);
+       }
+ 
+      $C_TextColor = $this->AllocateColor($this->Picture,$R,$G,$B,$Alpha);
+-     imagettftext($this->Picture,$FontSize,$Angle,$X,$Y,$C_TextColor,$FontName,$Text);
++     imagettftext_patched($this->Picture,$FontSize,$Angle,$X,$Y,$C_TextColor,$FontName,$Text);
+ 
+      $this->Shadow = $Shadow;
+ 
+@@ -6190,4 +6192,4 @@
+     }
+ 
+   }
+-?>
+\ No newline at end of file
++?>

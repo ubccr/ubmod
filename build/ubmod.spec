@@ -8,6 +8,7 @@ Packager:  Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
 Group:     Applications/Internet
 License:   GPLv3+
 Source:    %{name}-%{version}.tar.gz
+Patch:     ubmod-0.2.0-imagettftext.patch
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 BuildArch: noarch
 Requires:  httpd
@@ -25,6 +26,7 @@ detailed interactive charts, graphs, and tables.
 
 %prep
 %setup -q
+%patch
 
 %install
 rm -rf $RPM_BUILD_ROOT
