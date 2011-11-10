@@ -992,6 +992,10 @@ Ext.Loader.onReady(function () {
                 this.add(userPanel).show();
             }, this);
 
+            userTagGrid.on('userschanged', function () {
+                tagStatsGrid.store.load();
+            });
+
             this.tagActivity = Ext.create('Ubmod.store.TagActivity');
 
             tagStatsGrid = Ext.create('Ubmod.widget.StatsGrid', {
@@ -1048,6 +1052,14 @@ Ext.Loader.onReady(function () {
 
         constructor: function (config) {
             config = config || {};
+
+            /**
+             * @event userschanged
+             * Fires when a tag has been added to one or more users.
+             * @param {Array} users The users that changed.
+             */
+            this.addEvents({ userschanged: true });
+
             Ext.apply(config, {
                 height: 400,
                 store: Ext.create('Ubmod.store.UserTags'),
@@ -1055,6 +1067,7 @@ Ext.Loader.onReady(function () {
                     checkOnly: true
                 })
             });
+
             this.callParent([config]);
         },
 
@@ -1109,7 +1122,9 @@ Ext.Loader.onReady(function () {
                     return;
                 }
 
-                this.store.addTag(tag, selection);
+                this.store.addTag(tag, selection, function () {
+                    this.fireEvent('userschanged', selection);
+                }, this);
             }, this);
 
             this.dockedItems = [pagingToolbar, tagToolbar];
