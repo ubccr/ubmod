@@ -176,7 +176,7 @@ sub update_intervals {
     my @labels = (
         [ 'Week',    7 ],
         [ 'Month',   30 ],
-        [ 'Quarter', 84 ],    # [ 'Quarter', 91 ],
+        [ 'Quarter', 91 ],
         [ 'Year',    365 ],
     );
 
