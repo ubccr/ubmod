@@ -328,8 +328,10 @@ Ext.Loader.onReady(function () {
             this.store.load({
                 scope: this,
                 callback: function (records) {
-                    this.setValue(records[3].get(this.valueField));
-                    this.fireEvent('select', this, [records[3]]);
+                    // Default to the last record (longest interval).
+                    var i = records.length - 1;
+                    this.setValue(records[i].get(this.valueField));
+                    this.fireEvent('select', this, [records[i]]);
                 }
             });
         }
