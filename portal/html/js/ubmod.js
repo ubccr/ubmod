@@ -509,12 +509,14 @@ Ext.Loader.onReady(function () {
             this.columns = [{
                 header: this.label,
                 dataIndex: this.labelKey,
+                menuDisabled: true,
                 width: 128
             }, {
                 header: '# Jobs',
                 dataIndex: 'jobs',
                 xtype: 'numbercolumn',
                 format: '0,000',
+                menuDisabled: true,
                 width: 96,
                 align: 'right'
             }, {
@@ -522,6 +524,7 @@ Ext.Loader.onReady(function () {
                 dataIndex: 'avg_cpus',
                 xtype: 'numbercolumn',
                 format: '0,000',
+                menuDisabled: true,
                 width: 118,
                 align: 'right'
             }, {
@@ -529,6 +532,7 @@ Ext.Loader.onReady(function () {
                 dataIndex: 'avg_wait',
                 xtype: 'numbercolumn',
                 format: '0,000.00',
+                menuDisabled: true,
                 width: 118,
                 align: 'right'
             }, {
@@ -536,6 +540,7 @@ Ext.Loader.onReady(function () {
                 dataIndex: 'wallt',
                 xtype: 'numbercolumn',
                 format: '0,000.0',
+                menuDisabled: true,
                 width: 128,
                 align: 'right'
             }, {
@@ -543,6 +548,7 @@ Ext.Loader.onReady(function () {
                 dataIndex: 'avg_mem',
                 xtype: 'numbercolumn',
                 format: '0,000.0',
+                menuDisabled: true,
                 width: 128,
                 align: 'right'
             }];
