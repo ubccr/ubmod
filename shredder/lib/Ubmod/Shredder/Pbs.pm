@@ -45,8 +45,8 @@ my %params = (
 );
 
 sub new {
-    my ($class) = @_;
-    my $self = {};
+    my ( $class, %options ) = @_;
+    my $self = \%options;
     return bless $self, $class;
 }
 
@@ -68,7 +68,8 @@ sub shred {
     return unless defined $line;
 
     if ( $line !~ $pattern ) {
-        die "Malformed PBS acct line: $line\n";
+        $self->{logger}->warn("Malformed PBS acct line: $line");
+        return {};
     }
 
     my ( $date, $type, $job_id, $params ) = ( $1, $2, $3, $4 );

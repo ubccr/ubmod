@@ -4,8 +4,8 @@ use warnings;
 use DateTime;
 
 sub new {
-    my ( $class, $dbh ) = @_;
-    my $self = { dbh => $dbh };
+    my ( $class, %options ) = @_;
+    my $self = \%options;
     return bless $self, $class;
 }
 
@@ -43,14 +43,15 @@ sub update_clusters {
     foreach my $cluster ( @{ $self->select_event_clusters() } ) {
         my $host = $cluster->{host};
         if ( !defined $clusters{$host} ) {
-            $self->log_msg("Adding new cluster: $host");
+            $self->{logger}->info("Adding new cluster: $host");
             my $id = $self->insert_cluster( { host => $host } );
-            $self->log_msg("Successfully inserted new cluster with id: $id");
+            $self->{logger}
+                ->info("Successfully inserted new cluster with id: $id");
             $cluster->{cluster_id} = $id;
             $clusters{$host} = $cluster;
         }
         else {
-            $self->log_msg("Cluster '$host' already exists.");
+            $self->{logger}->info("Cluster '$host' already exists.");
         }
     }
 
@@ -65,14 +66,15 @@ sub update_queues {
     foreach my $queue ( @{ $self->select_event_queues() } ) {
         my $name = $queue->{queue};
         if ( !defined $queues{$name} ) {
-            $self->log_msg("Adding new queue: $name");
+            $self->{logger}->info("Adding new queue: $name");
             my $id = $self->insert_queue( { queue => $name } );
-            $self->log_msg("Successfully inserted new queue with id: $id");
+            $self->{logger}
+                ->info("Successfully inserted new queue with id: $id");
             $queue->{queue_id} = $id;
             $queues{$name} = $queue;
         }
         else {
-            $self->log_msg("Queue '$name' already exists.");
+            $self->{logger}->info("Queue '$name' already exists.");
             $queue->{queue_id} = $queues{$name}->{queue_id};
         }
 
@@ -97,14 +99,15 @@ sub update_groups {
     foreach my $group ( @{ $self->select_event_groups() } ) {
         my $name = $group->{ugroup};
         if ( !defined $groups{$name} ) {
-            $self->log_msg("Adding new group: $name");
+            $self->{logger}->info("Adding new group: $name");
             my $id = $self->insert_group( { group_name => $name } );
-            $self->log_msg("Successfully inserted new group with id: $id");
+            $self->{logger}
+                ->info("Successfully inserted new group with id: $id");
             $group->{group_id} = $id;
             $groups{$name} = $group;
         }
         else {
-            $self->log_msg("Group '$name' already exists.");
+            $self->{logger}->info("Group '$name' already exists.");
             $group->{group_id} = $groups{$name}->{group_id};
         }
 
@@ -129,14 +132,15 @@ sub update_users {
     foreach my $user ( @{ $self->select_event_users() } ) {
         my $name = $user->{user};
         if ( !defined $users{$name} ) {
-            $self->log_msg("Adding new user: $name");
+            $self->{logger}->info("Adding new user: $name");
             my $id = $self->insert_user( { user => $name } );
-            $self->log_msg("Successfully inserted new user with id: $id");
+            $self->{logger}
+                ->info("Successfully inserted new user with id: $id");
             $user->{user_id} = $id;
             $users{$name} = $user;
         }
         else {
-            $self->log_msg("User '$name' already exists.");
+            $self->{logger}->info("User '$name' already exists.");
             $user->{user_id} = $users{$name}->{user_id};
         }
 
@@ -208,7 +212,7 @@ sub update_cluster_activity {
             my $id      = $self->insert_activity($activity);
             my $cluster = $clusters->{ $activity->{host} };
             if ( !defined $cluster ) {
-                $self->log_msg("Skipping cluster activity.");
+                $self->{logger}->info("Skipping cluster activity.");
                 next;
             }
 
@@ -237,7 +241,7 @@ sub update_queue_activity {
             my $cluster = $clusters->{ $activity->{host} };
             my $queue   = $queues->{ $activity->{queue} };
             if ( !defined $cluster || !defined $queue ) {
-                $self->log_msg("Skipping queue activity.");
+                $self->{logger}->info("Skipping queue activity.");
                 next;
             }
 
@@ -267,7 +271,7 @@ sub update_group_activity {
             my $cluster = $clusters->{ $activity->{host} };
             my $group   = $groups->{ $activity->{ugroup} };
             if ( !defined $cluster || !defined $group ) {
-                $self->log_msg("Skipping group activity.");
+                $self->{logger}->info("Skipping group activity.");
                 next;
             }
 
@@ -296,7 +300,7 @@ sub update_user_activity {
             my $cluster = $clusters->{ $activity->{host} };
             my $user    = $users->{ $activity->{user} };
             if ( !defined $cluster || !defined $user ) {
-                $self->log_msg("Skipping user activity.");
+                $self->{logger}->info("Skipping user activity.");
                 next;
             }
 
@@ -335,7 +339,7 @@ sub update_cpu_consumption {
                 my $label = $self->get_cpu_min_max_label( $min, $max );
 
                 if ( !defined $consumption->{cput} ) {
-                    $self->log_msg( "No cput found for cpus $label"
+                    $self->{logger}->warn( "No cput found for cpus $label"
                             . " for time period $interval->{start}"
                             . " - $interval->{end} for cluster $cluster->{host}"
                     );
@@ -381,7 +385,7 @@ sub update_actual_wait_time {
                 my $label = $self->get_cpu_min_max_label( $min, $max );
 
                 if ( !defined $wait_time->{avg_wait} ) {
-                    $self->log_msg( "No avg_wait found for cpus $label"
+                    $self->{logger}->warn( "No avg_wait found for cpus $label"
                             . " for time period $interval->{start}"
                             . " - $interval->{end} for cluster $cluster->{host}"
                     );
@@ -431,11 +435,6 @@ sub get_cpu_min_max_label {
     else {
         return "$min-$max";
     }
-}
-
-sub log_msg {
-    my ( $self, $msg ) = @_;
-    print $msg, "\n";
 }
 
 # Database methods

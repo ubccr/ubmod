@@ -9,8 +9,10 @@ use File::Spec;
 use Config::Tiny;
 use Ubmod::Shredder::Pbs;
 use Ubmod::Aggregator;
+use Ubmod::Logger;
 
 my $Dbh;
+my $Logger;
 
 sub main {
     my ( $stdio, $file, $dir, $host, $shred, $update, $verbose, $help );
@@ -33,15 +35,17 @@ sub main {
         exit 0;
     }
 
+    $Logger = Ubmod::Logger->new($verbose);
+
     my $config = Config::Tiny->read("$FindBin::Bin/../config/settings.ini");
     db_connect( @{ $config->{database} }{qw{ dsn user password }} );
 
     if ($shred) {
-        my $shredder = Ubmod::Shredder::Pbs->new();
+        my $shredder = Ubmod::Shredder::Pbs->new( logger => $Logger );
 
         $shredder->set_host($host) if $host;
 
-        log_msg("Shredding.");
+        $Logger->info("Shredding.");
 
         if ($dir) {
             process_directory( $shredder, $dir );
@@ -50,23 +54,26 @@ sub main {
             process_file( $shredder, $file );
         }
         elsif ($stdio) {
-            log_msg("Processing standard input");
+            $Logger->info("Processing standard input");
             process_fh( $shredder, *STDIN );
         }
         else {
-            die usage();
+            print usage();
+            exit 1;
         }
 
-        log_msg("Done shredding!");
+        $Logger->info("Done shredding!");
     }
 
     if ($update) {
-        my $aggregator = Ubmod::Aggregator->new($Dbh);
+        my $aggregator
+            = Ubmod::Aggregator->new( dbh => $Dbh, logger => $Logger );
         $aggregator->aggregate();
     }
 
     if ( !$update && !$shred ) {
-        die usage();
+        print usage();
+        exit 1;
     }
 }
 
@@ -110,31 +117,49 @@ EOT
 sub process_directory {
     my ( $shredder, $dir ) = @_;
 
-    log_msg("Processing directory: $dir");
+    $Logger->info("Processing directory: $dir");
 
-    -d $dir or die "Cannot access '$dir': No such directory\n";
+    if ( !-d $dir ) {
+        $Logger->fatal("Cannot access '$dir': No such directory");
+        exit 1;
+    }
 
-    opendir my ($dh), $dir or die "Could not open die '$dir': $!";
+    my $dh;
+    if ( !opendir $dh, $dir ) {
+        $Logger->fatal("Could not open dir '$dir': $!");
+        exit 1;
+    }
 
     my $count = 0;
 
     while ( my $file = readdir($dh) ) {
         next if $file =~ /^\./;
+        next unless -f $file;
+        if ( !-r $file ) {
+            $Logger->warn("Skipping unreadable file '$file'.");
+        }
         $count
             += process_file( $shredder, File::Spec->catfile( $dir, $file ) );
     }
 
-    log_msg("Total shredded: $count");
+    $Logger->info("Total shredded: $count");
 }
 
 sub process_file {
     my ( $shredder, $file ) = @_;
 
-    log_msg("Processing file: $file");
+    $Logger->info("Processing file: $file");
 
-    -f $file or die "Cannot access '$file': No such file\n";
+    if ( !-f $file ) {
+        $Logger->fatal("Cannot access '$file': No such file");
+        exit 1;
+    }
 
-    open my ($fh), '<', $file or die "Could not open file '$file': $!";
+    my $fh;
+    if ( !open $fh, '<', $file ) {
+        $Logger->fatal("Could not open file '$file': $!");
+        exit 1;
+    }
 
     return process_fh( $shredder, $fh );
 }
@@ -146,6 +171,7 @@ sub process_fh {
 
     my $count = 0;
     while ( my $event = $shredder->shred() ) {
+        next unless %$event;
         my $event_id = insert_event($event);
         foreach my $host ( @{ $event->{hosts} } ) {
             insert_host_log( { %$host, event_id => $event_id } );
@@ -153,7 +179,7 @@ sub process_fh {
         $count++;
     }
 
-    log_msg("Shredded $count records.");
+    $Logger->info("Shredded $count records.");
 
     return $count;
 }
@@ -267,11 +293,6 @@ sub get_event_max_date {
     my $sth = $Dbh->prepare(q{ SELECT MAX(date_key) FROM event });
     $sth->execute();
     return $sth->fetchrow_arrayref->[0];
-}
-
-sub log_msg {
-    my ($msg) = @_;
-    print $msg, "\n";
 }
 
 main(@ARGV) unless caller();
