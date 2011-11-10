@@ -57,11 +57,14 @@ sub new {
 sub shred {
     my ( $self, $line ) = @_;
 
-    if ( $line !~ $pattern ) {
+    my ( $date, $type, $job_id, $params );
+
+    if ( $line =~ $pattern ) {
+        ( $date, $type, $job_id, $params ) = ( $1, $2, $3, $4 );
+    }
+    else {
         die "Malformed PBS acct line: $line";
     }
-
-    my ( $date, $type, $job_id, $params ) = ( $1, $2, $3, $4 );
 
     $date =~ s#^(\d{2})/(\d{2})/(\d{4})#$3-$1-$2#;
 
@@ -181,12 +184,12 @@ sub _set_exec_host {
 
     my $hosts = $self->_parse_hosts($hosts_str);
 
-    my %map;
+    my %host_map;
     foreach my $host (@$hosts) {
-        $map{ $host->{host} } += 1;
+        $host_map{ $host->{host} } += 1;
     }
 
-    while ( my ( $host, $total ) = each(%map) ) {
+    while ( my ( $host, $total ) = each(%host_map) ) {
         $nodes++;
         $cpus += $total;
     }

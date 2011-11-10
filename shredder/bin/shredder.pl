@@ -100,17 +100,20 @@ sub main {
         my %options = ( dbh => $Dbh, logger => $Logger );
 
         if ( defined $end_date ) {
-            if ( $end_date !~ /^(\d{4})-(\d{1,2})-(\d{1,2})$/ ) {
+            if ( $end_date =~ /^(\d{4})-(\d{1,2})-(\d{1,2})$/ ) {
+                my $date = eval {
+                    DateTime->new( year => $1, month => $2, day => $3 );
+                };
+                if ( !$date ) {
+                    $Logger->fatal("Invalid date: '$end_date'");
+                    exit 1;
+                }
+                $options{end_date} = $date;
+            }
+            else {
                 $Logger->fatal("Invalid date format: '$end_date'");
                 exit 1;
             }
-            my $date
-                = eval { DateTime->new( year => $1, month => $2, day => $3 ) };
-            if ( !$date ) {
-                $Logger->fatal("Invalid date: '$end_date'");
-                exit 1;
-            }
-            $options{end_date} = $date;
         }
 
         my $aggregator = Ubmod::Aggregator->new(%options);
@@ -327,16 +330,18 @@ sub get_file_names {
         second => 0,
     );
 
-    if ( $date !~ /^(\d{4})-(\d{2})-(\d{2})$/ ) {
-        $Logger->fatal("Unknown date format: '$date'");
+    my $current;
+    if ( $date =~ /^(\d{4})-(\d{2})-(\d{2})$/ ) {
+        $current = DateTime->new(
+            year  => $1,
+            month => $2,
+            day   => $3,
+        );
+    }
+    else {
+        $Logger->fatal("Invalid date format: '$date'");
         exit 1;
     }
-
-    my $current = DateTime->new(
-        year  => $1,
-        month => $2,
-        day   => $3,
-    );
 
     my @files;
 
