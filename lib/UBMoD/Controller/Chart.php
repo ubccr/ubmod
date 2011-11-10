@@ -24,7 +24,6 @@ class UBMoD_Controller_Chart extends UBMoD_Controller_Base
   public function executeCpuConsumption()
   {
     UBMoD_Model_Chart::renderCpuConsumption($this->getGetData());
-    exit(0);
   }
 
   /**
@@ -35,7 +34,6 @@ class UBMoD_Controller_Chart extends UBMoD_Controller_Base
   public function executeWaitTime()
   {
     UBMoD_Model_Chart::renderWaitTime($this->getGetData());
-    exit(0);
   }
 
   /**
@@ -46,7 +44,6 @@ class UBMoD_Controller_Chart extends UBMoD_Controller_Base
   public function executeUserPie()
   {
     UBMoD_Model_Chart::renderUserPie($this->getGetData());
-    exit(0);
   }
 
   /**
@@ -57,7 +54,6 @@ class UBMoD_Controller_Chart extends UBMoD_Controller_Base
   public function executeUserBar()
   {
     UBMoD_Model_Chart::renderUserBar($this->getGetData());
-    exit(0);
   }
 
   /**
@@ -68,7 +64,6 @@ class UBMoD_Controller_Chart extends UBMoD_Controller_Base
   public function executeGroupPie()
   {
     UBMoD_Model_Chart::renderGroupPie($this->getGetData());
-    exit(0);
   }
 
   /**
@@ -79,6 +74,5 @@ class UBMoD_Controller_Chart extends UBMoD_Controller_Base
   public function executeGroupBar()
   {
     UBMoD_Model_Chart::renderGroupBar($this->getGetData());
-    exit(0);
   }
 }

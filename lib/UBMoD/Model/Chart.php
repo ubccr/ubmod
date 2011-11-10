@@ -295,5 +295,6 @@ class UBMoD_Model_Chart
     ));
 
     $chart->stroke();
+    exit(0);
   }
 }
