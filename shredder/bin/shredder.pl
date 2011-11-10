@@ -133,13 +133,21 @@ sub process_directory {
     my $count = 0;
 
     while ( my $file = readdir($dh) ) {
+
+        # Skip hidden files
         next if $file =~ /^\./;
-        next unless -f $file;
-        if ( !-r $file ) {
-            $Logger->warn("Skipping unreadable file '$file'.");
+
+        my $file_path = File::Spec->catfile( $dir, $file );
+        if ( !-f $file_path ) {
+            $Logger->warn("Skipping '$file'.");
+            next;
         }
-        $count
-            += process_file( $shredder, File::Spec->catfile( $dir, $file ) );
+        if ( !-r $file_path ) {
+            $Logger->warn("Skipping unreadable file '$file'.");
+            next;
+        }
+
+        $count += process_file( $shredder, $file_path );
     }
 
     $Logger->info("Total shredded: $count");
