@@ -9,7 +9,8 @@
  */
 
 /**
- * Base Controller.
+ * Base class for handling requests.  Other controllers should extend this
+ * class.
  *
  * @package Ubmod
  */
@@ -31,18 +32,12 @@ class Ubmod_BaseController
   protected $_request;
 
   /**
-   * Response Object.
-   *
-   * @var Ubmod_Response
-   */
-  protected $_response;
-
-  /**
    * Constructor.
    *
+   * @param Ubmod_Request request The request this controller is handling
    * @return void
    */
-  protected function __construct($request)
+  protected function __construct(Ubmod_Request $request)
   {
     $this->_request = $request;
   }
@@ -50,9 +45,10 @@ class Ubmod_BaseController
   /**
    * Factory method.
    *
-   * @return BaseController
+   * @param Ubmod_Request request The request this controller is handling
+   * @return Ubmod_BaseController
    */
-  public static function factory($request)
+  public static function factory(Ubmod_Request $request)
   {
     return new static($request);
   }
@@ -112,6 +108,7 @@ class Ubmod_BaseController
    * Overload writing properties.
    *
    * @param string The property name
+   * @param mixed value the value to associate with this property
    * @return void
    */
   public function __set($name, $value)
