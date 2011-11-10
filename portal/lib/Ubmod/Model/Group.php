@@ -49,30 +49,6 @@ class Ubmod_Model_Group
 {
 
   /**
-   * Returns an array of all groups.
-   *
-   * @return array
-   */
-  public static function getAll()
-  {
-    $sql = '
-      SELECT
-        dim_group_id                 AS group_id,
-        COALESCE(display_name, name) AS group_name
-      FROM dim_group
-      ORDER BY group_name
-    ';
-    $dbh = Ubmod_DbService::dbh();
-    $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute();
-    if (!$r) {
-      $err = $stmt->errorInfo();
-      throw new Exception($err[2]);
-    }
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-  }
-
-  /**
    * Return the number of groups with activities.
    *
    * @param array params The parameters for the query

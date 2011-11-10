@@ -49,30 +49,6 @@ class Ubmod_Model_Queue
 {
 
   /**
-   * Returns an array of all queues.
-   *
-   * @return array
-   */
-  public static function getAll()
-  {
-    $sql = '
-      SELECT
-        dim_queue_id AS queue_id,
-        name         AS queue
-      FROM dim_queue
-      ORDER BY queue
-    ';
-    $dbh = Ubmod_DbService::dbh();
-    $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute();
-    if (!$r) {
-      $err = $stmt->errorInfo();
-      throw new Exception($err[2]);
-    }
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-  }
-
-  /**
    * Return the number of queues with activities.
    *
    * @param array params The parameters for the query

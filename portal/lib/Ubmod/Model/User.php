@@ -49,31 +49,6 @@ class Ubmod_Model_User
 {
 
   /**
-   * Returns an array of all users.
-   *
-   * @return array
-   */
-  public static function getAll()
-  {
-    $sql = '
-      SELECT
-        dim_user_id                  AS user_id,
-        name                         AS user,
-        COALESCE(name, display_name) AS display_name
-      FROM dim_user
-      ORDER BY user
-    ';
-    $dbh = Ubmod_DbService::dbh();
-    $stmt = $dbh->prepare($sql);
-    $r = $stmt->execute();
-    if (!$r) {
-      $err = $stmt->errorInfo();
-      throw new Exception($err[2]);
-    }
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-  }
-
-  /**
    * Return the number of users with activities.
    *
    * @param array params The parameters for the query
