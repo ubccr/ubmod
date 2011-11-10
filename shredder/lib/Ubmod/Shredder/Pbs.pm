@@ -45,14 +45,9 @@ my %params = (
 );
 
 sub new {
-    my ( $class ) = @_;
+    my ($class) = @_;
     my $self = {};
     return bless $self, $class;
-}
-
-sub set_host {
-    my ( $self, $host ) = @_;
-    $self->{host} = $host;
 }
 
 sub shred {
@@ -69,7 +64,6 @@ sub shred {
     my $event = {
         date_key => $date,
         type     => $type,
-        host     => $self->{host},
     };
 
     $self->_set_job_id_and_host( $event, $job_id );
@@ -134,13 +128,11 @@ sub _set_job_id_and_host {
     my ( $self, $event, $job_id ) = @_;
 
     my ( $job, $host ) = split /\./, $job_id, 2;
-
     my ( $id, $index ) = split /-/, $job;
 
+    $event->{host}            = $host;
     $event->{job_id}          = $id;
     $event->{job_array_index} = $index;
-
-    $event->{host} = $host if !defined $event->{host};
 }
 
 sub _set_exec_host {
@@ -195,12 +187,12 @@ Ubmod::Shredder::Pbs - Parse PBS/TORQUE format accounting logs
 =head1 SYNOPSIS
 
     my $shredder = Ubmod::Shredder::Pbs->new();
-    $shredder->set_host($host);
-    my $event = $shredder->shred($line);
+    my $event    = $shredder->shred($line);
 
 =head1 DESCRIPTION
 
-This module parses PBS/TORQUE accounting log files.
+This module parses PBS/TORQUE accounting log files.  It defines a class
+that implements a single public method to do so.
 
 =head1 CONSTRUCTOR
 
@@ -208,14 +200,7 @@ This module parses PBS/TORQUE accounting log files.
 
     my $shredder = Ubmod::Shredder::Pbs->new();
 
-=head1 METHODS
-
-=head2 set_host($host)
-
-    $shredder->set_host($host);
-
-Set the name of the cluster to C<$host>.  This will override any host
-names that are found in the log file during the shredding process.
+=head1 METHOD
 
 =head2 shred($line)
 

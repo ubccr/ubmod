@@ -11,8 +11,10 @@ use Ubmod::Shredder::Pbs;
 use Ubmod::Aggregator;
 use Ubmod::Logger;
 
+# Global variables
 my $Dbh;
 my $Logger;
+my $Host;
 
 sub main {
     my ( $stdio, $file, $dir, $host, $shred, $update, $verbose, $help );
@@ -43,7 +45,7 @@ sub main {
     if ($shred) {
         my $shredder = Ubmod::Shredder::Pbs->new();
 
-        $shredder->set_host($host) if $host;
+        $Host = $host if defined $host;
 
         $Logger->info("Shredding.");
 
@@ -193,6 +195,7 @@ sub process_fh {
             $Logger->fatal($@);
             next;
         }
+        $event->{host} = $Host if defined $Host;
         my $event_id = insert_event($event);
         foreach my $host ( @{ $event->{hosts} } ) {
             insert_host_log( { %$host, event_id => $event_id } );
