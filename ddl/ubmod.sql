@@ -153,6 +153,7 @@ create table sge_event (
   maxvmem                   bigint,
   arid                      int,
   ar_submission_time        int,
+  resource_list_arch             varchar(255),
   resource_list_qname            varchar(255),
   resource_list_hostname         varchar(255),
   resource_list_notify           int,
