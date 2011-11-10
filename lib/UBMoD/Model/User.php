@@ -40,7 +40,7 @@ class UBMoD_Model_User
   {
     $dbh = UBMoD_DBService::dbh();
 
-    $sql = 'SELECT count(*)
+    $sql = 'SELECT COUNT(*)
       FROM user u
       JOIN user_activity ua
         ON u.user_id = ua.user_id
@@ -75,7 +75,16 @@ class UBMoD_Model_User
   {
     $dbh = UBMoD_DBService::dbh();
 
-    $sql = 'SELECT *
+    $sql = 'SELECT
+        u.user_id,
+        u.user,
+        u.display_name,
+        IFNULL(a.jobs, 0) AS jobs,
+        IFNULL(ROUND(a.cput/cast(86400 AS DECIMAL), 2), 0) AS cput,
+        IFNULL(ROUND(a.wallt/cast(86400 AS DECIMAL), 2), 0) AS wallt,
+        IFNULL(ROUND(a.avg_wait/cast(3600 AS DECIMAL), 2), 0) AS avg_wait,
+        IFNULL(a.avg_cpus, 0) AS avg_cpus,
+        IFNULL(ROUND(a.avg_mem/1024,1), 0) AS avg_mem
       FROM user u
       JOIN user_activity ua
         ON u.user_id = ua.user_id
@@ -119,23 +128,23 @@ class UBMoD_Model_User
         u.user_id,
         u.user,
         u.display_name,
-        ifnull(a.jobs, 0) jobs,
-        ifnull(a.wallt, 0) wallt,
-        ifnull(round(a.avg_wallt/86400, 1), 0) avg_wallt,
-        ifnull(round(a.max_wallt/86400, 1), 0) max_wallt,
-        ifnull(a.cput, 0) cput,
-        ifnull(round(a.avg_cput/3600, 1),0) avg_cput,
-        ifnull(a.max_cput, 0) max_cput,
-        ifnull(round(a.avg_mem/1024, 1), 0) avg_mem ,
-        ifnull(a.max_mem, 0) max_mem,
-        ifnull(a.avg_vmem, 0) avg_mem,
-        ifnull(a.max_vmem, 0) max_vmem,
-        ifnull(round(a.avg_wait/3600, 1), 0) avg_wait,
-        ifnull(round(a.avg_exect/3600, 1), 0) avg_exect,
-        ifnull(a.avg_nodes, 0) avg_nodes,
-        ifnull(a.max_nodes, 0) max_nodes,
-        ifnull(a.avg_cpus, 0) avg_cpus,
-        ifnull(a.max_cpus, 0) max_cpus
+        IFNULL(a.jobs, 0) AS jobs,
+        IFNULL(a.wallt, 0) AS wallt,
+        IFNULL(ROUND(a.avg_wallt/86400, 1), 0) AS avg_wallt,
+        IFNULL(ROUND(a.max_wallt/86400, 1), 0) AS max_wallt,
+        IFNULL(a.cput, 0) AS cput,
+        IFNULL(ROUND(a.avg_cput/3600, 1),0) AS avg_cput,
+        IFNULL(a.max_cput, 0) AS max_cput,
+        IFNULL(ROUND(a.avg_mem/1024, 1), 0) AS avg_mem,
+        IFNULL(a.max_mem, 0) AS max_mem,
+        IFNULL(a.avg_vmem, 0) AS avg_vmem,
+        IFNULL(a.max_vmem, 0) AS max_vmem,
+        IFNULL(ROUND(a.avg_wait/3600, 1), 0) AS avg_wait,
+        IFNULL(ROUND(a.avg_exect/3600, 1), 0) AS avg_exect,
+        IFNULL(a.avg_nodes, 0) AS avg_nodes,
+        IFNULL(a.max_nodes, 0) AS max_nodes,
+        IFNULL(a.avg_cpus, 0) AS avg_cpus,
+        IFNULL(a.max_cpus, 0) AS max_cpus
       FROM user u
       JOIN
         user_activity ua
