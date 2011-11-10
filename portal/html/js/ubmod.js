@@ -453,8 +453,19 @@ Ext.Loader.onReady(function () {
             });
 
             // XXX Force the tab panel to recalculate it's layout when
-            // the grid is resized.
-            this.grid.on('resize', this.doLayout, this);
+            // the grid is resized.  Also, set the grid size if it has
+            // changed.  See the comment above for an explanation.
+            this.gridWidth = 0;
+            this.gridHeight = 0;
+            this.grid.on('resize', function() {
+                this.doLayout();
+                if (this.gridWidth !== this.grid.getWidth() &&
+                        this.gridHeight !== this.grid.getHeight()) {
+                    this.gridWidth = this.grid.getWidth();
+                    this.gridHeight = this.grid.getHeight();
+                    this.grid.setSize(this.getWidth(), this.getHeight());
+                }
+            }, this);
 
             // XXX Reverse sort direction so that the first click on a
             // grid header results in sorting in the descending order.
