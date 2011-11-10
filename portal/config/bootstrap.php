@@ -27,7 +27,7 @@ function __autoload($className)
   }
   else
   {
-    throw new Exception('Cannot find class: ' . $className);
+    throw new Exception("Cannot find file '$file' for class '$className'");
   }
 }
 
