@@ -961,13 +961,19 @@ class Ubmod_Model_Chart
     }
 
     if ($total > 0) {
+      $haveOther = false;
+
       while (list($i, $t) = each($series)) {
         $percentage = round($t / $total * 100);
 
         // Don't include slices with a small percentage. Add them to the
         // "other" slice. This improves the display of the pie chart
-        // labels.
-        if ($percentage <= 2) {
+        // labels. If a small slice is found, all subsequent slices are
+        // considered small regardless of size. This allows an "other"
+        // slice to be put at the end of the data as is done with the
+        // tag chart.
+        if ($haveOther || $percentage <= 2) {
+          $haveOther = true;
           unset($labels[$i]);
           unset($series[$i]);
           $other += $t;
@@ -976,8 +982,8 @@ class Ubmod_Model_Chart
         }
       }
 
-      // Don't include the remaining users if the percentage is too
-      // small. This prevents problems when rendering the pie chart.
+      // Don't include the "other" slice if the percentage is too small.
+      // This prevents problems when rendering the pie chart.
       if ($other / $total > 0.0028) {
         $percentage = round($other / $total * 100);
         if ($percentage < 1) { $percentage = '<1'; }
