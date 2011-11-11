@@ -1,8 +1,8 @@
 body {
     font: small sans-serif;
     color: black;
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 a {
@@ -48,7 +48,7 @@ pre {
     margin-top: 15px;
     margin-bottom: 15px;
     max-width: 775px;
-    clear:both;
+    clear: both;
 }
 
 .heading {
@@ -72,3 +72,28 @@ pre {
     margin-bottom: 10px;
     text-align: center;
 }
+
+.data {
+    margin: 20px;
+    border-collapse: collapse;
+}
+
+.data th {
+    padding: 5px;
+    border: 1px solid black;
+    background-color: #ccc;
+}
+
+.data td {
+    padding: 5px;
+    border: 1px solid black;
+}
+
+.col {
+    font-weight: bold;
+}
+
+.ex {
+    white-space: nowrap;
+}
+

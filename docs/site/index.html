@@ -1,71 +1,86 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>UBMoD - Metrics on Demand</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="description" content="UBMoD is an open source data warehouse and web portal for mining statistical data from resource managers (such as TORQUE) commonly found in high-performance computing environments." />
-<link rel="stylesheet" type="text/css" href="css/styles.css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>UBMoD - Metrics on Demand</title>
+  <meta name="description" content="UBMoD is an open source data warehouse and web portal for mining statistical data from resource managers (such as TORQUE) commonly found in high-performance computing environments." />
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-2972782-2']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
 </head>
 <body>
-<div id="header">
-    <div style="float:right;margin-top:10px;">
-    <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=207003&amp;type=2" width="125" height="37" style="border: 0" alt="SourceForge.net Logo" /></a>
+  <div id="header">
+    <div style="float:right; margin-top:10px;">
+      <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=207003&amp;type=2" width="125" height="37" style="border:0;" alt="SourceForge.net Logo" /></a>
     </div>
     <div>
-    <a href="/"><img src="images/logo.png" style="border: none" alt="UBMoD"/></a>
+      <a href="index.html"><img src="images/logo.png" style="border:none;" alt="UBMoD" /></a>
     </div>
-</div>
-<div id="page">
+  </div>
+  <div id="page">
     <div class="heading">About</div>
-<p><strong>UBMoD</strong> is an open source data warehouse and web portal for mining statistical
-data from resource managers (<a href="http://www.clusterresources.com/pages/products/torque-resource-manager.php">TORQUE</a> and OpenPBS currently supported) commonly
-found in high-performance computing environments. It was developed at the <a href="http://www.ccr.buffalo.edu">Center for Computational Research</a> at the <a href="http://www.buffalo.edu">University at Buffalo</a>,
-SUNY. </p><p>UBMoD presents resource utilization (CPU cycles consumed, total jobs, avg
-wait time, etc) for individual users, research groups, departments, and decanal
-units. A role-based authentication scheme can be set up to display data in the format
-best suited to the end-user (for example, as a student, research group leader,
-department chair, dean, etc.). The interface provides a dashboard overview of
-resource consumption along with fine-grained control over the time period and
-resources that are displayed. The information is presented in easy to
-understand interactive charts, graphs, and tables.</p>
-    <p>For more information, questions, or feedback send email to ubmod at ccr.buffalo.edu.
-<span style="font-weight: bold">If you find UBMoD useful and modify the default template we ask that you please
-keep the "Powered By UBMoD" logo with a link back to CCR
-(<a href="http://www.ccr.buffalo.edu">http://www.ccr.buffalo.edu</a>). Thanks!</span>
+    <p><strong>UBMoD</strong> is an open source data warehouse and web portal
+    for mining statistical data from resource managers
+    (<a href="http://www.clusterresources.com/pages/products/torque-resource-manager.php">TORQUE</a>, OpenPBS and SGE currently supported) commonly
+    found in high-performance computing environments. It was developed at the
+    <a href="http://www.ccr.buffalo.edu">Center for Computational Research</a>
+    at the <a href="http://www.buffalo.edu">University at Buffalo</a>, SUNY.
+    </p>
+    <p>UBMoD presents resource utilization (CPU cycles consumed, total jobs,
+    avg wait time, etc) for individual users, research groups, departments,
+    and decanal units. A role-based authentication scheme can be set up to
+    display data in the format best suited to the end-user (for example, as a
+    student, research group leader, department chair, dean, etc.). The
+    interface provides a dashboard overview of resource consumption along with
+    fine-grained control over the time period and resources that are
+    displayed. The information is presented in easy to understand interactive
+    charts, graphs, and tables.</p>
+    <p>For more information, questions, or feedback send email to ubmod at
+    ccr.buffalo.edu.
+    <span style="font-weight:bold;">If you find UBMoD useful and modify the
+      default template we ask that you please keep the "Powered By UBMoD" logo
+      with a link back to CCR
+      (<a href="http://www.ccr.buffalo.edu">http://www.ccr.buffalo.edu</a>).
+      Thanks!</span>
     </p>
     <div class="heading">Documentation</div>
-    <ul><li><a href="install.html">Installation Guide</a></li>
-        <li><a href="db-schema.html">Database Schema</a></li></ul>
+    <ul>
+      <li><a href="install.html">Installation Guide</a></li>
+      <li><a href="db-schema.html">Database Schema</a></li>
+    </ul>
     <div class="heading">Download</div>
-    <ul><li><a href="http://sourceforge.net/project/showfiles.php?group_id=207003&package_id=247707">Latest release</a></li>
-       <li><a href="http://ubmod.svn.sourceforge.net/">Browse source code</a></li>
-       <li><a href="http://sourceforge.net/projects/ubmod/">Sourceforge project page</a></li>
-   </ul>
+    <ul>
+      <li><a href="https://sourceforge.net/projects/ubmod/files/ubmod/">Latest release</a></li>
+      <li><a href="http://ubmod.svn.sourceforge.net/">Browse source code</a></li>
+      <li><a href="http://sourceforge.net/projects/ubmod/">Sourceforge project page</a></li>
+    </ul>
     <div class="heading">License</div>
-    <p>
-        <strong>UBMoD</strong> is an open source project released under the GNU General Public License ("GPL") Version 3.0. You can obtain a copy of the license <a href="http://www.gnu.org/licenses/gpl-3.0.txt">here</a>.
-    </p>
+    <p><strong>UBMoD</strong> is an open source project released under the GNU
+    General Public License ("GPL") Version 3.0. You can obtain a copy of the
+    license <a href="http://www.gnu.org/licenses/gpl-3.0.txt">here</a>.</p>
     <div class="heading">Screenshots</div>
-        <table style="width: 100%">
-            <tr>
-                <td><a href="images/ubmod_dashboard.jpg"><img src="images/ubmod_dashboard_thumb.jpg" class="screen" alt="UBMoD - Dashboard" /></a></td>
-                <td><a href="images/ubmod_cpu.jpg"><img src="images/ubmod_cpu_thumb.jpg" class="screen" alt="UBMoD - CPU Consumption vs Job Size" /></a></td>
-            </tr>
-            <tr>
-                <td><a href="images/ubmod_user.jpg"><img src="images/ubmod_user_thumb.jpg" class="screen" alt="UBMoD - User Detail" /></a></td>
-                <td><a href="images/ubmod_group.jpg"><img src="images/ubmod_group_thumb.jpg" class="screen" alt="UBMoD - Group Show" /></a></td>
-            </tr>
-        </table>
-</div>
-    <div class="footer">
-        <a href="http://www.ccr.buffalo.edu"><img style="border:none" src="images/ccr_logo.png" alt="Center for Computational Research"/></a>
-    </div>
-<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
-</script>
-<script type="text/javascript">
-_uacct = "UA-2972782-2";
-urchinTracker();
-</script>
+    <table style="width:100%;">
+      <tr>
+        <td><a href="images/ubmod_dashboard.jpg"><img src="images/ubmod_dashboard_thumb.jpg" class="screen" alt="UBMoD - Dashboard" /></a></td>
+        <td><a href="images/ubmod_cpu.jpg"><img src="images/ubmod_cpu_thumb.jpg" class="screen" alt="UBMoD - CPU Consumption vs Job Size" /></a></td>
+      </tr>
+      <tr>
+        <td><a href="images/ubmod_user.jpg"><img src="images/ubmod_user_thumb.jpg" class="screen" alt="UBMoD - User Detail" /></a></td>
+        <td><a href="images/ubmod_group.jpg"><img src="images/ubmod_group_thumb.jpg" class="screen" alt="UBMoD - Group Show" /></a></td>
+      </tr>
+    </table>
+  </div>
+  <div class="footer">
+    <a href="http://www.ccr.buffalo.edu"><img style="border:none;" src="images/ccr_logo.png" alt="Center for Computational Research" /></a>
+  </div>
 </body>
 </html>
 
