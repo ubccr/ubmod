@@ -1,0 +1,19 @@
+===============================================================================
+UBMoD - Metrics on Demand - SGE Notes
+===============================================================================
+
+SGE does not report the nodes used by a given job in the accounting log.
+For accurate node counts the accounting_summary must be set to FALSE in
+sge_pe.  If accounting_summary is set to TRUE it will appear that all
+jobs were run on a single node.
+
+Unlike PBS/TORQUE, SGE does not have native log rotating.  If you're
+logs are not rotated, it is necessary to truncate the `event` and
+`sge_event` tables before shredding the accounting logs.  Otherwise,
+duplicate data will be present in UBMoD.
+
+The ubmod-shredder -d/--dir option was designed to work with the
+accounting log naming convention used by PBS/TORQUE.  If you are not
+using the same convention (files are named YYYYMMDD corresponding to the
+current date), do not use this option.
+
