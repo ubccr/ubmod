@@ -8,20 +8,20 @@ subject to change in future releases. Any feedback is welcome.
 
 The latest version of this document can be found online at:
 
-    http://ubmod.sourceforge.net/install.html
+    http://ubmod.sourceforge.net/install-source.html
 
 This installation document assumes you are running a Linux based system and
-already have Apache with mod_rewrite and MySQL version 5 or greater installed
-and running. UBMoD requires PHP version 5.3 or greater and Perl 5.8 or
-greater. PHP must be built with GD and PDO support. Perl requires the
-following modules: DBI, DBD::mysql, Config::Tiny and DateTime.
+already have Apache with mod_rewrite and MySQL version 5.1 or greater
+installed and running. UBMoD requires PHP version 5.3 or greater and Perl 5.8
+or greater. PHP must be built with MySQL, GD and PDO support. Perl requires
+the following modules: DBI, DBD::mysql, Config::Tiny and DateTime.
 
 These can be installed on Red Hat based systems with the following command:
 
     # yum install httpd mysql-server mysql php php-mysql php-pdo php-gd perl \
                   perl-DBI perl-DBD-MySQL perl-Config-Tiny perl-DateTime
 
-and on Debain debian based systems with this command:
+and on Debain based systems with this command:
 
     # apt-get install apache2 mysql-server mysql-client libapache2-mod-php5 \
                       php5 php5-mysql php5-gd perl libdbi-perl \
@@ -57,9 +57,15 @@ Download UBMoD
     user = ubmoduser
     password = password
 
-* Load in accounting log data from TORQUE
+* Load in accounting log data
+
+    For PBS/TORQUE:
 
     $ ubmod-shredder -v -s --format pbs -H your.host.org -d /var/spool/pbs/server_priv/accounting
+
+    For SGE:
+
+   $ ubmod-shredder -v -s -H your.host.org -f sge -i /var/lib/gridengine/default/common/accounting
 
 * Aggregate accounting log data
 
@@ -88,5 +94,7 @@ Download UBMoD
             RewriteRule ^(.*)$ /index.php/$1 [L]
         </Directory>
     </VirtualHost>
+
+* Reload the Apache configuration
 
 * Point your browser to http://localhost:8080/
