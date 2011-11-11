@@ -2,8 +2,14 @@
 UBMoD - ChangeLog
 ===============================================================================
 
--
+- 2011-11-11 v0.2.0
     - Rewrote portal in PHP and shredder in Perl
+    - Restructured database
+    - Added additional time periods
+    - Added support for SGE accounting logs
+    - Added Tagging feature
+    - Added monthly charts
+    - Replaced CPU consumption charts with wall time charts
 
 - 2011-01-25 v0.1.3
     - Fixed PBS log parser to handle job arrays
