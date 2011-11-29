@@ -271,7 +271,7 @@ sub _cache_min_and_max_dates {
 
     if ( !$min_date || !$max_date ) {
         $self->{logger}->fatal('No dates found');
-        return;
+        die;
     }
 
     if ( $min_date =~ /^(\d{4})-(\d{1,2})-(\d{1,2})$/ ) {
@@ -280,7 +280,7 @@ sub _cache_min_and_max_dates {
     }
     else {
         $self->{logger}->fatal("Invalid date format: '$min_date'");
-        return;
+        die;
     }
 
     if ( $max_date =~ /^(\d{4})-(\d{1,2})-(\d{1,2})$/ ) {
@@ -289,7 +289,7 @@ sub _cache_min_and_max_dates {
     }
     else {
         $self->{logger}->fatal("Invalid date format: '$max_date'");
-        return;
+        die;
     }
 }
 

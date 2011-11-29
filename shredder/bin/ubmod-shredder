@@ -100,7 +100,12 @@ sub main {
         }
 
         my $aggregator = Ubmod::Aggregator->new(%agg_opts);
-        $aggregator->aggregate();
+
+        eval { $aggregator->aggregate(); };
+        if ($@) {
+            $Logger->fatal("Failed to update aggregate tables!");
+            exit 1;
+        }
 
         $Logger->info("Done updating aggregate tables!");
     }
