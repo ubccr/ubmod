@@ -2,6 +2,9 @@
 UBMoD - ChangeLog
 ===============================================================================
 
+-
+    - Removed dependence on Getopt::Long 2.38
+
 - 2011-11-11 v0.2.0
     - Rewrote portal in PHP and shredder in Perl
     - Restructured database

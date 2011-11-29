@@ -1,10 +1,11 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+use Carp;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 use DBI;
-use Getopt::Long qw(GetOptionsFromArray);
+use Getopt::Long;
 use Pod::Usage;
 use File::Spec;
 use Config::Tiny;
@@ -18,47 +19,29 @@ my $Logger;
 my $Format;
 
 sub main {
-    my ($stdio,  $file,     $dir,    $host,    $shred,
-        $format, $end_date, $update, $verbose, $help
-    );
+    my ($options) = @_;
 
-    Getopt::Long::Configure('no_ignore_case');
-
-    my $result = GetOptionsFromArray(
-        \@_,
-        ''             => \$stdio,
-        'in|i=s'       => \$file,
-        'dir|d=s'      => \$dir,
-        'host|H=s'     => \$host,
-        'shred|s'      => \$shred,
-        'format|f=s'   => \$format,
-        'end-date|e=s' => \$end_date,
-        'update|u'     => \$update,
-        'verbose|v'    => \$verbose,
-        'help|h'       => \$help,
-    );
-
-    if ($help) {
+    if ( $options->{help} ) {
         pod2usage( -exitval => 0, -verbose => 2 );
     }
 
-    $Logger = Ubmod::Logger->new($verbose);
+    $Logger = Ubmod::Logger->new( $options->{verbose} );
 
     my $config = Config::Tiny->read("$FindBin::Bin/../config/settings.ini");
     db_connect( @{ $config->{database} }{qw( host dbname user password )} );
 
-    if ($shred) {
+    if ( $options->{shred} ) {
 
-        if ( !$format ) {
+        if ( !$options->{format} ) {
             $Logger->fatal("No input format specified.");
             exit 1;
         }
-        elsif ( $format !~ /^\w+$/ ) {
+        elsif ( $options->{format} !~ /^\w+$/ ) {
             $Logger->fatal("Invalid input format specified.");
             exit 1;
         }
 
-        $Format = lc $format;
+        $Format = lc $options->{format};
         my $shredder_class = 'Ubmod::Shredder::' . ucfirst $Format;
 
         if ( !eval("require $shredder_class") ) {
@@ -68,18 +51,18 @@ sub main {
 
         my $shredder = $shredder_class->new( logger => $Logger );
 
-        $shredder->set_host($host) if defined $host;
+        $shredder->set_host( $options->{host} ) if defined $options->{host};
 
         $Logger->info("Shredding.");
 
         my $count;
-        if ($dir) {
-            $count = process_directory( $shredder, $dir );
+        if ( $options->{dir} ) {
+            $count = process_directory( $shredder, $options->{dir} );
         }
-        elsif ($file) {
-            $count = process_file( $shredder, $file );
+        elsif ( $options->{file} ) {
+            $count = process_file( $shredder, $options->{file} );
         }
-        elsif ($stdio) {
+        elsif ( $options->{stdio} ) {
             $Logger->info("Processing standard input.");
             $count = process_fh( $shredder, *STDIN );
         }
@@ -94,35 +77,35 @@ sub main {
         transform_data($shredder);
     }
 
-    if ($update) {
+    if ( $options->{update} ) {
         $Logger->info("Updating aggregate tables.");
 
-        my %options = ( dbh => $Dbh, logger => $Logger );
+        my %agg_opts = ( dbh => $Dbh, logger => $Logger );
 
-        if ( defined $end_date ) {
-            if ( $end_date =~ /^(\d{4})-(\d{1,2})-(\d{1,2})$/ ) {
+        if ( defined $options->{end_date} ) {
+            if ( $options->{end_date} =~ /^(\d{4})-(\d{1,2})-(\d{1,2})$/ ) {
                 my $date = eval {
                     DateTime->new( year => $1, month => $2, day => $3 );
                 };
                 if ( !$date ) {
-                    $Logger->fatal("Invalid date: '$end_date'");
+                    $Logger->fatal("Invalid date: '$options->{end_date}'");
                     exit 1;
                 }
-                $options{end_date} = $date;
+                $agg_opts{end_date} = $date;
             }
             else {
-                $Logger->fatal("Invalid date format: '$end_date'");
+                $Logger->fatal("Invalid date format: '$options->{end_date}'");
                 exit 1;
             }
         }
 
-        my $aggregator = Ubmod::Aggregator->new(%options);
+        my $aggregator = Ubmod::Aggregator->new(%agg_opts);
         $aggregator->aggregate();
 
         $Logger->info("Done updating aggregate tables!");
     }
 
-    if ( !$update && !$shred ) {
+    if ( !$options->{update} && !$options->{shred} ) {
         $Logger->fatal('No shredding or updating option was specified');
         pod2usage( -exitval => 1, -verbose => 1 );
     }
@@ -345,7 +328,25 @@ sub transform_data {
     return $Dbh->do($sql);
 }
 
-main(@ARGV);
+# Using case-sensitive options because -H and -h are distinct.
+Getopt::Long::Configure('no_ignore_case');
+
+my %options;
+
+GetOptions(
+    ''             => \$options{stdio},
+    'in|i=s'       => \$options{file},
+    'dir|d=s'      => \$options{dir},
+    'host|H=s'     => \$options{host},
+    'shred|s'      => \$options{shred},
+    'format|f=s'   => \$options{format},
+    'end-date|e=s' => \$options{end_date},
+    'update|u'     => \$options{update},
+    'verbose|v'    => \$options{verbose},
+    'help|h'       => \$options{help},
+) or croak "Invalid options: $!";
+
+main( \%options );
 
 __END__
 

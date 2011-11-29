@@ -2,45 +2,32 @@
 use strict;
 use warnings;
 use Carp;
-use Getopt::Long qw(GetOptionsFromArray);
+use Getopt::Long;
 use File::Copy;
 use File::Path qw(make_path);
 use FindBin;
 
 sub main {
+    my ($options) = @_;
+
     my $name    = 'ubmod';
     my $version = '0.2.0';
 
-    my $prefix  = '';
-    my $destdir = '';
-
-    my ( $bindir, $sysconfdir, $datadir, $docdir );
-
-    GetOptionsFromArray(
-        \@_,
-        'prefix=s'     => \$prefix,
-        'destdir=s'    => \$destdir,
-        'bindir=s'     => \$bindir,
-        'sysconfdir=s' => \$sysconfdir,
-        'datadir=s'    => \$datadir,
-        'docdir=s'     => \$docdir,
-    ) or croak "Invalid options";
-
     my %dirs = (
         src  => $FindBin::Bin,
-        dest => $destdir,
-        bin  => $bindir,
-        conf => $sysconfdir,
-        data => $datadir,
-        doc  => $docdir,
+        dest => $options->{destdir},
+        bin  => $options->{bindir},
+        conf => $options->{sysconfdir},
+        data => $options->{datadir},
+        doc  => $options->{docdir},
     );
 
-    if ($prefix) {
-        $dirs{conf}  ||= "$prefix/etc";
-        $dirs{bin}   ||= "$prefix/bin";
-        $dirs{data}  ||= "$prefix/share";
-        $dirs{doc}   ||= "$prefix/doc";
-        $dirs{httpd} ||= "$prefix/etc/httpd";
+    if ( $options->{prefix} ) {
+        $dirs{conf}  ||= "$options->{prefix}/etc";
+        $dirs{bin}   ||= "$options->{prefix}/bin";
+        $dirs{data}  ||= "$options->{prefix}/share";
+        $dirs{doc}   ||= "$options->{prefix}/doc";
+        $dirs{httpd} ||= "$options->{prefix}/etc/httpd";
     }
     else {
         $dirs{conf}  ||= "/etc/$name";
@@ -224,7 +211,21 @@ sub copy_dir {
     }
 }
 
-main(@ARGV);
+my %options = (
+    prefix  => '',
+    destdir => '',
+);
+
+GetOptions(
+    'prefix=s'     => \$options{prefix},
+    'destdir=s'    => \$options{destdir},
+    'bindir=s'     => \$options{bindir},
+    'sysconfdir=s' => \$options{sysconfdir},
+    'datadir=s'    => \$options{datadir},
+    'docdir=s'     => \$options{docdir},
+) or croak "Invalid options: $!";
+
+main( \%options );
 
 __END__
 
