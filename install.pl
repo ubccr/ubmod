@@ -34,7 +34,7 @@ sub main {
         $dirs{bin}   ||= '/usr/bin';
         $dirs{data}  ||= "/usr/share/$name";
         $dirs{doc}   ||= "/usr/share/doc/$name-$version";
-        $dirs{httpd} ||= '/etc/httpd/conf.d',;
+        $dirs{httpd} ||= '/etc/httpd/conf.d';
     }
 
     $dirs{phplib}    = "$dirs{data}/php5/lib";
