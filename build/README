@@ -1,0 +1,14 @@
+This directory contains files used to create the UBMoD distributions
+
+- make_dist.pl
+Used to create the UBMoD tarball distribution.
+
+- ubmod.spec
+Used to create the UBMoD RPM distribution.
+
+- ubmod-0.2.0-imagettftext.patch
+A patch to replace the use of imagettftext in the pChart library.  The
+version of PHP (5.3.2) that is included in RHEL 6 contains a bug that
+improperly renders rotated text.  This patch is included in the RPM
+distribution.
+

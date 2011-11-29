@@ -3,7 +3,10 @@ UBMoD - AUTHORS
 ===============================================================================
 
 The code for UBMoD was originally written and currently maintained by:
-    Andrew E. Bruno <aebruno2@ccr.buffalo.edu>  
+    Andrew E. Bruno <aebruno2@ccr.buffalo.edu>
+
+The PHP and Perl rewrite was written and currently maintained by:
+    Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
 
 Contributors:
     -;

@@ -1,1 +1,0 @@
-<h3>Error: $message</h3>

@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>UBMoD - RPM Install</title>
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-2972782-2']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+</head>
+<body>
+  <div id="header">
+    <div style="float:right; margin-top:10px;">
+      <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=207003&amp;type=2" width="125" height="37" style="border:0;" alt="SourceForge.net Logo" /></a>
+    </div>
+    <div>
+      <a href="index.html"><img src="images/logo.png" style="border:none;" alt="UBMoD"/></a>
+    </div>
+  </div>
+  <div id="page">
+    <div class="heading">RPM Installation</div>
+    <p>This document will attempt to ouline a basic install of UBMoD. As UBMoD
+    is still actively being developed these instructions may be incomplete and
+    are subject to change in future releases. Any feedback is welcome.</p>
+    <p>This installation document assumes you are running a Red Hat based
+    Linux system and already have Apache, PHP, Perl and MySQL installed and
+    running.</p>
+
+    <div class="subhead">Download UBMoD</div>
+    <ul><li>Download the latest RPM release (ubmod-x.x.x-x.el6.noarch.rpm)
+      <a href="https://sourceforge.net/projects/ubmod/files/ubmod/">here</a>.
+      </li></ul>
+
+    <div class="subhead">Install the RPM</div>
+    <pre># rpm -Uvh ubmod-x.x.x-x.el6.noarch.rpm</pre>
+
+    <div class="subhead">Set up the MySQL database</div>
+<pre>
+mysql&gt; create database ubmod;
+mysql&gt; grant all on ubmod.* to ubmoduser@localhost identified by 'password';
+mysql&gt; quit;
+
+$ mysql -u ubmoduser -p ubmod &lt; /usr/share/doc/ubmod-x.x.x/ddl/ubmod.sql
+</pre>
+
+    <div class="subhead">Edit the UBMoD config file</div>
+    <ul><li>Update the file /etc/ubmod/settings.ini with your site specific
+      settings.</li></ul>
+<pre>
+[database]
+host = localhost
+dbname = ubmod
+user = ubmoduser
+password = password
+</pre>
+
+    <div class="subhead">Load in accounting log data</div>
+    <ul><li>For PBS/TORQUE:</li></ul>
+    <pre>$ ubmod-shredder -v -s -H your.host.org -f pbs -d /var/spool/pbs/server_priv/accounting</pre>
+    <ul><li>For SGE:</li></ul>
+    <pre>$ ubmod-shredder -v -s -H your.host.org -f sge -i /var/lib/gridengine/default/common/accounting</pre>
+
+    <div class="subhead">Aggregate accounting log data</div>
+    <pre>$ ubmod-shredder -v -u</pre>
+
+    <div class="subhead">Set up the web application</div>
+    <ul><li>Update the file /etc/httpd/conf.d/ubmod.conf with your site
+      specific settings.</li></ul>
+<pre>
+Listen 8080
+&lt;VirtualHost *:8080&gt;
+    DocumentRoot /usr/share/ubmod/html
+    &lt;Directory /usr/share/ubmod/html&gt;
+        RewriteEngine on
+        RewriteCond $1 !^index\.php/
+        RewriteRule ^api/rest/(.*)$ /api/rest/index.php/$1 [L]
+        RewriteCond $1 !^api/rest/
+        RewriteCond $1 !^(favicon\.ico|robots\.txt)$
+        RewriteCond $1 !^(css|images|js|resources)/
+        RewriteCond $1 !^index\.php/
+        RewriteRule ^(.*)$ /index.php/$1 [L]
+    &lt;/Directory&gt;
+&lt;/VirtualHost&gt;
+</pre>
+    <ul>
+      <li><strong>* Note this is a basic example of setting up Apache for use
+        with UBMoD for demo purposes only and not intended for production
+        use.</strong></li>
+    </ul>
+
+    <div class="subhead">Reload the Apache configuration</div>
+    <pre># /etc/init.d/httpd reload</pre>
+    <ul><li>Point your browser to
+      <a href="http://localhost:8080/">http://localhost:8080/</a>.</li></ul>
+  </div>
+  <div class="footer">
+    <a href="http://www.ccr.buffalo.edu"><img style="border:none;" src="images/ccr_logo.png" alt="Center for Computational Research"/></a>
+  </div>
+</body>
+</html>
+

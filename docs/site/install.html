@@ -1,84 +1,42 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>UBMoD - Install</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link rel="stylesheet" type="text/css" href="css/styles.css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>UBMoD - Installation Guide</title>
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-2972782-2']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
 </head>
 <body>
-<div id="header">
-    <div style="float:right;margin-top:10px;">
-    <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=207003&amp;type=2" width="125" height="37" style="border: 0" alt="SourceForge.net Logo" /></a>
+  <div id="header">
+    <div style="float:right; margin-top:10px;">
+      <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=207003&amp;type=2" width="125" height="37" style="border:0;" alt="SourceForge.net Logo" /></a>
     </div>
     <div>
-    <a href="/"><img src="images/logo.png" style="border: none" alt="UBMoD"/></a>
+      <a href="index.html"><img src="images/logo.png" style="border:none;" alt="UBMoD"/></a>
     </div>
-</div>
-<div id="page">
-    <div class="heading">Installation</div>
-    <p>This document will attempt to ouline a basic install of UBMoD. As UBMoD
-    is still actively being developed these instructions may be incomplete and
-    are subject to change in future releases. Any feedback is welcome.
-    </p>
-    <p>
-    This installation document assumes you are running a Linux based system and
-    already have MySQL version 5 or greater installed and running.  UBMoD
-    requires Java version 1.5 or greater.
-    </p>
-    <div class="subhead">Download UBMoD</div>
-    <ul><li>Download the latest pre-built release (ubmod-x.x.x-bin.tar.gz) <a href="http://sourceforge.net/project/showfiles.php?group_id=207003&package_id=247707">here</a></li></ul>
-<pre>
-    $ tar -xvzf ubmod-x.x.x-bin.tar.gz
-    $ cd ubmod-x.x.x
-</pre>
-
-    <div class="subhead">Set up the MySQL database</div>
-<pre>
-mysql&gt; create database ubmod;
-mysql&gt; grant all on ubmod.* to ubmoduser@localhost identified by 'password';
-mysql&gt; quit;
-
-$ mysql -u ubmoduser -p ubmod &lt; ./ddl/ubmod.sql
-</pre>
-    <div class="subhead">Create the UBMoD config file</div>
-    <ul><li>Create the file /etc/ubmod.conf with your site specific settings. An example can be found in the docs directory of the UBMoD distribution</li></ul>
-<pre>
-db.host=localhost
-db.port=3306
-db.name=ubmod
-db.user=ubmoduser
-db.password=password
-</pre>
-    <div class="subhead">Load in accounting log data from TORQUE</div>
-<pre>
-$ java -jar ubmod-shredder-exe.jar -v -s -H your.host.org -d /var/spool/pbs/server_priv/accounting
-</pre>
-    <div class="subhead">Aggregate accounting log data</div>
-<pre>
-$ java -jar ubmod-shredder-exe.jar -v -u 
-</pre>
-    <div class="subhead">Set up the web application</div>
-    <ul><li>UBMoD is packaged as a WAR file which can be used with any servlet container. This example uses <a href="http://tomcat.apache.org/">tomcat</a>. <strong>* Note this is a basic example of setting up tomcat for use with UBMoD for demo purposes only and not intended for production use.</strong></li></ul>
-<pre>
-$ cd /usr/local
-$ tar -xvzf apache-tomcat-x.x.x.tar.gz
-$ ln -s apache-tomcat-x.x.x tomcat
-$ cd tomcat
-$ rm -Rf ./webapps/*
-$ cp /path/to/ubmod/ubmod-portal.war ./webapps/ROOT.war 
-$ ./bin/startup.sh
-</pre>
-<ul><li>Point your browser to <a href="http://localhost:8080/">http://localhost:8080/</a></li></ul>
-</div>
-    <div class="footer">
-        <a href="http://www.ccr.buffalo.edu"><img style="border:none" src="images/ccr_logo.png" alt="Center for Computational Research"/></a>
-    </div>
-<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
-</script>
-<script type="text/javascript">
-_uacct = "UA-2972782-2";
-urchinTracker();
-</script>
+  </div>
+  <div id="page">
+    <div class="heading">Installation Options</div>
+    <p>There are multiple options available for installing UBMoD. If you are
+    running a Red Hat based Linux system (RHEL 6 or greater), an RPM is
+    available. Otherwise, UBMoD can be installed directly from source.</p>
+    <ul>
+      <li><a href="install-rpm.html">RPM Installation</a></li>
+      <li><a href="install-source.html">Source Installation</a></li>
+    </ul>
+  </div>
+  <div class="footer">
+    <a href="http://www.ccr.buffalo.edu"><img style="border:none;" src="images/ccr_logo.png" alt="Center for Computational Research"/></a>
+  </div>
 </body>
 </html>
 
