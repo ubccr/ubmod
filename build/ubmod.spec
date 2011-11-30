@@ -1,5 +1,5 @@
 Name:      ubmod
-Version:   0.2.0
+Version:   0.2.1
 Release:   1%{?dist}
 Summary:   Data warehouse and web portal for mining statistical data from resource managers
 URL:       http://ubmod.sourceforge.net
@@ -58,5 +58,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/ubmod
 
 %changelog
+* Wed Nov 30 2011 Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu> 0.2.1-1
+- Minor documentation updates
+- Removed dependence on Getopt::Long 2.38
 * Fri Nov 11 2011 Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu> 0.2.0-1
 - Initial RPM release
+
