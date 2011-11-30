@@ -103,6 +103,8 @@ class Ubmod_Model_User
    *
    * Doesn't apply any sorting or limiting.
    *
+   * @param Ubmod_Model_QueryParams $params The parameters for the query.
+   *
    * @return array
    */
   private static function getTagsUnlimited(Ubmod_Model_QueryParams $params)

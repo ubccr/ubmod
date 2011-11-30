@@ -48,7 +48,12 @@ class Ubmod_DataWarehouse_Fact extends Ubmod_DataWarehouse_Table
   protected $_dimensions = array();
 
   /**
-   * Constructor
+   * Constructor.
+   *
+   * @param array $config
+   *   - string name       The fact's name.
+   *   - array  dimensions The fact's dimensions.
+   *   - array  facts      The fact's attributes.
    *
    * @return Ubmod_DataWarehouse_Fact
    */
@@ -72,7 +77,10 @@ class Ubmod_DataWarehouse_Fact extends Ubmod_DataWarehouse_Table
   }
 
   /**
-   * Determine if this fact has a given dimension
+   * Determine if this fact has a given dimension.
+   *
+   * @param Ubmod_DataWarehouse_Dimension $dimension The dimension to
+   *   check for.
    *
    * @return bool
    */
@@ -90,7 +98,9 @@ class Ubmod_DataWarehouse_Fact extends Ubmod_DataWarehouse_Table
   }
 
   /**
-   * Determine if this fact has all the given dimensions
+   * Determine if this fact has all the given dimensions.
+   *
+   * @param array $dimensions The dimensions to check for.
    *
    * @return bool
    */

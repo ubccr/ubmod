@@ -27,7 +27,7 @@
  * Job model.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
- * @version $Id: User.php 3125 2011-09-14 19:33:14Z jtpalmer@K5.CCR.BUFFALO.EDU $
+ * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
  * @package Ubmod
  */
@@ -142,8 +142,8 @@ class Ubmod_Model_Job
    * Returns a single array with the activity with the specific model
    * data added.
    *
-   * @param Ubmod_Model_QueryParams $params The parameters for the query.
    * @param string $type The model type (user, group, queue or cluster).
+   * @param Ubmod_Model_QueryParams $params The parameters for the query.
    *
    * @return array
    */

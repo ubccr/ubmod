@@ -60,6 +60,7 @@ class Ubmod_DbService
    * @param string dbname The database name
    * @param string username The database username
    * @param string password The database password
+   *
    * @return void
    */
   private function __construct($host, $dbname, $username, $password)
@@ -93,11 +94,21 @@ class Ubmod_DbService
     return self::$_instance;
   }
 
+  /**
+   * Get a database handle.
+   *
+   * @return PDO
+   */
   public function getHandle()
   {
     return $this->_dbh;
   }
 
+  /**
+   * Get a database handle.
+   *
+   * @return PDO
+   */
   public static function dbh()
   {
     $service = static::factory();

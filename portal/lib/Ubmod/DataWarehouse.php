@@ -155,6 +155,11 @@ class Ubmod_DataWarehouse
   /**
    * Private constructor for the factory method.
    *
+   * @param array $config
+   *   - array dimensions
+   *   - array facts
+   *   - array aggregates
+   *
    * @return Ubmod_DataWarehouse
    */
   private function __construct($config)

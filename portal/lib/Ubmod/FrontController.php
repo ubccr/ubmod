@@ -24,6 +24,8 @@
  */
 
 /**
+ * Front controller.
+ *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
@@ -125,9 +127,11 @@ class Ubmod_FrontController
   /**
    * Create a controller for a given request.
    *
+   * @param Ubmod_Request $request
+   *
    * @return Ubmod_Controller
    */
-  private function getController($request)
+  private function getController(Ubmod_Request $request)
   {
     $segment = $request->getControllerSegment();
     $class = 'Ubmod_Controller_' . $this->convertPathSegment($segment);
@@ -142,9 +146,11 @@ class Ubmod_FrontController
   /**
    * Returns the name of action for a given request.
    *
+   * @param Ubmod_Request $request
+   *
    * @return string
    */
-  private function getAction($request)
+  private function getAction(Ubmod_Request $request)
   {
     $segment = $request->getActionSegment();
     return 'execute' . $this->convertPathSegment($segment);
@@ -153,7 +159,8 @@ class Ubmod_FrontController
   /**
    * Convert a path segment string to the corresponding camel case string.
    *
-   * @param string The path segment
+   * @param string $segment The path segment.
+   *
    * @return string
    */
   private function convertPathSegment($segment)
@@ -170,9 +177,11 @@ class Ubmod_FrontController
   /**
    * Returns the view file for the given request.
    *
+   * @param Ubmod_Request $request
+   *
    * @return string
    */
-  private function getView($request)
+  private function getView(Ubmod_Request $request)
   {
     $controller = $request->getControllerSegment();
     $action     = $request->getActionSegment();

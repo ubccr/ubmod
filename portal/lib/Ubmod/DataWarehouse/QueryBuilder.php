@@ -27,7 +27,7 @@
  * Data warehouse SQL query builder.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
- * @version $Id: User.php 3125 2011-09-14 19:33:14Z jtpalmer@K5.CCR.BUFFALO.EDU $
+ * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
  * @package Ubmod
  */
@@ -156,7 +156,7 @@ class Ubmod_DataWarehouse_QueryBuilder
    * If the supplied array has string keys, they will be used as aliases
    * for the corresponding expression. Numeric keys are ignored.
    *
-   * @param array $expression Expressions passed to addSelectExpression.
+   * @param array $expressions Expressions passed to addSelectExpression.
    *
    * @return void
    */

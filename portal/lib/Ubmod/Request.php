@@ -71,6 +71,12 @@ class Ubmod_Request
   /**
    * Constructor.
    *
+   * @param string $requestUrl The request URL.
+   * @param string $pathInfo The request path info.
+   * @param string $queryString The request query string.
+   * @param array $getData The request GET data.
+   * @param array $postData The request POST data.
+   *
    * @return void
    */
   private function __construct($requestUrl, $pathInfo, $queryString, $getData,
@@ -83,6 +89,12 @@ class Ubmod_Request
 
   /**
    * Factory method.
+   *
+   * @param string $requestUrl The request URL.
+   * @param string $pathInfo The request path info.
+   * @param string $queryString The request query string.
+   * @param array $getData The request GET data.
+   * @param array $postData The request POST data.
    *
    * @return Ubmod_Request
    */
