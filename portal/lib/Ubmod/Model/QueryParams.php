@@ -27,7 +27,7 @@
  * Query parameter model.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
- * @version $_Id: User.php 3116 2011-09-13 15:10:23Z jtpalmer@K5.CCR.BUFFALO.EDU $_
+ * @version $Id$
  * @copyright Center for Computational Research, University at Buffalo, 2011
  * @package Ubmod
  */
