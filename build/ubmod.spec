@@ -1,5 +1,5 @@
 Name:      ubmod
-Version:   0.2.1
+Version:   0.2.2
 Release:   1%{?dist}
 Summary:   Data warehouse and web portal for mining statistical data from resource managers
 URL:       http://ubmod.sourceforge.net
@@ -13,7 +13,7 @@ BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 BuildArch: noarch
 Requires:  httpd
 Requires:  mysql-server >= 5.1 mysql >= 5.1
-Requires:  php >= 5.3
+Requires:  php >= 5.3 php-cli
 Requires:  php-mysql php-gd php-pdo
 Requires:  perl >= 5.10.1
 Requires:  perl-Config-Tiny perl-DateTime perl-DBI perl-DBD-MySQL
@@ -58,6 +58,10 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/ubmod
 
 %changelog
+* Tue Dec 20 2011 Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu> 0.2.2-1
+- Minor documentation updates
+- Changed time zone used in shredding process
+- Added support for SGE project tags
 * Wed Nov 30 2011 Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu> 0.2.1-1
 - Minor documentation updates
 - Removed dependence on Getopt::Long 2.38
