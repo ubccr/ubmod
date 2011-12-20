@@ -26,7 +26,7 @@ sub fatal {
 
 sub _log {
     my ( $self, $message, $level ) = @_;
-    my $dt = DateTime->now();
+    my $dt = DateTime->now( time_zone => 'local' );
     print $dt->ymd('-') . ' ' . $dt->hms(':') . " [$level] $message\n";
 }
 

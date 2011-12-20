@@ -10,7 +10,8 @@ sub new {
     my $self = {%options};
 
     if ( !defined $self->{end_date} ) {
-        $self->{end_date} = DateTime->now()->subtract( days => 1 );
+        $self->{end_date}
+            = DateTime->now( time_zone => 'local' )->subtract( days => 1 );
     }
 
     return bless $self, $class;

@@ -264,7 +264,7 @@ sub get_event_max_date {
 sub get_file_names {
     my ( $dir, $date ) = @_;
 
-    my $today = DateTime->now();
+    my $today = DateTime->now( time_zone => 'local' );
     $today->set(
         hour   => 0,
         minute => 0,

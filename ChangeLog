@@ -2,6 +2,10 @@
 UBMoD - ChangeLog
 ===============================================================================
 
+-
+    - Minor documentation updates
+    - Changed time zone used in shredding process
+
 - 2011-11-30 v0.2.1
     - Minor documentation updates
     - Removed dependence on Getopt::Long 2.38
