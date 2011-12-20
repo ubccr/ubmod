@@ -5,6 +5,7 @@ UBMoD - ChangeLog
 -
     - Minor documentation updates
     - Changed time zone used in shredding process
+    - Added support for SGE project tags
 
 - 2011-11-30 v0.2.1
     - Minor documentation updates

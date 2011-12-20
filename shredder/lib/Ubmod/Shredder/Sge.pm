@@ -111,6 +111,7 @@ my %map = (
     user            => 'owner',
     group           => q{`group`},
     account         => 'account',
+    project         => 'project',
     start_time      => 'FROM_UNIXTIME(MIN(start_time))',
     end_time        => 'FROM_UNIXTIME(MAX(end_time))',
     submission_time => 'FROM_UNIXTIME(MIN(submission_time))',

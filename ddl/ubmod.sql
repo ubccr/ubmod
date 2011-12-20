@@ -171,6 +171,7 @@ CREATE TABLE `event` (
   `group`                     varchar(255) NOT NULL,
   `tags`                      varchar(255) NOT NULL default '[]',
   `account`                   varchar(255),
+  `project`                   varchar(255),
   `start_time`                datetime NOT NULL,
   `end_time`                  datetime NOT NULL,
   `submission_time`           datetime NOT NULL,
