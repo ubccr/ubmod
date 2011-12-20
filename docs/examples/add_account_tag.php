@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 /*
  * This program is free software: you can redistribute it and/or modify
@@ -34,7 +35,7 @@
 
 // Update this to the location of the bootstrap file, if it is in a
 // different location on your system.
-require_once '/etc/ubmod/bootstrap.php';
+require_once dirname(__FILE__) . '/../../portal/config/bootstrap.php';
 
 $selectSql = '
   SELECT event_id, account, tags
@@ -83,3 +84,4 @@ while ($event = $selectStmt->fetch(PDO::FETCH_ASSOC)) {
 }
 
 echo "Updated $eventCount events\n";
+
