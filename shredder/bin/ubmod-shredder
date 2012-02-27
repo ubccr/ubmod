@@ -218,7 +218,7 @@ sub process_fh {
 sub db_connect {
     my ( $host, $dbname, $user, $pass ) = @_;
 
-    my $dsn = "DBI:mysql:host=$host;database=$dbname";
+    my $dsn = "DBI:mysql:database=$dbname;host=$host";
 
     $Dbh = eval {
         DBI->connect( $dsn, $user, $pass,
