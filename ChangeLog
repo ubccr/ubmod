@@ -2,6 +2,9 @@
 UBMoD - ChangeLog
 ===============================================================================
 
+-
+    - Added host check to shredder when determining which files to process
+
 - 2011-12-20 v0.2.2
     - Minor documentation updates
     - Changed time zone used in shredding process

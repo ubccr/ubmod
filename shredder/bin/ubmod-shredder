@@ -119,6 +119,8 @@ sub main {
 sub process_directory {
     my ( $shredder, $dir ) = @_;
 
+    $Logger->info( "Processing files for host: " . $shredder->host() )
+        if $shredder->has_host();
     $Logger->info("Processing directory: $dir");
 
     if ( !-d $dir ) {
@@ -127,7 +129,7 @@ sub process_directory {
     }
 
     my @files;
-    if ( my $date = get_event_max_date() ) {
+    if ( my $date = get_event_max_date( $shredder->host() ) ) {
         $Logger->info("Shredding files dated after $date.");
         @files = @{ get_file_names( $dir, $date ) };
     }
@@ -254,10 +256,15 @@ sub insert_host_log {
 }
 
 sub get_event_max_date {
+    my ($host) = @_;
+
     my $sql = q{
         SELECT DATE_FORMAT( MAX(date_key), '%Y-%m-%d' )
         FROM event
     };
+
+    $sql .= " WHERE cluster = " . $Dbh->quote($host) if defined $host;
+
     return $Dbh->selectrow_arrayref($sql)->[0];
 }
 
