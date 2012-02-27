@@ -206,7 +206,7 @@ sub _parse_resource_list_options {
         my ( $key, $value ) = split /=/, $option, 2;
 
         if ( !exists $resource_attributes{$key} ) {
-            warn "Unkown resource attribute: '$key'";
+            warn "Unknown resource attribute: '$key'";
             next;
         }
 

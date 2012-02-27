@@ -233,7 +233,7 @@ sub _set_job_id_and_host {
         $job_id = $sequence;
     }
     else {
-        $self->logger->warn("Unkown id_string format: '$id_string'");
+        $self->logger->warn("Unknown id_string format: '$id_string'");
         $job_id = $sequence;
     }
 
