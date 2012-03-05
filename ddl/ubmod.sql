@@ -622,6 +622,7 @@ BEGIN
   JOIN `dim_date` ON `fact_job`.`dim_date_id` = `dim_date`.`dim_date_id`
   JOIN `dim_timespan` ON
         `dim_date`.`month`         = `dim_timespan`.`month`
+    AND `dim_date`.`year`          = `dim_timespan`.`year`
     AND `dim_date`.`last_7_days`   = `dim_timespan`.`last_7_days`
     AND `dim_date`.`last_30_days`  = `dim_timespan`.`last_30_days`
     AND `dim_date`.`last_90_days`  = `dim_timespan`.`last_90_days`
