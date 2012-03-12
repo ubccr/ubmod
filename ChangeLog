@@ -3,6 +3,7 @@ UBMoD - ChangeLog
 ===============================================================================
 
 -
+    - Removed outdated schema document
     - Added logchecker.sh.patch (Contributed by Scott Roberts)
     - Moved SGE specific documentation to a separate directory
     - Added host check to shredder when determining which files to process
