@@ -1,0 +1,70 @@
+--- logchecker.sh.orig	2012-02-08 18:36:52.000000000 -0500
++++ logchecker.sh	2012-02-28 10:52:43.246423243 -0500
+@@ -56,7 +56,7 @@
+ # for more information about this script
+ #
+ 
+-PATH=/usr/bin
++PATH=/usr/bin:/bin
+ 
+ #---------------------------------------------------------------------------
+ # begin section that needs to be customized
+@@ -64,7 +64,7 @@
+ 
+ # UNCONFIGURED=yes|no    if set to "no" really do action
+ #                        otherwise just print what would be done  
+-UNCONFIGURED=yes
++UNCONFIGURED=no
+ 
+ 
+ # ECHO=:|echo            be verbose or not, the ":" (colon) is the
+@@ -75,7 +75,7 @@
+ 
+ # SGE_ROOT=<path to your SGE_ROOT directory>
+ #
+-SGE_ROOT=undefined
++SGE_ROOT=/opt/gridengine
+ 
+ 
+ # SGE_CELL - name of your cell, usually "default"
+@@ -90,7 +90,7 @@
+ #      3 = work on all accessible execd "messages" files of global config
+ #      4 = work on qmaster "messages" and all accessible execd "messages" files
+ #
+-ACTION_ON=4
++ACTION_ON=1
+ 
+ 
+ # ACTIONSIZE=<size_inkilobyte> rotate/delete only if file size exceeds given
+@@ -116,7 +116,10 @@
+ #                         messages file as well
+ #                   no  = don't rotate accounting file
+ #
+-ACCT=no
++ACCT=yes
++
++#REPORT=yes|no  yes = rotate reporting file
++REPORT=yes
+ 
+ #
+ #
+@@ -264,6 +267,11 @@
+    if [ $ACCT = yes ]; then
+       sge_logcheck 2 $SGE_ROOT/$SGE_CELL/common/accounting
+    fi
++
++   if [ $REPORT = yes ]; then
++      sge_logcheck 2 $SGE_ROOT/$SGE_CELL/common/reporting
++   fi
++
+ fi
+ 
+ if [ $ACTION_ON = 2 ]; then
+@@ -284,3 +292,7 @@
+       fi
+    done
+ fi
++
++gunzip $SGE_ROOT/$SGE_CELL/common/accounting.0.gz
++/opt/gridengine/ubmod/shredder/bin/ubmod-shredder -s -u -H wisp -f sge -i /opt/gridengine/default/common/accounting.0
++gzip $SGE_ROOT/$SGE_CELL/common/accounting.0
