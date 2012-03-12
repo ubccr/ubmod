@@ -7,10 +7,18 @@ For accurate node counts the accounting_summary must be set to FALSE in
 sge_pe.  If accounting_summary is set to TRUE it will appear that all
 jobs were run on a single node.
 
-Unlike PBS/TORQUE, SGE does not have native log rotating.  If you're
-logs are not rotated, it is necessary to truncate the `event` and
-`sge_event` tables before shredding the accounting logs.  Otherwise,
+If your logs are not rotated (you re-shred the same log file every time
+you update the UBMoD database), it is necessary to truncate the `event`
+and `sge_event` tables before shredding the accounting logs.  Otherwise,
 duplicate data will be present in UBMoD.
+
+This command can be used to truncate those tables:
+
+    $ mysql -u ubmoduser -ppassword ubmod \
+      -e 'TRUNCATE event; TRUNCATE sge_event;'
+
+If you use the logchecker.sh script included with SGE, an example of how
+to customize the script to use UBMoD is included in logchecker.sh.patch.
 
 The ubmod-shredder -d/--dir option was designed to work with the
 accounting log naming convention used by PBS/TORQUE.  If you are not
