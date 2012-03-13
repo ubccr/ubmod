@@ -3,10 +3,10 @@ UBMoD - Metrics on Demand
 ===============================================================================
 
 UBMoD is an open source data warehouse and web portal for mining statistical
-data from resource managers (TORQUE and OpenPBS currently supported) commonly
-found in high-performance computing environments. It was developed by Andrew
-Bruno at the Center for Computational Research at the University at Buffalo,
-SUNY.
+data from resource managers (TORQUE, OpenPBS and Sun Grid Engine currently
+supported) commonly found in high-performance computing environments. It was
+developed by Andrew Bruno at the Center for Computational Research at the
+University at Buffalo, SUNY.
 
 UBMoD is still under active development and should be considered alpha. To
 report bugs, send feedback or to submit patches email ubmod@ccr.buffalo.edu.
