@@ -260,7 +260,7 @@ sub _scale_memory {
 
     die "Unknown memory unit: $unit" unless defined $bytes;
 
-    return $bytes / 1024;
+    return int($bytes / 1024);
 }
 
 1;

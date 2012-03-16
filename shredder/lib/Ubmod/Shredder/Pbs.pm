@@ -202,10 +202,12 @@ sub _parse_memory {
 sub _scale_memory {
     my ( $self, $value, $unit ) = @_;
 
-    return $value / 1024        if $unit eq 'b';
-    return $value               if $unit eq 'kb';
-    return $value * 1024        if $unit eq 'mb';
-    return $value * 1024 * 1024 if $unit eq 'gb';
+    my $bytes;
+
+    return int($value / 1024)        if $unit eq 'b';
+    return int($value)               if $unit eq 'kb';
+    return int($value * 1024)        if $unit eq 'mb';
+    return int($value * 1024 * 1024) if $unit eq 'gb';
 
     die "Unknown memory unit: $unit";
 }
