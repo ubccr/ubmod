@@ -232,11 +232,12 @@ sub _parse_parallel_environment_options {
 sub _parse_memory {
     my ( $self, $memory ) = @_;
 
-    if ( $memory =~ /^\d+$/ ) {
-        return $self->_scale_memory( $memory, 'b' );
-    }
-    elsif ( $memory =~ /^(\d+)(\D+)$/ ) {
-        return $self->_scale_memory( $1, $2 );
+    if ( $memory =~ /^(\d*\.?\d+)(\D+)?$/ ) {
+        my ( $value, $unit ) = ( $1, $2 );
+
+        # SGE uses bytes by default
+        $unit ||= 'b';
+        return $self->_scale_memory( $value, $unit );
     }
     else {
         die "Unknown memory format: $memory";

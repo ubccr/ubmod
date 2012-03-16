@@ -186,11 +186,12 @@ sub _parse_time {
 sub _parse_memory {
     my ( $self, $memory ) = @_;
 
-    if ( $memory =~ /^\d+$/ ) {
-        return $self->_scale_memory( $memory, 'kb' );
-    }
-    elsif ( $memory =~ /^(\d+)(\D+)$/ ) {
-        return $self->_scale_memory( $1, $2 );
+    if ( $memory =~ /^(\d*\.?\d+)(\D+)?$/ ) {
+        my ( $value, $unit ) = ( $1, $2 );
+
+        # PBS uses kilobytes by default
+        $unit ||= 'kb';
+        return $self->_scale_memory( $value, $unit );
     }
     else {
         die "Unknown memory format: $memory";

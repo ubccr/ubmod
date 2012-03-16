@@ -3,6 +3,7 @@ UBMoD - ChangeLog
 ===============================================================================
 
 -
+    - Added support for floating point memory values to shredders
     - Added FAQ to documentation
     - Removed outdated schema document
     - Added logchecker.sh.patch (Contributed by Scott Roberts)
