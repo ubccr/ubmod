@@ -28,7 +28,7 @@ sub main {
     $Logger = Ubmod::Logger->new( $options->{verbose} );
 
     my $config = Config::Tiny->read("$FindBin::Bin/../config/settings.ini");
-    db_connect( @{ $config->{database} }{qw( host dbname user password )} );
+    db_connect( $config->{database} );
 
     if ( $options->{shred} ) {
 
@@ -216,12 +216,22 @@ sub process_fh {
 }
 
 sub db_connect {
-    my ( $host, $dbname, $user, $pass ) = @_;
+    my ($args) = @_;
 
-    my $dsn = "DBI:mysql:database=$dbname;host=$host";
+    foreach my $arg (qw( host dbname user password )) {
+        if ( !defined $args->{$arg} ) {
+            $Logger->fatal("Missing database config option: '$arg'");
+        }
+    }
+
+    my $dsn = "DBI:mysql:database=$args->{dbname};host=$args->{host}";
+
+    if ( defined $args->{port} ) {
+        $dsn .= ";port=$args->{port}";
+    }
 
     $Dbh = eval {
-        DBI->connect( $dsn, $user, $pass,
+        DBI->connect( $dsn, $args->{user}, $args->{password},
             { PrintError => 0, RaiseError => 1, AutoCommit => 1 } );
     };
     if ($@) {

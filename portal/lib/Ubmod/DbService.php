@@ -56,17 +56,31 @@ class Ubmod_DbService
   /**
    * Private constructor
    *
-   * @param string host The database host
-   * @param string dbname The database name
-   * @param string username The database username
-   * @param string password The database password
+   * @param array options
+   *   string host     The database host
+   *   string dbname   The database name
+   *   string user     The database username
+   *   string password The database password
+   *   int    port     (optional) The database port number
    *
    * @return void
    */
-  private function __construct($host, $dbname, $username, $password)
+  private function __construct($options)
   {
-    $dsn = "mysql:host=$host;dbname=$dbname";
-    $this->_dbh = new PDO($dsn, $username, $password);
+    $requiredKeys = array('host', 'dbname', 'user', 'password');
+    foreach ($requiredKeys as $key) {
+      if (!isset($options[$key])) {
+        throw new Exception("Missing database config option: '$key'");
+      }
+    }
+
+    $dsn = "mysql:host={$options['host']};dbname={$options['dbname']}";
+
+    if (isset($options['port'])) {
+      $dsn .= ';port=' . $options['port'];
+    }
+
+    $this->_dbh = new PDO($dsn, $options['user'], $options['password']);
   }
 
   /**
@@ -85,10 +99,20 @@ class Ubmod_DbService
         throw new Exception($msg);
       }
 
-      self::$_instance = new Ubmod_DbService($options->$section->host,
-                                      $options->$section->dbname,
-                                      $options->$section->user,
-                                      $options->$section->password);
+      $dbOptions = $options->$section;
+
+      $args = array(
+        'host'     => $dbOptions->host,
+        'dbname'   => $dbOptions->dbname,
+        'user'     => $dbOptions->user,
+        'password' => $dbOptions->password
+      );
+
+      if (isset($dbOptions->port)) {
+        $args['port'] = $dbOptions->port;
+      }
+
+      self::$_instance = new Ubmod_DbService($args);
     }
 
     return self::$_instance;
