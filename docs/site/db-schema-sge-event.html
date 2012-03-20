@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>UBMoD Database Schema Docs</title>
+  <title>UBMoD - Database Schema Docs - SGE Event Table</title>
   <meta name="description" content="UBMoD is an open source data warehouse and web portal for mining statistical data from resource managers (such as TORQUE) commonly found in high-performance computing environments." />
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
   <script type="text/javascript">
@@ -36,97 +36,97 @@
       </tr>
       <tr>
         <td class="col">sge_event_id</td>
-        <td>bigint(20) unsigned</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>bigint unsigned</td>
+        <td>Internal unique auto incrementing ID (primary key for UBMoD)</td>
+        <td class="ex">1001</td>
       </tr>
       <tr>
         <td class="col">cluster</td>
         <td>varchar(255)</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>The name of the cluster where the event ran</td>
+        <td class="ex">myhost.org</td>
       </tr>
       <tr>
         <td class="col">qname</td>
         <td>varchar(255)</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>The name of the queue in which the job executed</td>
+        <td class="ex">debug</td>
       </tr>
       <tr>
         <td class="col">hostname</td>
         <td>varchar(255)</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>The name of the host where the event ran</td>
+        <td class="ex">node1.myhost.org</td>
       </tr>
       <tr>
         <td class="col">group</td>
         <td>varchar(255)</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>The group name under which the job executed</td>
+        <td class="ex">joegroup1</td>
       </tr>
       <tr>
         <td class="col">owner</td>
         <td>varchar(255)</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>The user name under which the job executed</td>
+        <td class="ex">joeuser1</td>
       </tr>
       <tr>
         <td class="col">job_name</td>
         <td>varchar(255)</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>The name of the job</td>
+        <td class="ex">STDIN</td>
       </tr>
       <tr>
         <td class="col">job_number</td>
-        <td>int(10) unsigned</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>int unsigned</td>
+        <td>Job identifier used by the resource manager</td>
+        <td class="ex">1134231</td>
       </tr>
       <tr>
         <td class="col">account</td>
         <td>varchar(255)</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>The account name under which the job was executed</td>
+        <td class="ex">account1</td>
       </tr>
       <tr>
         <td class="col">priority</td>
-        <td>tinyint(4)</td>
-        <td></td>
+        <td>tinyint</td>
+        <td>Priority from queue configuration</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">submission_time</td>
-        <td>int(11)</td>
-        <td></td>
+        <td>int</td>
+        <td>UNIX time when job was created</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">start_time</td>
-        <td>int(11)</td>
-        <td></td>
+        <td>int</td>
+        <td>UNIX time when job execution started</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">end_time</td>
-        <td>int(11)</td>
-        <td></td>
+        <td>int</td>
+        <td>UNIX time when job ended execution</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">failed</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">exit_status</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_wallclock</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
@@ -144,91 +144,91 @@
       </tr>
       <tr>
         <td class="col">ru_maxrss</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_ixrss</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_ismrss</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_idrss</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_isrss</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_minflt</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_majflt</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_nswap</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_inblock</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_oublock</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_msgsnd</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_msgrcv</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_nsignals</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_nvcsw</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_nivcsw</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
@@ -252,13 +252,13 @@
       </tr>
       <tr>
         <td class="col">slots</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">task_number</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
@@ -294,25 +294,25 @@
       </tr>
       <tr>
         <td class="col">pe_taskid</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">maxvmem</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">arid</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ar_submission_time</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
@@ -336,7 +336,7 @@
       </tr>
       <tr>
         <td class="col">resource_list_notify</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
@@ -348,7 +348,7 @@
       </tr>
       <tr>
         <td class="col">resource_list_min_cpu_interval</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
@@ -360,79 +360,79 @@
       </tr>
       <tr>
         <td class="col">resource_list_seq_no</td>
-        <td>int(11)</td>
+        <td>int</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">resource_list_s_rt</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">resource_list_h_rt</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">resource_list_s_cpu</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">resource_list_h_cpu</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">resource_list_s_data</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">resource_list_h_data</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">resource_list_s_stack</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">resource_list_h_stack</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">resource_list_s_core</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">resource_list_h_core</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">resource_list_s_rss</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">resource_list_h_rss</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>
@@ -444,25 +444,25 @@
       </tr>
       <tr>
         <td class="col">resource_list_s_vmem</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">resource_list_h_vmem</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">resource_list_s_fsize</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">resource_list_h_fsize</td>
-        <td>bigint(20)</td>
+        <td>bigint</td>
         <td></td>
         <td class="ex"></td>
       </tr>

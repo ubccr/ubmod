@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>UBMoD Database Schema Docs</title>
+  <title>UBMoD - Database Schema Docs - Event Table</title>
   <meta name="description" content="UBMoD is an open source data warehouse and web portal for mining statistical data from resource managers (such as TORQUE) commonly found in high-performance computing environments." />
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
   <script type="text/javascript">
@@ -36,135 +36,135 @@
       </tr>
       <tr>
         <td class="col">event_id</td>
-        <td>bigint(20) unsigned</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>bigint unsigned</td>
+        <td>Internal unique auto incrementing ID (primary key for UBMoD)</td>
+        <td class="ex">1001</td>
       </tr>
       <tr>
         <td class="col">date_key</td>
         <td>datetime</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>Date and time when the event was recorded</td>
+        <td class="ex">2008-12-10 14:18:32</td>
       </tr>
       <tr>
         <td class="col">job_id</td>
-        <td>int(10) unsigned</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>int unsigned</td>
+        <td>Job identifier used by the resource manager</td>
+        <td class="ex">1134231</td>
       </tr>
       <tr>
         <td class="col">job_array_index</td>
-        <td>int(10) unsigned</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>int unsigned</td>
+        <td>The index of the job if it was part of a job array</td>
+        <td class="ex">123</td>
       </tr>
       <tr>
         <td class="col">job_name</td>
         <td>varchar(255)</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>The name of the job</td>
+        <td class="ex">STDIN</td>
       </tr>
       <tr>
         <td class="col">cluster</td>
         <td>varchar(255)</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>The name of the cluster where the event ran</td>
+        <td class="ex">myhost.org</td>
       </tr>
       <tr>
         <td class="col">queue</td>
         <td>varchar(255)</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>The name of the queue in which the job executed</td>
+        <td class="ex">debug</td>
       </tr>
       <tr>
         <td class="col">user</td>
         <td>varchar(255)</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>The user name under which the job executed</td>
+        <td class="ex">joeuser1</td>
       </tr>
       <tr>
         <td class="col">group</td>
         <td>varchar(255)</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>The group name under which the job executed</td>
+        <td class="ex">joegroup1</td>
       </tr>
       <tr>
         <td class="col">tags</td>
         <td>varchar(255)</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>JSON encoded list of tags assocciated with the job</td>
+        <td class="ex">["tag1","tag2"]</td>
       </tr>
       <tr>
         <td class="col">account</td>
         <td>varchar(255)</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>The account name under which the job was executed</td>
+        <td class="ex">account1</td>
       </tr>
       <tr>
         <td class="col">start_time</td>
         <td>datetime</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>Date and time when job execution started</td>
+        <td class="ex">2008-12-09 23:57:43</td>
       </tr>
       <tr>
         <td class="col">end_time</td>
         <td>datetime</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>Date and time when job execution ended</td>
+        <td class="ex">2008-12-09 23:57:43</td>
       </tr>
       <tr>
         <td class="col">submission_time</td>
         <td>datetime</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>Date and time when the job was created</td>
+        <td class="ex">2008-12-09 23:57:43</td>
       </tr>
       <tr>
         <td class="col">wallt</td>
-        <td>bigint(20) unsigned</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>bigint unsigned</td>
+        <td>Amount of walltime in seconds</td>
+        <td class="ex">4841</td>
       </tr>
       <tr>
         <td class="col">cput</td>
-        <td>bigint(20) unsigned</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>bigint unsigned</td>
+        <td>Amount of cpu time consumed in seconds</td>
+        <td class="ex">308936</td>
       </tr>
       <tr>
         <td class="col">mem</td>
-        <td>bigint(20) unsigned</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>bigint unsigned</td>
+        <td>Amount of physical mem used in KiB</td>
+        <td class="ex">18259364</td>
       </tr>
       <tr>
         <td class="col">vmem</td>
-        <td>bigint(20) unsigned</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>bigint unsigned</td>
+        <td>Amount of virtual mem used in KiB</td>
+        <td class="ex">18259364</td>
       </tr>
       <tr>
         <td class="col">wait</td>
-        <td>bigint(20) unsigned</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>bigint unsigned</td>
+        <td>The difference between submission and start time in seconds</td>
+        <td class="ex">308936</td>
       </tr>
       <tr>
         <td class="col">exect</td>
-        <td>bigint(20) unsigned</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>bigint unsigned</td>
+        <td>The difference between start and end time in seconds</td>
+        <td class="ex">308936</td>
       </tr>
       <tr>
         <td class="col">nodes</td>
-        <td>int(10) unsigned</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>int unsigned</td>
+        <td>Amount of nodes used</td>
+        <td class="ex">32</td>
       </tr>
       <tr>
         <td class="col">cpus</td>
-        <td>int(10) unsigned</td>
-        <td></td>
-        <td class="ex"></td>
+        <td>int unsigned</td>
+        <td>Amount of cpu's used</td>
+        <td class="ex">64</td>
       </tr>
     </table>
   </div>
