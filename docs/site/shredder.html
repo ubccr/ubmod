@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>UBMoD - Shredder Guide</title>
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-2972782-2']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+</head>
+<body>
+  <div id="header">
+    <div style="float:right; margin-top:10px;">
+      <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=207003&amp;type=2" width="125" height="37" style="border:0;" alt="SourceForge.net Logo" /></a>
+    </div>
+    <div>
+      <a href="index.html"><img src="images/logo.png" style="border:none;" alt="UBMoD"/></a>
+    </div>
+  </div>
+  <div id="page">
+    <div class="heading">Shredder Guide</div>
+    <p>This guide will attempt to outline the use of the UBMoD shredder
+    command line utility.</p>
+    <div class="subhead">General Usage</div>
+    <p>In order to make data available to the UBMoD portal you will need to
+    use the shredder utility.  If you followed the install guide, you will
+    have already used the shredder to populate your database.  In addition to
+    the install process, this program is typically used once a day to add the
+    previous days jobs to the database.</p>
+    <div class="subhead">Shredding and Updating</div>
+    <p>The UBMoD shredder performs two separate tasks.  It parses log files
+    and inserts the parsed data into the database (shredding) and updates the
+    aggregate database tables which are used to speed up database queries that
+    are performed by the portal and would otherwise be much slower. Both of
+    these tasks must be completed to make data available through the
+    portal.</p>
+    <p>It is possible to perform these two tasks sequently during one
+    invocation of the UBMoD shredder by using both options at the same time.
+    If you have more than one cluster (and therefore more than one set of log
+    files), you may shred the log files for each cluster, then perform the
+    update once after that.</p>
+<pre>
+$ ubmod-shredder -s ...
+$ ubmod-shredder -u ...
+$ ubmod-shredder -s -u ...
+</pre>
+    <div class="subhead">Log Format</div>
+    <p>You must specify the format of the log files you are shredding. This is
+    dependant on the resource manager you use.  For TORQUE and OpenPBS use
+    "pbs" and for Sun Grid Engine use "sge".</p>
+<pre>
+$ ubmod-shredder -f pbs ...
+$ ubmod-shredder -f sge ...
+</pre>
+    <div class="subhead">Specifying Input</div>
+    <p>The UBMoD shredder can accept input from a file, a directory or
+    standard input. The directory option assumes that all the files in the
+    specified directory are formatted as YYYYMMDD (e.g. 20120101). If that
+    option is used, the log file for the current day will be ignored.</p>
+<pre>
+$ ubmod-shredder -in file ...
+$ ubmod-shredder -d directory ...
+$ ubmod-shredder ... - &lt; file
+$ cat file | ubmod-shredder ... -
+</pre>
+    <div class="subhead">Specifying the Host Name</div>
+    <p>If you are using SGE, you must specify a host name (the name of your
+    cluster) during the shredding process.  This can be any string and will be
+    used in the list of clusters. If you are using TORQUE or PBS is possible
+    to override any host name that appears in the log file and use whatever
+    you prefer.</p>
+<pre>
+$ ubmod-shredder -H mycluster ...
+</pre>
+    <div class="subhead">Specifying the Time Interval End Date</div>
+    <p>By default, the UBMoD shredder with use yesterday's date as the end
+    date for the various time intervals (e.g. last 30 days) that are available
+    in the portal. If you have reason to use a different date, that is also
+    possible.<p>
+<pre>
+$ ubmod-shredder -e 2012-01-01 ...
+</pre>
+    <div class="subhead">Verbose Output</div>
+    <p>By default the UBMoD shredder only outputs what it considers to be
+    warnings or errors. If you would like to see informational output about
+    what is being performed, use the verbose option.</p>
+<pre>
+$ ubmod-shredder -v ...
+</pre>
+    <div class="subhead">Shredder Help</div>
+    <p>To view all the options for the shredder:<p>
+<pre>
+$ ubmod-shredder -h
+</pre>
+    <p></p>
+  </div>
+  <div class="footer">
+    <a href="http://www.ccr.buffalo.edu"><img style="border:none;" src="images/ccr_logo.png" alt="Center for Computational Research"/></a>
+  </div>
+</body>
+</html>
+
