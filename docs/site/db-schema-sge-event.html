@@ -115,49 +115,49 @@
       <tr>
         <td class="col">failed</td>
         <td>int</td>
-        <td></td>
+        <td>Indicates job could not be started</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">exit_status</td>
         <td>int</td>
-        <td></td>
+        <td>Exit status of job<td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_wallclock</td>
         <td>int</td>
-        <td></td>
+        <td>Amount of walltime in seconds</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_utime</td>
         <td>decimal(32,6)</td>
-        <td></td>
+        <td>User CPU time used</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_stime</td>
         <td>decimal(32,6)</td>
-        <td></td>
+        <td>System CPU time used</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_maxrss</td>
         <td>int</td>
-        <td></td>
+        <td>Resident set size</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_ixrss</td>
         <td>int</td>
-        <td></td>
+        <td>Integral shared memory size</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_ismrss</td>
         <td>int</td>
-        <td></td>
+        <td>Integral unshared data size</td>
         <td class="ex"></td>
       </tr>
       <tr>
@@ -169,115 +169,115 @@
       <tr>
         <td class="col">ru_isrss</td>
         <td>int</td>
-        <td></td>
+        <td>Integral unshared stack size</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_minflt</td>
         <td>int</td>
-        <td></td>
+        <td>page reclaims (soft page faults)</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_majflt</td>
         <td>int</td>
-        <td></td>
+        <td>page faults (hard page faults)</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_nswap</td>
         <td>int</td>
-        <td></td>
+        <td>Swaps</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_inblock</td>
         <td>int</td>
-        <td></td>
+        <td>block input operations</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_oublock</td>
         <td>int</td>
-        <td></td>
+        <td>block output operations</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_msgsnd</td>
         <td>int</td>
-        <td></td>
+        <td>IPC messages sent</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_msgrcv</td>
         <td>int</td>
-        <td></td>
+        <td>IPC messages received</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_nsignals</td>
         <td>int</td>
-        <td></td>
+        <td>signals received</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_nvcsw</td>
         <td>int</td>
-        <td></td>
+        <td>voluntary context switches</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ru_nivcsw</td>
         <td>int</td>
-        <td></td>
+        <td>involuntary context switches</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">project</td>
         <td>varchar(255)</td>
-        <td></td>
+        <td>project assigned to job</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">department</td>
         <td>varchar(255)</td>
-        <td></td>
+        <td>department assigned to job</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">granted_pe</td>
         <td>varchar(255)</td>
-        <td></td>
+        <td>parallel environment</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">slots</td>
         <td>int</td>
-        <td></td>
+        <td>number of cpus</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">task_number</td>
         <td>int</td>
-        <td></td>
+        <td>Task number</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">cpu</td>
         <td>decimal(32,6)</td>
-        <td></td>
+        <td>Amount of cpu time</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">mem</td>
         <td>decimal(32,6)</td>
-        <td></td>
+        <td>integral memory usage</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">io</td>
         <td>decimal(32,6)</td>
-        <td></td>
+        <td>amount of data transferred</td>
         <td class="ex"></td>
       </tr>
       <tr>
@@ -289,31 +289,31 @@
       <tr>
         <td class="col">iow</td>
         <td>decimal(32,6)</td>
-        <td></td>
+        <td>wait time in seconds</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">pe_taskid</td>
         <td>int</td>
-        <td></td>
+        <td>if “qrsh -inherit” was used</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">maxvmem</td>
         <td>bigint</td>
-        <td></td>
+        <td>amount of virtual memory in bytes</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">arid</td>
         <td>int</td>
-        <td></td>
+        <td>advance reservation identifier</td>
         <td class="ex"></td>
       </tr>
       <tr>
         <td class="col">ar_submission_time</td>
         <td>int</td>
-        <td></td>
+        <td>submission time of the advance reservation</td>
         <td class="ex"></td>
       </tr>
       <tr>
