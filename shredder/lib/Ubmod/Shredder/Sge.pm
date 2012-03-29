@@ -79,6 +79,8 @@ my @resource_attributes = qw(
     h_vmem
     s_fsize
     h_fsize
+    num_proc
+    mem_free
 );
 
 # Use this hash to check if a resource exists
@@ -86,18 +88,19 @@ my %resource_attributes = map { $_ => 1 } @resource_attributes;
 
 # These resource attributes may require formatting
 my %attribute_formats = (
-    s_data  => 'memory',
-    h_data  => 'memory',
-    s_stack => 'memory',
-    h_stack => 'memory',
-    s_core  => 'memory',
-    h_core  => 'memory',
-    s_rss   => 'memory',
-    h_rss   => 'memory',
-    s_vmem  => 'memory',
-    h_vmem  => 'memory',
-    s_fsize => 'memory',
-    h_fsize => 'memory',
+    s_data   => 'memory',
+    h_data   => 'memory',
+    s_stack  => 'memory',
+    h_stack  => 'memory',
+    s_core   => 'memory',
+    h_core   => 'memory',
+    s_rss    => 'memory',
+    h_rss    => 'memory',
+    s_vmem   => 'memory',
+    h_vmem   => 'memory',
+    s_fsize  => 'memory',
+    h_fsize  => 'memory',
+    mem_free => 'memory',
 );
 
 # Mapping from generic event table to SGE specific event table
@@ -122,7 +125,7 @@ my %map = (
     wait            => 'GREATEST(start_time - submission_time, 0)',
     exect           => 'GREATEST(end_time - start_time, 0)',
     nodes           => 'COUNT(DISTINCT hostname)',
-    cpus            => 'slots',
+    cpus            => 'GREATEST(COALESCE(slots, 1), COALESCE(resource_list_num_proc, 1))',
 );
 
 sub shred {

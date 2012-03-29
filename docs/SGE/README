@@ -7,6 +7,12 @@ For accurate node counts the accounting_summary must be set to FALSE in
 sge_pe.  If accounting_summary is set to TRUE it will appear that all
 jobs were run on a single node.
 
+UBMoD supports two different ways of specifying the number of CPUs used
+by a job.  By default, the number of "slots" reported by SGE will be
+used as the number of CPUs.  If you configure "num_procs" as a
+consumable resource, the greater of the two values will be used as the
+number of CPUs.
+
 If your logs are not rotated (you re-shred the same log file every time
 you update the UBMoD database), it is necessary to truncate the `event`
 and `sge_event` tables before shredding the accounting logs.  Otherwise,

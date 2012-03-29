@@ -3,6 +3,8 @@ UBMoD - ChangeLog
 ===============================================================================
 
 -
+    - Added support for using num_procs consumable resource with SGE to
+      specify number of cpus (Contributed by Scott Roberts)
     - Added support for floating point memory values to shredders
     - Updated documentation:
         - Added FAQ, shredder guide and tag guide
