@@ -153,7 +153,8 @@ CREATE TABLE `sge_event` (
   `resource_list_h_fsize`          bigint,
   `resource_list_num_proc`         int,
   `resource_list_mem_free`         bigint,
-  PRIMARY KEY (`sge_event_id`)
+  PRIMARY KEY (`sge_event_id`),
+  UNIQUE KEY (`hostname`,`job_number`,`task_number`)
 ) ENGINE=MyISAM;
 
 --

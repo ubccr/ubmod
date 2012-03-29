@@ -154,6 +154,19 @@ sub shred {
     return \%event;
 }
 
+sub get_event_table { return 'sge_event'; }
+
+sub get_insert_query {
+    my ( $self, $event ) = @_;
+
+    my ( $sql, @values ) = $self->SUPER::get_insert_query($event);
+
+    $sql .= ' ON DUPLICATE KEY
+        UPDATE sge_event_id = LAST_INSERT_ID(sge_event_id)';
+
+    return ( $sql, @values );
+}
+
 sub get_transform_query {
     my ($self) = @_;
 

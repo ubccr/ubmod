@@ -159,6 +159,8 @@ sub shred {
     return $event;
 }
 
+sub get_event_table { return 'pbs_event'; }
+
 sub get_transform_query {
     my ($self) = @_;
 

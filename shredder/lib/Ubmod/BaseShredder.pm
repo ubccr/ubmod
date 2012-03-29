@@ -36,6 +36,24 @@ sub shred {
     die "Shredder subclass must implement shred\n";
 }
 
+sub get_event_table {
+    die "Shredder subclass must implement get_event_table\n";
+}
+
+sub get_insert_query {
+    my ($self, $event) = @_;
+
+    my $table = $self->get_event_table();
+
+    my $sql = qq[ INSERT INTO $table SET ];
+
+    my @pairs = map {qq[ `$_` = ? ]} keys %$event;
+
+    $sql .= join( ',', @pairs );
+
+    return ( $sql, values %$event );
+}
+
 sub get_transform_query {
     die "Shredder subclass must implement get_transform_query\n";
 }

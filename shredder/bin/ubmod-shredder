@@ -206,7 +206,11 @@ sub process_fh {
         # Skip empty events
         next unless %$event;
 
-        insert_native_event($event);
+        my ( $sql, @values ) = $shredder->get_insert_query($event);
+
+        my $sth = $Dbh->prepare($sql);
+        $sth->execute(@values);
+
         $count++;
     }
 
@@ -238,18 +242,6 @@ sub db_connect {
         $Logger->fatal("Failed to connect to database: $@");
         exit 1;
     }
-}
-
-sub insert_native_event {
-    my ($event) = @_;
-
-    my $sql = qq[ INSERT INTO ${Format}_event SET ];
-    my @pairs = map {qq[ `$_` = ? ]} keys %$event;
-    $sql .= join( ',', @pairs );
-    my $sth = $Dbh->prepare($sql);
-    $sth->execute( values %$event );
-
-    return $Dbh->{mysql_insertid};
 }
 
 sub insert_host_log {
