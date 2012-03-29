@@ -61,11 +61,11 @@ Download UBMoD
 
     For PBS/TORQUE:
 
-    $ ubmod-shredder -v -s --format pbs -H your.host.org -d /var/spool/pbs/server_priv/accounting
+    $ ubmod-shredder -v -s -H your.host.org -f pbs -d /var/spool/pbs/server_priv/accounting
 
     For SGE:
 
-   $ ubmod-shredder -v -s -H your.host.org -f sge -i /var/lib/gridengine/default/common/accounting
+    $ ubmod-shredder -v -s -H your.host.org -f sge -i /var/lib/gridengine/default/common/accounting
 
 * Aggregate accounting log data
 
