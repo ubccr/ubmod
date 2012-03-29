@@ -125,7 +125,8 @@ my %map = (
     wait            => 'GREATEST(start_time - submission_time, 0)',
     exect           => 'GREATEST(end_time - start_time, 0)',
     nodes           => 'COUNT(DISTINCT hostname)',
-    cpus            => 'GREATEST(COALESCE(slots, 1), COALESCE(resource_list_num_proc, 1))',
+    cpus =>
+        'GREATEST(COALESCE(slots, 1), COALESCE(resource_list_num_proc, 1))',
 );
 
 sub shred {
@@ -263,7 +264,7 @@ sub _scale_memory {
 
     die "Unknown memory unit: $unit" unless defined $bytes;
 
-    return int($bytes / 1024);
+    return int( $bytes / 1024 );
 }
 
 1;
