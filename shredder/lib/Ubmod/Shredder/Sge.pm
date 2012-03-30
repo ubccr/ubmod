@@ -299,23 +299,9 @@ Version: $Id$
 
 =head1 DESCRIPTION
 
-This module parses Sun Grid Engine accounting log files.  It defines a
-class that implements a single public method to do so.
+This module parses Sun Grid Engine accounting log files.
 
-=head1 CONSTRUCTOR
-
-=head2 new()
-
-    my $shredder = Ubmod::Shredder::Sge->new();
-
-=head1 METHOD
-
-=head2 shred($line)
-
-    my $event = $shredder->shred($line);
-
-Shred the given C<$line>.  Returns a hashref containing the information
-parsed from the line.  C<die>s if there was an error parsing the line.
+See C<Ubmod::BaseShredder>.
 
 =head1 AUTHOR
 

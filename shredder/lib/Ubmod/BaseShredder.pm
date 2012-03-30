@@ -86,11 +86,26 @@ Version: $Id$
       return \%event;
   }
 
+  sub get_event_table {
+
+      # Return the name of the custom event table.
+      return 'myformat_event';
+  }
+
+  sub get_insert_query {
+      my ($self, $event) = @_;
+
+      # Construct a SQL query to insert data into the custom event
+      # table.  Return the query with optional bind params.
+
+      return ($sql, @values);
+  }
+
   sub get_transform_query {
       my ($self) = @_;
 
-      # Construct a SQL query to insert data from the custom event
-      # table to the generic event table.
+      # Construct a SQL query to insert data from the custom event table
+      # to the generic event table.
 
       return $sql;
   }
@@ -134,7 +149,7 @@ implementation to check if the cluster name should be replaced.
 
 Returns the logger object. This should be used to log any messages.
 
-=head2 shred($line)
+=head2 shred( $line )
 
 This must be implemented by subclasses.
 
@@ -142,6 +157,22 @@ Shred the given C<$line>. Returns a hash reference containing the
 information parsed from the line. Should C<die> if there was an error
 parsing the line. Keys in the returned hash reference should match the
 columns of the custom event table.
+
+=head2 get_event_table()
+
+This must be implemented by subclasses.
+
+Returns the name of the custom event table used by this shredder.
+
+=head2 get_insert_query( $event )
+
+This may be overridden by subclasses.  A default version is supplied
+that insert every value in the C<$event> hash to the custom event table
+using the keys of the hash as column names.
+
+Returns a list containing the SQL query that will insert data from
+C<$event> into the custom event table followed by a list of bind
+parameters.
 
 =head2 get_transform_query()
 
