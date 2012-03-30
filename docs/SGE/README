@@ -14,14 +14,11 @@ consumable resource, the greater of the two values will be used as the
 number of CPUs.
 
 If your logs are not rotated (you re-shred the same log file every time
-you update the UBMoD database), it is necessary to truncate the `event`
-and `sge_event` tables before shredding the accounting logs.  Otherwise,
-duplicate data will be present in UBMoD.
-
-This command can be used to truncate those tables:
-
-    $ mysql -u ubmoduser -ppassword ubmod \
-      -e 'TRUNCATE event; TRUNCATE sge_event;'
+you update the UBMoD database), when UBMoD inserts the duplicate data,
+the unique key constraint on the sge_event table will prevent the
+insertion of this data, but will instead update the primary key.  This
+will prevent duplicate data from being entered into the database, even
+though the entire log file will still be parsed.
 
 If you use the logchecker.sh script included with SGE, an example of how
 to customize the script to use UBMoD is included in logchecker.sh.patch.
