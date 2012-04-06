@@ -9,7 +9,7 @@ use File::Copy;
 
 sub main {
     my $name    = 'ubmod';
-    my $version = '0.2.2';
+    my $version = '0.2.3';
 
     my $full_name = "$name-$version";
 
