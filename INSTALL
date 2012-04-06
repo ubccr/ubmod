@@ -34,7 +34,7 @@ Download UBMoD
     $ tar -xvzf ubmod-x.x.x.tar.gz
     $ cd ubmod-x.x.x
 
-* Set up the MySQL database
+Set up the MySQL database
 
     mysql> create database ubmod;
     mysql> grant all on ubmod.* to ubmoduser@localhost identified by 'password';
@@ -42,14 +42,14 @@ Download UBMoD
 
     $ mysql -u ubmoduser -p ubmod < ./ddl/ubmod.sql
 
-* Create the UBMoD config files
+Create the UBMoD config files
 
-    - Create the files portal/config/settings.ini and
-      shredder/config/settings.ini with your site specific settings. An
-      example can be found in the docs directory of the UBMoD distribution.
-      These files both contain the same information. Two files are needed so
-      that the portal and shredder can be moved and used separately if
-      necessary.
+* Create the files portal/config/settings.ini and
+  shredder/config/settings.ini with your site specific settings. An
+  example can be found in the docs directory of the UBMoD distribution.
+  These files both contain the same information. Two files are needed so
+  that the portal and shredder can be moved and used separately if
+  necessary.
 
     [database]
     host = localhost
@@ -57,25 +57,25 @@ Download UBMoD
     user = ubmoduser
     password = password
 
-* Load in accounting log data
+Load in accounting log data
 
-    For PBS/TORQUE:
+* For PBS/TORQUE:
 
-    $ ubmod-shredder -v -s -H your.host.org -f pbs -d /var/spool/pbs/server_priv/accounting
+    $ ./shredder/bin/ubmod-shredder -v -s -H your.host.org -f pbs -d /var/spool/pbs/server_priv/accounting
 
-    For SGE:
+* For SGE:
 
-    $ ubmod-shredder -v -s -H your.host.org -f sge -i /var/lib/gridengine/default/common/accounting
+    $ ./shredder/bin/ubmod-shredder -v -s -H your.host.org -f sge -i /var/lib/gridengine/default/common/accounting
 
-* Aggregate accounting log data
+Aggregate accounting log data
 
-    $ ubmod-shredder -v -u
+    $ ./shredder/bin/ubmod-shredder -v -u
 
-* Set up the web application
+Set up the web application
 
-    - The UBMoD portal is packaged as a PHP application.
-      * Note that this is a basic example of setting up Apache for use with
-      UBMoD for demo purposes only and not intended for production use.
+* Add a virtual host to your Apache configuration. Update the path and
+  port number where necessary. An example with comments (ubmod.conf) can
+  be found in the docs directory of the UBMoD distribution.
 
 * Copy the following into your Apache configuration file.
   Replace /path/to/ubmod with the appropriate path.
@@ -95,6 +95,12 @@ Download UBMoD
         </Directory>
     </VirtualHost>
 
-* Reload the Apache configuration
+* Note that this is a basic example of setting up Apache for use with
+  UBMoD for demo purposes only and not intended for production use.
+  UBMoD does not have built-in authentication or authorization access
+  controls.
+
+* Reload the Apache configuration.
 
 * Point your browser to http://localhost:8080/
+

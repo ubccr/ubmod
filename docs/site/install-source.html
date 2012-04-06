@@ -68,18 +68,20 @@ password = password
 
     <div class="subhead">Load in accounting log data</div>
     <ul><li>For PBS/TORQUE:</li></ul>
-    <pre>$ ubmod-shredder -v -s -H your.host.org -f pbs -d /var/spool/pbs/server_priv/accounting</pre>
+    <pre>$ ./shredder/bin/ubmod-shredder -v -s -H your.host.org -f pbs -d /var/spool/pbs/server_priv/accounting</pre>
     <ul><li>For SGE:</li></ul>
-    <pre>$ ubmod-shredder -v -s -H your.host.org -f sge -i /var/lib/gridengine/default/common/accounting</pre>
+    <pre>$ ./shredder/bin/ubmod-shredder -v -s -H your.host.org -f sge -i /var/lib/gridengine/default/common/accounting</pre>
 
 
     <div class="subhead">Aggregate accounting log data</div>
-    <pre>$ ubmod-shredder -v -u</pre>
+    <pre>$ ./shredder/bin/ubmod-shredder -v -u</pre>
 
     <div class="subhead">Set up the web application</div>
     <ul><li>Add a virtual host to your Apache configuration. Update the path
-      and port number where necessary. An example (ubmod.conf) can be found in
-      the docs directory of the UBMoD distribution.</li></ul>
+      and port number where necessary. An example with comments (ubmod.conf)
+      can be found in the docs directory of the UBMoD distribution.</li>
+      <li>Copy the following into your Apache configuration file.
+      Replace /path/to/ubmod with the appropriate path.</li></ul>
 <pre>
 Listen 8080
 &lt;VirtualHost *:8080&gt;
@@ -99,7 +101,8 @@ Listen 8080
     <ul>
       <li><strong>* Note this is a basic example of setting up Apache for use
         with UBMoD for demo purposes only and not intended for production
-        use.</strong></li>
+        use. UBMoD does not have built-in authentication or authorization
+        access controls.</strong></li>
     </ul>
     <ul>
       <li>Reload the Apache configuration.</li>
