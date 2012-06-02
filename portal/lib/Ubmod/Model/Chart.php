@@ -1186,6 +1186,17 @@ class Ubmod_Model_Chart
     }
     $data->setAxisName(0, $params['yLabel']);
 
+    // Prevent too many labels from being displayed
+    $labelCount = count($params['labels']);
+    if ($labelCount > 20) {
+      $x = (int)($labelCount / 20) + 1;
+      foreach (range(0, $labelCount - 1) as $i) {
+        if ($i % $x !== 0) {
+          $params['labels'][$i] = '';
+        }
+      }
+    }
+
     $data->addPoints($params['labels'], 'labels');
     $data->setAbscissa('labels');
 

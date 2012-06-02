@@ -2,6 +2,10 @@
 UBMoD - ChangeLog
 ===============================================================================
 
+-
+    - Changed stacked area charts to display fewer labels on the x-axis
+      for long time periods
+
 - 2012-04-06 v0.2.3
     - Added unique key to sge_event table; this allows re-shredding the
       same log file without duplicate data being inserted into the
