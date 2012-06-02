@@ -1,5 +1,10 @@
 <div style="padding:10px;">
   <?php if ($group): ?>
+    <script type="text/javascript">
+        Ext.onReady(function () {
+            Ubmod.app.extendPanelHeight();
+        });
+    </script>
     <div style="padding-top:5px;" class="labelHeading">
       Group: <span class="labelHeader"><?php echo $group['name'] ?></span>
     </div>

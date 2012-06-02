@@ -952,7 +952,8 @@ Ext.Loader.onReady(function () {
                     loader: {
                         url: this.recordFormat.detailsUrl,
                         autoLoad: true,
-                        params: params
+                        params: params,
+                        scripts: true
                     }
                 });
 
@@ -1825,6 +1826,33 @@ Ext.Loader.onReady(function () {
                 widgets.push(panel);
 
                 return panel;
+            },
+
+            /**
+             * Extend the height of the current main panel.
+             */
+            extendPanelHeight: function () {
+                var panels, panel, position, bodyHeight, panelHeight,
+                    newHeight;
+
+                panels = Ext.ComponentQuery.query('tabpanel');
+
+                if (panels.length === 0) {
+                    return;
+                }
+
+                panel = panels[0];
+
+                position = panel.getPosition()
+                panelHeight = panel.getHeight();
+
+                bodyHeight = Ext.getBody().getViewSize().height;
+
+                newHeight = bodyHeight - position[1];
+
+                if (newHeight > panelHeight) {
+                    panel.setHeight(newHeight);
+                }
             }
         };
     }());
