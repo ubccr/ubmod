@@ -2,7 +2,8 @@
   <script type="text/javascript">
   Ext.onReady(function () {
 
-      var currentType = 'pie',
+      var params = <?php echo $params ?>,
+          currentType = 'pie',
           link = Ext.get('swap-link'),
           pie = Ext.select('.pie'),
           bar = Ext.select('.bar');
@@ -23,6 +24,14 @@
               link.dom.innerHTML = 'Pie';
           }
       });
+
+      Ubmod.app.loadChart('tag-bar', 'tag', 'bar', params);
+      Ubmod.app.loadChart('tag-pie', 'tag', 'pie', params);
+
+      <?php if ($interval['multi_month']): ?>
+          Ubmod.app.loadChart('tag-stacked-area', 'tag', 'stackedArea',
+              params);
+      <?php endif; ?>
   });
   </script>
   <div style="margin-bottom:20px; margin-top:10px;">
@@ -30,14 +39,14 @@
     <table style="margin-top:10px;">
       <tr>
         <td style="vertical-align:top;">
-          <img class="pie" src="<?php echo $pieChart ?>" />
-          <img class="bar" src="<?php echo $barChart ?>" style="display:none;" />
+          <img id="tag-pie" class="pie" src="/images/loading.gif" />
+          <img id="tag-bar" class="bar" src="/images/loading.gif" style="display:none;" />
         </td>
       </tr>
       <?php if ($interval['multi_month']): ?>
         <tr>
           <td style="vertical-align:top;">
-            <img src="<?php echo $areaChart ?>" />
+            <img id="tag-stacked-area" src="/images/loading.gif" />
           </td>
         </tr>
       <?php endif; ?>
@@ -46,3 +55,4 @@
 <?php else: ?>
   <div style="margin:100px; font-weight:bold;">Select a Tag Key</div>
 <?php endif; ?>
+

@@ -2,7 +2,19 @@
   <?php if ($group): ?>
     <script type="text/javascript">
         Ext.onReady(function () {
+            var params = <?php echo $params ?>;
+
             Ubmod.app.extendPanelHeight();
+
+            Ubmod.app.loadChart('<?php echo $groupId ?>-pie', 'user', 'pie',
+                params);
+            Ubmod.app.loadChart('<?php echo $groupId ?>-bar', 'user', 'bar',
+                params);
+
+            <?php if ($interval['multi_month']): ?>
+                Ubmod.app.loadChart('<?php echo $groupId ?>-stacked-area',
+                    'user', 'stackedArea', params);
+            <?php endif; ?>
         });
     </script>
     <div style="padding-top:5px;" class="labelHeading">
@@ -31,13 +43,14 @@
           <td style="font-weight:bold;"><?php echo $group['avg_exect'] ?></td>
         </tr>
       </table>
-      <div style="margin-top:10px;"><img src="<?php echo $pieChart ?>" /></div>
-      <div style="margin-top:10px;"><img src="<?php echo $barChart ?>" /></div>
+      <div style="margin-top:10px;"><img id="<?php echo $groupId ?>-pie" src="/images/loading.gif" /></div>
+      <div style="margin-top:10px;"><img id="<?php echo $groupId ?>-bar" src="/images/loading.gif" /></div>
       <?php if ($interval['multi_month']): ?>
-        <div style="margin-top:10px;"><img src="<?php echo $areaChart ?>" /></div>
+        <div style="margin-top:10px;"><img id="<?php echo $groupId ?>-stacked-area" src="/images/loading.gif" /></div>
       <?php endif; ?>
     </div>
   <?php else: ?>
     No job data found for group in given time period.
   <?php endif; ?>
 </div>
+

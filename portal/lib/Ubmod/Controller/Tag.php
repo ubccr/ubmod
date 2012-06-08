@@ -28,7 +28,7 @@
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
@@ -69,14 +69,14 @@ class Ubmod_Controller_Tag extends Ubmod_BaseController
   {
     $params = Ubmod_Model_QueryParams::factory($this->getPostData());
 
+    $this->params   = json_encode($this->getPostData());
     $this->tagName  = $params->getTag();
     $this->interval = Ubmod_Model_TimeInterval::getByParams($params);
     $this->activity = Ubmod_Model_Job::getActivity($params);
-    $queryString    = Ubmod_Model_Chart::getQueryString($params);
 
-    $this->pieChart  = '/chart/user-pie?'  . $queryString;
-    $this->barChart  = '/chart/user-bar?'  . $queryString;
-    $this->areaChart = '/chart/user-area?' . $queryString;
+    // Used for img element id
+    $this->tagId = 'tag-' . preg_replace('/\W+/', '', $params->getTag())
+      . rand();
   }
 
   /**
@@ -88,13 +88,9 @@ class Ubmod_Controller_Tag extends Ubmod_BaseController
   {
     $params = Ubmod_Model_QueryParams::factory($this->getPostData());
 
+    $this->params   = json_encode($this->getPostData());
     $this->tagKey   = $params->getTagKey();
     $this->interval = Ubmod_Model_TimeInterval::getByParams($params);
-    $queryString    = Ubmod_Model_Chart::getQueryString($params);
-
-    $this->pieChart  = '/chart/tag-pie?'  . $queryString;
-    $this->barChart  = '/chart/tag-bar?'  . $queryString;
-    $this->areaChart = '/chart/tag-area?' . $queryString;
   }
 
   /**
@@ -132,3 +128,4 @@ class Ubmod_Controller_Tag extends Ubmod_BaseController
     exit();
   }
 }
+

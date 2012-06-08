@@ -28,7 +28,7 @@
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
@@ -41,145 +41,32 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
 {
 
   /**
-   * Execute the wall time period action.
+   * Execute the "cached" chart action.
    *
    * @return void
    */
-  public function executeWallTimePeriod()
+  public function executeCached()
   {
-    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    Ubmod_Model_Chart::renderWallTimePeriod($params);
-  }
+    $data = $this->getGetData();
 
-  /**
-   * Execute the wall time monthly action.
-   *
-   * @return void
-   */
-  public function executeWallTimeMonthly()
-  {
-    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    Ubmod_Model_Chart::renderWallTimeMonthly($params);
-  }
+    $chart = Ubmod_Model_Chart::cacheGet($data['id']);
 
-  /**
-   * Execute the wait time period action.
-   *
-   * @return void
-   */
-  public function executeWaitTimePeriod()
-  {
-    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    Ubmod_Model_Chart::renderWaitTimePeriod($params);
-  }
-
-  /**
-   * Execute the wait time monthly action.
-   *
-   * @return void
-   */
-  public function executeWaitTimeMonthly()
-  {
-    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    Ubmod_Model_Chart::renderWaitTimeMonthly($params);
-  }
-
-  /**
-   * Execute the user pie chart action.
-   *
-   * @return void
-   */
-  public function executeUserPie()
-  {
-    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    Ubmod_Model_Chart::renderUserPie($params);
-  }
-
-  /**
-   * Execute the user bar chart action.
-   *
-   * @return void
-   */
-  public function executeUserBar()
-  {
-    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    Ubmod_Model_Chart::renderUserBar($params);
-  }
-
-  /**
-   * Execute the user stacked area chart action.
-   *
-   * @return void
-   */
-  public function executeUserArea()
-  {
-    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    Ubmod_Model_Chart::renderUserStackedArea($params);
-  }
-
-  /**
-   * Execute the group pie chart action.
-   *
-   * @return void
-   */
-  public function executeGroupPie()
-  {
-    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    Ubmod_Model_Chart::renderGroupPie($params);
-  }
-
-  /**
-   * Execute the user group bar action.
-   *
-   * @return void
-   */
-  public function executeGroupBar()
-  {
-    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    Ubmod_Model_Chart::renderGroupBar($params);
-  }
-
-  /**
-   * Execute the group stacked area chart action.
-   *
-   * @return void
-   */
-  public function executeGroupArea()
-  {
-    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    Ubmod_Model_Chart::renderGroupStackedArea($params);
-  }
-
-  /**
-   * Execute the tag pie chart action.
-   *
-   * @return void
-   */
-  public function executeTagPie()
-  {
-    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    Ubmod_Model_Chart::renderTagPie($params);
-  }
-
-  /**
-   * Execute the tag bar chart action.
-   *
-   * @return void
-   */
-  public function executeTagBar()
-  {
-    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    Ubmod_Model_Chart::renderTagBar($params);
-  }
-
-  /**
-   * Execute the tag stacked area chart action.
-   *
-   * @return void
-   */
-  public function executeTagArea()
-  {
-    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    Ubmod_Model_Chart::renderTagStackedArea($params);
+    switch ($chart['type']) {
+    case 'pie':
+      Ubmod_Model_Chart::renderPieChart($chart['data']);
+      break;
+    case 'bar':
+    case 'period':
+      Ubmod_Model_Chart::renderBarChart($chart['data']);
+      break;
+    case 'stackedArea':
+    case 'monthly':
+      Ubmod_Model_Chart::renderStackedAreaChart($chart['data']);
+      break;
+    default:
+      throw new Exception("Unknown chart type '{$chart['type']}'");
+      break;
+    }
   }
 }
+

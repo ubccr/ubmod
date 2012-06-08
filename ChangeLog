@@ -3,6 +3,7 @@ UBMoD - ChangeLog
 ===============================================================================
 
 -
+    - Added chart loading image
     - Changed group details page, panel now expands when a group detail
       tab is opened
     - Changed stacked area charts to display fewer labels on the x-axis

@@ -28,7 +28,7 @@
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
@@ -59,13 +59,13 @@ class Ubmod_Controller_Group extends Ubmod_BaseController
   {
     $params = Ubmod_Model_QueryParams::factory($this->getPostData());
 
+    $this->params   = json_encode($this->getPostData());
     $this->interval = Ubmod_Model_TimeInterval::getByParams($params);
     $this->group    = Ubmod_Model_Job::getEntity('group', $params);
-    $queryString    = Ubmod_Model_Chart::getQueryString($params);
 
-    $this->pieChart  = '/chart/user-pie?'  . $queryString;
-    $this->barChart  = '/chart/user-bar?'  . $queryString;
-    $this->areaChart = '/chart/user-area?' . $queryString;
+    // Used for img element id
+    $this->groupId = 'group-'
+      . preg_replace('/\W+/', '', $this->group['name']) . rand();
   }
 
   /**
@@ -104,3 +104,4 @@ class Ubmod_Controller_Group extends Ubmod_BaseController
     exit();
   }
 }
+

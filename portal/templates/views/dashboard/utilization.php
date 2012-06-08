@@ -1,7 +1,8 @@
 <script type="text/javascript">
 Ext.onReady(function () {
 
-    var currentType = 'pie',
+    var params = <?php echo $params ?>,
+        currentType = 'pie',
         link = Ext.get('swap-link'),
         pie = Ext.select('.pie'),
         bar = Ext.select('.bar');
@@ -22,6 +23,18 @@ Ext.onReady(function () {
             link.dom.innerHTML = 'Pie';
         }
     });
+
+    Ubmod.app.loadChart('user-pie',  'user',  'pie', params);
+    Ubmod.app.loadChart('user-bar',  'user',  'bar', params);
+    Ubmod.app.loadChart('group-pie', 'group', 'pie', params);
+    Ubmod.app.loadChart('group-bar', 'group', 'bar', params);
+
+    <?php if ($interval['multi_month']): ?>
+        Ubmod.app.loadChart('user-stacked-area',  'user',  'stackedArea',
+            params);
+        Ubmod.app.loadChart('group-stacked-area', 'group', 'stackedArea',
+            params);
+    <?php endif; ?>
 });
 </script>
 <div class="labelHeading" style="font-weight:bold;">
@@ -41,17 +54,17 @@ Ext.onReady(function () {
         <a id="swap-link" class="editLink" href="#">Bar</a></td>
     </tr>
     <tr>
-      <td style="vertical-align:top;"><img class="pie" src="<?php echo $userPieChart ?>" /><img class="bar" style="display:none;" src="<?php echo $userBarChart ?>" /></td>
+      <td style="vertical-align:top;"><img id="user-pie" class="pie" src="/images/loading.gif" /><img id="user-bar" class="bar" style="display:none;" src="/images/loading.gif" /></td>
     </tr>
     <tr>
-      <td style="vertical-align:top;"><img class="pie" src="<?php echo $groupPieChart ?>" /><img class="bar" style="display:none;" src="<?php echo $groupBarChart ?>" /></td>
+      <td style="vertical-align:top;"><img id="group-pie" class="pie" src="/images/loading.gif" /><img id="group-bar" class="bar" style="display:none;" src="/images/loading.gif" /></td>
     </tr>
     <?php if ($interval['multi_month']): ?>
       <tr>
-        <td style="vertical-align:top;"><img src="<?php echo $userAreaChart ?>" /></td>
+        <td style="vertical-align:top;"><img id="user-stacked-area" src="/images/loading.gif" /></td>
       </tr>
       <tr>
-        <td style="vertical-align:top;"><img src="<?php echo $groupAreaChart ?>" /></td>
+        <td style="vertical-align:top;"><img id="group-stacked-area" src="/images/loading.gif" /></td>
       </tr>
     <?php endif; ?>
   </table>
@@ -99,3 +112,4 @@ Ext.onReady(function () {
   such as the total number of jobs submitted, the average wait time, and the
   average length of a job.
 </div>
+

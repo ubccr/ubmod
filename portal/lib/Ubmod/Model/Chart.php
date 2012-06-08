@@ -28,7 +28,7 @@
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
@@ -237,15 +237,15 @@ class Ubmod_Model_Chart
   }
 
   /**
-   * Create a wall time period chart and send it to the browser.
+   * Get the data for a wall time period chart.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
-   * @return void
+   * @return array
    */
-  public static function renderWallTimePeriod(
-    Ubmod_Model_QueryParams $params)
-  {
+  public static function getWallTimePeriodData(
+    Ubmod_Model_QueryParams $params
+  ) {
     $walltForLabel = array();
     foreach (self::getWallTime($params) as $cpu) {
       $walltForLabel[$cpu['label']] = $cpu['wallt'];
@@ -258,7 +258,7 @@ class Ubmod_Model_Chart
       $time[] = isset($walltForLabel[$label]) ? $walltForLabel[$label] : 0;
     }
 
-    self::renderBarChart(array(
+    return array(
       'width'         => 700,
       'height'        => 400,
       'title'         => 'Wall Time vs. Job Size',
@@ -268,18 +268,19 @@ class Ubmod_Model_Chart
       'labels'        => $cpus,
       'series'        => $time,
       'displayValues' => TRUE,
-    ));
+    );
   }
 
   /**
-   * Create a wait time period chart and send it to the browser.
+   * Get the data for a wait time period chart.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
-   * @return void
+   * @return array
    */
-  public static function renderWaitTimePeriod(Ubmod_Model_QueryParams $params)
-  {
+  public static function getWaitTimePeriodData(
+    Ubmod_Model_QueryParams $params
+  ) {
     $waitForLabel = array();
     foreach (self::getWaitTime($params) as $cpu) {
       $waitForLabel[$cpu['label']] = $cpu['avg_wait'];
@@ -292,7 +293,7 @@ class Ubmod_Model_Chart
       $time[] = isset($waitForLabel[$label]) ? $waitForLabel[$label] : 0;
     }
 
-    self::renderBarChart(array(
+    return array(
       'width'         => 700,
       'height'        => 400,
       'title'         => 'Job Wait vs. Job Size',
@@ -302,19 +303,19 @@ class Ubmod_Model_Chart
       'labels'        => $cpus,
       'series'        => $time,
       'displayValues' => TRUE,
-    ));
+    );
   }
 
   /**
-   * Create a wall time monthly chart and send it to the browser.
+   * Get the data for a wall time monthly chart.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
-   * @return void
+   * @return array
    */
-  public static function renderWallTimeMonthly(
-    Ubmod_Model_QueryParams $params)
-  {
+  public static function getWallTimeMonthlyData(
+    Ubmod_Model_QueryParams $params
+  ) {
     $cpuLabels  = self::getCpuIntervalLabels();
     $months     = Ubmod_Model_TimeInterval::getMonths($params);
     $monthNames = array();
@@ -346,7 +347,7 @@ class Ubmod_Model_Chart
       }
     }
 
-    self::renderStackedAreaChart(array(
+    return array(
       'width'      => 700,
       'height'     => 400,
       'title'      => 'Wall Time vs. Job Size (Monthly)',
@@ -356,19 +357,19 @@ class Ubmod_Model_Chart
       'labels'     => $monthNames,
       'series'     => $serieForCpus,
       'legendMode' => LEGEND_VERTICAL,
-    ));
+    );
   }
 
   /**
-   * Create a wait time monthly chart and send it to the browser.
+   * Get the data for a wait time monthly chart.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
-   * @return void
+   * @return array
    */
-  public static function renderWaitTimeMonthly(
-    Ubmod_Model_QueryParams $params)
-  {
+  public static function getWaitTimeMonthlyData(
+    Ubmod_Model_QueryParams $params
+  ) {
     $cpuLabels  = self::getCpuIntervalLabels();
     $months     = Ubmod_Model_TimeInterval::getMonths($params);
     $monthNames = array();
@@ -400,7 +401,7 @@ class Ubmod_Model_Chart
       }
     }
 
-    self::renderStackedAreaChart(array(
+    return array(
       'width'      => 700,
       'height'     => 400,
       'title'      => 'Job Wait vs. Job Size (Monthly)',
@@ -410,17 +411,17 @@ class Ubmod_Model_Chart
       'labels'     => $monthNames,
       'series'     => $serieForCpus,
       'legendMode' => LEGEND_VERTICAL,
-    ));
+    );
   }
 
   /**
-   * Create a user utilization pie chart and send it to the browser.
+   * Get the data for a user utilization pie chart.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
-   * @return void
+   * @return array
    */
-  public static function renderUserPie(Ubmod_Model_QueryParams $params)
+  public static function getUserPieData(Ubmod_Model_QueryParams $params)
   {
     $params->setModel('user');
     $params->setOrderByColumn('wallt');
@@ -435,7 +436,7 @@ class Ubmod_Model_Chart
       $time[]  = $user['wallt'];
     }
 
-    self::renderPieChart(array(
+    return array(
       'width'      => 700,
       'height'     => 350,
       'title'      => 'User Utilization',
@@ -444,17 +445,17 @@ class Ubmod_Model_Chart
       'series'     => $time,
       'maxSlices'  => 10,
       'otherLabel' => "Remaining Users",
-    ));
+    );
   }
 
   /**
-   * Create a group utilization pie chart and send it to the browser.
+   * Get the data for a group utilization pie chart.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
-   * @return void
+   * @return array
    */
-  public static function renderGroupPie(Ubmod_Model_QueryParams $params)
+  public static function getGroupPieData(Ubmod_Model_QueryParams $params)
   {
     $params->setModel('group');
     $params->setOrderByColumn('wallt');
@@ -469,7 +470,7 @@ class Ubmod_Model_Chart
       $time[]   = $group['wallt'];
     }
 
-    self::renderPieChart(array(
+    return array(
       'width'      => 700,
       'height'     => 350,
       'title'      => 'Group Utilization',
@@ -478,17 +479,17 @@ class Ubmod_Model_Chart
       'series'     => $time,
       'maxSlices'  => 10,
       'otherLabel' => "Remaining Groups",
-    ));
+    );
   }
 
   /**
-   * Create a tag utilization pie chart and send it to the browser.
+   * Get the data for a tag utilization pie chart.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
-   * @return void
+   * @return array
    */
-  public static function renderTagPie(Ubmod_Model_QueryParams $params)
+  public static function getTagPieData(Ubmod_Model_QueryParams $params)
   {
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(TRUE);
@@ -510,7 +511,7 @@ class Ubmod_Model_Chart
       $time[] = $otherWallt;
     }
 
-    self::renderPieChart(array(
+    return array(
       'width'      => 700,
       'height'     => 350,
       'title'      => 'Tag Utilization',
@@ -519,17 +520,17 @@ class Ubmod_Model_Chart
       'series'     => $time,
       'maxSlices'  => 10,
       'otherLabel' => "Other",
-    ));
+    );
   }
 
   /**
-   * Create a user utilization bar chart and send it to the browser.
+   * Get the data for a user utilization bar chart.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
-   * @return void
+   * @return array
    */
-  public static function renderUserBar(Ubmod_Model_QueryParams $params)
+  public static function getUserBarData(Ubmod_Model_QueryParams $params)
   {
     $params->setModel('user');
     $params->setLimitRowCount(21);
@@ -548,7 +549,7 @@ class Ubmod_Model_Chart
       $time[] = $user['wallt'];
     }
 
-    self::renderBarChart(array(
+    return array(
       'width'    => 700,
       'height'   => 350,
       'title'    => 'User Utilization',
@@ -556,17 +557,17 @@ class Ubmod_Model_Chart
       'yLabel'   => 'Wall Time (Days)',
       'labels'   => $users,
       'series'   => $time,
-    ));
+    );
   }
 
   /**
-   * Create a group utilization bar chart and send it to the browser.
+   * Get the data for a group utilization bar chart.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
-   * @return void
+   * @return array
    */
-  public static function renderGroupBar(Ubmod_Model_QueryParams $params)
+  public static function getGroupBarData(Ubmod_Model_QueryParams $params)
   {
     $params->setModel('group');
     $params->setLimitRowCount(21);
@@ -585,7 +586,7 @@ class Ubmod_Model_Chart
       $time[]   = $group['wallt'];
     }
 
-    self::renderBarChart(array(
+    return array(
       'width'    => 700,
       'height'   => 350,
       'title'    => 'Group Utilization',
@@ -593,17 +594,17 @@ class Ubmod_Model_Chart
       'yLabel'   => 'Wall Time (Days)',
       'labels'   => $groups,
       'series'   => $time,
-    ));
+    );
   }
 
   /**
-   * Create a tag utilization bar chart and send it to the browser.
+   * Get the data for a tag utilization bar chart.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
-   * @return void
+   * @return array
    */
-  public static function renderTagBar(Ubmod_Model_QueryParams $params)
+  public static function getTagBarData(Ubmod_Model_QueryParams $params)
   {
     $params->setModel('tag');
     $params->setLimitRowCount(21);
@@ -619,7 +620,7 @@ class Ubmod_Model_Chart
       $time[] = $tag['wallt'];
     }
 
-    self::renderBarChart(array(
+    return array(
       'width'    => 700,
       'height'   => 350,
       'title'    => 'Tag Utilization',
@@ -627,19 +628,19 @@ class Ubmod_Model_Chart
       'yLabel'   => 'Wall Time (Days)',
       'labels'   => $tags,
       'series'   => $time,
-    ));
+    );
   }
 
   /**
-   * Create a user utilization stacked area chart and send it to the browser.
+   * Get the data for a user utilization stacked area chart.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
-   * @return void
+   * @return array
    */
-  public static function renderUserStackedArea(
-    Ubmod_Model_QueryParams $params)
-  {
+  public static function getUserStackedAreaData(
+    Ubmod_Model_QueryParams $params
+  ) {
     $params->setModel('user');
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(TRUE);
@@ -716,7 +717,7 @@ class Ubmod_Model_Chart
       $serieForUser[$otherUser] = $otherSerie;
     }
 
-    self::renderStackedAreaChart(array(
+    return array(
       'width'      => 700,
       'height'     => 350,
       'title'      => 'Monthly User Utilization',
@@ -726,19 +727,19 @@ class Ubmod_Model_Chart
       'labels'     => $monthNames,
       'series'     => $serieForUser,
       'legendMode' => LEGEND_VERTICAL,
-    ));
+    );
   }
 
   /**
-   * Create a group utilization stacked area chart and send it to the browser.
+   * Get the data for a group utilization stacked area chart.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
-   * @return void
+   * @return array
    */
-  public static function renderGroupStackedArea(
-    Ubmod_Model_QueryParams $params)
-  {
+  public static function getGroupStackedAreaData(
+    Ubmod_Model_QueryParams $params
+  ) {
     $params->setModel('group');
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(TRUE);
@@ -815,7 +816,7 @@ class Ubmod_Model_Chart
       $serieForGroup[$otherGroup] = $otherSerie;
     }
 
-    self::renderStackedAreaChart(array(
+    return array(
       'width'      => 700,
       'height'     => 350,
       'title'      => 'Monthly Group Utilization',
@@ -825,19 +826,19 @@ class Ubmod_Model_Chart
       'labels'     => $monthNames,
       'series'     => $serieForGroup,
       'legendMode' => LEGEND_VERTICAL,
-    ));
+    );
   }
 
   /**
-   * Create a tag utilization stacked area chart and send it to the browser.
+   * Get the data for a tag utilization stacked area chart.
    *
    * @param Ubmod_Model_QueryParams $params The query parameters.
    *
-   * @return void
+   * @return array
    */
-  public static function renderTagStackedArea(
-    Ubmod_Model_QueryParams $params)
-  {
+  public static function getTagStackedAreaData(
+    Ubmod_Model_QueryParams $params
+  ) {
     $params->setModel('tag');
     $params->setOrderByColumn('wallt');
     $params->setOrderByDescending(TRUE);
@@ -906,7 +907,7 @@ class Ubmod_Model_Chart
       $serieForTagValue[$otherTag] = $otherSerie;
     }
 
-    self::renderStackedAreaChart(array(
+    return array(
       'width'      => 700,
       'height'     => 350,
       'title'      => 'Monthly Tag Utilization',
@@ -916,7 +917,7 @@ class Ubmod_Model_Chart
       'labels'     => $monthNames,
       'series'     => $serieForTagValue,
       'legendMode' => LEGEND_VERTICAL,
-    ));
+    );
   }
 
   /**
@@ -934,7 +935,7 @@ class Ubmod_Model_Chart
    *
    * @return void
    */
-  private static function renderPieChart(array $params)
+  public static function renderPieChart(array $params)
   {
     if (count($params['series']) == 0) {
       self::renderNoDataImage($params);
@@ -1061,7 +1062,7 @@ class Ubmod_Model_Chart
    *
    * @return void
    */
-  private static function renderBarChart(array $params)
+  public static function renderBarChart(array $params)
   {
     if (count($params['series']) == 0) {
       self::renderNoDataImage($params);
@@ -1165,7 +1166,7 @@ class Ubmod_Model_Chart
    *
    * @return void
    */
-  private static function renderStackedAreaChart(array $params)
+  public static function renderStackedAreaChart(array $params)
   {
     if (count($params['series']) == 0) {
       self::renderNoDataImage($params);
@@ -1347,4 +1348,76 @@ class Ubmod_Model_Chart
     }
     return $name;
   }
+
+  /**
+   * Set cache data.
+   *
+   * @param mixed $data The data to store in the cache.
+   *
+   * @return string An identifier to retrieve the data.
+   */
+  public static function cacheSet($data)
+  {
+    $json = json_encode($data);
+
+    $id = md5($json);
+
+    if ( !isset($_SESSION['chart-cache'])
+      || !is_array($_SESSION['chart-cache'])
+    ) {
+      $_SESSION['chart-cache'] = array();
+    }
+
+    $_SESSION['chart-cache'][$id] = $json;
+
+    return $id;
+  }
+
+  /**
+   * Get data from the cache.
+   *
+   * @param string $id The data identifier.
+   *
+   * @param mixed The data to stored in the cache.
+   */
+  public static function cacheGet($id)
+  {
+    if (!is_array($_SESSION['chart-cache'])) {
+      return false;
+    }
+
+    if (!array_key_exists($id, $_SESSION['chart-cache'])) {
+      return false;
+    }
+
+    try {
+      $data = json_decode($_SESSION['chart-cache'][$id], true);
+    } catch (Exception $e) {
+      $msg = "Failed to decode cached data: " . $e->getMessage();
+      throw new Exception($msg);
+    }
+
+    return $data;
+  }
+
+  /**
+   * Clear a cache element.
+   *
+   * @param string $id The data identifier.
+   *
+   * @return bool Indicates if that the data was found and cleared.
+   */
+  public static function cacheClear($id)
+  {
+    if ( !isset($_SESSION['chart-cache'])
+      || !is_array($_SESSION['chart-cache'])
+    ) {
+      return false;
+    }
+
+    unset($_SESSION['chart-cache'][$id]);
+
+    return true;
+  }
 }
+

@@ -25,7 +25,7 @@
 /**
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  */
 Ext.Loader.onReady(function () {
 
@@ -1853,6 +1853,34 @@ Ext.Loader.onReady(function () {
                 if (newHeight > panelHeight) {
                     panel.setHeight(newHeight);
                 }
+            },
+
+            /**
+             * Load a chart.
+             *
+             * @param {String} id The img tag id.
+             * @param {String} model The data model identifier.
+             * @param {String} type The chart type identifier.
+             * @param {Object} params The chart parameters.
+             */
+            loadChart: function (id, model, type, params) {
+                Ext.Ajax.request({
+                    url: '/api/rest/json/chart/cache',
+                    params: {
+                        model: model,
+                        type: type,
+                        params: Ext.encode(params)
+                    },
+                    success: function (response) {
+                        var src = Ext.JSON.decode(response.responseText).url;
+                        Ext.select('#' + id).set({ src: src });
+                    },
+                    failure: function (response) {
+                        Ext.Msg.alert('Error', 'Failed to load chart');
+                    },
+                    timeout: 120000,
+                    scope: this
+                });
             }
         };
     }());
@@ -1860,3 +1888,4 @@ Ext.Loader.onReady(function () {
     Ext.onReady(Ubmod.app.init, Ubmod);
 
 }, window, false);
+

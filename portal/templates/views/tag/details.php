@@ -1,5 +1,21 @@
 <div style="padding:10px;">
   <?php if ($activity): ?>
+    <script type="text/javascript">
+        Ext.onReady(function () {
+            var params = <?php echo $params ?>;
+
+            Ubmod.app.extendPanelHeight();
+            Ubmod.app.loadChart('<?php echo $tagId ?>-pie', 'user', 'pie',
+                params);
+            Ubmod.app.loadChart('<?php echo $tagId ?>-bar', 'user', 'bar',
+                params);
+
+            <?php if ($interval['multi_month']): ?>
+                Ubmod.app.loadChart('<?php echo $tagId ?>-stacked-area',
+                    'user', 'stackedArea', params);
+            <?php endif; ?>
+        });
+    </script>
     <div style="padding-top:5px;" class="labelHeading">
       Tag: <span class="labelHeader"><?php echo htmlspecialchars($tagName) ?></span>
     </div>
@@ -27,13 +43,14 @@
           <td style="font-weight:bold;"><?php echo $activity['avg_exect'] ?></td>
         </tr>
       </table>
-      <div style="margin-top:10px;"><img src="<?php echo $pieChart ?>" /></div>
-      <div style="margin-top:10px;"><img src="<?php echo $barChart ?>" /></div>
+      <div style="margin-top:10px;"><img id="<?php echo $tagId ?>-pie" src="/images/loading.gif" /></div>
+      <div style="margin-top:10px;"><img id="<?php echo $tagId ?>-bar" src="/images/loading.gif" /></div>
       <?php if ($interval['multi_month']): ?>
-        <div style="margin-top:10px;"><img src="<?php echo $areaChart ?>" /></div>
+      <div style="margin-top:10px;"><img id="<?php echo $tagId ?>-stacked-area" src="/images/loading.gif" /></div>
       <?php endif; ?>
     </div>
   <?php else: ?>
     No job data found for this tag in given time period.
   <?php endif; ?>
 </div>
+
