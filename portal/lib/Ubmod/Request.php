@@ -142,7 +142,6 @@ class Ubmod_Request
    */
   public function getPathSegments()
   {
-    error_log($this->getPath());
     $path = trim($this->getPath(), '/');
     if ($path === '') {
       return array();
