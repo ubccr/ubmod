@@ -65,7 +65,7 @@ class Ubmod_FrontController
   public function process()
   {
     $requestUrl  = $_SERVER['REQUEST_URI'];
-    $pathInfo    = $_SERVER['PATH_INFO'];
+    $pathInfo    = $_GET['path_info'];
     $queryString = $_SERVER['QUERY_STRING'];
     $getData     = $_GET;
     $postData    = $_POST;
