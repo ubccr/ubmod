@@ -88,12 +88,12 @@ Listen 8080
     DocumentRoot /path/to/ubmod/html
     &lt;Directory /path/to/ubmod/html&gt;
         RewriteEngine on
-        RewriteCond $1 !^index\.php/
+        RewriteCond $1 !^index\.php
         RewriteRule ^api/rest/(.*)$ /api/rest/index.php?path_info=$1 [L,QSA]
         RewriteCond $1 !^api/rest/
         RewriteCond $1 !^(favicon\.ico|robots\.txt)$
         RewriteCond $1 !^(css|images|js|resources)/
-        RewriteCond $1 !^index\.php/
+        RewriteCond $1 !^index\.php
         RewriteRule ^(.*)$ /index.php?path_info=$1 [L,QSA]
     &lt;/Directory&gt;
 &lt;/VirtualHost&gt;
