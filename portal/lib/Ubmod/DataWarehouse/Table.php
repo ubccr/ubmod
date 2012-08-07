@@ -45,14 +45,14 @@ class Ubmod_DataWarehouse_Table
    *
    * @var string
    */
-  protected $_name;
+  private $_name;
 
   /**
    * Columns belonging to the table.
    *
    * @var array
    */
-  protected $_columns = array();
+  protected $columns = array();
 
   /**
    * Constructor.
@@ -63,8 +63,8 @@ class Ubmod_DataWarehouse_Table
    */
   public function __construct(array $def)
   {
-    $this->_name    = $def['name'];
-    $this->_columns = $def['columns'];
+    $this->_name   = $def['name'];
+    $this->columns = $def['columns'];
   }
 
   /**
@@ -84,7 +84,7 @@ class Ubmod_DataWarehouse_Table
    */
   public function getColumns()
   {
-    return $this->_columns;
+    return $this->columns;
   }
 
   /**
@@ -97,7 +97,7 @@ class Ubmod_DataWarehouse_Table
   public function hasColumns($columns)
   {
     foreach ($columns as $column) {
-      if (!in_array($column, $this->_columns)) {
+      if (!in_array($column, $this->columns)) {
         return false;
       }
     }
@@ -117,7 +117,7 @@ class Ubmod_DataWarehouse_Table
     $intersection = array();
 
     foreach ($columns as $column) {
-      if (in_array($column, $this->_columns)) {
+      if (in_array($column, $this->columns)) {
         $intersection[] = $column;
       }
     }

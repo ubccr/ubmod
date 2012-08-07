@@ -54,17 +54,17 @@ Ext.onReady(function () {
         <a id="swap-link" class="editLink" href="#">Bar</a></td>
     </tr>
     <tr>
-      <td style="vertical-align:top;"><img id="user-pie" class="pie" src="/images/loading.gif" /><img id="user-bar" class="bar" style="display:none;" src="/images/loading.gif" /></td>
+      <td style="vertical-align:top;"><img id="user-pie" class="pie" src="<?php echo $BASE_URL ?>/images/loading.gif" /><img id="user-bar" class="bar" style="display:none;" src="<?php echo $BASE_URL ?>/images/loading.gif" /></td>
     </tr>
     <tr>
-      <td style="vertical-align:top;"><img id="group-pie" class="pie" src="/images/loading.gif" /><img id="group-bar" class="bar" style="display:none;" src="/images/loading.gif" /></td>
+      <td style="vertical-align:top;"><img id="group-pie" class="pie" src="<?php echo $BASE_URL ?>/images/loading.gif" /><img id="group-bar" class="bar" style="display:none;" src="<?php echo $BASE_URL ?>/images/loading.gif" /></td>
     </tr>
     <?php if ($interval['multi_month']): ?>
       <tr>
-        <td style="vertical-align:top;"><img id="user-stacked-area" src="/images/loading.gif" /></td>
+        <td style="vertical-align:top;"><img id="user-stacked-area" src="<?php echo $BASE_URL ?>/images/loading.gif" /></td>
       </tr>
       <tr>
-        <td style="vertical-align:top;"><img id="group-stacked-area" src="/images/loading.gif" /></td>
+        <td style="vertical-align:top;"><img id="group-stacked-area" src="<?php echo $BASE_URL ?>/images/loading.gif" /></td>
       </tr>
     <?php endif; ?>
   </table>

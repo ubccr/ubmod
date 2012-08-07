@@ -1,8 +1,8 @@
 <script type="text/javascript">
-Ext.onReady(function() {
+Ext.onReady(function () {
     Ubmod.app.createPartial({
         renderTo: 'dash-chart',
-        url: '/wall-time/chart'
+        url: Ubmod.baseUrl + '/wall-time/chart'
     });
 });
 </script>
@@ -16,3 +16,4 @@ Ext.onReady(function() {
   displayed with the total days consumed for each month that is included in
   the time period.
 </div>
+

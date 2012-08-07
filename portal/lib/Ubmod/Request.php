@@ -45,28 +45,28 @@ class Ubmod_Request
    *
    * @var string
    */
-  protected $_path;
+  private $_path;
 
   /**
    * Request query string.
    *
    * @var string
    */
-  protected $_queryString;
+  private $_queryString;
 
   /**
    * Request GET data.
    *
    * @var array
    */
-  protected $_getData;
+  private $_getData;
 
   /**
    * Request POST data.
    *
    * @var array
    */
-  protected $_postData;
+  private $_postData;
 
   /**
    * Constructor.
@@ -142,6 +142,7 @@ class Ubmod_Request
    */
   public function getPathSegments()
   {
+    error_log($this->getPath());
     $path = trim($this->getPath(), '/');
     if ($path === '') {
       return array();

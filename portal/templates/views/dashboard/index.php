@@ -2,7 +2,7 @@
 Ext.onReady(function () {
     Ubmod.app.createPartial({
         renderTo: 'dash-chart',
-        url: '/dashboard/utilization'
+        url: Ubmod.baseUrl + '/dashboard/utilization'
     });
 });
 </script>

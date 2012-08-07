@@ -127,7 +127,7 @@ sub shred {
 
     my @parts = split /\s+/, $params;
 
-    foreach my $part (@parts) {
+    for my $part (@parts) {
 
         # Skip parts that aren't attributes.
         next unless $part =~ /=/;
@@ -149,7 +149,7 @@ sub shred {
         }
     }
 
-    foreach my $key ( keys %$event ) {
+    for my $key ( keys %$event ) {
         if ( !exists $columns{$key} ) {
             $self->logger->warn("Ignoring unknown attribute '$key'");
             delete $event->{$key};
@@ -256,7 +256,7 @@ sub _set_exec_host {
     my $hosts = $self->_parse_hosts($hosts_str);
 
     my %host_map;
-    foreach my $host (@$hosts) {
+    for my $host (@$hosts) {
         $host_map{ $host->{host} } += 1;
     }
 
@@ -275,7 +275,7 @@ sub _parse_hosts {
     my @parts = split /\+/, $hosts;
 
     my @hosts;
-    foreach my $part (@parts) {
+    for my $part (@parts) {
         my ( $host, $cpu ) = split /\//, $part;
         push @hosts,
             {

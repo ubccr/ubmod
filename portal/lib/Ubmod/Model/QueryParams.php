@@ -28,7 +28,7 @@
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
@@ -45,14 +45,14 @@ class Ubmod_Model_QueryParams
    *
    * @var int
    */
-  protected $_timeIntervalId = null;
+  private $_timeIntervalId = null;
 
   /**
    * Indicates that the time interval is a custom date range.
    *
    * @var bool
    */
-  protected $_isCustomDateRange = false;
+  private $_isCustomDateRange = false;
 
   /**
    * Time interval start date.
@@ -61,7 +61,7 @@ class Ubmod_Model_QueryParams
    *
    * @var string
    */
-  protected $_startDate = null;
+  private $_startDate = null;
 
   /**
    * Time interval end date.
@@ -70,7 +70,7 @@ class Ubmod_Model_QueryParams
    *
    * @var string
    */
-  protected $_endDate = null;
+  private $_endDate = null;
 
   /**
    * Time interval month.
@@ -79,7 +79,7 @@ class Ubmod_Model_QueryParams
    *
    * @var int
    */
-  protected $_month = null;
+  private $_month = null;
 
   /**
    * Time interval year.
@@ -88,133 +88,140 @@ class Ubmod_Model_QueryParams
    *
    * @var int
    */
-  protected $_year = null;
+  private $_year = null;
 
   /**
    * Indicates that the time interval is the last 365 days.
    *
    * @var bool
    */
-  protected $_isLast365Days = false;
+  private $_isLast365Days = false;
 
   /**
    * Indicates that the time interval is the last 90 days.
    *
    * @var bool
    */
-  protected $_isLast90Days = false;
+  private $_isLast90Days = false;
 
   /**
    * Indicates that the time interval is the last 30 days.
    *
    * @var bool
    */
-  protected $_isLast30Days = false;
+  private $_isLast30Days = false;
 
   /**
    * Indicates that the time interval is the last 7 days.
    *
    * @var bool
    */
-  protected $_isLast7Days = false;
+  private $_isLast7Days = false;
 
   /**
    * Cluster dimension primary key.
    *
    * @var int
    */
-  protected $_clusterId = null;
+  private $_clusterId = null;
 
   /**
    * Queue dimension primary key.
    *
    * @var int
    */
-  protected $_queueId = null;
+  private $_queueId = null;
 
   /**
    * User dimension primary key.
    *
    * @var int
    */
-  protected $_userId = null;
+  private $_userId = null;
 
   /**
    * Group dimension primary key.
    *
    * @var int
    */
-  protected $_groupId = null;
+  private $_groupId = null;
 
   /**
    * CPUs dimension primary key.
    *
    * @var int
    */
-  protected $_cpusId = null;
+  private $_cpusId = null;
 
   /**
    * Filter keyword to add to the WHERE clause.
    *
    * @var string
    */
-  protected $_filter = null;
+  private $_filter = null;
 
   /**
    * GROUP BY column.
    *
    * @var string
    */
-  protected $_groupByColumn = null;
+  private $_groupByColumn = null;
 
   /**
    * ORDER BY column.
    *
    * @var string
    */
-  protected $_orderByColumn = null;
+  private $_orderByColumn = null;
 
   /**
    * Indicates that the ORDER BY is descending.
    *
    * @var bool
    */
-  protected $_isOrderByDescending = false;
+  private $_isOrderByDescending = false;
 
   /**
    * LIMIT offset.
    *
    * @var int
    */
-  protected $_limitOffset = null;
+  private $_limitOffset = null;
 
   /**
    * LIMIT row count.
    *
    * @var int
    */
-  protected $_limitRowCount = null;
+  private $_limitRowCount = null;
 
   /**
    * Tag name.
    *
    * @var string
    */
-  protected $_tag = null;
+  private $_tag = null;
 
   /**
    * Tag key.
    *
    * @var string
    */
-  protected $_tagKey = null;
+  private $_tagKey = null;
+
+  /**
+   * Parent tag id.
+   *
+   * @var int
+   */
+  private $_tagParentId = null;
 
   /**
    * Model name for use with the query builder.
    *
    * @var string
    */
-  protected $_model = null;
+  private $_model = null;
 
   /**
    * Private constructor.
@@ -236,7 +243,7 @@ class Ubmod_Model_QueryParams
    *
    * @return Ubmod_Model_QueryParams
    */
-  public static function factory($params)
+  public static function factory(array $params = array())
   {
     $query = new Ubmod_Model_QueryParams();
 
@@ -324,6 +331,10 @@ class Ubmod_Model_QueryParams
 
     if (isset($params['tag_key']) && $params['tag_key'] !== '') {
       $query->setTagKey($params['tag_key']);
+    }
+
+    if (isset($params['tag_parent_id']) && $params['tag_parent_id'] !== '') {
+      $query->setTagParentId($params['tag_parent_id']);
     }
 
     if (isset($params['model']) && $params['model'] !== '') {
@@ -458,7 +469,7 @@ class Ubmod_Model_QueryParams
   /**
    * Check if the cluster ID is set.
    *
-   * @return int True if the cluster ID is set.
+   * @return bool True if the cluster ID is set.
    */
   public function hasClusterId()
   {
@@ -502,7 +513,7 @@ class Ubmod_Model_QueryParams
   /**
    * Check if the time interval start date is set.
    *
-   * @return int True if the time interval start date is set.
+   * @return bool True if the time interval start date is set.
    */
   public function hasStartDate()
   {
@@ -534,7 +545,7 @@ class Ubmod_Model_QueryParams
   /**
    * Check if the time interval end date is set.
    *
-   * @return int True if the time interval end date is set.
+   * @return bool True if the time interval end date is set.
    */
   public function hasEndDate()
   {
@@ -566,7 +577,7 @@ class Ubmod_Model_QueryParams
   /**
    * Check if the time interval month is set.
    *
-   * @return int True if the time interval month is set.
+   * @return bool True if the time interval month is set.
    */
   public function hasMonth()
   {
@@ -598,7 +609,7 @@ class Ubmod_Model_QueryParams
   /**
    * Check if the time interval year is set.
    *
-   * @return int True if the time interval year is set.
+   * @return bool True if the time interval year is set.
    */
   public function hasYear()
   {
@@ -718,7 +729,7 @@ class Ubmod_Model_QueryParams
   /**
    * Check if the queue ID is set.
    *
-   * @return int True if the queue ID is set.
+   * @return bool True if the queue ID is set.
    */
   public function hasQueueId()
   {
@@ -750,7 +761,7 @@ class Ubmod_Model_QueryParams
   /**
    * Check if the user ID is set.
    *
-   * @return int True if the user ID is set.
+   * @return bool True if the user ID is set.
    */
   public function hasUserId()
   {
@@ -782,7 +793,7 @@ class Ubmod_Model_QueryParams
   /**
    * Check if the group ID is set.
    *
-   * @return int True if the group ID is set.
+   * @return bool True if the group ID is set.
    */
   public function hasGroupId()
   {
@@ -814,7 +825,7 @@ class Ubmod_Model_QueryParams
   /**
    * Check if the cpus ID is set.
    *
-   * @return int True if the cpus ID is set.
+   * @return bool True if the cpus ID is set.
    */
   public function hasCpusId()
   {
@@ -841,6 +852,52 @@ class Ubmod_Model_QueryParams
   public function getFilter()
   {
     return $this->_filter;
+  }
+
+  /**
+   * Get the filter in simple SQL regular expression form.
+   *
+   * The returned pattern is intended to be used with the SQL LIKE
+   * operator.
+   *
+   * @return string The filter pattern.
+   */
+  public function getSqlFilter()
+  {
+    $filter = $this->_filter;
+
+    // If the filter string contains any '*' characters replace them
+    // with '%', otherwise add '%' to the beginning and end.
+    if (strpos($filter, '*') !== false) {
+      $filter = str_replace('*', '%', $filter);
+    } else {
+      $filter = '%' . $filter . '%';
+    }
+
+    return $filter;
+  }
+
+  /**
+   * Get the filter in regular expression form.
+   *
+   * The returned pattern is intended to be used with pre_match or any
+   * of the other preg_* functions.
+   *
+   * @return string The filter pattern.
+   */
+  public function getRegexFilter()
+  {
+    $regex = preg_quote($this->_filter);
+
+    // If the filter string contains any "\*" strings replace them
+    // with '.*' and add the beginning and end anchors.
+    if (strpos($regex, '\*') !== false) {
+      $regex = str_replace('\*', '.*', $regex);
+      $regex = '^' . $regex . '$';
+    }
+    $regex = '/' . $regex . '/i';
+
+    return $regex;
   }
 
   /**
@@ -936,7 +993,7 @@ class Ubmod_Model_QueryParams
    */
   public function setOrderByDescending($orderByDescending)
   {
-    $this->_orderByDescending = $orderByDescending;
+    $this->_isOrderByDescending = $orderByDescending;
   }
 
   /**
@@ -946,7 +1003,7 @@ class Ubmod_Model_QueryParams
    */
   public function isOrderByDescending()
   {
-    return $this->_orderByDescending;
+    return $this->_isOrderByDescending;
   }
 
   /**
@@ -1078,6 +1135,38 @@ class Ubmod_Model_QueryParams
   }
 
   /**
+   * Set the tag parent id.
+   *
+   * @param string $id The tag parent id.
+   *
+   * @return void
+   */
+  public function setTagParentId($id)
+  {
+    $this->_tagParentId = $id;
+  }
+
+  /**
+   * Get the tag parent id.
+   *
+   * @return string The tag parent id.
+   */
+  public function getTagParentId()
+  {
+    return $this->_tagParentId;
+  }
+
+  /**
+   * Check if the tag parent id is set.
+   *
+   * @return bool True if the tag parent id is set.
+   */
+  public function hasTagParentId()
+  {
+    return $this->_tagParentId !== null;
+  }
+
+  /**
    * Set the model.
    *
    * @param string $model The model.
@@ -1139,3 +1228,4 @@ class Ubmod_Model_QueryParams
     }
   }
 }
+

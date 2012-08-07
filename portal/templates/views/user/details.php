@@ -19,7 +19,7 @@
         </tr>
         <tr>
           <th>Group: </th>
-          <td style="font-weight:bold;"><?php echo $group['name'] ?></td>
+          <td style="font-weight:bold;"><?php echo $user['group'] ?></td>
           <th>Total Wall (d): </th>
           <td style="font-weight:bold;"><?php echo number_format($user['wallt']) ?></td>
           <th>Avg. Wall (d): </th>
@@ -35,3 +35,4 @@
     No job data found for user in given time period.
   <?php endif; ?>
 </div>
+

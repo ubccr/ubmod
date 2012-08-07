@@ -28,7 +28,7 @@
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
@@ -62,7 +62,10 @@ class Ubmod_Handler_Tag
     $options = array(
       'query' => 'Return tags that begin with this string.',
     );
-    return Ubmod_RestResponse::factory(TRUE, $desc, $options);
+    return Ubmod_RestResponse::factory(array(
+      'message' => $desc,
+      'results' => $options,
+    ));
   }
 
   /**
@@ -73,23 +76,206 @@ class Ubmod_Handler_Tag
    *
    * @return Ubmod_RestResponse
    */
-  public function listAction(array $arguments, array $postData = NULL)
+  public function listAction(array $arguments, array $postData = null)
   {
     if (isset($arguments['query']) && $arguments['query'] !== '') {
-      $tagNames = Ubmod_Model_Tag::getMatching($arguments['query']);
+      $tags = Ubmod_Model_Tag::getMatching($arguments['query']);
     } else {
-      $tagNames = Ubmod_Model_Tag::getAll();
+      $tags = Ubmod_Model_Tag::getAll();
     }
 
-    $tags = array();
-    foreach ($tagNames as $name) {
-      $tags[] = array('name' => $name);
-    }
+    return Ubmod_RestResponse::factory(array('results' => $tags));
+  }
 
-    return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'total' => count($tags),
-      'tags'  => $tags,
+  /**
+   * Help for the "tree" action.
+   *
+   * @return void
+   */
+  public function treeHelp()
+  {
+    $desc = 'Returns a tree of tags.';
+    return Ubmod_RestResponse::factory(array('message' => $desc));
+  }
+
+  /**
+   * Returns a tree of tags.
+   *
+   * @param array $arguments
+   * @param array $postData
+   *
+   * @return Ubmod_RestResponse
+   */
+  public function treeAction(array $arguments, array $postData = null)
+  {
+    return Ubmod_RestResponse::factory(array(
+      'results' => Ubmod_Model_Tag::getTree($arguments['node']),
     ));
+  }
+
+  /**
+   * Help for the "createTree" action.
+   *
+   * @return void
+   */
+  public function createTreeHelp()
+  {
+    $desc = 'Create nodes in a tree of tags.';
+    return Ubmod_RestResponse::factory(array('message' => $desc));
+  }
+
+  /**
+   * Create nodes in a tree of tags.
+   *
+   * @param array $arguments
+   * @param array $postData
+   *
+   * @return Ubmod_RestResponse
+   */
+  public function createTreeAction(array $arguments, array $postData = null)
+  {
+
+    // Ext.data.TreeStore.sync posts raw data
+    $rawPostData = file_get_contents('php://input');
+
+    try {
+      $data = json_decode($rawPostData, true);
+    } catch (Exception $e) {
+      $msg = "Failed to decode post data: " . $e->getMessage();
+      return Ubmod_RestResponse::factory(array(
+        'success' => false,
+        'message' => $msg,
+      ));
+    }
+
+    // Check if the data is an array or a single object
+    if (substr($rawPostData, 0, 1) === '[') {
+      $nodes = $data;
+    } else {
+      $nodes = array($data);
+    }
+
+    try {
+      $results = Ubmod_Model_Tag::createTreeNodes($nodes);
+    } catch (Exception $e) {
+      $msg = "Failed to create tree nodes: " . $e->getMessage();
+      return Ubmod_RestResponse::factory(array(
+        'success' => false,
+        'message' => $msg,
+      ));
+    }
+
+    return Ubmod_RestResponse::factory(array('results' => $results));
+  }
+
+  /**
+   * Help for the "updateTree" action.
+   *
+   * @return void
+   */
+  public function updateTreeHelp()
+  {
+    $desc = 'Updates a tree of tags.';
+    return Ubmod_RestResponse::factory(array('message' => $desc));
+  }
+
+  /**
+   * Updates a tree of tags.
+   *
+   * @param array $arguments
+   * @param array $postData
+   *
+   * @return Ubmod_RestResponse
+   */
+  public function updateTreeAction(array $arguments, array $postData = null)
+  {
+
+    // Ext.data.TreeStore.sync posts raw data
+    $rawPostData = file_get_contents('php://input');
+
+    try {
+      $data = json_decode($rawPostData, true);
+    } catch (Exception $e) {
+      $msg = "Failed to decode post data: " . $e->getMessage();
+      return Ubmod_RestResponse::factory(array(
+        'success' => false,
+        'message' => $msg,
+      ));
+    }
+
+    // Check if the data is an array or a single object
+    if (substr($rawPostData, 0, 1) === '[') {
+      $nodes = $data;
+    } else {
+      $nodes = array($data);
+    }
+
+    try {
+      $results = Ubmod_Model_Tag::updateTreeNodes($nodes);
+    } catch (Exception $e) {
+      $msg = "Failed to update tree: " . $e->getMessage();
+      return Ubmod_RestResponse::factory(array(
+        'success' => false,
+        'message' => $msg,
+      ));
+    }
+
+    return Ubmod_RestResponse::factory(array('results' => $results));
+  }
+
+  /**
+   * Help for the "deleteTree" action.
+   *
+   * @return void
+   */
+  public function deleteTreeHelp()
+  {
+    $desc = 'Delete nodes from a tree of tags.';
+    return Ubmod_RestResponse::factory(array('message' => $desc));
+  }
+
+  /**
+   * Delete nodes from a tree of tags.
+   *
+   * @param array $arguments
+   * @param array $postData
+   *
+   * @return Ubmod_RestResponse
+   */
+  public function deleteTreeAction(array $arguments, array $postData = null)
+  {
+
+    // Ext.data.TreeStore.sync posts raw data
+    $rawPostData = file_get_contents('php://input');
+
+    try {
+      $data = json_decode($rawPostData, true);
+    } catch (Exception $e) {
+      $msg = "Failed to decode post data: " . $e->getMessage();
+      return Ubmod_RestResponse::factory(array(
+        'success' => false,
+        'message' => $msg,
+      ));
+    }
+
+    // Check if the data is an array or a single object
+    if (substr($rawPostData, 0, 1) === '[') {
+      $nodes = $data;
+    } else {
+      $nodes = array($data);
+    }
+
+    try {
+      Ubmod_Model_Tag::deleteTreeNodes($nodes);
+    } catch (Exception $e) {
+      $msg = "Failed to delete nodes: " . $e->getMessage();
+      return Ubmod_RestResponse::factory(array(
+        'success' => false,
+        'message' => $msg,
+      ));
+    }
+
+    return Ubmod_RestResponse::factory();
   }
 
   /**
@@ -104,7 +290,10 @@ class Ubmod_Handler_Tag
     $options = array(
       'query' => 'Return tag keys that begin with this string.',
     );
-    return Ubmod_RestResponse::factory(TRUE, $desc, $options);
+    return Ubmod_RestResponse::factory(array(
+      'message' => $desc,
+      'results' => $options,
+    ));
   }
 
   /**
@@ -115,7 +304,7 @@ class Ubmod_Handler_Tag
    *
    * @return Ubmod_RestResponse
    */
-  public function keyListAction(array $arguments, array $postData = NULL)
+  public function keyListAction(array $arguments, array $postData = null)
   {
     $tagKeys = Ubmod_Model_Tag::getKeysMatching($arguments['query']);
 
@@ -124,10 +313,7 @@ class Ubmod_Handler_Tag
       $keys[] = array('name' => $key);
     }
 
-    return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'total' => count($keys),
-      'keys'  => $keys,
-    ));
+    return Ubmod_RestResponse::factory(array('results' => $keys));
   }
 
   /**
@@ -150,7 +336,10 @@ class Ubmod_Handler_Tag
       'start'       => 'Limit offset. (requires limit)',
       'limit'       => 'Maximum number of entities to return. (requires start)',
     );
-    return Ubmod_RestResponse::factory(TRUE, $desc, $options);
+    return Ubmod_RestResponse::factory(array(
+      'message' => $desc,
+      'results' => $options,
+    ));
   }
 
   /**
@@ -161,13 +350,24 @@ class Ubmod_Handler_Tag
    *
    * @return Ubmod_RestResponse
    */
-  public function activityAction(array $arguments, array $postData = NULL)
+  public function activityAction(array $arguments, array $postData = null)
   {
     $params = Ubmod_Model_QueryParams::factory($arguments);
 
-    return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'total' => Ubmod_Model_Tag::getActivityCount($params),
-      'tags'  => Ubmod_Model_Tag::getActivityList($params),
+    $columns = array(
+      'tag'      => 'Tag',
+      'jobs'     => '# Jobs',
+      'avg_cpus' => 'Avg. Job Size (cpus)',
+      'avg_wait' => 'Avg. Wait Time (h)',
+      'wallt'    => 'Wall Time (d)',
+      'avg_mem'  => 'Avg. Mem (MB)',
+    );
+
+    return Ubmod_RestResponse::factory(array(
+      'results'  => Ubmod_Model_Tag::getActivityList($params),
+      'total'    => Ubmod_Model_Tag::getActivityCount($params),
+      'columns'  => $columns,
+      'filename' => 'tags',
     ));
   }
 }

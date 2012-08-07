@@ -33,9 +33,6 @@
  */
 
 require_once('pChart/class/pDraw.class.php');
-require_once('pChart/class/pImage.class.php');
-require_once('pChart/class/pData.class.php');
-require_once('pChart/class/pPie.class.php');
 
 /**
  * Chart model.
@@ -109,7 +106,7 @@ class Ubmod_Model_Chart
         : $cluster['name'];
       $parts[] = "Cluster: $name";
     } else {
-      $parts[] = "All Clusters";
+      $parts[] = 'All Clusters';
     }
 
     if ($params->hasTimeIntervalId()) {
@@ -129,6 +126,11 @@ class Ubmod_Model_Chart
 
     if ($params->hasTagKey()) {
       $parts[] = 'Tag Key: ' . $params->getTagKey();
+    }
+
+    if ($params->hasTagParentId()) {
+      $tag = Ubmod_Model_Tag::getTagById($params->getTagParentId());
+      $parts[] = 'Tag Parent: ' . $tag['name'];
     }
 
     return implode(', ', $parts);
@@ -267,7 +269,7 @@ class Ubmod_Model_Chart
       'xLabel'        => 'Number of CPUs/Job',
       'labels'        => $cpus,
       'series'        => $time,
-      'displayValues' => TRUE,
+      'displayValues' => true,
     );
   }
 
@@ -302,7 +304,7 @@ class Ubmod_Model_Chart
       'xLabel'        => 'Number of CPUs/Job',
       'labels'        => $cpus,
       'series'        => $time,
-      'displayValues' => TRUE,
+      'displayValues' => true,
     );
   }
 
@@ -425,7 +427,7 @@ class Ubmod_Model_Chart
   {
     $params->setModel('user');
     $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(TRUE);
+    $params->setOrderByDescending(true);
 
     $users = array();
     $time  = array();
@@ -444,7 +446,7 @@ class Ubmod_Model_Chart
       'labels'     => $users,
       'series'     => $time,
       'maxSlices'  => 10,
-      'otherLabel' => "Remaining Users",
+      'otherLabel' => 'Remaining Users',
     );
   }
 
@@ -459,15 +461,22 @@ class Ubmod_Model_Chart
   {
     $params->setModel('group');
     $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(TRUE);
+    $params->setOrderByDescending(true);
 
-    $groups = array();
-    $time   = array();
+    $groups    = array();
+    $time      = array();
+    $mapParams = array();
     foreach (Ubmod_Model_Job::getActivityList($params) as $group) {
       if ($group['wallt'] == 0) { continue; }
 
       $groups[] = self::formatName($group['name'], $group['display_name']);
       $time[]   = $group['wallt'];
+
+      $mapParams[] = array(
+        'chart_type' => 'user',
+        'group_id'   => $group['group_id'],
+        'tag'        => $params->getTag(),
+      );
     }
 
     return array(
@@ -478,7 +487,8 @@ class Ubmod_Model_Chart
       'labels'     => $groups,
       'series'     => $time,
       'maxSlices'  => 10,
-      'otherLabel' => "Remaining Groups",
+      'otherLabel' => 'Remaining Groups',
+      'mapParams'  => $mapParams,
     );
   }
 
@@ -492,15 +502,28 @@ class Ubmod_Model_Chart
   public static function getTagPieData(Ubmod_Model_QueryParams $params)
   {
     $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(TRUE);
+    $params->setOrderByDescending(true);
 
-    $tags = array();
-    $time = array();
+    $tags      = array();
+    $time      = array();
+    $mapParams = array();
     foreach (Ubmod_Model_Tag::getActivityList($params) as $tag) {
       if ($tag['wallt'] == 0) { continue; }
 
       $tags[] = $tag['tag_value'];
       $time[] = $tag['wallt'];
+
+      if (Ubmod_Model_Tag::hasChildren($tag['tag_id'])) {
+        $mapParams[] = array(
+          'chart_type'    => 'tag',
+          'tag_parent_id' => $tag['tag_id'],
+        );
+      } else {
+        $mapParams[] = array(
+          'chart_type' => 'group',
+          'tag'        => $tag['name'],
+        );
+      }
     }
 
     $totalActivity = Ubmod_Model_Job::getActivity($params);
@@ -519,7 +542,8 @@ class Ubmod_Model_Chart
       'labels'     => $tags,
       'series'     => $time,
       'maxSlices'  => 10,
-      'otherLabel' => "Other",
+      'otherLabel' => 'Other',
+      'mapParams'  => $mapParams,
     );
   }
 
@@ -535,7 +559,7 @@ class Ubmod_Model_Chart
     $params->setModel('user');
     $params->setLimitRowCount(21);
     $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(TRUE);
+    $params->setOrderByDescending(true);
 
     $users = array();
     $time  = array();
@@ -572,10 +596,11 @@ class Ubmod_Model_Chart
     $params->setModel('group');
     $params->setLimitRowCount(21);
     $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(TRUE);
+    $params->setOrderByDescending(true);
 
-    $groups = array();
-    $time   = array();
+    $groups    = array();
+    $time      = array();
+    $mapParams = array();
     foreach (Ubmod_Model_Job::getActivityList($params) as $group) {
       if ($group['wallt'] == 0) { continue; }
 
@@ -583,17 +608,25 @@ class Ubmod_Model_Chart
         = isset($group['display_name'])
         ? $group['display_name']
         : $group['name'];
-      $time[]   = $group['wallt'];
+
+      $time[] = $group['wallt'];
+
+      $mapParams[] = array(
+        'chart_type' => 'user',
+        'group_id'   => $group['group_id'],
+        'tag'        => $params->getTag(),
+      );
     }
 
     return array(
-      'width'    => 700,
-      'height'   => 350,
-      'title'    => 'Group Utilization',
-      'subtitle' => self::getSubtitle($params),
-      'yLabel'   => 'Wall Time (Days)',
-      'labels'   => $groups,
-      'series'   => $time,
+      'width'     => 700,
+      'height'    => 350,
+      'title'     => 'Group Utilization',
+      'subtitle'  => self::getSubtitle($params),
+      'yLabel'    => 'Wall Time (Days)',
+      'labels'    => $groups,
+      'series'    => $time,
+      'mapParams' => $mapParams,
     );
   }
 
@@ -609,25 +642,39 @@ class Ubmod_Model_Chart
     $params->setModel('tag');
     $params->setLimitRowCount(21);
     $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(TRUE);
+    $params->setOrderByDescending(true);
 
-    $tags = array();
-    $time = array();
+    $tags      = array();
+    $time      = array();
+    $mapParams = array();
     foreach (Ubmod_Model_Tag::getActivityList($params) as $tag) {
       if ($tag['wallt'] == 0) { continue; }
 
       $tags[] = $tag['tag_value'];
       $time[] = $tag['wallt'];
+
+      if (Ubmod_Model_Tag::hasChildren($tag['tag_id'])) {
+        $mapParams[] = array(
+          'chart_type'    => 'tag',
+          'tag_parent_id' => $tag['tag_id'],
+        );
+      } else {
+        $mapParams[] = array(
+          'chart_type' => 'group',
+          'tag'        => $tag['name'],
+        );
+      }
     }
 
     return array(
-      'width'    => 700,
-      'height'   => 350,
-      'title'    => 'Tag Utilization',
-      'subtitle' => self::getSubtitle($params),
-      'yLabel'   => 'Wall Time (Days)',
-      'labels'   => $tags,
-      'series'   => $time,
+      'width'     => 700,
+      'height'    => 350,
+      'title'     => 'Tag Utilization',
+      'subtitle'  => self::getSubtitle($params),
+      'yLabel'    => 'Wall Time (Days)',
+      'labels'    => $tags,
+      'series'    => $time,
+      'mapParams' => $mapParams,
     );
   }
 
@@ -643,7 +690,7 @@ class Ubmod_Model_Chart
   ) {
     $params->setModel('user');
     $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(TRUE);
+    $params->setOrderByDescending(true);
 
     $maxUsers = 10;
     $topUsers = array();
@@ -742,7 +789,7 @@ class Ubmod_Model_Chart
   ) {
     $params->setModel('group');
     $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(TRUE);
+    $params->setOrderByDescending(true);
 
     $maxGroups = 10;
     $topGroups = array();
@@ -841,7 +888,7 @@ class Ubmod_Model_Chart
   ) {
     $params->setModel('tag');
     $params->setOrderByColumn('wallt');
-    $params->setOrderByDescending(TRUE);
+    $params->setOrderByDescending(true);
 
     $maxTags = 10;
     $topTags = array();
@@ -852,7 +899,7 @@ class Ubmod_Model_Chart
     $tags     = Ubmod_Model_Tag::getActivityList($params);
     $tagCount = count($tags);
 
-    foreach (Ubmod_Model_Tag::getActivityList($params) as $tag) {
+    foreach ($tags as $tag) {
       if ($tag['wallt'] == 0) { continue; }
 
       // Always include the first ($maxTags - 1) tags. If the number
@@ -946,6 +993,7 @@ class Ubmod_Model_Chart
     $count  = 0;
     $series = array();
     $labels = array();
+    $values = array();
 
     // Calculate total and "other" values, copy data into $series and
     // $labels arrays.
@@ -953,6 +1001,15 @@ class Ubmod_Model_Chart
       if ($count < $params['maxSlices'] - 1) {
         $series[] = $value;
         $labels[] = $params['labels'][$i];
+
+        $mapValue = array(
+          'label' => $params['labels'][$i],
+          'value' => $value,
+        );
+        if (isset($params['mapParams']) && isset($params['mapParams'][$i])) {
+          $mapValue['params'] = $params['mapParams'][$i];
+        }
+        $values[] = json_encode($mapValue);
       } else {
         $other += $value;
       }
@@ -977,19 +1034,28 @@ class Ubmod_Model_Chart
           $haveOther = true;
           unset($labels[$i]);
           unset($series[$i]);
+          unset($values[$i]);
           $other += $t;
         } else {
           $labels[$i] .= " ($percentage%)";
         }
       }
 
+      // Make sure this is a numerical array after possibly unsetting
+      // elements.
+      $values = array_values($values);
+
       // Don't include the "other" slice if the percentage is too small.
       // This prevents problems when rendering the pie chart.
-      if ($other / $total > 0.0028) {
+      if ($other / $total > 0.004) {
         $percentage = round($other / $total * 100);
         if ($percentage < 1) { $percentage = '<1'; }
         $labels[] = "{$params['otherLabel']} ($percentage%)";
         $series[] = $other;
+        $values[] = json_encode(array(
+          'label' => $params['otherLabel'],
+          'value' => $other,
+        ));
       }
     }
 
@@ -1006,6 +1072,10 @@ class Ubmod_Model_Chart
 
     $chart = new pImage($params['width'], $params['height'], $data);
 
+    if (isset($params['id'])) {
+      $chart->initialiseImageMap($params['id'], IMAGE_MAP_STORAGE_SESSION);
+    }
+
     $chart->setFontProperties(array(
       'FontName' => FONT_DIR . '/verdana.ttf',
       'FontSize' => 8,
@@ -1014,14 +1084,15 @@ class Ubmod_Model_Chart
     $pie = new pPie($chart, $data);
 
     $pie->draw2DPie($center, $middle, array(
-      'Radius'        => 80,
-      'DrawLabels'    => TRUE,
-      'LabelStacked'  => TRUE,
-      'Border'        => TRUE,
-      'SecondPass'    => TRUE,
+      'Radius'         => 80,
+      'DrawLabels'     => true,
+      'LabelStacked'   => true,
+      'Border'         => true,
+      'SecondPass'     => true,
+      'RecordImageMap' => true,
     ));
 
-    $chart->setShadow(TRUE, array(
+    $chart->setShadow(true, array(
       'X'     => 1,
       'Y'     => 1,
       'R'     => 0,
@@ -1040,6 +1111,10 @@ class Ubmod_Model_Chart
         'Align'    => TEXT_ALIGN_TOPMIDDLE,
         'FontSize' => 8,
       ));
+    }
+
+    if (isset($params['id'])) {
+      self::replacePieChartMapValues($params['id'], $values);
     }
 
     $chart->stroke();
@@ -1092,12 +1167,16 @@ class Ubmod_Model_Chart
 
     $chart = new pImage($params['width'], $params['height'], $data);
 
+    if (isset($params['id'])) {
+      $chart->initialiseImageMap($params['id'], IMAGE_MAP_STORAGE_SESSION);
+    }
+
     $chart->setFontProperties(array(
       'FontName' => FONT_DIR . '/verdana.ttf',
       'FontSize' => 8,
     ));
 
-    $chart->setShadow(TRUE, array(
+    $chart->setShadow(true, array(
       'X'     => 1,
       'Y'     => 1,
       'R'     => 0,
@@ -1135,12 +1214,28 @@ class Ubmod_Model_Chart
       = isset($params['displayValues']) && $params['displayValues'];
 
     $chart->drawBarChart(array(
-      'DisplayValues' => $displayValues,
-      'DisplayR'      => 0,
-      'DisplayG'      => 0,
-      'DisplayB'      => 0,
-      'DisplayShadow' => TRUE,
+      'DisplayValues'  => $displayValues,
+      'DisplayR'       => 0,
+      'DisplayG'       => 0,
+      'DisplayB'       => 0,
+      'DisplayShadow'  => true,
+      'RecordImageMap' => true,
     ));
+
+    $values = array();
+    foreach ($params['series'] as $i => $value) {
+        $mapValue = array(
+          'label' => $params['labels'][$i],
+          'value' => $value,
+        );
+      if (isset($params['mapParams']) && isset($params['mapParams'][$i])) {
+        $mapValue['params'] = $params['mapParams'][$i];
+      }
+      $values[] = json_encode($mapValue);
+    }
+
+    $chart->replaceImageMapValues('series', $values);
+    $chart->replaceImageMapTitle('series', $params['labels']);
 
     $chart->stroke();
     exit(0);
@@ -1226,7 +1321,7 @@ class Ubmod_Model_Chart
       'FontSize' => 8,
     ));
 
-    $chart->setShadow(TRUE, array(
+    $chart->setShadow(true, array(
       'X'     => 1,
       'Y'     => 1,
       'R'     => 0,
@@ -1303,7 +1398,7 @@ class Ubmod_Model_Chart
       'FontSize' => 8,
     ));
 
-    $chart->setShadow(TRUE, array(
+    $chart->setShadow(true, array(
       'X'     => 1,
       'Y'     => 1,
       'R'     => 0,
@@ -1331,6 +1426,34 @@ class Ubmod_Model_Chart
 
     $chart->stroke();
     exit(0);
+  }
+
+  /**
+   * Output the image map data for a pie chart.
+   *
+   * @see renderPieChart
+   */
+  public static function outputPieChartImageMap($params)
+  {
+    if (isset($params['id'])) {
+      self::outputChartMap($params['id']);
+    } else {
+      throw new Exception('Chart map id not found in paramters');
+    }
+  }
+
+  /**
+   * Output the image map data for a bar chart.
+   *
+   * @see renderBarChart
+   */
+  public static function outputBarChartImageMap($params)
+  {
+    if (isset($params['id'])) {
+      self::outputChartMap($params['id']);
+    } else {
+      throw new Exception('Chart map id not found in paramters');
+    }
   }
 
   /**
@@ -1393,7 +1516,7 @@ class Ubmod_Model_Chart
     try {
       $data = json_decode($_SESSION['chart-cache'][$id], true);
     } catch (Exception $e) {
-      $msg = "Failed to decode cached data: " . $e->getMessage();
+      $msg = 'Failed to decode cached data: ' . $e->getMessage();
       throw new Exception($msg);
     }
 
@@ -1418,6 +1541,95 @@ class Ubmod_Model_Chart
     unset($_SESSION['chart-cache'][$id]);
 
     return true;
+  }
+
+  /**
+   * Output chart map data.
+   *
+   * This is a replacement pImage::dumpImageMap, but only supports the
+   * session storage mode.
+   *
+   * @param string $name The chart key.
+   */
+  public static function outputChartMap($name)
+  {
+    if (!isset($_SESSION[$name])) {
+      echo '[]';
+      exit(0);
+    }
+
+    $data = array();
+
+    foreach ($_SESSION[$name] as $i => $params) {
+      $shape  = $params[0];
+      $coords = $params[1];
+
+      if (strtolower($shape) === 'rect') {
+        $coords = self::fixRectCoords($coords);
+      }
+
+      $value = json_decode($params[4], true);
+
+      $area = array(
+        'id'     => $name . '-' . $i,
+        'shape'  => $shape,
+        'coords' => $coords,
+        'color'  => $params[2],
+        'title'  => $params[3],
+        'label'  => $value['label'],
+        'value'  => $value['value'],
+      );
+
+      if (isset($value['params'])) {
+        $area['params'] = $value['params'];
+      }
+
+      $data[] = $area;
+    }
+
+    echo json_encode($data);
+    exit(0);
+  }
+
+  /**
+   * Format rectangle coordinates as "left,top,right,bottom".
+   *
+   * pChart 2.1.3 incorrectly swaps the top and bottom coordinates,
+   * which results in warnings from Firebug.
+   *
+   * @param string $coords Rectangle coordinates
+   *
+   * @return string
+   */
+  private static function fixRectCoords($coords)
+  {
+    list($x1, $y1, $x2, $y2) = explode(',', $coords);
+
+    $left   = min($x1, $x2);
+    $right  = max($x1, $x2);
+    $top    = min($y1, $y2);
+    $bottom = max($y1, $y2);
+
+    return implode(',', array($left, $top, $right, $bottom));
+  }
+
+  /**
+   * Replace values in chart map data.
+   *
+   * This is a replacement for pImage::replaceImageMapValues, but only
+   * supports the session storage mode.  The pChart method doesn't work
+   * for pie charts, but this will.
+   *
+   * @param string $name The chart key.
+   * @param array $values The new values for the chart
+   */
+  private static function replacePieChartMapValues($name, array $values)
+  {
+    foreach ($_SESSION[$name] as $i => &$params) {
+      if (isset($values[$i])) {
+        $params[4] = $values[$i];
+      }
+    }
   }
 }
 

@@ -1,8 +1,8 @@
 <script type="text/javascript">
-Ext.onReady(function() {
+Ext.onReady(function () {
     Ubmod.app.createPartial({
         renderTo: 'dash-chart',
-        url: '/wait-time/chart'
+        url: Ubmod.baseUrl + '/wait-time/chart'
     });
 });
 </script>
@@ -18,3 +18,4 @@ Ext.onReady(function() {
   displayed with the average wait time for each month that is included in the
   time period.
 </div>
+

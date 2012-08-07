@@ -103,7 +103,7 @@ sub main {
 
         eval { $aggregator->aggregate(); };
         if ($@) {
-            $Logger->fatal("Failed to update aggregate tables!");
+            $Logger->fatal("Failed to update aggregate tables: $@");
             exit 1;
         }
 
@@ -150,7 +150,7 @@ sub process_files {
     my $record_count = 0;
     my $file_count   = 0;
 
-    foreach my $file (@$files) {
+    for my $file (@$files) {
         if ( !-e $file ) {
             $Logger->warn("File not found '$file'.");
             next;
@@ -222,7 +222,7 @@ sub process_fh {
 sub db_connect {
     my ($args) = @_;
 
-    foreach my $arg (qw( host dbname user password )) {
+    for my $arg (qw( host dbname user password )) {
         if ( !defined $args->{$arg} ) {
             $Logger->fatal("Missing database config option: '$arg'");
         }
@@ -242,19 +242,6 @@ sub db_connect {
         $Logger->fatal("Failed to connect to database: $@");
         exit 1;
     }
-}
-
-sub insert_host_log {
-    my ($log) = @_;
-    my $sth = $Dbh->prepare(
-        q{
-            INSERT INTO host_log SET
-                event_id = ?,
-                host = ?,
-                cpu = ?
-        }
-    );
-    $sth->execute( @$log{qw( event_id host cpu )} );
 }
 
 sub get_event_max_date {
@@ -450,9 +437,9 @@ with the UBMoD portal.
 
 =head1 EXAMPLES
 
-  ubmod-shredder -s --format pbs -d /var/spool/pbs/server_priv/accounting
+  ubmod-shredder -s -f pbs -d /var/spool/pbs/server_priv/accounting
 
-  ubmod-shredder -s --format sge -i /var/lib/gridengine/default/common/accounting
+  ubmod-shredder -s -f sge -i /var/lib/gridengine/default/common/accounting
 
   ubmod-shredder -u
 

@@ -30,7 +30,7 @@
       "attributes": [
         "name",
         "display_name",
-        "tags"
+        "current_group"
       ]
     }, {
       "name": "dim_group",
@@ -41,7 +41,7 @@
     }, {
       "name": "dim_tags",
       "attributes": [
-        "event_tags"
+        "tags"
       ]
     }, {
       "name": "dim_cpus",

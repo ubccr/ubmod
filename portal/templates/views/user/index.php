@@ -8,9 +8,9 @@ Ext.onReady(function () {
             label: 'User',
             key: 'name',
             id: 'user_id',
-            detailsUrl: '/user/details'
+            detailsUrl: Ubmod.baseUrl + '/user/details'
         },
-        downloadUrl: '/user/csv'
+        downloadUrl: Ubmod.baseUrl + '/api/rest/{format}/job/activity'
     });
 });
 </script>
@@ -26,3 +26,4 @@ Ext.onReady(function () {
   Data" button to download a CSV file containing the data that is currently
   being displayed.
 </div>
+

@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use List::Util qw(max);
 use DateTime;
+use JSON;
 
 sub new {
     my ( $class, %options ) = @_;
@@ -25,8 +26,8 @@ sub aggregate {
     $self->_update_queues();
     $self->_update_groups();
     $self->_update_users();
-    $self->_update_dates();
     $self->_update_tags();
+    $self->_update_dates();
     $self->_update_cpus();
 
     # Time intervals
@@ -40,6 +41,9 @@ sub aggregate {
 
     # Update aggregates
     $self->_update_job_aggregates();
+
+    # Update other fields
+    $self->_update_users_current_group();
 }
 
 sub _update_clusters {
@@ -50,7 +54,7 @@ sub _update_clusters {
     my %clusters = %{ $self->_select_clusters() };
     my @names    = @{ $self->_select_distinct_from_event('cluster') };
 
-    foreach my $name (@names) {
+    for my $name (@names) {
         if ( !defined $clusters{$name} ) {
             $self->{logger}->info("Adding new cluster: $name");
             my $id = $self->_insert_cluster( { name => $name } );
@@ -71,7 +75,7 @@ sub _update_queues {
     my %queues = %{ $self->_select_queues() };
     my @names  = @{ $self->_select_distinct_from_event('queue') };
 
-    foreach my $name (@names) {
+    for my $name (@names) {
         if ( !defined $queues{$name} ) {
             $self->{logger}->info("Adding new queue: $name");
             my $id = $self->_insert_queue( { name => $name } );
@@ -92,7 +96,7 @@ sub _update_groups {
     my %groups = %{ $self->_select_groups() };
     my @names  = @{ $self->_select_distinct_from_event('group') };
 
-    foreach my $name (@names) {
+    for my $name (@names) {
         if ( !defined $groups{$name} ) {
             $self->{logger}->info("Adding new group: $name");
             my $id = $self->_insert_group( { name => $name } );
@@ -113,7 +117,7 @@ sub _update_users {
     my %users = %{ $self->_select_users() };
     my @names = @{ $self->_select_distinct_from_event('user') };
 
-    foreach my $name (@names) {
+    for my $name (@names) {
         if ( !defined $users{$name} ) {
             $self->{logger}->info("Adding new user: $name");
             my $id = $self->_insert_user( { name => $name } );
@@ -123,6 +127,39 @@ sub _update_users {
         else {
             $self->{logger}->info("User '$name' already exists.");
         }
+    }
+
+    return \@names;
+}
+
+sub _update_users_current_group {
+    my ( $self, $users ) = @_;
+
+    $self->{logger}->info('Updating user current group');
+
+    my %users = %{ $self->_select_users() };
+
+    while ( my ( undef, $user ) = each %users ) {
+        my ( $id, $name ) = @$user{qw( dim_user_id name )};
+        my $group = $self->_select_user_current_group($id);
+        $self->{logger}
+            ->info("Setting user '$name' current group to '$group'.");
+        $self->_update_user_current_group( $id, $group );
+    }
+}
+
+sub _update_tags {
+    my ($self) = @_;
+
+    $self->{logger}->info('Updating tags dimension');
+
+    $self->_truncate('br_tags_to_tag');
+    $self->_truncate('dim_tags');
+
+    my @tags = @{ $self->_select_distinct_from_event('tags') };
+
+    for my $json (@tags) {
+        $self->_insert_tags($json);
     }
 }
 
@@ -140,19 +177,6 @@ sub _update_dates {
     $self->{logger}->info( 'Most recent day: ' . $max_date->ymd() );
 
     return $self->_insert_dates( $min_date, $max_date );
-}
-
-sub _update_tags {
-    my ($self) = @_;
-
-    $self->_truncate('dim_tags');
-
-    my $sql = q{
-        INSERT INTO `dim_tags` (`event_tags`)
-        SELECT DISTINCT `tags` FROM `event`
-    };
-
-    $self->{dbh}->do($sql);
 }
 
 sub _update_cpus {
@@ -188,7 +212,7 @@ sub _update_time_intervals {
         [ 'Last 365 days', 365, '{"last_365_days":1}' ],
     );
 
-    foreach my $item (@labels) {
+    for my $item (@labels) {
         my ( $label, $days, $clause ) = @$item;
 
         my $start_date = $end_date->clone()->subtract( days => $days - 1 );
@@ -202,7 +226,7 @@ sub _update_time_intervals {
         $self->_insert_time_interval($interval);
     }
 
-    foreach my $year ( @{ $self->_select_years() } ) {
+    for my $year ( @{ $self->_select_years() } ) {
         my $interval = {
             label        => $year,
             start        => "$year-01-01",
@@ -333,13 +357,21 @@ sub _select_users {
     return $self->{dbh}->selectall_hashref( $sql, 'name' );
 }
 
+sub _select_tag_id {
+    my ( $self, $tag ) = @_;
+    my $sql = q{SELECT `dim_tag_id` FROM `dim_tag` WHERE `name` = ?};
+    my $row = $self->{dbh}->selectrow_hashref( $sql, undef, $tag );
+    return unless $row;
+    return $row->{dim_tag_id};
+}
+
 sub _select_years {
     my ($self) = @_;
 
-    my $sql = qq{
-        SELECT DISTINCT year
-        FROM dim_date
-        ORDER BY year DESC
+    my $sql = q{
+        SELECT DISTINCT `year`
+        FROM `dim_date`
+        ORDER BY `year` DESC
     };
 
     my $rows = $self->{dbh}->selectall_arrayref( $sql, { Slice => {} } );
@@ -353,13 +385,29 @@ sub _select_distinct_from_event {
 
     my $sql = qq{
         SELECT DISTINCT `$column`
-        FROM event
+        FROM `event`
         WHERE `$column` IS NOT NULL
     };
     my $rows = $self->{dbh}->selectall_arrayref( $sql, { Slice => {} } );
     my @fields = map { $_->{$column} } @$rows;
 
     return \@fields;
+}
+
+sub _select_user_current_group {
+    my ( $self, $id ) = @_;
+
+    my $sql = q{
+        SELECT dim_group.name
+        FROM fact_job
+        JOIN dim_group USING (dim_group_id)
+        JOIN dim_date USING (dim_date_id)
+        WHERE dim_user_id = ?
+        ORDER BY dim_date.date
+        DESC LIMIT 1
+    };
+
+    return $self->{dbh}->selectrow_array( $sql, undef, $id );
 }
 
 sub _insert_cluster {
@@ -398,6 +446,63 @@ sub _insert_user {
     my $sql = q{INSERT INTO `dim_user` SET `name` = ?};
     my $sth = $self->{dbh}->prepare($sql);
     $sth->execute( $user->{name} );
+
+    return $self->{dbh}->{mysql_insertid};
+}
+
+sub _insert_tags {
+    my ( $self, $json ) = @_;
+
+    my $sql = q{INSERT INTO `dim_tags` SET `tags` = ?};
+    my $sth = $self->{dbh}->prepare($sql);
+    $sth->execute($json);
+
+    my $tags_id = $self->{dbh}->{mysql_insertid};
+
+    my @tags;
+    eval {
+        @tags = @{ decode_json($json) };
+        1;
+    } or do {
+        $self->{logger}->fatal("Error decoding tags: $@");
+        return $tags_id;
+    };
+
+    $sql = q{
+        INSERT INTO `br_tags_to_tag` SET
+            `dim_tags_id` = ?,
+            `dim_tag_id`  = ?
+    };
+    $sth = $self->{dbh}->prepare($sql);
+
+    for my $tag (@tags) {
+        my $tag_id = $self->_select_tag_id($tag);
+
+        $tag_id = $self->_insert_tag($tag) unless $tag_id;
+
+        $sth->execute( $tags_id, $tag_id );
+    }
+
+    return $tags_id;
+}
+
+sub _insert_tag {
+    my ( $self, $tag ) = @_;
+
+    my ( $key, $value );
+
+    if ( $tag =~ /=/ ) {
+        ( $key, $value ) = split /=/, $tag, 2;
+    }
+
+    my $sql = q{
+        INSERT INTO `dim_tag` SET
+            `name`  = ?,
+            `key`   = ?,
+            `value` = ?
+    };
+    my $sth = $self->{dbh}->prepare($sql);
+    $sth->execute( $tag, $key, $value );
 
     return $self->{dbh}->{mysql_insertid};
 }
@@ -477,7 +582,7 @@ sub _insert_cpus {
     # Make sure all cpu intervals are included
     $global_max = max( $global_max, $min_max[-1][0] );
 
-    foreach my $i ( 0 .. $#min_max ) {
+    for my $i ( 0 .. $#min_max ) {
         my ( $min, $max ) = @{ $min_max[$i] };
 
         my $label = $self->_get_cpu_min_max_label( $min, $max );
@@ -485,7 +590,7 @@ sub _insert_cpus {
         # The last interval needs a max
         $max ||= $global_max;
 
-        foreach my $cpu ( $min .. $max ) {
+        for my $cpu ( $min .. $max ) {
             my $r = $sth->execute( $cpu, $label, $i );
             if ( !$r ) {
                 $self->{logger}->fatal( $sth->errstr() );
@@ -511,6 +616,13 @@ sub _update_job_aggregates {
     my ($self) = @_;
     $self->{logger}->info('Updating job aggregates');
     $self->{dbh}->do(q{CALL UpdateJobAggregates()});
+}
+
+sub _update_user_current_group {
+    my ( $self, $id, $group ) = @_;
+    my $sql = q{UPDATE dim_user SET current_group = ? WHERE dim_user_id = ?};
+    my $sth = $self->{dbh}->prepare($sql);
+    $sth->execute( $group, $id );
 }
 
 sub _truncate {

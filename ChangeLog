@@ -3,11 +3,26 @@ UBMoD - ChangeLog
 ===============================================================================
 
 -
+    - Added drill-down capability to tag report charts
+    - Added chart tooltips
     - Added chart loading image
     - Changed group details page, panel now expands when a group detail
       tab is opened
     - Changed stacked area charts to display fewer labels on the x-axis
       for long time periods
+    - Changed search behavior, now recognizing '*' as a wildcard
+    - Changed keys on dimension tables to unique keys
+    - Changed tag dimension to use bridge tables
+    - Added data export feature to queue table
+    - Added support for exporting data in the XLS format
+    - Switched to non-debug Ext JS
+    - Upgraded to Ext JS 4.1.1
+    - Fixed HTTP response headers
+    - Internal refactoring:
+        - Refactored REST framework
+        - Changed code style
+        - Changed several protected variables to private
+        - Refactored grid sorting
 
 - 2012-04-06 v0.2.3
     - Added unique key to sge_event table; this allows re-shredding the

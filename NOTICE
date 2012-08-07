@@ -1,11 +1,19 @@
 UBMoD includes the Ext JS JavaScript library
 (http://www.sencha.com/products/extjs/) written by Sencha Inc.
 
-UBMoD includes the Zend Framework PHP library (http://framework.zend.com/)
-written by Zend Technologies USA, Inc.
+UBMoD includes the Zend Framework PHP library
+(http://framework.zend.com/) written by Zend Technologies USA, Inc.
 
-UBMoD includes the pChart PHP library (http://www.pchart.net/) written by
-Jean-Damien POGOLOTTI
+UBMoD includes the pChart PHP library (http://www.pchart.net/) written
+by Jean-Damien POGOLOTTI
 
-See the docs directory of the UBMoD distribution for the licenses of the these
-libraries.
+UBMOD includes the OLE PHP library (http://pear.php.net/package/OLE)
+written by Christian Schmidt, et al.
+
+UBMOD includes the Spreadsheet_Excel_Writer PHP library
+(http://pear.php.net/package/Spreadsheet_Excel_Writer) written by
+Carsten Schmitz, et al.
+
+See the docs directory of the UBMoD distribution for the licenses of the
+these libraries.
+

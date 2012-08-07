@@ -65,7 +65,10 @@ class Ubmod_Handler_Chart
       'type' => 'The type of chart ("pie", "bar", "stackedArea").',
       'params' => 'The query parameters.',
     );
-    return Ubmod_RestResponse::factory(TRUE, $desc);
+    return Ubmod_RestResponse::factory(array(
+      'message' => $desc,
+      'results' => $options,
+    ));
   }
 
   /**
@@ -78,6 +81,8 @@ class Ubmod_Handler_Chart
    */
   public function cacheAction(array $arguments, array $postData = null)
   {
+    global $BASE_URL;
+
     $params = Ubmod_Model_QueryParams::factory(
       json_decode($postData['params'], true)
     );
@@ -99,8 +104,12 @@ class Ubmod_Handler_Chart
 
     $id = Ubmod_Model_Chart::cacheSet($chart);
 
-    return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'url' => '/chart/cached?id=' . $id,
+    return Ubmod_RestResponse::factory(array(
+      'results' => array(
+        'id'      => $id,
+        'img_url' => $BASE_URL . '/chart/cached?id=' . $id . '&t=' . time(),
+        'map_url' => $BASE_URL . '/chart/image-map?id=' . $id,
+      ),
     ));
   }
 }

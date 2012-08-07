@@ -53,7 +53,7 @@ class Ubmod_BaseController
    *
    * @var Ubmod_Request
    */
-  protected $_request;
+  private $_request;
 
   /**
    * Constructor.

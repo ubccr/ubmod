@@ -1,4 +1,5 @@
-<?php if (isset($tagKey)): ?>
+<?php // TODO: Rename this view ?>
+<?php if (isset($chartType)): ?>
   <script type="text/javascript">
   Ext.onReady(function () {
 
@@ -25,12 +26,14 @@
           }
       });
 
-      Ubmod.app.loadChart('tag-bar', 'tag', 'bar', params);
-      Ubmod.app.loadChart('tag-pie', 'tag', 'pie', params);
+      Ubmod.app.loadChart('chart-bar', '<?php echo $chartType ?>', 'bar',
+         params);
+      Ubmod.app.loadChart('chart-pie', '<?php echo $chartType ?>', 'pie',
+         params);
 
       <?php if ($interval['multi_month']): ?>
-          Ubmod.app.loadChart('tag-stacked-area', 'tag', 'stackedArea',
-              params);
+          Ubmod.app.loadChart('chart-stacked-area', '<?php echo $chartType ?>',
+              'stackedArea', params);
       <?php endif; ?>
   });
   </script>
@@ -39,14 +42,14 @@
     <table style="margin-top:10px;">
       <tr>
         <td style="vertical-align:top;">
-          <img id="tag-pie" class="pie" src="/images/loading.gif" />
-          <img id="tag-bar" class="bar" src="/images/loading.gif" style="display:none;" />
+          <img id="chart-pie" class="pie" src="<?php echo $BASE_URL ?>/images/loading.gif" />
+          <img id="chart-bar" class="bar" src="<?php echo $BASE_URL ?>/images/loading.gif" style="display:none;" />
         </td>
       </tr>
       <?php if ($interval['multi_month']): ?>
         <tr>
           <td style="vertical-align:top;">
-            <img id="tag-stacked-area" src="/images/loading.gif" />
+            <img id="chart-stacked-area" src="<?php echo $BASE_URL ?>/images/loading.gif" />
           </td>
         </tr>
       <?php endif; ?>

@@ -59,42 +59,5 @@ class Ubmod_Controller_User extends Ubmod_BaseController
   {
     $params = Ubmod_Model_QueryParams::factory($this->getPostData());
     $this->user  = Ubmod_Model_Job::getEntity('user', $params);
-    $this->group = Ubmod_Model_User::getGroup($this->user['user_id']);
-  }
-
-  /**
-   * Execute the "csv" action.
-   *
-   * @return void
-   */
-  public function executeCsv()
-  {
-    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    $users = Ubmod_Model_Job::getActivityList($params);
-
-    header('Content-type: text/csv');
-    header('Content-disposition: attachment; filename=users.csv');
-
-    $columns = array(
-      'name'         => 'User',
-      'display_name' => 'Name',
-      'jobs'         => '# Jobs',
-      'avg_cpus'     => 'Avg. Job Size (cpus)',
-      'avg_wait'     => 'Avg. Wait Time (h)',
-      'wallt'        => 'Wall Time (d)',
-      'avg_mem'      => 'Avg. Mem (MB)',
-    );
-
-    echo implode("\t", array_values($columns)), "\n";
-
-    $keys = array_keys($columns);
-
-    foreach ($users as $user) {
-      $map = function ($key) use($user) { return $user[$key]; };
-      $values = array_map($map, $keys);
-      echo implode("\t", $values), "\n";
-    }
-
-    exit();
   }
 }

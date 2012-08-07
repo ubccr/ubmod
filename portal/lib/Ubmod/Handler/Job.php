@@ -27,8 +27,8 @@
  * Job REST handler.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
- * @version $Id: Job.php 3125 2011-09-14 19:33:14Z jtpalmer@K5.CCR.BUFFALO.EDU $
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @version $Id$
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
@@ -70,7 +70,10 @@ class Ubmod_Handler_Job
       'start'       => 'Limit offset. (requires limit)',
       'limit'       => 'Maximum number of entities to return. (requires start)',
     );
-    return Ubmod_RestResponse::factory(TRUE, $desc, $options);
+    return Ubmod_RestResponse::factory(array(
+      'message' => $desc,
+      'results' => $options,
+    ));
   }
 
   /**
@@ -81,13 +84,15 @@ class Ubmod_Handler_Job
    *
    * @return Ubmod_RestResponse
    */
-  public function activityAction(array $arguments, array $postData = NULL)
+  public function activityAction(array $arguments, array $postData = null)
   {
     $params = Ubmod_Model_QueryParams::factory($arguments);
 
-    return Ubmod_RestResponse::factory(TRUE, NULL, array(
+    return Ubmod_RestResponse::factory(array(
+      'results'  => Ubmod_Model_Job::getActivityList($params),
       'total'    => Ubmod_Model_Job::getActivityCount($params),
-      'activity' => Ubmod_Model_Job::getActivityList($params),
+      'columns'  => Ubmod_Model_Job::getColumns($params),
+      'filename' => Ubmod_Model_Job::getFilename($params),
     ));
   }
 }

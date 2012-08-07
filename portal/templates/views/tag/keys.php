@@ -23,3 +23,4 @@ Ext.onReady(function () {
 <div class="chart-desc">
   Note: these charts ignore any tag that is selected in the toolbar.
 </div>
+

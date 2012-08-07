@@ -238,7 +238,7 @@ CREATE TABLE `dim_cluster` (
   `name`           varchar(255) NOT NULL,
   `display_name`   varchar(255),
   PRIMARY KEY (`dim_cluster_id`),
-  KEY (`name`)
+  UNIQUE KEY (`name`)
 ) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `dim_queue`;
@@ -247,18 +247,17 @@ CREATE TABLE `dim_queue` (
   `name`         varchar(255) NOT NULL,
   `display_name` varchar(255),
   PRIMARY KEY (`dim_queue_id`),
-  KEY (`name`)
+  UNIQUE KEY (`name`)
 ) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `dim_user`;
 CREATE TABLE `dim_user` (
-  `dim_user_id`  int unsigned NOT NULL AUTO_INCREMENT,
-  `name`         varchar(255) NOT NULL,
-  `display_name` varchar(255),
-  `tags`         varchar(255) NOT NULL default '[]',
+  `dim_user_id`   int unsigned NOT NULL AUTO_INCREMENT,
+  `name`          varchar(255) NOT NULL,
+  `display_name`  varchar(255),
+  `current_group` varchar(255),
   PRIMARY KEY (`dim_user_id`),
-  KEY (`name`),
-  KEY (`tags`)
+  UNIQUE KEY (`name`)
 ) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `dim_group`;
@@ -267,15 +266,29 @@ CREATE TABLE `dim_group` (
   `name`         varchar(255) NOT NULL,
   `display_name` varchar(255),
   PRIMARY KEY (`dim_group_id`),
-  KEY (`name`)
+  UNIQUE KEY (`name`)
 ) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `dim_tags`;
 CREATE TABLE `dim_tags` (
   `dim_tags_id` int unsigned NOT NULL AUTO_INCREMENT,
-  `event_tags`  varchar(255) NOT NULL,
+  `tags`        varchar(255) NOT NULL,
   PRIMARY KEY (`dim_tags_id`),
-  KEY (`event_tags`)
+  UNIQUE KEY (`tags`)
+) ENGINE=MyISAM;
+
+DROP TABLE IF EXISTS `dim_tag`;
+CREATE TABLE `dim_tag` (
+  `dim_tag_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `parent_id`  int unsigned,
+  `path`       varchar(255) default '/',
+  `name`       varchar(255) NOT NULL,
+  `key`        varchar(255),
+  `value`      varchar(255),
+  PRIMARY KEY (`dim_tag_id`),
+  KEY `parent` (`parent_id`),
+  UNIQUE KEY (`name`),
+  KEY (`key`,`value`)
 ) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `dim_cpus`;
@@ -285,9 +298,27 @@ CREATE TABLE `dim_cpus` (
   `display_name` varchar(255),
   `view_order`   int unsigned,
   PRIMARY KEY (`dim_cpus_id`),
-  KEY (`cpu_count`),
+  UNIQUE KEY (`cpu_count`),
   KEY (`display_name`),
   KEY (`view_order`)
+) ENGINE=MyISAM;
+
+--
+-- Bridges
+--
+
+DROP TABLE IF EXISTS `br_user_to_tag`;
+CREATE TABLE `br_user_to_tag` (
+  `dim_user_id` int unsigned NOT NULL,
+  `dim_tag_id`  int unsigned NOT NULL,
+  PRIMARY KEY (`dim_user_id`,`dim_tag_id`)
+) ENGINE=MyISAM;
+
+DROP TABLE IF EXISTS `br_tags_to_tag`;
+CREATE TABLE `br_tags_to_tag` (
+  `dim_tags_id` int unsigned NOT NULL,
+  `dim_tag_id`  int unsigned NOT NULL,
+  PRIMARY KEY (`dim_tags_id`,`dim_tag_id`)
 ) ENGINE=MyISAM;
 
 --
@@ -491,7 +522,7 @@ BEGIN
   JOIN `dim_queue`   ON `event`.`queue`          = `dim_queue`.`name`
   JOIN `dim_user`    ON `event`.`user`           = `dim_user`.`name`
   JOIN `dim_group`   ON `event`.`group`          = `dim_group`.`name`
-  JOIN `dim_tags`    ON `event`.`tags`           = `dim_tags`.`event_tags`
+  JOIN `dim_tags`    ON `event`.`tags`           = `dim_tags`.`tags`
   JOIN `dim_cpus`    ON `event`.`cpus`           = `dim_cpus`.`cpu_count`;
 END//
 

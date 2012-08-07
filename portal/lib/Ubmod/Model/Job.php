@@ -53,7 +53,6 @@ class Ubmod_Model_Job
     $qb->setFactTable('fact_job');
     $qb->setQueryParams($params);
 
-
     list($sql, $dbParams) = $qb->buildCountQuery();
 
     $dbh = Ubmod_DbService::dbh();
@@ -151,5 +150,88 @@ class Ubmod_Model_Job
   {
     $params->setModel($type);
     return self::getActivity($params);
+  }
+
+  /**
+   * Return the standard columns for given query parameters.
+   *
+   * @param Ubmod_Model_QueryParams $params The parameters for the query.
+   *
+   * @return array
+   */
+  public static function getColumns(Ubmod_Model_QueryParams $params)
+  {
+    if (!$params->hasModel()) {
+      throw new Exception('No model specified');
+    }
+
+    switch ($params->getModel()) {
+    case 'user':
+      return array(
+        'name'         => 'User',
+        'display_name' => 'Name',
+        'group'        => 'Group',
+        'jobs'         => '# Jobs',
+        'avg_cpus'     => 'Avg. Job Size (cpus)',
+        'avg_wait'     => 'Avg. Wait Time (h)',
+        'wallt'        => 'Wall Time (d)',
+        'avg_mem'      => 'Avg. Mem (MB)',
+      );
+      break;
+    case 'group':
+      return array(
+        'name'         => 'Group',
+        'display_name' => 'Name',
+        'jobs'         => '# Jobs',
+        'avg_cpus'     => 'Avg. Job Size (cpus)',
+        'avg_wait'     => 'Avg. Wait Time (h)',
+        'wallt'        => 'Wall Time (d)',
+        'avg_mem'      => 'Avg. Mem (MB)',
+      );
+      break;
+    case 'queue':
+      return array(
+        'name'         => 'Queue',
+        'display_name' => 'Name',
+        'jobs'         => '# Jobs',
+        'avg_cpus'     => 'Avg. Job Size (cpus)',
+        'avg_wait'     => 'Avg. Wait Time (h)',
+        'wallt'        => 'Wall Time (d)',
+        'avg_mem'      => 'Avg. Mem (MB)',
+      );
+      break;
+    default:
+      throw new Exception('Unknown model');
+      break;
+    }
+  }
+
+  /**
+   * Return a suitable filename for the given query parameters.
+   *
+   * @param Ubmod_Model_QueryParams $params The parameters for the query.
+   *
+   * @return string
+   */
+  public static function getFilename(Ubmod_Model_QueryParams $params)
+  {
+    if (!$params->hasModel()) {
+      throw new Exception('No model specified');
+    }
+
+    switch ($params->getModel()) {
+    case 'user':
+      return 'users';
+      break;
+    case 'group':
+      return 'groups';
+      break;
+    case 'queue':
+      return 'queues';
+      break;
+    default:
+      throw new Exception('Unknown model');
+      break;
+    }
   }
 }

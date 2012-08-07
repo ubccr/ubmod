@@ -28,7 +28,7 @@
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
@@ -44,14 +44,14 @@ class Ubmod_DbService
    *
    * @var Ubmod_DbService
    */
-  private static $_instance;
+  private static $_instance = null;
 
   /**
    * Database handle.
    *
    * @var PDO
    */
-  private $_dbh;
+  private $_dbh = null;
 
   /**
    * Private constructor
@@ -90,7 +90,7 @@ class Ubmod_DbService
    */
   public static function factory()
   {
-    if (self::$_instance === NULL) {
+    if (self::$_instance === null) {
       $section = 'database';
       $options = $GLOBALS['options'];
 
@@ -139,3 +139,4 @@ class Ubmod_DbService
     return $service->getHandle();
   }
 }
+

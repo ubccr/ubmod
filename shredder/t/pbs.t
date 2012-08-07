@@ -22,7 +22,7 @@ my @memory_pairs = (
     [ '1.5gb', 1.5 * 1024 * 1024 ],
 );
 
-foreach my $mem_pair (@memory_pairs) {
+for my $mem_pair (@memory_pairs) {
     is( $shredder->_parse_memory( $mem_pair->[0] ), $mem_pair->[1] );
 }
 

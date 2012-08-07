@@ -47,21 +47,21 @@ class Ubmod_DataWarehouse_QueryBuilder
    *
    * @var array
    */
-  protected $_selectExpressions = array();
+  private $_selectExpressions = array();
 
   /**
    * The database fact table to SELECT FROM.
    *
    * @var string
    */
-  protected $_factTable = null;
+  private $_factTable = null;
 
   /**
    * The database dimension tables to SELECT FROM.
    *
    * @var array
    */
-  protected $_dimensionTables = array();
+  private $_dimensionTables = array();
 
   /**
    * Data used to generate the WHERE clause.
@@ -70,42 +70,42 @@ class Ubmod_DataWarehouse_QueryBuilder
    *
    * @var array
    */
-  protected $_whereClauses = array();
+  private $_whereClauses = array();
 
   /**
    * The database column to GROUP BY.
    *
    * @var string
    */
-  protected $_groupBy = null;
+  private $_groupBy = null;
 
   /**
    * The database column to ORDER BY.
    *
    * @var string
    */
-  protected $_orderBy = null;
+  private $_orderBy = null;
 
   /**
    * The database column to ORDER BY.
    *
    * @var bool
    */
-  protected $_orderByDesc = false;
+  private $_orderByDesc = false;
 
   /**
    * LIMIT offset.
    *
    * @var int
    */
-  protected $_limitOffset = null;
+  private $_limitOffset = null;
 
   /**
    * LIMIT row count.
    *
    * @var int
    */
-  protected $_limitRowCount = null;
+  private $_limitRowCount = null;
 
   /**
    * Filter expression.
@@ -115,7 +115,7 @@ class Ubmod_DataWarehouse_QueryBuilder
    *
    * @var string
    */
-  protected $_filterExpression = null;
+  private $_filterExpression = null;
 
   /**
    * Add a SELECT expression to the generated query.
@@ -369,6 +369,7 @@ class Ubmod_DataWarehouse_QueryBuilder
           'user_id'       => 'dim_user_id',
           'name'          => 'dim_user.name',
           'display_name'  => 'dim_user.display_name',
+          'group'         => 'dim_user.current_group',
         ));
         $this->removeSelectExpression('user_count');
         $this->removeSelectExpression('group_count');
@@ -412,22 +413,114 @@ class Ubmod_DataWarehouse_QueryBuilder
 
     if ($params->hasFilter() && $this->_filterExpression !== null) {
       $this->addWhereClause($this->_filterExpression . ' LIKE :filter', array(
-        ':filter' => '%' . $params->getFilter() . '%'
+        ':filter' => $params->getSqlFilter(),
       ));
     }
 
     if ($params->hasTag()) {
-      $tag = json_encode($params->getTag());
+      $tag = Ubmod_Model_Tag::getTagByName($params->getTag());
       $this->addDimensionTable('dim_user');
       $this->addDimensionTable('dim_tags');
 
-      $this->addWhereClause(
-        '(tags LIKE :tags OR event_tags LIKE :event_tags)',
-        array(
-          ':tags'       => '%' . $tag . '%',
-          ':event_tags' => '%' . $tag . '%',
-        )
-      );
+      $clauses = array();
+
+      $dbh = Ubmod_DbService::dbh();
+      $sql = "
+        SELECT dim_tags_id
+        FROM br_tags_to_tag
+        JOIN dim_tag USING (dim_tag_id)
+        WHERE dim_tag_id = :dim_tag_id
+          OR path LIKE CONCAT('%/', :dim_tag_id, '/%')
+      ";
+      $stmt = $dbh->prepare($sql);
+      $r = $stmt->execute(array(':dim_tag_id' => $tag['dim_tag_id']));
+      if (!$r) {
+        $err = $stmt->errorInfo();
+        throw new Exception($err[2]);
+      }
+      $tagsIds = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+
+      if (count($tagsIds) > 0) {
+        $clauses[] = 'dim_tags_id IN (' . implode(', ', $tagsIds) . ')';
+      }
+
+      $dbh = Ubmod_DbService::dbh();
+      $sql = "
+        SELECT dim_user_id
+        FROM br_user_to_tag
+        JOIN dim_tag USING (dim_tag_id)
+        WHERE dim_tag_id = :dim_tag_id
+          OR path LIKE CONCAT('%/', :dim_tag_id, '/%')
+      ";
+      $stmt = $dbh->prepare($sql);
+      $r = $stmt->execute(array(':dim_tag_id' => $tag['dim_tag_id']));
+      if (!$r) {
+        $err = $stmt->errorInfo();
+        throw new Exception($err[2]);
+      }
+      $userIds = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+
+      if (count($userIds) > 0) {
+        $clauses[] = 'dim_user_id IN (' . implode(', ', $userIds) . ')';
+      }
+
+      if (count($clauses) > 0) {
+        $this->addWhereClause('(' . implode(' OR ', $clauses) . ')');
+      } else {
+        $this->addWhereClause('1 = 0');
+      }
+    }
+
+    if ($params->hasTagParentId()) {
+      $parentId = $params->getTagParentId();
+      $this->addDimensionTable('dim_user');
+      $this->addDimensionTable('dim_tags');
+
+      $clauses = array();
+
+      $dbh = Ubmod_DbService::dbh();
+      $sql = "
+        SELECT dim_tags_id
+        FROM br_tags_to_tag
+        JOIN dim_tag USING (dim_tag_id)
+        WHERE path LIKE CONCAT('%/', :dim_tag_id, '/%')
+      ";
+      $stmt = $dbh->prepare($sql);
+      $r = $stmt->execute(array(':dim_tag_id' => $parentId));
+      if (!$r) {
+        $err = $stmt->errorInfo();
+        throw new Exception($err[2]);
+      }
+      $tagsIds = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+
+      if (count($tagsIds) > 0) {
+        $clauses[] = 'dim_tags_id IN (' . implode(', ', $tagsIds) . ')';
+      }
+
+      $dbh = Ubmod_DbService::dbh();
+      $sql = "
+        SELECT dim_user_id
+        FROM br_user_to_tag
+        JOIN dim_tag USING (dim_tag_id)
+        WHERE path LIKE CONCAT('%/', :dim_tag_id, '/%')
+      ";
+      $stmt = $dbh->prepare($sql);
+      $r = $stmt->execute(array(':dim_tag_id' => $parentId));
+      if (!$r) {
+        $err = $stmt->errorInfo();
+        throw new Exception($err[2]);
+      }
+      $userIds = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+
+      if (count($userIds) > 0) {
+        $clauses[] = 'dim_user_id IN (' . implode(', ', $userIds) . ')';
+      }
+
+      if (count($clauses) > 0) {
+        $this->addWhereClause('(' . implode(' OR ', $clauses) . ')');
+      } else {
+        $this->addWhereClause('1 = 0');
+      }
     }
 
     if ($params->hasOrderByColumn()) {
@@ -569,3 +662,4 @@ class Ubmod_DataWarehouse_QueryBuilder
     return array($sql, $params);
   }
 }
+

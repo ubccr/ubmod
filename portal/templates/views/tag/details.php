@@ -43,10 +43,10 @@
           <td style="font-weight:bold;"><?php echo $activity['avg_exect'] ?></td>
         </tr>
       </table>
-      <div style="margin-top:10px;"><img id="<?php echo $tagId ?>-pie" src="/images/loading.gif" /></div>
-      <div style="margin-top:10px;"><img id="<?php echo $tagId ?>-bar" src="/images/loading.gif" /></div>
+      <div style="margin-top:10px;"><img id="<?php echo $tagId ?>-pie" src="<?php echo $BASE_URL ?>/images/loading.gif" /></div>
+      <div style="margin-top:10px;"><img id="<?php echo $tagId ?>-bar" src="<?php echo $BASE_URL ?>/images/loading.gif" /></div>
       <?php if ($interval['multi_month']): ?>
-      <div style="margin-top:10px;"><img id="<?php echo $tagId ?>-stacked-area" src="/images/loading.gif" /></div>
+        <div style="margin-top:10px;"><img id="<?php echo $tagId ?>-stacked-area" src="<?php echo $BASE_URL ?>/images/loading.gif" /></div>
       <?php endif; ?>
     </div>
   <?php else: ?>

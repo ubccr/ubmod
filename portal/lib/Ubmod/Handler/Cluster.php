@@ -28,7 +28,7 @@
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
@@ -59,7 +59,7 @@ class Ubmod_Handler_Cluster
   {
     $desc = 'List all clusters.  Results will be an array where individual'
       . ' records will consist of (cluster_id, name, display_name).';
-    return Ubmod_RestResponse::factory(TRUE, $desc);
+    return Ubmod_RestResponse::factory(array('message' => $desc));
   }
 
   /**
@@ -70,12 +70,10 @@ class Ubmod_Handler_Cluster
    *
    * @return Ubmod_RestResponse
    */
-  public function listAction(array $arguments, array $postData = NULL)
+  public function listAction(array $arguments, array $postData = null)
   {
-    $clusters = Ubmod_Model_Cluster::getAll();
-    return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'total'    => count($clusters),
-      'clusters' => $clusters,
+    return Ubmod_RestResponse::factory(array(
+      'results' => Ubmod_Model_Cluster::getAll(),
     ));
   }
 }

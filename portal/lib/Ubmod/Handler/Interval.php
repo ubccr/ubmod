@@ -28,7 +28,7 @@
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
@@ -60,7 +60,7 @@ class Ubmod_Handler_Interval
     $desc = 'List all time intervals.  Results will be an array where'
       . ' individual records consist of (interval_id, name, start, end,'
       . ' is_custom, params).';
-    return Ubmod_RestResponse::factory(TRUE, $desc);
+    return Ubmod_RestResponse::factory(array('message' => $desc));
   }
 
   /**
@@ -71,13 +71,10 @@ class Ubmod_Handler_Interval
    *
    * @return Ubmod_RestResponse
    */
-  public function listAction(array $arguments, array $postData = NULL)
+  public function listAction(array $arguments, array $postData = null)
   {
-    $intervals = Ubmod_Model_TimeInterval::getAll();
-
-    return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'total'     => count($intervals),
-      'intervals' => $intervals,
+    return Ubmod_RestResponse::factory(array(
+      'results' => Ubmod_Model_TimeInterval::getAll(),
     ));
   }
 }

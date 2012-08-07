@@ -24,3 +24,4 @@ Ext.onReady(function () {
   Press enter in the search bar to filter.  Double-click a row to open a
   detail tab for that tag.
 </div>
+

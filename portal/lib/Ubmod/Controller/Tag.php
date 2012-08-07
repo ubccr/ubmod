@@ -82,50 +82,21 @@ class Ubmod_Controller_Tag extends Ubmod_BaseController
   /**
    * Execute the "keyDetails" action.
    *
+   * TODO: Rename this action, move it to another controller
+   *
    * @return void
    */
   public function executeKeyDetails()
   {
-    $params = Ubmod_Model_QueryParams::factory($this->getPostData());
+    $post = $this->getPostData();
+    $params = Ubmod_Model_QueryParams::factory($post);
 
-    $this->params   = json_encode($this->getPostData());
-    $this->tagKey   = $params->getTagKey();
-    $this->interval = Ubmod_Model_TimeInterval::getByParams($params);
-  }
-
-  /**
-   * Execute the "csv" action.
-   *
-   * @return void
-   */
-  public function executeCsv()
-  {
-    $params = Ubmod_Model_QueryParams::factory($this->getGetData());
-    $tags   = Ubmod_Model_Tag::getActivityList($params);
-
-    header('Content-type: text/csv');
-    header('Content-disposition: attachment; filename=tags.csv');
-
-    $columns = array(
-      'tag'      => 'Tag',
-      'jobs'     => '# Jobs',
-      'avg_cpus' => 'Avg. Job Size (cpus)',
-      'avg_wait' => 'Avg. Wait Time (h)',
-      'wallt'    => 'Wall Time (d)',
-      'avg_mem'  => 'Avg. Mem (MB)',
-    );
-
-    echo implode("\t", array_values($columns)), "\n";
-
-    $keys = array_keys($columns);
-
-    foreach ($tags as $tag) {
-      $map = function ($key) use($tag) { return $tag[$key]; };
-      $values = array_map($map, $keys);
-      echo implode("\t", $values), "\n";
+    if (isset($post['chart_type'])) {
+      $this->chartType = $post['chart_type'];
     }
 
-    exit();
+    $this->params   = json_encode($post);
+    $this->interval = Ubmod_Model_TimeInterval::getByParams($params);
   }
 }
 

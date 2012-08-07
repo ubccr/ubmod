@@ -51,6 +51,9 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
 
     $chart = Ubmod_Model_Chart::cacheGet($data['id']);
 
+    // Re-use chart id for image map
+    $chart['data']['id'] = 'image-map-' . $data['id'];
+
     switch ($chart['type']) {
     case 'pie':
       Ubmod_Model_Chart::renderPieChart($chart['data']);
@@ -62,6 +65,38 @@ class Ubmod_Controller_Chart extends Ubmod_BaseController
     case 'stackedArea':
     case 'monthly':
       Ubmod_Model_Chart::renderStackedAreaChart($chart['data']);
+      break;
+    default:
+      throw new Exception("Unknown chart type '{$chart['type']}'");
+      break;
+    }
+  }
+
+  /**
+   * Execute the "imageMap" chart action.
+   *
+   * @return void
+   */
+  public function executeImageMap()
+  {
+    $data = $this->getGetData();
+
+    $chart = Ubmod_Model_Chart::cacheGet($data['id']);
+
+    // Re-use chart id for image map
+    $chart['data']['id'] = 'image-map-' . $data['id'];
+
+    switch ($chart['type']) {
+    case 'pie':
+      Ubmod_Model_Chart::outputPieChartImageMap($chart['data']);
+      break;
+    case 'bar':
+    case 'period':
+      Ubmod_Model_Chart::outputBarChartImageMap($chart['data']);
+      break;
+    case 'stackedArea':
+    case 'monthly':
+      throw new Exception("Unsupported chart type '{$chart['type']}'");
       break;
     default:
       throw new Exception("Unknown chart type '{$chart['type']}'");

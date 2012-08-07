@@ -28,7 +28,7 @@
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
@@ -66,7 +66,10 @@ class Ubmod_Handler_User
       'start'  => 'Limit offset. (requires limit)',
       'limit'  => 'Maximum number of entities to return. (requires start)',
     );
-    return Ubmod_RestResponse::factory(TRUE, $desc, $options);
+    return Ubmod_RestResponse::factory(array(
+      'message' => $desc,
+      'results' => $options,
+    ));
   }
 
   /**
@@ -77,13 +80,13 @@ class Ubmod_Handler_User
    *
    * @return Ubmod_RestResponse
    */
-  public function tagsAction(array $arguments, array $postData = NULL)
+  public function tagsAction(array $arguments, array $postData = null)
   {
     $params = Ubmod_Model_QueryParams::factory($arguments);
 
-    return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'total' => Ubmod_Model_User::getTagsCount($params),
-      'users' => Ubmod_Model_User::getTags($params),
+    return Ubmod_RestResponse::factory(array(
+      'results' => Ubmod_Model_User::getTags($params),
+      'total'   => Ubmod_Model_User::getTagsCount($params),
     ));
   }
 
@@ -99,7 +102,10 @@ class Ubmod_Handler_User
       'tag'     => 'The tag to add.',
       'userIds' => 'An array of user ids.',
     );
-    return Ubmod_RestResponse::factory(TRUE, $desc, $options);
+    return Ubmod_RestResponse::factory(array(
+      'message' => $desc,
+      'results' => $options,
+    ));
   }
 
   /**
@@ -110,13 +116,15 @@ class Ubmod_Handler_User
    *
    * @return Ubmod_RestResponse
    */
-  public function addTagAction(array $arguments, array $postData = NULL)
+  public function addTagAction(array $arguments, array $postData = null)
   {
     $tag     = $postData['tag'];
     $userIds = $postData['userIds'];
 
-    return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'success' => Ubmod_Model_User::addTag($tag, $userIds),
+    return Ubmod_RestResponse::factory(array(
+      'results' => array(
+        'success' => Ubmod_Model_User::addTag($tag, $userIds),
+      )
     ));
   }
 
@@ -132,7 +140,10 @@ class Ubmod_Handler_User
       'userId' => 'The id of the user to update.',
       'tags'   => 'An array of tags.',
     );
-    return Ubmod_RestResponse::factory(TRUE, $desc, $options);
+    return Ubmod_RestResponse::factory(array(
+      'message' => $desc,
+      'results' => $options,
+    ));
   }
 
   /**
@@ -143,13 +154,15 @@ class Ubmod_Handler_User
    *
    * @return Ubmod_RestResponse
    */
-  public function updateTagsAction(array $arguments, array $postData = NULL)
+  public function updateTagsAction(array $arguments, array $postData = null)
   {
     $tags   = isset($postData['tags']) ? $postData['tags'] : array();
     $userId = $postData['userId'];
 
-    return Ubmod_RestResponse::factory(TRUE, NULL, array(
-      'tags' => Ubmod_Model_User::updateTags($userId, $tags),
+    return Ubmod_RestResponse::factory(array(
+      'results' => array(
+        'tags' => Ubmod_Model_User::updateTags($userId, $tags),
+      )
     ));
   }
 }

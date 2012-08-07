@@ -193,7 +193,7 @@ sub _set_resource_lists {
     # Split on flags, but don't remove the flags
     my @parts = split /\s+?(?=-\w+)/, $category;
 
-    foreach my $part (@parts) {
+    for my $part (@parts) {
         my ( $flag, $value ) = split /\s+/, $part, 2;
 
         my $resources;
@@ -219,7 +219,7 @@ sub _parse_resource_list_options {
 
     my @options = split /,/, $options;
 
-    foreach my $option (@options) {
+    for my $option (@options) {
         my ( $key, $value ) = split /=/, $option, 2;
 
         if ( !exists $resource_attributes{$key} ) {

@@ -10,8 +10,8 @@ Ext.onReady(function () {
     <?php endif; ?>
 });
 </script>
-<div><img id="wait-time-period" src="/images/loading.gif"/></div>
+<div><img id="wait-time-period" src="<?php echo $BASE_URL ?>/images/loading.gif"/></div>
 <?php if ($interval['multi_month']): ?>
-  <div><img id="wait-time-monthly" src="/images/loading.gif"/></div>
+  <div><img id="wait-time-monthly" src="<?php echo $BASE_URL ?>/images/loading.gif"/></div>
 <?php endif; ?>
 

@@ -78,7 +78,7 @@ class Ubmod_DataWarehouse_Dimension extends Ubmod_DataWarehouse_Table
    */
   public function getPrimaryKey()
   {
-    return $this->_columns[0];
+    return $this->columns[0];
   }
 
   /**

@@ -1,5 +1,5 @@
 <script type="text/javascript">
-Ext.onReady(function(){
+Ext.onReady(function () {
     Ubmod.app.createStatsPanel({
         store: Ext.create('Ubmod.store.GroupActivity'),
         renderTo: 'stats',
@@ -8,9 +8,9 @@ Ext.onReady(function(){
             label: 'Group',
             key: 'name',
             id: 'group_id',
-            detailsUrl: '/group/details'
+            detailsUrl: Ubmod.baseUrl + '/group/details'
         },
-        downloadUrl: '/group/csv'
+        downloadUrl: Ubmod.baseUrl + '/api/rest/{format}/job/activity'
     });
 });
 </script>
@@ -26,3 +26,4 @@ Ext.onReady(function(){
   Data" button to download a CSV file containing the data that is currently
   being displayed.
 </div>
+

@@ -97,12 +97,13 @@ class Ubmod_FrontController
   /**
    * Render a view template.
    *
-   * @param view string The path to the view to render
-   * @param controller Ubmod_BaseController The controller for the view
+   * @param string $view The path to the view to render
+   * @param Ubmod_BaseController $controller The controller for the view
    * @return string
    */
   private function renderView($view, $controller)
   {
+    global $BASE_URL;
     foreach ($controller->getData() as $key => $value) {
       $$key = $value;
     }
@@ -114,13 +115,15 @@ class Ubmod_FrontController
   /**
    * Render the layout template.
    *
-   * @param content string The page content
-   * @param controller string The name of the controller segment
-   * @param action string The name of the action
+   * @param string $content The page content
+   * @param string $controller The name of the controller segment
+   * @param string $action The name of the action
+   *
    * @return void
    */
   private function renderLayout($content, $controller, $action)
   {
+    global $BASE_URL;
     require TEMPLATE_DIR . '/layouts/default.php';
   }
 
@@ -188,3 +191,4 @@ class Ubmod_FrontController
     return TEMPLATE_DIR . '/views/' . $controller . '/' . $action . '.php';
   }
 }
+

@@ -41,13 +41,6 @@ class Ubmod_DataWarehouse_Fact extends Ubmod_DataWarehouse_Table
 {
 
   /**
-   * The fact's dimensions.
-   *
-   * @var array
-   */
-  protected $_dimensions = array();
-
-  /**
    * Constructor.
    *
    * @param array $config
@@ -88,7 +81,7 @@ class Ubmod_DataWarehouse_Fact extends Ubmod_DataWarehouse_Table
   {
     $key = $dimension->getPrimaryKey();
 
-    foreach ($this->_columns as $column) {
+    foreach ($this->columns as $column) {
       if ($column === $key) {
         return true;
       }

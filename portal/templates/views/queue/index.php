@@ -1,15 +1,16 @@
 <script type="text/javascript">
-Ext.onReady(function(){
+Ext.onReady(function () {
     Ubmod.app.createStatsPanel({
         store: Ext.create('Ubmod.store.QueueActivity'),
         renderTo: 'stats',
         gridTitle: 'All Queues',
         recordFormat: {
-            label: 'Queues',
+            label: 'Queue',
             key: 'name',
             id: 'queue_id',
-            detailsUrl: '/queue/details'
-        }
+            detailsUrl: Ubmod.baseUrl + '/queue/details'
+        },
+        downloadUrl: Ubmod.baseUrl + '/api/rest/{format}/job/activity'
     });
 });
 </script>

@@ -123,7 +123,7 @@ class Ubmod_DataWarehouse
    */
   public static function factory()
   {
-    if (self::$_instance === NULL) {
+    if (self::$_instance === null) {
       $config = new Zend_Config_Json(DW_CONFIG_FILE);
 
       $options = $GLOBALS['options'];
@@ -241,6 +241,9 @@ class Ubmod_DataWarehouse
    */
   private function getColumnsFor($tableName)
   {
+    if (!isset($this->_tables[$tableName])) {
+      throw new Exception("Unkown table '$tableName'");
+    }
     $table = $this->_tables[$tableName];
     return $table->getColumns();
   }
@@ -361,6 +364,10 @@ class Ubmod_DataWarehouse
       }
 
     } catch (Exception $e) {
+      if (self::$_debug) {
+        error_log("Optimization failed: " . $e->getMessage());
+      }
+
       return $sql;
     }
 
@@ -379,11 +386,11 @@ class Ubmod_DataWarehouse
     // All tables used in the query
     $tables = array();
 
-    if (preg_match_all('/ FROM \s+ `? (\w+) `? /xsi', $sql, $matches)) {
+    if (preg_match_all('/ \s FROM \s+ `? (\w+) `? /xsi', $sql, $matches)) {
       $tables = array_merge($tables, $matches[1]);
     }
 
-    if (preg_match_all('/ JOIN \s+ `? (\w+) `? /xsi', $sql, $matches)) {
+    if (preg_match_all('/ \s JOIN \s+ `? (\w+) `? /xsi', $sql, $matches)) {
       $tables = array_merge($tables, $matches[1]);
     }
 

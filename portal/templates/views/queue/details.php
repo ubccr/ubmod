@@ -31,3 +31,4 @@
     No job data found for queue in given time period.
   <?php endif; ?>
 </div>
+
