@@ -2095,7 +2095,7 @@ Ext.Loader.onReady(function () {
         toolTip: null,
 
         constructor: function (config) {
-            var map, mapTpl, areaTpl;
+            var map, mapTpl, areaTpl, panels, panel;
 
             this.id      = config.id;
             this.imageId = config.imageId;
@@ -2110,24 +2110,23 @@ Ext.Loader.onReady(function () {
                 '<area id="{id}" shape="{shape}" coords="{coords}" />'
             );
 
+            panels = Ext.ComponentQuery.query('[xtype="tagkeypanel"]');
+            if (panels.length !== 0) {
+                panel = panels[0];
+            }
+
             Ext.each(config.areas, function (item) {
-                var area = areaTpl.append(map, item);
+                var area = Ext.get(areaTpl.append(map, item));
 
                 this.areas[item.id] = item;
 
-                // If the area has params add the click listener to
+                // If the area has params and a panel that supports
+                // drill-downs is present, add the click listener to
                 // drill-down.
-                if (!Ext.isEmpty(item.params)) {
+                if (!Ext.isEmpty(item.params) && !Ext.isEmpty(panel)) {
+                    area.setStyle('cursor', 'pointer');
                     Ext.EventManager.addListener(area, 'click', function () {
-                        var panels = Ext.ComponentQuery.query(
-                            '[xtype="tagkeypanel"]'
-                        );
-
-                        if (panels.length !== 0) {
-                            panels[0].reload(item.params, {
-                                add: item.label
-                            });
-                        }
+                        panel.reload(item.params, { add: item.label });
                     });
                 }
             }, this);
