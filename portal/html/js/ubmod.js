@@ -1487,7 +1487,7 @@ Ext.Loader.onReady(function () {
                     buttons: Ext.Msg.OKCANCEL,
                     scope: this,
                     fn: function (buttonId) {
-                        if (buttonId === "ok") {
+                        if (buttonId === 'ok') {
                             this.removeTag(tag);
                         }
                     }
