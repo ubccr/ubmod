@@ -1344,9 +1344,7 @@ Ext.Loader.onReady(function () {
                         },
                         drop: {
                             scope: this,
-                            fn: function () {
-                                this.down('[name="save"]').enable();
-                            }
+                            fn: this.enableSaveButton
                         }
                     }
                 }
