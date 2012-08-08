@@ -1,31 +1,40 @@
-===============================================================================
+========================================================================
 UBMoD - Installation
-===============================================================================
+========================================================================
 
-This document will attempt to outline a basic install of UBMoD. As UBMoD is
-still actively being developed these instructions may be incomplete and are
-subject to change in future releases. Any feedback is welcome.
+This document will attempt to outline a basic install of UBMoD. As
+UBMoD is still actively being developed these instructions may be
+incomplete and are subject to change in future releases. Any feedback is
+welcome.
 
-The latest version of this document can be found online at:
+The latest HTML version of this document can be found online at:
 
     http://ubmod.sourceforge.net/install-source.html
 
-This installation document assumes you are running a Linux based system and
-already have Apache with mod_rewrite and MySQL version 5.1 or greater
-installed and running. UBMoD requires PHP version 5.3 or greater and Perl 5.8
-or greater. PHP must be built with MySQL, GD and PDO support. Perl requires
-the following modules: DBI, DBD::mysql, Config::Tiny and DateTime.
+Also see the UBMoD website and
 
-These can be installed on Red Hat based systems with the following command:
+    http://ubmod.sourceforge.net/
 
-    # yum install httpd mysql-server mysql php php-mysql php-pdo php-gd perl \
-                  perl-DBI perl-DBD-MySQL perl-Config-Tiny perl-DateTime
+This installation document assumes you are running a Linux based system
+and already have Apache with mod_rewrite and MySQL version 5.1 or
+greater installed and running. UBMoD requires PHP version 5.3 or greater
+and Perl 5.8 or greater. PHP must be built with MySQL, GD and PDO
+support. Perl requires the following modules: DBI, DBD::mysql,
+Config::Tiny and DateTime.
+
+These can be installed on Red Hat based systems with the following
+command:
+
+    # yum install httpd mysql-server mysql php php-mysql php-pdo \
+                  php-gd perl perl-DBI perl-DBD-MySQL perl-Config-Tiny \
+                  perl-DateTime
 
 and on Debain based systems with this command:
 
-    # apt-get install apache2 mysql-server mysql-client libapache2-mod-php5 \
-                      php5 php5-mysql php5-gd perl libdbi-perl \
-                      libdbd-mysql-perl libconfig-tiny-perl libdatetime-perl
+    # apt-get install apache2 mysql-server mysql-client \
+                      libapache2-mod-php5 php5 php5-mysql php5-gd perl \
+                      libdbi-perl libdbd-mysql-perl \
+                      libconfig-tiny-perl libdatetime-perl
 
 Download UBMoD
 
@@ -36,9 +45,10 @@ Download UBMoD
 
 Set up the MySQL database
 
-    mysql> create database ubmod;
-    mysql> grant all on ubmod.* to ubmoduser@localhost identified by 'password';
-    mysql> quit;
+    mysql> CREATE DATABASE ubmod;
+    mysql> GRANT ALL ON ubmod.* TO 'ubmoduser'@'localhost'
+                                IDENTIFIED BY 'password';
+    mysql> QUIT;
 
     $ mysql -u ubmoduser -p ubmod < ./ddl/ubmod.sql
 
@@ -61,11 +71,13 @@ Load in accounting log data
 
 * For PBS/TORQUE:
 
-    $ ./shredder/bin/ubmod-shredder -v -s -H your.host.org -f pbs -d /var/spool/pbs/server_priv/accounting
+    $ ./shredder/bin/ubmod-shredder -v -s -H your.host.org -f pbs \
+                                -d /var/spool/pbs/server_priv/accounting
 
 * For SGE:
 
-    $ ./shredder/bin/ubmod-shredder -v -s -H your.host.org -f sge -i /var/lib/gridengine/default/common/accounting
+    $ ./shredder/bin/ubmod-shredder -v -s -H your.host.org -f sge \
+                        -i /var/lib/gridengine/default/common/accounting
 
 Aggregate accounting log data
 
@@ -82,17 +94,17 @@ Set up the web application
 
     Listen 8080
     <VirtualHost *:8080>
-        DocumentRoot /path/to/ubmod/html
-        <Directory /path/to/ubmod/html>
-            RewriteEngine on
-            RewriteCond $1 !^index\.php
-            RewriteRule ^api/rest/(.*)$ /api/rest/index.php?path_info=$1 [L,QSA]
-            RewriteCond $1 !^api/rest/
-            RewriteCond $1 !^(favicon\.ico|robots\.txt)$
-            RewriteCond $1 !^(css|images|js|resources)/
-            RewriteCond $1 !^index\.php
-            RewriteRule ^(.*)$ /index.php?path_info=$1 [L,QSA]
-        </Directory>
+      DocumentRoot /path/to/ubmod/html
+      <Directory /path/to/ubmod/html>
+        RewriteEngine on
+        RewriteCond $1 !^index\.php
+        RewriteRule ^api/rest/(.*)$ /api/rest/index.php?path_info=$1 [L,QSA]
+        RewriteCond $1 !^api/rest/
+        RewriteCond $1 !^(favicon\.ico|robots\.txt)$
+        RewriteCond $1 !^(css|images|js|resources)/
+        RewriteCond $1 !^index\.php
+        RewriteRule ^(.*)$ /index.php?path_info=$1 [L,QSA]
+      </Directory>
     </VirtualHost>
 
 * Note that this is a basic example of setting up Apache for use with

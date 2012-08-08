@@ -1,6 +1,6 @@
-===============================================================================
+========================================================================
 UBMoD - Metrics on Demand - SGE Notes
-===============================================================================
+========================================================================
 
 SGE does not report the nodes used by a given job in the accounting log.
 For accurate node counts the accounting_summary must be set to FALSE in
