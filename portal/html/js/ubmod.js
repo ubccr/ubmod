@@ -1449,6 +1449,9 @@ Ext.Loader.onReady(function () {
                     values = form.getValues();
 
                 record.set(values);
+                if (values.root_node === 'on') {
+                    record.set('parent_id', null);
+                }
 
                 this.updateTag(record);
 
@@ -1557,7 +1560,8 @@ Ext.Loader.onReady(function () {
                         },
                         {
                             xtype: 'checkbox',
-                            fieldLabel: 'No Parent',
+                            name: 'root_node',
+                            fieldLabel: 'Root Node',
                             scope: this,
                             handler: function (checkbox, checked) {
                                 var combo = this.down('[name="parent_id"]');
@@ -1593,6 +1597,10 @@ Ext.Loader.onReady(function () {
             this.callParent(arguments);
 
             this.down('form').loadRecord(this.tag);
+
+            if (this.tag.get('parent_id') === null) {
+                this.down('[name="root_node"]').setValue(true);
+            }
         }
     });
 
