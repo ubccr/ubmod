@@ -193,3 +193,4 @@ class Ubmod_Request
       && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
   }
 }
+

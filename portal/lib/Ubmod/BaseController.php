@@ -170,3 +170,4 @@ class Ubmod_BaseController
     unset($this->_data[$name]);
   }
 }
+
