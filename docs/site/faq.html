@@ -38,8 +38,11 @@
       unexpected T_PAAMAYIM_NEKUDOTAYIM" in my Apache error log?</div>
     <p>You aren't using PHP 5.3+ which is required by UBMoD.</p>
     <div class="subhead">How do I install UBMoD in a non-root URL?</div>
-    <p>Currently, UBMoD must be installed in the document root.  It's
-    easiest to serve UBMoD from a subomain name or an alternate port.</p>
+    <p>You need to set a <pre>base_url</pre> in the <pre>[portal]</pre>
+    section of the portal configuration file and add an <pre>Alias</pre>
+    in your Apache configuration.  See
+    <a href="install-base-url.html">Alternate Base URL Installation</a> for
+    more details.</p>
     <div class="subhead">Why do I see "Unknown resource attribute" in my
       ubmod-shredder output?</div>
     <p>This indicates that you are using a resource attribute that UBMoD does
