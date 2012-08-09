@@ -141,7 +141,7 @@ class Ubmod_Handler_Tag
     try {
       $data = json_decode($rawPostData, true);
     } catch (Exception $e) {
-      $msg = "Failed to decode post data: " . $e->getMessage();
+      $msg = "Failed to decode POST data: " . $e->getMessage();
       return Ubmod_RestResponse::factory(array(
         'success' => false,
         'message' => $msg,
@@ -196,7 +196,7 @@ class Ubmod_Handler_Tag
     try {
       $data = json_decode($rawPostData, true);
     } catch (Exception $e) {
-      $msg = "Failed to decode post data: " . $e->getMessage();
+      $msg = "Failed to decode POST data: " . $e->getMessage();
       return Ubmod_RestResponse::factory(array(
         'success' => false,
         'message' => $msg,
@@ -251,7 +251,7 @@ class Ubmod_Handler_Tag
     try {
       $data = json_decode($rawPostData, true);
     } catch (Exception $e) {
-      $msg = "Failed to decode post data: " . $e->getMessage();
+      $msg = "Failed to decode POST data: " . $e->getMessage();
       return Ubmod_RestResponse::factory(array(
         'success' => false,
         'message' => $msg,
