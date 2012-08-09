@@ -99,7 +99,10 @@ class Ubmod_Handler_Chart
       );
     } catch (Exception $e) {
       $msg = 'Failed to generate chart data: ' . $e->getMessage();
-      return Ubmod_RestResponse::factory(FALSE, $msg);
+      return Ubmod_RestResponse::factory(array(
+        'success' => false,
+        'message' => $msg,
+      ));
     }
 
     $id = Ubmod_Model_Chart::cacheSet($chart);
