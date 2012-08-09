@@ -514,6 +514,7 @@ class Ubmod_Model_Tag
       JOIN br_user_to_tag USING (dim_tag_id)
       JOIN dim_user       USING (dim_user_id)
       WHERE dim_user_id = :dim_user_id
+      ORDER BY dim_tag.name
     ";
 
     $dbh = Ubmod_DbService::dbh();
