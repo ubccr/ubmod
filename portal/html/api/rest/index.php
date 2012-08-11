@@ -42,8 +42,9 @@ $getData     = $_GET;
 $postData    = $_POST;
 
 try {
-  $request = Ubmod_RestRequest::factory($requestUrl, $pathInfo, $queryString,
-    $getData, $postData);
+  $request = Ubmod_RestRequest::factory(
+    $requestUrl, $pathInfo, $queryString, $getData, $postData
+  );
   $request->process();
   $response = $request->formatResponse();
   foreach ($request->responseHeader() as $headerInfo) {
