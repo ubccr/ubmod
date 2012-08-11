@@ -117,11 +117,13 @@ class Ubmod_RestResponse
    * Factory pattern.
    *
    * @param array $params
-   *   success => bool
-   *   message => string
-   *   results => array
-   *   total   => int
-   *   headers => array
+   *   success  => bool
+   *   message  => string
+   *   results  => array
+   *   total    => int
+   *   headers  => array
+   *   filename => string
+   *   columns  => array
    *
    * @return Ubmod_RestResponse
    */
@@ -136,16 +138,18 @@ class Ubmod_RestResponse
    * The constructor is private and is meant to be called by the
    * factory() method.
    *
+   * @see factory()
+   *
    * @param array $params
-   *   success => bool
-   *   message => string
-   *   results => array
-   *   total   => int
-   *   headers => array
+   *   success  => bool
+   *   message  => string
+   *   results  => array
+   *   total    => int
+   *   headers  => array
+   *   filename => string
+   *   columns  => array
    *
    * @return Ubmod_RestResponse
-   *
-   * @see factory()
    */
   private function __construct(array $params = array())
   {
