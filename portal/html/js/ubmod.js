@@ -2101,7 +2101,7 @@ Ext.Loader.onReady(function () {
         toolTip: null,
 
         constructor: function (config) {
-            var map, mapTpl, areaTpl, panels, panel;
+            var map, mapTpl, areaTpl, panels, panel, image;
 
             this.id      = config.id;
             this.imageId = config.imageId;
@@ -2137,7 +2137,16 @@ Ext.Loader.onReady(function () {
                 }
             }, this);
 
-            Ext.getDom(this.imageId).useMap = '#' + this.id;
+            image = Ext.getDom(this.imageId);
+
+            // If the page changed while the chart map was loading, it
+            // may no longer be on the page. If that happens the image
+            // is not present.
+            // TODO: Cancel any pending AJAX requests when the a new
+            // page is loaded so this check isn't necessary.
+            if (!Ext.isEmpty(image)) {
+                image.useMap = '#' + this.id;
+            }
 
             this.toolTip = Ext.create('Ext.tip.ToolTip', {
                 target: map,
