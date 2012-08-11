@@ -223,7 +223,14 @@ class Ubmod_RestResponse
    */
   public function jsonFormat()
   {
-    return json_encode($this->_results);
+    if ($this->_success) {
+      return json_encode($this->_results);
+    } else {
+      if ($this->_message !== null) {
+        error_log($this->_message);
+      }
+      return '';
+    }
   }
 
   /**
@@ -233,7 +240,11 @@ class Ubmod_RestResponse
    */
   public function jsonHeader()
   {
-    return array(array('Content-Type', 'application/json'));
+    if ($this->_success) {
+      return array(array('Content-Type', 'application/json'));
+    } else {
+      return array('HTTP/1.0 500 Internal Server Error');
+    }
   }
 
   /**

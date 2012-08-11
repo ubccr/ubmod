@@ -48,8 +48,12 @@ try {
   $request->process();
   $response = $request->formatResponse();
   foreach ($request->responseHeader() as $headerInfo) {
-    list($name, $value) = $headerInfo;
-    header($name . ": " . $value);
+    if (is_array($headerInfo)) {
+      list($name, $value) = $headerInfo;
+      header($name . ': ' . $value);
+    } else {
+      header($headerInfo);
+    }
   }
   print $response;
 } catch (Exception $e) {
