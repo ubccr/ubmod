@@ -3,6 +3,9 @@
     About UBMoD - University at Buffalo Metrics on Demand
   </div>
   <br />
+  UBMoD 2.0 (Version <?php echo UBMOD_VERSION ?>)
+  <br />
+  <br />
   <p>UBMoD (UB Metrics on Demand) is an open source data warehouse and web
   portal for mining statistical data from resource managers
   (<a href="http://www.clusterresources.com/pages/products/torque-resource-manager.php">TORQUE</a>,
