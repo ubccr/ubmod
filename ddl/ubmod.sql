@@ -368,7 +368,8 @@ CREATE TABLE `fact_job` (
   `nodes`          int    unsigned NOT NULL,
   `cpus`           int    unsigned NOT NULL,
   PRIMARY KEY (`fact_job_id`),
-  KEY (`dim_date_id`,`dim_cluster_id`,`dim_queue_id`,`dim_user_id`,`dim_group_id`,`dim_tags_id`,`dim_cpus_id`)
+  KEY (`dim_date_id`,`dim_cluster_id`,`dim_queue_id`,`dim_user_id`,`dim_group_id`,`dim_tags_id`,`dim_cpus_id`),
+  KEY (`dim_user_id`,`dim_date_id`,`dim_group_id`)
 ) ENGINE=MyISAM;
 
 --

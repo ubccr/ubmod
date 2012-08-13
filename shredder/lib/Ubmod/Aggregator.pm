@@ -137,11 +137,10 @@ sub _update_users_current_group {
 
     $self->{logger}->info('Updating user current group');
 
-    my %users = %{ $self->_select_users() };
+    my %users = %{ $self->_select_users_current_group() };
 
-    while ( my ( undef, $user ) = each %users ) {
-        my ( $id, $name ) = @$user{qw( dim_user_id name )};
-        my $group = $self->_select_user_current_group($id);
+    while ( my ( $id, $user ) = each %users ) {
+        my ( $name, $group ) = @$user{qw( name group )};
         $self->{logger}
             ->info("Setting user '$name' current group to '$group'.");
         $self->_update_user_current_group( $id, $group );
@@ -394,20 +393,30 @@ sub _select_distinct_from_event {
     return \@fields;
 }
 
-sub _select_user_current_group {
-    my ( $self, $id ) = @_;
+sub _select_users_current_group {
+    my ( $self ) = @_;
 
+    # The combination of SUBSTRING_INDEX and GROUP_CONCAT used below
+    # selects the last group for each user when the groups are order
+    # by date.  It is assumed that group names don't contain the comma
+    # (",") character.
     my $sql = q{
-        SELECT dim_group.name
+        SELECT
+            dim_user.dim_user_id,
+            dim_user.name,
+            SUBSTRING_INDEX(
+                GROUP_CONCAT(dim_group.name ORDER BY dim_date.date DESC),
+                ',',
+                1
+            ) AS `group`
         FROM fact_job
+        JOIN dim_user  USING (dim_user_id)
         JOIN dim_group USING (dim_group_id)
-        JOIN dim_date USING (dim_date_id)
-        WHERE dim_user_id = ?
-        ORDER BY dim_date.date
-        DESC LIMIT 1
+        JOIN dim_date  USING (dim_date_id)
+        GROUP BY dim_user.dim_user_id
     };
 
-    return $self->{dbh}->selectrow_array( $sql, undef, $id );
+    return $self->{dbh}->selectall_hashref( $sql, 'dim_user_id' );
 }
 
 sub _insert_cluster {
