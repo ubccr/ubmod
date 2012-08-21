@@ -728,8 +728,14 @@ Ext.Loader.onReady(function () {
                 this.model.setCluster(records[0]);
             }, this);
 
-            this.startDate    = Ext.create('Ext.form.field.Date');
-            this.endDate      = Ext.create('Ext.form.field.Date');
+            this.startDate = Ext.create('Ext.form.field.Date', {
+                width: 100
+            });
+
+            this.endDate = Ext.create('Ext.form.field.Date', {
+                width: 100
+            });
+
             this.updateButton = Ext.create('Ext.Button', { text: 'Update' });
 
             this.updateButton.on('click', function () {
@@ -749,7 +755,7 @@ Ext.Loader.onReady(function () {
 
             this.dateRange = Ext.create('Ext.container.Container', {
                 layout: { type: 'hbox', align: 'middle' },
-                width: 500,
+                width: 375,
                 hidden: true,
                 items: [
                     { xtype: 'tbtext', text: 'Date Range:' },
