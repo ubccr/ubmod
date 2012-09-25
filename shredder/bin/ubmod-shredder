@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Carp;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 use DBI;
@@ -345,7 +344,7 @@ GetOptions(
     'update|u'     => \$options{update},
     'verbose|v'    => \$options{verbose},
     'help|h'       => \$options{help},
-) or croak "Invalid options: $!";
+) or exit 1;
 
 main( \%options );
 
