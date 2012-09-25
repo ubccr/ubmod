@@ -74,7 +74,8 @@ CREATE TABLE `pbs_event` (
   `resource_list_nodect`      int unsigned,
   `resource_list_mem`         bigint unsigned,
   `resource_list_pmem`        bigint unsigned,
-  PRIMARY KEY (`pbs_event_id`)
+  PRIMARY KEY (`pbs_event_id`),
+  KEY (`type`)
 ) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `sge_event`;
