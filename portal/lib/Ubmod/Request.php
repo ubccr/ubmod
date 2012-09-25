@@ -149,7 +149,6 @@ class Ubmod_Request
     return explode('/', $path);
   }
 
-
   /**
    * Returns the portion of the path segment that is used to determine
    * which controller should process this request
