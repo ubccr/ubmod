@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Carp;
 use Getopt::Long;
 use File::Copy;
 use File::Path qw(make_path);
@@ -62,7 +61,7 @@ sub install {
         # Create directories that don't exist.
         if ( !-d $dirs->{$key} ) {
             make_path $dirs->{$key}
-                or croak "Failed to create directory: '$dirs->{$key}': $!";
+                or die "Failed to create directory: '$dirs->{$key}': $!";
         }
     }
 
@@ -92,20 +91,20 @@ sub install_templates {
 sub install_template {
     my ( $src, $dest, $substitutions ) = @_;
 
-    open my ($fh), '<', $src or croak "Failed to open file '$src': $!";
+    open my ($fh), '<', $src or die "Failed to open file '$src': $!";
     my $perm = ( stat $fh )[2];
     my $text = do { local $/; <$fh> };
-    close $fh or croak "Failed to close file '$src': $!";
+    close $fh or die "Failed to close file '$src': $!";
     undef $fh;
 
     while ( my ( $key, $value ) = each %$substitutions ) {
         $text =~ s/\Q$key\E/$value/g;
     }
 
-    open $fh, '>', $dest or croak "Failed to open file '$dest': $!";
-    print $fh $text or croak "Failed to write to file '$dest': $!";
+    open $fh, '>', $dest or die "Failed to open file '$dest': $!";
+    print $fh $text or die "Failed to write to file '$dest': $!";
     chmod $perm, $fh
-        or croak "Failed to change permissions of file '$dest': $!";
+        or die "Failed to change permissions of file '$dest': $!";
 }
 
 sub templates {
@@ -177,15 +176,15 @@ sub rcopy {
 
     if ( -f $src ) {
         my $perm = ( stat $src )[2];
-        copy $src, $dest or croak "Copy failed: $!";
+        copy $src, $dest or die "Copy failed: $!";
         chmod $perm, $dest
-            or croak "Failed to change permissions of file '$dest': $!";
+            or die "Failed to change permissions of file '$dest': $!";
     }
     elsif ( -d $src ) {
         copy_dir( $src, $dest );
     }
     else {
-        croak "Attempt to copy unexpected non-file: '$src'";
+        die "Attempt to copy unexpected non-file: '$src'";
     }
 }
 
@@ -195,12 +194,12 @@ sub copy_dir {
 
     if ( !-d $dest ) {
         my $perm = ( stat $src )[2];
-        make_path $dest or croak "Failed to create directory: '$dest': $!";
+        make_path $dest or die "Failed to create directory: '$dest': $!";
         chmod $perm, $dest
-            or croak "Failed to change permissions of directory '$dest': $!";
+            or die "Failed to change permissions of directory '$dest': $!";
     }
 
-    opendir my ($dh), $src or croak "Failed to open directory '$src': $!";
+    opendir my ($dh), $src or die "Failed to open directory '$src': $!";
 
     while ( my $file = readdir $dh ) {
 
