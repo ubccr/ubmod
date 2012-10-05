@@ -158,21 +158,11 @@ class Ubmod_RestRequest extends Ubmod_BaseRequest
       $postData
     );
 
-    // Parse the path info to determine our return type, entity, action,
-    // and any options.
-    $this->parseUri();
-
     // Verify that the return format is valid.
     if (!$this->verifyReturnFormat()) {
       $msg = "Invalid return data format requested '{$this->_returnFormat}'";
       throw new Exception($msg);
     }
-
-    // Authenticate the user.
-    $this->authenticate();
-
-    // Check if the user is authorized to access this URL.
-    $this->authorize();
 
     // Load the API handler.
     $this->loadHandler();

@@ -133,6 +133,10 @@ abstract class Ubmod_BaseRequest
     $this->queryString = urldecode($queryString);
     $this->getData     = $getData;
     $this->postData    = $postData;
+
+    $this->parseUri();
+    $this->authenticate();
+    $this->authorize();
   }
 
   /**
@@ -423,10 +427,6 @@ abstract class Ubmod_BaseRequest
    */
   public function getEntity()
   {
-    if ($this->entity === null) {
-      $this->parseUri();
-    }
-
     return $this->entity;
   }
 
@@ -437,10 +437,6 @@ abstract class Ubmod_BaseRequest
    */
   public function getAction()
   {
-    if ($this->action === null) {
-      $this->parseUri();
-    }
-
     return $this->action;
   }
 
