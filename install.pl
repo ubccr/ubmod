@@ -6,6 +6,24 @@ use File::Copy;
 use File::Path qw(make_path);
 use FindBin;
 
+my %options = (
+    prefix  => '',
+    destdir => '',
+);
+
+GetOptions(
+    'prefix=s'     => \$options{prefix},
+    'destdir=s'    => \$options{destdir},
+    'bindir=s'     => \$options{bindir},
+    'sysconfdir=s' => \$options{sysconfdir},
+    'datadir=s'    => \$options{datadir},
+    'docdir=s'     => \$options{docdir},
+) or exit 1;
+
+main( \%options );
+
+exit;
+
 sub main {
     my ($options) = @_;
 
@@ -209,22 +227,6 @@ sub copy_dir {
         rcopy( "$src/$file", "$dest/$file" );
     }
 }
-
-my %options = (
-    prefix  => '',
-    destdir => '',
-);
-
-GetOptions(
-    'prefix=s'     => \$options{prefix},
-    'destdir=s'    => \$options{destdir},
-    'bindir=s'     => \$options{bindir},
-    'sysconfdir=s' => \$options{sysconfdir},
-    'datadir=s'    => \$options{datadir},
-    'docdir=s'     => \$options{docdir},
-) or croak "Invalid options: $!";
-
-main( \%options );
 
 __END__
 

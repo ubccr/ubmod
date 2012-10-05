@@ -17,6 +17,28 @@ my $Dbh;
 my $Logger;
 my $Format;
 
+# Using case-sensitive options because -H and -h are distinct.
+Getopt::Long::Configure('no_ignore_case');
+
+my %options;
+
+GetOptions(
+    ''             => \$options{stdio},
+    'in|i=s'       => \$options{file},
+    'dir|d=s'      => \$options{dir},
+    'host|H=s'     => \$options{host},
+    'shred|s'      => \$options{shred},
+    'format|f=s'   => \$options{format},
+    'end-date|e=s' => \$options{end_date},
+    'update|u'     => \$options{update},
+    'verbose|v'    => \$options{verbose},
+    'help|h'       => \$options{help},
+) or exit 1;
+
+main( \%options );
+
+exit;
+
 sub main {
     my ($options) = @_;
 
@@ -327,26 +349,6 @@ sub transform_data {
     my $sql = $shredder->get_transform_query();
     return $Dbh->do($sql);
 }
-
-# Using case-sensitive options because -H and -h are distinct.
-Getopt::Long::Configure('no_ignore_case');
-
-my %options;
-
-GetOptions(
-    ''             => \$options{stdio},
-    'in|i=s'       => \$options{file},
-    'dir|d=s'      => \$options{dir},
-    'host|H=s'     => \$options{host},
-    'shred|s'      => \$options{shred},
-    'format|f=s'   => \$options{format},
-    'end-date|e=s' => \$options{end_date},
-    'update|u'     => \$options{update},
-    'verbose|v'    => \$options{verbose},
-    'help|h'       => \$options{help},
-) or exit 1;
-
-main( \%options );
 
 __END__
 
