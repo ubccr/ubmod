@@ -45,7 +45,9 @@ class Ubmod_FrontController
    *
    * @return void
    */
-  private function __construct() {}
+  private function __construct()
+  {
+  }
 
   /**
    * Factory method.
@@ -70,8 +72,13 @@ class Ubmod_FrontController
     $getData     = $_GET;
     $postData    = $_POST;
 
-    $request = Ubmod_Request::factory($requestUrl, $pathInfo, $queryString,
-      $getData, $postData);
+    $request = Ubmod_Request::factory(
+      $requestUrl,
+      $pathInfo,
+      $queryString,
+      $getData,
+      $postData
+    );
 
     $controller = $this->getController($request);
     $action     = $this->getAction($request);
@@ -160,7 +167,8 @@ class Ubmod_FrontController
   }
 
   /**
-   * Convert a path segment string to the corresponding camel case string.
+   * Convert a path segment string to the corresponding camel case
+   * string.
    *
    * @param string $segment The path segment.
    *
@@ -172,8 +180,9 @@ class Ubmod_FrontController
       function ($word) {
         return ucfirst(strtolower($word));
       },
-        preg_split('/\W+/', $segment)
-      );
+      preg_split('/\W+/', $segment)
+    );
+
     return implode('', $words);
   }
 
