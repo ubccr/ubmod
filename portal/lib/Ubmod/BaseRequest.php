@@ -278,7 +278,7 @@ abstract class Ubmod_BaseRequest
   /**
    * Parse the API URL to extract the entity and action.
    *
-   * This function must set $this->entity and $this->action.
+   * This function must set the "entity" and "action" properties.
    */
   abstract protected function parseUri();
 }
