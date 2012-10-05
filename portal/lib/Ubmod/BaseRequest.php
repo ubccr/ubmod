@@ -418,11 +418,21 @@ abstract class Ubmod_BaseRequest
     }
   }
 
+  /**
+   * Return the user name.
+   *
+   * @return string
+   */
   public function getUser()
   {
     return $this->user;
   }
 
+  /**
+   * Return the user's group name.
+   *
+   * @return string
+   */
   public function getGroup()
   {
     if ($this->group === null && $this->user !== null) {
