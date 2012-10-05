@@ -94,7 +94,7 @@ class Ubmod_DbService
       $section = 'database';
       $options = $GLOBALS['options'];
 
-      if ( ! isset($options->$section) ) {
+      if (!isset($options->$section)) {
         $msg = "Invalid configuration section '$section'";
         throw new Exception($msg);
       }
