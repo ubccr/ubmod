@@ -24,7 +24,7 @@
  */
 
 /**
- * Encapsulate a request from a client.
+ * Encapsulate a non-REST request from a client.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
@@ -37,117 +37,8 @@
  *
  * @package Ubmod
  */
-class Ubmod_Request
+class Ubmod_Request extends Ubmod_BaseRequest
 {
-
-  /**
-   * Request URL path.
-   *
-   * @var string
-   */
-  private $_path;
-
-  /**
-   * Request query string.
-   *
-   * @var string
-   */
-  private $_queryString;
-
-  /**
-   * Request GET data.
-   *
-   * @var array
-   */
-  private $_getData;
-
-  /**
-   * Request POST data.
-   *
-   * @var array
-   */
-  private $_postData;
-
-  /**
-   * Constructor.
-   *
-   * @param string $requestUrl The request URL.
-   * @param string $pathInfo The request path info.
-   * @param string $queryString The request query string.
-   * @param array $getData The request GET data.
-   * @param array $postData The request POST data.
-   *
-   * @return void
-   */
-  private function __construct($requestUrl, $pathInfo, $queryString, $getData,
-    $postData)
-  {
-    $this->_path     = $pathInfo;
-    $this->_getData  = $getData;
-    $this->_postData = $postData;
-  }
-
-  /**
-   * Factory method.
-   *
-   * @param string $requestUrl The request URL.
-   * @param string $pathInfo The request path info.
-   * @param string $queryString The request query string.
-   * @param array $getData The request GET data.
-   * @param array $postData The request POST data.
-   *
-   * @return Ubmod_Request
-   */
-  public static function factory($requestUrl, $pathInfo, $queryString, $getData,
-    $postData)
-  {
-    return new Ubmod_Request($requestUrl, $pathInfo, $queryString, $getData,
-      $postData);
-  }
-
-  /**
-   * Returns POST data.
-   *
-   * @return array
-   */
-  public function getPostData()
-  {
-    return $this->_postData;
-  }
-
-  /**
-   * Returns GET data.
-   *
-   * @return array
-   */
-  public function getGetData()
-  {
-    return $this->_getData;
-  }
-
-  /**
-   * Returns the request path.
-   *
-   * @return string
-   */
-  public function getPath()
-  {
-    return $this->_path;
-  }
-
-  /**
-   * Returns an array containing the segments of the request path in order.
-   *
-   * @return array
-   */
-  public function getPathSegments()
-  {
-    $path = trim($this->getPath(), '/');
-    if ($path === '') {
-      return array();
-    }
-    return explode('/', $path);
-  }
 
   /**
    * Returns the portion of the path segment that is used to determine
@@ -179,17 +70,6 @@ class Ubmod_Request
     } else {
       return 'index';
     }
-  }
-
-  /**
-   * Returns true if this is an AJAX request
-   *
-   * @return bool
-   */
-  public function isXmlHttpRequest()
-  {
-    return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-      && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
   }
 }
 

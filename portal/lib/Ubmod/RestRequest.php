@@ -83,43 +83,8 @@
  *
  * @package Ubmod
  */
-class Ubmod_RestRequest
+class Ubmod_RestRequest extends Ubmod_BaseRequest
 {
-
-  /**
-   * Full API call url sent to the server including the query string
-   *
-   * @var string
-   */
-  private $_fullApiCall = null;
-
-  /**
-   * Path portion of the API call (same as $_SERVER['PATH_INFO'])
-   *
-   * @var string
-   */
-  private $_apiUrl = null;
-
-  /**
-   * The query string passed in the API call
-   *
-   * @var string
-   */
-  private $_queryString = null;
-
-  /**
-   * The form GET data accompanying the request
-   *
-   * @var array
-   */
-  private $_getData = null;
-
-  /**
-   * The form POST data accompanying the request
-   *
-   * @var array
-   */
-  private $_postData = null;
 
   /**
    * Return format parsed from API url
@@ -171,50 +136,12 @@ class Ubmod_RestRequest
   private $_response = null;
 
   /**
-   * Factory pattern.
-   *
-   * Generate Ubmod_RestRequest objects based on the API call.
-   *
-   * @param string $requestUrl The full url of the request, including
-   *   any path information preceeding the api URL as well as any query
-   *   string information.  For example,
-   *   /api/rest/json/entities/bindingsite/citation?pmid=9834431
-   * @param string $pathInfo The API path portion of the URL following
-   *   the actual location of the API script and not including the query
-   *   string.  This is typically provided by the $_SERVER['PATH_INFO']
-   *   variable.  For example, json/entities/bindingsite/citation
-   * @param string $queryString The http query string, if any.
-   * @param array $getData The contents of the form GET, if any, as
-   *   parsed by PHP. This differs from the query string in the handling
-   *   of arrays specified using the "[]" construct (e.g. redfly_id[]).
-   * @param array $postData The contents of the form POST, if any, as
-   *   parsed by PHP.
-   *
-   * @return Ubmod_RestRequest
-   */
-  public static function factory(
-    $requestUrl,
-    $pathInfo,
-    $queryString = null,
-    array $getData = null,
-    array $postData = null
-  ) {
-    return new Ubmod_RestRequest(
-      $requestUrl,
-      $pathInfo,
-      $queryString,
-      $getData,
-      $postData
-    );
-  }
-
-  /**
    * Construct a new instance of a Ubmod_RestRequest object.
    *
    * The constructor is private and is meant to be called by the
    * factory() method.
    *
-   * @param string $requestUrl The full url of the request, including
+   * @param string $requestUri The full url of the request, including
    *   any path information preceeding the api URL as well as any query
    *   string information.  For example,
    *   /api/rest/json/entities/bindingsite/citation?pmid=9834431
@@ -230,37 +157,35 @@ class Ubmod_RestRequest
    *
    * @return Ubmod_RestRequest
    */
-  private function __construct(
-    $requestUrl,
+  protected function __construct(
+    $requestUri,
     $pathInfo = null,
     $queryString = null,
     array $getData = null,
     array $postData = null
   ) {
-    $this->_fullApiCall = $requestUrl;
-    $this->_apiUrl = $pathInfo;
-    $this->_queryString
-      = !empty($queryString) ? urldecode($queryString) : null;
-    $this->_postData = $postData;
-    $this->_getData = $getData;
-    $this->_options = array();
+    parent::__construct(
+      $requestUri,
+      $pathInfo,
+      $queryString,
+      $getData,
+      $postData
+    );
 
     // Parse the path info to determine our return type, entity, action,
     // and any options.
+    $this->parseUri();
 
-    $this->parseUrl();
-
-    // Verify that the return format is valid
-
+    // Verify that the return format is valid.
     if (!$this->verifyReturnFormat()) {
       $msg = "Invalid return data format requested '{$this->_returnFormat}'";
       throw new Exception($msg);
     }
 
+    // Authenticate the user.
     $this->authenticate();
 
-    // Load the API handler
-
+    // Load the API handler.
     $this->loadHandler();
   }
 
@@ -269,15 +194,15 @@ class Ubmod_RestRequest
    * entity to query, optional entity component, and optional query
    * options.
    */
-  private function parseUrl()
+  private function parseUri()
   {
     // Trim any preceeding or trailing slashes from the API URL before
     // breaking it apart.
 
-    $splitPath = explode('/', trim($this->_apiUrl, '/'));
+    $splitPath = $this->getPathSegments();
     $numParts = count($splitPath);
     if ($numParts !== 3) {
-      $msg = "Invalid Url '{$this->_apiUrl}'";
+      $msg = "Invalid Url '{$this->path}'";
       throw new Exception($msg);
     }
     list($returnFormat, $entity, $action) = $splitPath;
@@ -286,11 +211,11 @@ class Ubmod_RestRequest
     $this->_entity = $entity;
     $this->_action = $action;
 
-    if ($this->_getData !== null) {
-      $this->_displayHelp = array_key_exists('help', $this->_getData)
-        && strtolower(substr($this->_getData['help'], 0, 1)) === 'y';
+    if ($this->getData !== null) {
+      $this->_displayHelp = array_key_exists('help', $this->getData)
+        && strtolower(substr($this->getData['help'], 0, 1)) === 'y';
 
-      foreach ($this->_getData as $key => $value) {
+      foreach ($this->getData as $key => $value) {
         $this->_options[$key] = $value;
       }
     }
@@ -303,13 +228,6 @@ class Ubmod_RestRequest
   {
     $formatMethod = $this->_returnFormat . 'Format';
     return method_exists('Ubmod_RestResponse', $formatMethod);
-  }
-
-  /**
-   * Authenticate the user session.
-   */
-  private function authenticate()
-  {
   }
 
   /**
@@ -362,7 +280,7 @@ class Ubmod_RestRequest
 
     try {
       $this->_response
-        = $this->_handler->$actionMethod($this->_options, $this->_postData);
+        = $this->_handler->$actionMethod($this->_options, $this->postData);
     } catch (Exception $e) {
       $this->_response = Ubmod_RestResponse::factory(array(
         'success' => false,
