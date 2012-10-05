@@ -37,23 +37,13 @@
  *
  * @package Ubmod
  */
-class Ubmod_Handler_Job
+class Ubmod_Handler_Job extends Ubmod_BaseHandler
 {
-
-  /**
-   * Factory method.
-   *
-   * @return Ubmod_Handler_Job
-   */
-  public static function factory()
-  {
-    return new Ubmod_Handler_Job();
-  }
 
   /**
    * Help for the "activity" action.
    *
-   * @return void
+   * @return Ubmod_RestResponse
    */
   public function activityHelp()
   {
@@ -79,8 +69,8 @@ class Ubmod_Handler_Job
   /**
    * Returns user activity.
    *
-   * @param array $arguments
-   * @param array $postData
+   * @param array $arguments Request GET data.
+   * @param array $postData Request POST data.
    *
    * @return Ubmod_RestResponse
    */
@@ -96,3 +86,4 @@ class Ubmod_Handler_Job
     ));
   }
 }
+

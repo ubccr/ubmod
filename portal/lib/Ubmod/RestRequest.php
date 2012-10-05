@@ -96,7 +96,7 @@ class Ubmod_RestRequest extends Ubmod_BaseRequest
   /**
    * API query handler object
    *
-   * @var mixed
+   * @var Ubmod_BaseHandler
    */
   private $_handler = null;
 
@@ -232,7 +232,7 @@ class Ubmod_RestRequest extends Ubmod_BaseRequest
       throw new Exception($msg);
     }
 
-    $this->_handler = $handlerClassName::factory();
+    $this->_handler = $handlerClassName::factory($this);
   }
 
   /**

@@ -37,18 +37,8 @@
  *
  * @package Ubmod
  */
-class Ubmod_Handler_Chart
+class Ubmod_Handler_Chart extends Ubmod_BaseHandler
 {
-
-  /**
-   * Factory method.
-   *
-   * @return Ubmod_Handler_Chart
-   */
-  public static function factory()
-  {
-    return new Ubmod_Handler_Chart();
-  }
 
   /**
    * Return help for the "cache" action.
@@ -74,8 +64,8 @@ class Ubmod_Handler_Chart
   /**
    * Cache chart data.
    *
-   * @param array $arguments Request GET data
-   * @param array $postData  Request POST data
+   * @param array $arguments Request GET data.
+   * @param array $postData Request POST data.
    *
    * @return Ubmod_RestResponse
    */

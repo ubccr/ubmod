@@ -37,23 +37,13 @@
  *
  * @package Ubmod
  */
-class Ubmod_Handler_Tag
+class Ubmod_Handler_Tag extends Ubmod_BaseHandler
 {
-
-  /**
-   * Factory method.
-   *
-   * @return Ubmod_Handler_Tag
-   */
-  public static function factory()
-  {
-    return new Ubmod_Handler_Tag();
-  }
 
   /**
    * Help for the "list" action.
    *
-   * @return void
+   * @return Ubmod_RestResponse
    */
   public function listHelp()
   {
@@ -71,8 +61,8 @@ class Ubmod_Handler_Tag
   /**
    * Returns a list of tags.
    *
-   * @param array $arguments
-   * @param array $postData
+   * @param array $arguments Request GET data.
+   * @param array $postData Request POST data.
    *
    * @return Ubmod_RestResponse
    */
@@ -90,7 +80,7 @@ class Ubmod_Handler_Tag
   /**
    * Help for the "tree" action.
    *
-   * @return void
+   * @return Ubmod_RestResponse
    */
   public function treeHelp()
   {
@@ -101,8 +91,8 @@ class Ubmod_Handler_Tag
   /**
    * Returns a tree of tags.
    *
-   * @param array $arguments
-   * @param array $postData
+   * @param array $arguments Request GET data.
+   * @param array $postData Request POST data.
    *
    * @return Ubmod_RestResponse
    */
@@ -116,7 +106,7 @@ class Ubmod_Handler_Tag
   /**
    * Help for the "createTree" action.
    *
-   * @return void
+   * @return Ubmod_RestResponse
    */
   public function createTreeHelp()
   {
@@ -127,8 +117,8 @@ class Ubmod_Handler_Tag
   /**
    * Create nodes in a tree of tags.
    *
-   * @param array $arguments
-   * @param array $postData
+   * @param array $arguments Request GET data.
+   * @param array $postData Request POST data.
    *
    * @return Ubmod_RestResponse
    */
@@ -171,7 +161,7 @@ class Ubmod_Handler_Tag
   /**
    * Help for the "updateTree" action.
    *
-   * @return void
+   * @return Ubmod_RestResponse
    */
   public function updateTreeHelp()
   {
@@ -182,8 +172,8 @@ class Ubmod_Handler_Tag
   /**
    * Updates a tree of tags.
    *
-   * @param array $arguments
-   * @param array $postData
+   * @param array $arguments Request GET data.
+   * @param array $postData Request POST data.
    *
    * @return Ubmod_RestResponse
    */
@@ -226,7 +216,7 @@ class Ubmod_Handler_Tag
   /**
    * Help for the "deleteTree" action.
    *
-   * @return void
+   * @return Ubmod_RestResponse
    */
   public function deleteTreeHelp()
   {
@@ -237,8 +227,8 @@ class Ubmod_Handler_Tag
   /**
    * Delete nodes from a tree of tags.
    *
-   * @param array $arguments
-   * @param array $postData
+   * @param array $arguments Request GET data.
+   * @param array $postData Request POST data.
    *
    * @return Ubmod_RestResponse
    */
@@ -281,7 +271,7 @@ class Ubmod_Handler_Tag
   /**
    * Help for the "keyList" action.
    *
-   * @return void
+   * @return Ubmod_RestResponse
    */
   public function keyListHelp()
   {
@@ -299,8 +289,8 @@ class Ubmod_Handler_Tag
   /**
    * Returns a list of tag keys.
    *
-   * @param array $arguments
-   * @param array $postData
+   * @param array $arguments Request GET data.
+   * @param array $postData Request POST data.
    *
    * @return Ubmod_RestResponse
    */
@@ -319,7 +309,7 @@ class Ubmod_Handler_Tag
   /**
    * Help for the "activity" action.
    *
-   * @return void
+   * @return Ubmod_RestResponse
    */
   public function activityHelp()
   {
@@ -345,8 +335,8 @@ class Ubmod_Handler_Tag
   /**
    * Returns tag activity.
    *
-   * @param array $arguments
-   * @param array $postData
+   * @param array $arguments Request GET data.
+   * @param array $postData Request POST data.
    *
    * @return Ubmod_RestResponse
    */
@@ -371,3 +361,4 @@ class Ubmod_Handler_Tag
     ));
   }
 }
+

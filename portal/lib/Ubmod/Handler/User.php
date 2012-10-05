@@ -37,23 +37,13 @@
  *
  * @package Ubmod
  */
-class Ubmod_Handler_User
+class Ubmod_Handler_User extends Ubmod_BaseHandler
 {
-
-  /**
-   * Factory method.
-   *
-   * @return Ubmod_Handler_User
-   */
-  public static function factory()
-  {
-    return new Ubmod_Handler_User();
-  }
 
   /**
    * Help for the "tags" action.
    *
-   * @return void
+   * @return Ubmod_RestResponse
    */
   public function tagsHelp()
   {
@@ -75,8 +65,8 @@ class Ubmod_Handler_User
   /**
    * Returns users and their tags.
    *
-   * @param array $arguments
-   * @param array $postData
+   * @param array $arguments Request GET data.
+   * @param array $postData Request POST data.
    *
    * @return Ubmod_RestResponse
    */
@@ -93,7 +83,7 @@ class Ubmod_Handler_User
   /**
    * Help for the "addTag" action.
    *
-   * @return void
+   * @return Ubmod_RestResponse
    */
   public function addTagHelp()
   {
@@ -111,8 +101,8 @@ class Ubmod_Handler_User
   /**
    * Add a tag to one or more users.
    *
-   * @param array $arguments
-   * @param array $postData
+   * @param array $arguments Request GET data.
+   * @param array $postData Request POST data.
    *
    * @return Ubmod_RestResponse
    */
@@ -131,7 +121,7 @@ class Ubmod_Handler_User
   /**
    * Help for the "updateTags" action.
    *
-   * @return void
+   * @return Ubmod_RestResponse
    */
   public function updateTagsHelp()
   {
@@ -149,8 +139,8 @@ class Ubmod_Handler_User
   /**
    * Update the tags for a given user.
    *
-   * @param array $arguments
-   * @param array $postData
+   * @param array $arguments Request GET data.
+   * @param array $postData Request POST data.
    *
    * @return Ubmod_RestResponse
    */
@@ -166,3 +156,4 @@ class Ubmod_Handler_User
     ));
   }
 }
+

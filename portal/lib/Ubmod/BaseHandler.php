@@ -24,7 +24,7 @@
  */
 
 /**
- * Cluster REST handler.
+ * Base Handler.
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
@@ -33,38 +33,75 @@
  */
 
 /**
- * Cluster REST Handler.
+ * Base class for handling REST requests. Other handlers should extend
+ * this class.
  *
  * @package Ubmod
  */
-class Ubmod_Handler_Cluster extends Ubmod_BaseHandler
+class Ubmod_BaseHandler
 {
 
   /**
-   * Return help for the "list" action.
+   * Request object.
    *
-   * @return Ubmod_RestResponse
+   * @var Ubmod_RestRequest
    */
-  public function listHelp()
+  private $_request;
+
+  /**
+   * Constructor.
+   *
+   * @param Ubmod_RestRequest $request The request this controller is
+   *   handling.
+   *
+   * @return Ubmod_BaseHandler
+   */
+  protected function __construct(Ubmod_RestRequest $request)
   {
-    $desc = 'List all clusters.  Results will be an array where individual'
-      . ' records will consist of (cluster_id, name, display_name).';
-    return Ubmod_RestResponse::factory(array('message' => $desc));
+    $this->_request = $request;
   }
 
   /**
-   * List clusters.
+   * Factory method.
    *
-   * @param array $arguments Request GET data.
-   * @param array $postData Request POST data.
+   * @param Ubmod_RestRequest $request The request this controller is
+   *   handling.
    *
-   * @return Ubmod_RestResponse
+   * @return Ubmod_BaseHandler
    */
-  public function listAction(array $arguments, array $postData = null)
+  public static function factory(Ubmod_RestRequest $request)
   {
-    return Ubmod_RestResponse::factory(array(
-      'results' => Ubmod_Model_Cluster::getAll(),
-    ));
+    return new static($request);
+  }
+
+  /**
+   * Returns the request for this controller.
+   *
+   * @return Ubmod_RestRequest
+   */
+  public function getRequest()
+  {
+    return $this->_request;
+  }
+
+  /**
+   * Returns the POST data for this controller.
+   *
+   * @return array
+   */
+  public function getPostData()
+  {
+    return $this->_request->getPostData();
+  }
+
+  /**
+   * Returns the GET data for this controller.
+   *
+   * @return array
+   */
+  public function getGetData()
+  {
+    return $this->_request->getGetData();
   }
 }
 

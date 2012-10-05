@@ -37,18 +37,8 @@
  *
  * @package Ubmod
  */
-class Ubmod_Handler_Interval
+class Ubmod_Handler_Interval extends Ubmod_BaseHandler
 {
-
-  /**
-   * Factory method.
-   *
-   * @return Ubmod_Handler_Interval
-   */
-  public static function factory()
-  {
-    return new Ubmod_Handler_Interval();
-  }
 
   /**
    * Return help for the "list" action.
@@ -66,8 +56,8 @@ class Ubmod_Handler_Interval
   /**
    * List time intervals.
    *
-   * @param array $arguments Request GET data
-   * @param array $postData  Request POST data
+   * @param array $arguments Request GET data.
+   * @param array $postData Request POST data.
    *
    * @return Ubmod_RestResponse
    */
@@ -78,3 +68,4 @@ class Ubmod_Handler_Interval
     ));
   }
 }
+
