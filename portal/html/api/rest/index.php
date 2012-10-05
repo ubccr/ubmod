@@ -29,7 +29,7 @@
  * @author Steve Gallo
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
@@ -43,7 +43,11 @@ $postData    = $_POST;
 
 try {
   $request = Ubmod_RestRequest::factory(
-    $requestUrl, $pathInfo, $queryString, $getData, $postData
+    $requestUrl,
+    $pathInfo,
+    $queryString,
+    $getData,
+    $postData
   );
   $request->process();
   $response = $request->formatResponse();
@@ -55,8 +59,8 @@ try {
       header($headerInfo);
     }
   }
-  print $response;
+  echo $response;
 } catch (Exception $e) {
-  print '<pre>' . $e->getMessage() . '</pre>';
+  echo '<pre>' . $e->getMessage() . '</pre>';
 }
 
