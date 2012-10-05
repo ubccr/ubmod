@@ -3,12 +3,12 @@
         "name": "__default__",
         "parents": [
             "general",
-            "dashboard-page",
             "wait-time-page",
             "wall-time-page",
             "user-detail-page",
             "group-detail-page",
-            "queue-detail-page"
+            "queue-detail-page",
+            "about-page"
         ],
         "deny": {
             "user": ["query-all"],
