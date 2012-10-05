@@ -285,18 +285,15 @@ class Ubmod_RestRequest extends Ubmod_BaseRequest
   public function formatResponse()
   {
     // Process the request if it hasn't already been done
-
     if ($this->_response === null) {
       $this->process();
     }
 
     // Call the appropriate format method.  Existance of the formatted
     // should be checked in the constructor.
-
     $formatMethod = $this->_returnFormat . 'Format';
-    $retval = $this->_response->$formatMethod();
 
-    return $retval;
+    return $this->_response->$formatMethod();
   }
 
   /**
@@ -307,18 +304,15 @@ class Ubmod_RestRequest extends Ubmod_BaseRequest
   public function responseHeader()
   {
     // Process the request if it hasn't already been done
-
     if ($this->_response === null) {
       $this->process();
     }
 
     // Call the appropriate header method.  Existance of the formatted
     // should be checked in the constructor.
-
     $headerMethod = $this->_returnFormat . 'Header';
-    $retval = $this->_response->$headerMethod();
 
-    return $retval;
+    return $this->_response->$headerMethod();
   }
 
   /**
