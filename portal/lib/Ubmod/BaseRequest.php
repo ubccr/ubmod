@@ -97,6 +97,13 @@ abstract class Ubmod_BaseRequest
   protected $user = null;
 
   /**
+   * Authenticated user's group.
+   *
+   * @var string
+   */
+  protected $group = null;
+
+  /**
    * Authenticated user's role.
    *
    * @var string
@@ -409,6 +416,21 @@ abstract class Ubmod_BaseRequest
         }
       }
     }
+  }
+
+  public function getUser()
+  {
+    return $this->user;
+  }
+
+  public function getGroup()
+  {
+    if ($this->group === null && $this->user !== null) {
+      $userId = Ubmod_Model_User::getUserId($this->user);
+      $this->group = Ubmod_Model_User::getCurrentGroup($userId);
+    }
+
+    return $this->group;
   }
 
   /**

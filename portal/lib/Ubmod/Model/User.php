@@ -28,7 +28,7 @@
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
@@ -39,6 +39,28 @@
  */
 class Ubmod_Model_User
 {
+
+  /**
+   * Return the ID for a given user.
+   *
+   * @param string $name The user name.
+   *
+   * @return int
+   */
+  public static function getUserId($name)
+  {
+    $sql = 'SELECT dim_user_id FROM dim_user WHERE name = :name';
+
+    $dbh = Ubmod_DbService::dbh();
+    $stmt = $dbh->prepare($sql);
+    $r = $stmt->execute(array(':name' => $name));
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
+
+    return $stmt->fetchColumn();
+  }
 
   /**
    * Returns the number of users for the given parameters.
@@ -281,6 +303,37 @@ class Ubmod_Model_User
     }
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /**
+   * Find the user's current group.
+   *
+   * The current group is defined as the group that was used in the most
+   * recently submitted job.
+   *
+   * @param int $userId The user dimension primary key.
+   *
+   * @return string
+   */
+  public static function getCurrentGroup($userId)
+  {
+    $sql = '
+      SELECT current_group
+      FROM dim_user
+      WHERE dim_user_id = :dim_user_id
+    ';
+
+    $sql = Ubmod_DataWarehouse::optimize($sql);
+
+    $dbh = Ubmod_DbService::dbh();
+    $stmt = $dbh->prepare($sql);
+    $r = $stmt->execute(array(':dim_user_id' => $userId));
+    if (!$r) {
+      $err = $stmt->errorInfo();
+      throw new Exception($err[2]);
+    }
+
+    return $stmt->fetchColumn();
   }
 
   /**

@@ -78,6 +78,25 @@ class Ubmod_Handler_Job extends Ubmod_BaseHandler
   {
     $params = Ubmod_Model_QueryParams::factory($arguments);
 
+    // Limit queries according to authorization ACL.
+    $request = $this->getRequest();
+    switch ($params->getModel()) {
+    case 'user':
+      if (!$request->isAllowed('user', 'query-all')) {
+        $user = $request->getUser();
+        $userId = Ubmod_Model_User::getUserId($user);
+        $params->setUserId($userId);
+      }
+      break;
+    case 'group':
+      if (!$request->isAllowed('group', 'query-all')) {
+        $user = $request->getUser();
+        $userId = Ubmod_Model_User::getUserId($user);
+        $params->setUserId($userId);
+      }
+      break;
+    }
+
     return Ubmod_RestResponse::factory(array(
       'results'  => Ubmod_Model_Job::getActivityList($params),
       'total'    => Ubmod_Model_Job::getActivityCount($params),
