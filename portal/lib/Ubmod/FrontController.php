@@ -28,7 +28,7 @@
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
@@ -139,7 +139,7 @@ class Ubmod_FrontController
     $request    = $this->_request;
     $controller = $request->getEntity();
     $action     = $request->getAction();
-    $menu       = json_decode(file_get_contents(MENU_CONFIG_FILE), true);
+    $menu       = Ubmod_Menu::factory();
 
     require TEMPLATE_DIR . '/layouts/default.php';
   }

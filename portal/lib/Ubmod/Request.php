@@ -28,7 +28,7 @@
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
@@ -51,7 +51,24 @@ class Ubmod_Request extends Ubmod_BaseRequest
 
     $segmentCount = count($segments);
 
-    $this->entity = $segmentCount > 0 ? $segments[0] : 'dashboard';
+    if ($segmentCount === 0) {
+      // Find first menu item that the user is authorized to access.
+      $menu = Ubmod_Menu::factory();
+      foreach ($menu as $item) {
+        if ($this->isAllowed($item['resource'], 'menu')) {
+          $this->entity = $item['resource'];
+          break;
+        }
+      }
+
+      if ($this->entity === null) {
+        $msg = "Not authorized to view any pages";
+        throw new Exception($msg);
+      }
+    } else {
+      $this->entity = $segments[0];
+    }
+
     $this->action = $segmentCount > 1 ? $segments[1] : 'index';
   }
 }
