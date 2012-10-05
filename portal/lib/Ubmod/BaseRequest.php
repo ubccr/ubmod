@@ -224,10 +224,6 @@ abstract class Ubmod_BaseRequest
     // Check if debugging is enabled.
     $debug = isset($authOptions->debug) && $authOptions->debug;
 
-    if ($debug) {
-      error_log('authentication: ' . json_encode($authOptions));
-    }
-
     if (!isset($authOptions->key)) {
       $msg = '"key" missing from authentication configuration';
       throw new Exception($msg);
@@ -236,6 +232,10 @@ abstract class Ubmod_BaseRequest
     $key = $authOptions->key;
 
     if (!isset($_SERVER[$key])) {
+      if ($debug) {
+        error_log("'$key' not found in \$_SERVER");
+      }
+
       header('HTTP/1.0 401 Unauthorized');
       exit;
     }
