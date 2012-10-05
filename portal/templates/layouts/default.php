@@ -28,15 +28,11 @@
       <td valign="top" style="width:230px;">
         <div class="menu">Menu<div class="menu-content">
           <ul id="menu-list">
-            <li<?php if ($controller == "dashboard") { echo ' class="menu-active"'; } ?>><a href="<?php echo $BASE_URL ?>/dashboard">Dashboard</a></li>
-            <li<?php if ($controller == "wait-time") { echo ' class="menu-active"'; } ?>><a href="<?php echo $BASE_URL ?>/wait-time">Wait Time</a></li>
-            <li<?php if ($controller == "cpu-consumption") { echo ' class="menu-active"'; } ?>><a href="<?php echo $BASE_URL ?>/wall-time">Wall Time</a></li>
-            <li<?php if ($controller == "user") { echo ' class="menu-active"'; } ?>><a href="<?php echo $BASE_URL ?>/user">User Detail</a></li>
-            <li<?php if ($controller == "group") { echo ' class="menu-active"'; } ?>><a href="<?php echo $BASE_URL ?>/group">Group Detail</a></li>
-            <li<?php if ($controller == "queue") { echo ' class="menu-active"'; } ?>><a href="<?php echo $BASE_URL ?>/queue">Queue Detail</a></li>
-            <li<?php if ($controller == "tag") { echo ' class="menu-active"'; } ?>><a href="<?php echo $BASE_URL ?>/tag">Tag Management</a></li>
-            <li<?php if ($controller == "tag") { echo ' class="menu-active"'; } ?>><a href="<?php echo $BASE_URL ?>/tag/keys">Tag Reports</a></li>
-            <li<?php if ($controller == "about") {echo ' class="menu-active"'; } ?>><a href="<?php echo $BASE_URL ?>/about">About UBMoD</a></li>
+            <?php foreach ($menu as $item): ?>
+              <?php if ($request->isAllowed($item['resource'], 'menu')): ?>
+                <li<?php if ($controller == $item['resource']) { echo ' class="menu-active"'; } ?>><a href="<?php echo $BASE_URL . $item['url'] ?>"><?php echo $item['name'] ?></a></li>
+              <?php endif; ?>
+            <?php endforeach; ?>
           </ul>
         </div></div>
       </td>

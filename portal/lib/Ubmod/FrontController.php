@@ -139,6 +139,7 @@ class Ubmod_FrontController
     $request    = $this->_request;
     $controller = $request->getEntity();
     $action     = $request->getAction();
+    $menu       = json_decode(file_get_contents(MENU_CONFIG_FILE), true);
 
     require TEMPLATE_DIR . '/layouts/default.php';
   }

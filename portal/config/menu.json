@@ -1,0 +1,48 @@
+[
+    {
+        "name": "Dashboard",
+        "url": "/dashboard",
+        "resource": "dashboard"
+    },
+    {
+        "name": "Wait Time",
+        "url": "/wait-time",
+        "resource": "wait-time"
+    },
+    {
+        "name": "Wall Time",
+        "url": "/wall-time",
+        "resource": "wall-time"
+    },
+    {
+        "name": "User Detail",
+        "url": "/user",
+        "resource": "user"
+    },
+    {
+        "name": "Group Detail",
+        "url": "/group",
+        "resource": "group"
+    },
+    {
+        "name": "Queue Detail",
+        "url": "/queue",
+        "resource": "queue"
+    },
+    {
+        "name": "Tag Management",
+        "url": "/tag",
+        "resource": "tag"
+    },
+    {
+        "name": "Tag Reports",
+        "url": "/tag/keys",
+        "resource": "tag"
+    },
+    {
+        "name": "About UBMoD",
+        "url": "/about",
+        "resource": "about"
+    }
+]
+

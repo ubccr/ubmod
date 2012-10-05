@@ -39,6 +39,11 @@ define('CONFIG_DIR', BASE_DIR . '/config');
 define('CONFIG_FILE', CONFIG_DIR . '/settings.ini');
 
 /**
+ * Menu configuration file path.
+ */
+define('MENU_CONFIG_FILE', CONFIG_DIR . '/menu.json');
+
+/**
  * Access control list resource definition file path.
  */
 define('ACL_RESOURCES_FILE', CONFIG_DIR . '/acl-resources.json');
