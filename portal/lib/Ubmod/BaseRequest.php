@@ -311,6 +311,13 @@ abstract class Ubmod_BaseRequest
    */
   public function isAllowed($resource, $privilege = null)
   {
+
+    // If no user is set, assume that authentication is not being used
+    // and allow everything.
+    if ($this->user === null) {
+      return true;
+    }
+
     $acl  = $this->getAcl();
     $role = $this->getRole();
 
