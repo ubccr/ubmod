@@ -199,8 +199,13 @@ class Ubmod_RestRequest
     array $getData = null,
     array $postData = null
   ) {
-    return new Ubmod_RestRequest($requestUrl, $pathInfo, $queryString,
-      $getData, $postData);
+    return new Ubmod_RestRequest(
+      $requestUrl,
+      $pathInfo,
+      $queryString,
+      $getData,
+      $postData
+    );
   }
 
   /**
@@ -333,7 +338,9 @@ class Ubmod_RestRequest
    */
   public function process()
   {
-    if ($this->_handler === null) { $this->loadHandler(); }
+    if ($this->_handler === null) {
+      $this->loadHandler();
+    }
 
     if ($this->_displayHelp) {
       $helpMethod = $this->_action . 'Help';
@@ -375,7 +382,9 @@ class Ubmod_RestRequest
   {
     // Process the request if it hasn't already been done
 
-    if ($this->_response === null) { $this->process(); }
+    if ($this->_response === null) {
+      $this->process();
+    }
 
     // Call the appropriate format method.  Existance of the formatted
     // should be checked in the constructor.
@@ -395,7 +404,9 @@ class Ubmod_RestRequest
   {
     // Process the request if it hasn't already been done
 
-    if ($this->_response === null) { $this->process(); }
+    if ($this->_response === null) {
+      $this->process();
+    }
 
     // Call the appropriate header method.  Existance of the formatted
     // should be checked in the constructor.
