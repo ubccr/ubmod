@@ -224,8 +224,8 @@ class Ubmod_RestRequest extends Ubmod_BaseRequest
    */
   private function loadHandler()
   {
-    $handlerClassName = 'Ubmod_Handler_' . ucfirst($this->entity);
-    $handlerClassFile = $handlerClassName . '.php';
+    $entity = $this->getEntity();
+    $handlerClassName = 'Ubmod_Handler_' . ucfirst($entity);
 
     if (!class_exists($handlerClassName)) {
       $msg = "Unknown handler '$handlerClassName' for entity '$entity'";
@@ -246,21 +246,23 @@ class Ubmod_RestRequest extends Ubmod_BaseRequest
       $this->loadHandler();
     }
 
+    $action = $this->getAction();
+
     if ($this->_displayHelp) {
-      $helpMethod = $this->action . 'Help';
+      $helpMethod = $action . 'Help';
       if (method_exists($this->_handler, $helpMethod)) {
         $this->_response = $this->_handler->$helpMethod();
       } else {
         $this->_response = Ubmod_RestResponse::factory(array(
-          'message' => "No help available for action '{$this->action}'",
+          'message' => "No help available for action '$action'",
         ));
       }
       return $this->_response;
     }
 
-    $actionMethod = $this->action . 'Action';
+    $actionMethod = $action . 'Action';
     if (!method_exists($this->_handler, $actionMethod)) {
-      $msg = "Undefined action '{$this->action}'";
+      $msg = "Undefined action '$action'";
       throw new Exception($msg);
     }
 
