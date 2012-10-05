@@ -208,7 +208,7 @@ class Ubmod_RestRequest extends Ubmod_BaseRequest
   }
 
   /**
-   * Authenticate the user session.
+   * Verify that the return format is supported.
    */
   private function verifyReturnFormat()
   {
