@@ -76,6 +76,13 @@ class Ubmod_BaseRequest
   protected $postData = null;
 
   /**
+   * Authenticated user.
+   *
+   * @var string
+   */
+  protected $user = null;
+
+  /**
    * Constructor.
    *
    * @param string $requestUri The request URL.
@@ -199,6 +206,13 @@ class Ubmod_BaseRequest
 
     $authOptions = $options->authentication;
 
+    // Check if debugging is enabled.
+    $debug = isset($authOptions->debug) && $authOptions->debug;
+
+    if ($debug) {
+      error_log('authentication: ' . json_encode($authOptions));
+    }
+
     if (!isset($authOptions->key)) {
       $msg = '"key" missing from authentication configuration';
       throw new Exception($msg);
@@ -211,7 +225,11 @@ class Ubmod_BaseRequest
       exit;
     }
 
-    $this->_user = $_SERVER[$key];
+    $this->user = $_SERVER[$key];
+
+    if ($debug) {
+      error_log("Authenticated as {$this->user}");
+    }
   }
 }
 
