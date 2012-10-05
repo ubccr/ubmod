@@ -189,6 +189,29 @@ class Ubmod_BaseRequest
    */
   protected function authenticate()
   {
+    $options = $GLOBALS['options'];
+
+    // If there is no authentication section, don't require any
+    // authentication.
+    if (!isset($options->authentication)) {
+      return;
+    }
+
+    $authOptions = $options->authentication;
+
+    if (!isset($authOptions->key)) {
+      $msg = '"key" missing from authentication configuration';
+      throw new Exception($msg);
+    }
+
+    $key = $authOptions->key;
+
+    if (!isset($_SERVER[$key])) {
+      header('HTTP/1.0 401 Unauthorized');
+      exit;
+    }
+
+    $this->_user = $_SERVER[$key];
   }
 }
 
