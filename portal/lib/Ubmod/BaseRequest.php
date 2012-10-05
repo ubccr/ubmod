@@ -179,7 +179,8 @@ abstract class Ubmod_BaseRequest
   }
 
   /**
-   * Returns an array containing the segments of the request path in order.
+   * Returns an array containing the segments of the request path in
+   * order.
    *
    * @return array
    */
