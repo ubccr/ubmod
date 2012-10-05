@@ -4,52 +4,52 @@
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
 /**
  * Ubmod version string.
  */
-define("UBMOD_VERSION", "0.2.3");
+define('UBMOD_VERSION', '0.2.3');
 
 /**
  * Ubmod application base directory.
  */
-define("BASE_DIR", dirname(dirname(__FILE__)));
+define('BASE_DIR', dirname(dirname(__FILE__)));
 
 /**
  * Class file directory.
  */
-define("LIB_DIR", BASE_DIR . "/lib");
+define('LIB_DIR', BASE_DIR . '/lib');
 
 /**
  * Template directory.
  */
-define("TEMPLATE_DIR", BASE_DIR . "/templates");
+define('TEMPLATE_DIR', BASE_DIR . '/templates');
 
 /**
  * Configuration file directory.
  */
-define("CONFIG_DIR", BASE_DIR . "/config");
+define('CONFIG_DIR', BASE_DIR . '/config');
 
 /**
  * Configuration file path.
  */
-define("CONFIG_FILE", CONFIG_DIR . "/settings.ini");
+define('CONFIG_FILE', CONFIG_DIR . '/settings.ini');
 
 /**
  * Data warehouse configuration file path.
  */
-define("DW_CONFIG_FILE", CONFIG_DIR . "/datawarehouse.json");
+define('DW_CONFIG_FILE', CONFIG_DIR . '/datawarehouse.json');
 
 /**
  * Directory containing fonts.
  */
-define("FONT_DIR", LIB_DIR . "/pChart/fonts");
+define('FONT_DIR', LIB_DIR . '/pChart/fonts');
 
 /**
  * Color palette file.
  */
-define("PALETTE_FILE", CONFIG_DIR . "/palette.csv");
+define('PALETTE_FILE', CONFIG_DIR . '/palette.csv');
 
