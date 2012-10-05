@@ -5,7 +5,7 @@
             "cluster": ["list"],
             "interval": ["list"],
             "tag": ["list"],
-            "chart": ["cache", "cached"]
+            "chart": ["cache", "cached", "image-map"]
         }
     },
     {
