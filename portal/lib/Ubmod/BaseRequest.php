@@ -302,6 +302,11 @@ abstract class Ubmod_BaseRequest
     $entity = $this->getEntity();
     $action = $this->getAction();
 
+    if ($debug) {
+      $msg = "Checking authorization for '$entity/$action'";
+      error_log($msg);
+    }
+
     if (!$this->isAllowed($entity, $action)) {
       header('HTTP/1.0 401 Unauthorized');
       exit;
