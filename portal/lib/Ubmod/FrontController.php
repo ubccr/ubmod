@@ -111,6 +111,7 @@ class Ubmod_FrontController
    *
    * @param string $view The path to the view to render
    * @param Ubmod_BaseController $controller The controller for the view
+   *
    * @return string
    */
   private function renderView($view, $controller)
