@@ -41,18 +41,32 @@ class Ubmod_Request extends Ubmod_BaseRequest
 {
 
   /**
-   * Parse the API URL to extract the entity and action.
-   *
    * @see Ubmod_BaseRequest
    */
-  protected function parseUri()
-  {
-    $segments = $this->getPathSegments();
+  protected function __construct(
+    $requestUri,
+    $pathInfo = null,
+    $queryString = null,
+    array $getData = null,
+    array $postData = null
+  ) {
+    parent::__construct(
+      $requestUri,
+      $pathInfo,
+      $queryString,
+      $getData,
+      $postData
+    );
 
-    $segmentCount = count($segments);
+    // If the user isn't authorized for the current entity, use the
+    // first menu item that the user is authorized to access.
+    $this->authenticate();
+    if ($this->action === 'index'
+      && !$this->isAllowed($this->entity, 'index')
+      && !$this->isAllowed($this->entity, 'menu')
+    ) {
+      $this->entity = null;
 
-    if ($segmentCount === 0) {
-      // Find first menu item that the user is authorized to access.
       $menu = Ubmod_Menu::factory();
       foreach ($menu as $item) {
         if ($this->isAllowed($item['resource'], 'menu')) {
@@ -65,10 +79,21 @@ class Ubmod_Request extends Ubmod_BaseRequest
         $msg = "Not authorized to view any pages";
         throw new Exception($msg);
       }
-    } else {
-      $this->entity = $segments[0];
     }
+  }
 
+  /**
+   * Parse the API URL to extract the entity and action.
+   *
+   * @see Ubmod_BaseRequest
+   */
+  protected function parseUri()
+  {
+    $segments = $this->getPathSegments();
+
+    $segmentCount = count($segments);
+
+    $this->entity = $segmentCount > 0 ? $segments[0] : 'dashboard';
     $this->action = $segmentCount > 1 ? $segments[1] : 'index';
   }
 }

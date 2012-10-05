@@ -142,8 +142,6 @@ abstract class Ubmod_BaseRequest
     $this->postData    = $postData;
 
     $this->parseUri();
-    $this->authenticate();
-    $this->authorize();
   }
 
   /**
@@ -164,13 +162,18 @@ abstract class Ubmod_BaseRequest
     $getData,
     $postData
   ) {
-    return new static(
+    $request = new static(
       $requestUri,
       $pathInfo,
       $queryString,
       $getData,
       $postData
     );
+
+    $request->authenticate();
+    $request->authorize();
+
+    return $request;
   }
 
   /**
@@ -236,6 +239,12 @@ abstract class Ubmod_BaseRequest
    */
   protected function authenticate()
   {
+
+    // If the user is already authenticated, don't check again.
+    if ($this->user !== null) {
+      return;
+    }
+
     $options = $GLOBALS['options'];
 
     // If there is no authentication section, don't require any
