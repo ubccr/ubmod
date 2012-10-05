@@ -39,6 +39,21 @@ define('CONFIG_DIR', BASE_DIR . '/config');
 define('CONFIG_FILE', CONFIG_DIR . '/settings.ini');
 
 /**
+ * Access control list resource definition file path.
+ */
+define('ACL_RESOURCES_FILE', CONFIG_DIR . '/acl-resources.json');
+
+/**
+ * Access control list roles definition file path.
+ */
+define('ACL_ROLES_FILE', CONFIG_DIR . '/acl-roles.json');
+
+/**
+ * Custom user role configuration file path.
+ */
+define('ROLES_CONFIG_FILE', CONFIG_DIR . '/roles.json');
+
+/**
  * Data warehouse configuration file path.
  */
 define('DW_CONFIG_FILE', CONFIG_DIR . '/datawarehouse.json');

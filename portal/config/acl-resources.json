@@ -1,0 +1,106 @@
+[
+    {
+        "name": "dashboard",
+        "privileges": [
+            "menu",
+            "index",
+            "utilization"
+        ]
+    },
+    {
+        "name": "wait-time",
+        "privileges": [
+            "menu",
+            "index",
+            "chart"
+        ]
+    },
+    {
+        "name": "wall-time",
+        "privileges": [
+            "menu",
+            "index",
+            "chart"
+        ]
+    },
+    {
+        "name": "user",
+        "privileges": [
+            "menu",
+            "index",
+            "details",
+            "tags",
+            "addTag",
+            "updateTags",
+            "query-all"
+        ]
+    },
+    {
+        "name": "group",
+        "privileges": [
+            "menu",
+            "index",
+            "details",
+            "query-all"
+        ]
+    },
+    {
+        "name": "queue",
+        "privileges": [
+            "menu",
+            "index",
+            "details"
+        ]
+    },
+    {
+        "name": "tag",
+        "privileges": [
+            "menu",
+            "index",
+            "keys",
+            "details",
+            "key-details",
+            "list",
+            "tree",
+            "createTree",
+            "updateTree",
+            "deleteTree",
+            "keyList",
+            "activity"
+        ]
+    },
+    {
+        "name": "about",
+        "privileges": [
+            "menu",
+            "index"
+        ]
+    },
+    {
+        "name": "interval",
+        "privileges": [
+            "list"
+        ]
+    },
+    {
+        "name": "cluster",
+        "privileges": [
+            "list"
+        ]
+    },
+    {
+        "name": "chart",
+        "privileges": [
+            "cached",
+            "image-map",
+            "cache"
+        ]
+    },
+    {
+        "name": "job",
+        "privileges": [
+            "activity"
+        ]
+    }
+]
+

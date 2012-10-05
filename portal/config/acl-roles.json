@@ -1,0 +1,68 @@
+[
+    {
+        "name": "general",
+        "allow": {
+            "cluster": ["list"],
+            "interval": ["list"],
+            "tag": ["list"],
+            "chart": ["cache", "cached"]
+        }
+    },
+    {
+        "name": "dashboard-page",
+        "allow": {
+            "dashboard": ["menu", "index", "utilization"],
+            "chart": ["user", "group"]
+        }
+    },
+    {
+        "name": "wait-time-page",
+        "allow": {
+            "wait-time": ["menu", "index", "chart"],
+            "chart": ["waitTime"]
+        }
+    },
+    {
+        "name": "wall-time-page",
+        "allow": {
+            "wall-time": ["menu", "index", "chart"],
+            "chart": ["wallTime"]
+        }
+    },
+    {
+        "name": "user-detail-page",
+        "allow": {
+            "user": ["menu", "index", "details"],
+            "job": ["activity"]
+        }
+    },
+    {
+        "name": "group-detail-page",
+        "allow": {
+            "group": ["menu", "index", "details"],
+            "chart": ["user"],
+            "job": ["activity"]
+        }
+    },
+    {
+        "name": "queue-detail-page",
+        "allow": {
+            "queue": ["menu", "index", "details"],
+            "job": ["activity"]
+        }
+    },
+    {
+        "name": "tag-pages",
+        "allow": {
+            "tag": ["menu", "index", "keys", "details"],
+            "job": ["activity"]
+        }
+    },
+    {
+        "name": "about-page",
+        "allow": {
+            "about": ["menu", "index"]
+        }
+    }
+]
+

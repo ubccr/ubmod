@@ -171,6 +171,9 @@ class Ubmod_RestRequest extends Ubmod_BaseRequest
     // Authenticate the user.
     $this->authenticate();
 
+    // Check if the user is authorized to access this URL.
+    $this->authorize();
+
     // Load the API handler.
     $this->loadHandler();
   }

@@ -97,6 +97,20 @@ abstract class Ubmod_BaseRequest
   protected $user = null;
 
   /**
+   * Authenticated user's role.
+   *
+   * @var string
+   */
+  protected $role = null;
+
+  /**
+   * Access control list.
+   *
+   * @var Zend_Acl
+   */
+  protected $acl = null;
+
+  /**
    * Constructor.
    *
    * @param string $requestUri The request URL.
@@ -245,6 +259,161 @@ abstract class Ubmod_BaseRequest
     if ($debug) {
       error_log("Authenticated as {$this->user}");
     }
+  }
+
+  /**
+   * Check if user is authorized to access the requested resource.
+   */
+  protected function authorize()
+  {
+    $options = $GLOBALS['options'];
+
+    // If there is no authorization section, don't require any
+    // authorization.
+    if (!isset($options->authorization)) {
+      return;
+    }
+
+    $authOptions = $options->authorization;
+
+    // Check if debugging is enabled.
+    $debug = isset($authOptions->debug) && $authOptions->debug;
+
+    if ($this->user === null) {
+      if ($debug) {
+        $msg = "Attempt to authorize a user that hasn't been authenticated.";
+        error_log($msg);
+      }
+
+      return;
+    }
+
+    $entity = $this->getEntity();
+    $action = $this->getAction();
+
+    if (!$this->isAllowed($entity, $action)) {
+      header('HTTP/1.0 401 Unauthorized');
+      exit;
+    }
+  }
+
+  /**
+   * Check if the user has a privilege for a resource.
+   *
+   * @param string $resource The resource name.
+   * @param string $privilege The privilege name.
+   *
+   * @return bool
+   */
+  public function isAllowed($resource, $privilege = null)
+  {
+    $acl  = $this->getAcl();
+    $role = $this->getRole();
+
+    return $acl->isAllowed($role, $resource, $privilege);
+  }
+
+  /**
+   * Return the access control list.
+   *
+   * @return Zend_Acl
+   */
+  protected function getAcl()
+  {
+    if ($this->acl === null) {
+      $acl = new Zend_Acl();
+
+      try {
+        $resources = json_decode(file_get_contents(ACL_RESOURCES_FILE), true);
+      } catch (Exception $e) {
+        $msg = "Error: " . $e->getMessage();
+        throw new Exception($msg);
+      }
+
+      foreach ($resources as $resource) {
+        $privileges
+          = array_key_exists('privileges', $resource)
+          ? $resource['privileges']
+          : null;
+
+        $acl->add(new Zend_Acl_Resource($resource['name'], $privileges));
+      }
+
+      try {
+        $roles = json_decode(file_get_contents(ACL_ROLES_FILE), true);
+      } catch (Exception $e) {
+        $msg = "Error: " . $e->getMessage();
+        throw new Exception($msg);
+      }
+
+      $this->addRolesToAcl($acl, $roles);
+
+      try {
+        $roles = json_decode(file_get_contents(ROLES_CONFIG_FILE), true);
+      } catch (Exception $e) {
+        $msg = "Error: " . $e->getMessage();
+        throw new Exception($msg);
+      }
+
+      $this->addRolesToAcl($acl, $roles);
+
+      $this->acl = $acl;
+    }
+
+    return $this->acl;
+  }
+
+  /**
+   * Helper function for adding a role to an ACL.
+   *
+   * @param Zend_Acl $acl
+   * @param array $roles
+   */
+  private function addRolesToAcl(Zend_Acl $acl, array $roles)
+  {
+    foreach ($roles as $role) {
+      $name = $role['name'];
+
+      $parents = array_key_exists('parents', $role) ? $role['parents'] : null;
+
+      $acl->addRole($name, $parents);
+
+      if (array_key_exists('allow', $role)) {
+        if (is_array($role['allow'])) {
+          foreach ($role['allow'] as $resource => $privileges) {
+            $acl->allow($name, $resource, $privileges);
+          }
+        } else {
+          $acl->allow($name, $role['allow']);
+        }
+      }
+
+      if (array_key_exists('deny', $role)) {
+        if (is_array($role['deny'])) {
+          foreach ($role['deny'] as $resource => $privileges) {
+            $acl->deny($name, $resource, $privileges);
+          }
+        } else {
+          $acl->deny($name, $role['deny']);
+        }
+      }
+    }
+  }
+
+  /**
+   * Return the name of the role associated with the authenticated user.
+   *
+   * @return string
+   */
+  protected function getRole()
+  {
+    if ($this->role === null) {
+
+      # TODO: Determine role from user.
+      $this->role = '__default__';
+    }
+
+    return $this->role;
   }
 
   /**

@@ -80,6 +80,10 @@ class Ubmod_Handler_Chart extends Ubmod_BaseHandler
     $model = $postData['model'];
     $type  = $postData['type'];
 
+    if (!$this->getRequest()->isAllowed('chart', $model)) {
+      throw new Exception('Unauthorized access');
+    }
+
     $method = 'get' . ucfirst($model) . ucfirst($type) . 'Data';
 
     try {
