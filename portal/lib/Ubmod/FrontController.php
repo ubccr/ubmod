@@ -92,8 +92,8 @@ class Ubmod_FrontController
       if ($request->isXmlHttpRequest()) {
         echo $content;
       } else {
-        $controller = $request->getControllerSegment();
-        $action     = $request->getActionSegment();
+        $controller = $request->getEntity();
+        $action     = $request->getAction();
         $this->renderLayout($content, $controller, $action);
       }
     } catch (Exception $e) {
@@ -143,7 +143,7 @@ class Ubmod_FrontController
    */
   private function getController(Ubmod_Request $request)
   {
-    $segment = $request->getControllerSegment();
+    $segment = $request->getEntity();
     $class = 'Ubmod_Controller_' . $this->convertPathSegment($segment);
     try {
       return $class::factory($request);
@@ -162,7 +162,8 @@ class Ubmod_FrontController
    */
   private function getAction(Ubmod_Request $request)
   {
-    $segment = $request->getActionSegment();
+    $segment = $request->getAction();
+
     return 'execute' . $this->convertPathSegment($segment);
   }
 
@@ -195,8 +196,9 @@ class Ubmod_FrontController
    */
   private function getView(Ubmod_Request $request)
   {
-    $controller = $request->getControllerSegment();
-    $action     = $request->getActionSegment();
+    $controller = $request->getEntity();
+    $action     = $request->getAction();
+
     return TEMPLATE_DIR . '/views/' . $controller . '/' . $action . '.php';
   }
 }

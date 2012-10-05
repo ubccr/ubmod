@@ -41,35 +41,18 @@ class Ubmod_Request extends Ubmod_BaseRequest
 {
 
   /**
-   * Returns the portion of the path segment that is used to determine
-   * which controller should process this request
+   * Parse the API URL to extract the entity and action.
    *
-   * @return string
+   * @see Ubmod_BaseRequest
    */
-  public function getControllerSegment()
+  protected function parseUri()
   {
     $segments = $this->getPathSegments();
-    if (count($segments) > 0) {
-      return $segments[0];
-    } else {
-      return 'dashboard';
-    }
-  }
 
-  /**
-   * Returns the portion of the path segment that is used to determine
-   * which action should process this request
-   *
-   * @return string
-   */
-  public function getActionSegment()
-  {
-    $segments = $this->getPathSegments();
-    if (count($segments) > 1) {
-      return $segments[1];
-    } else {
-      return 'index';
-    }
+    $segmentCount = count($segments);
+
+    $this->entity = $segmentCount > 0 ? $segments[0] : 'dashboard';
+    $this->action = $segmentCount > 1 ? $segments[1] : 'index';
   }
 }
 

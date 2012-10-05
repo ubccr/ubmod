@@ -37,7 +37,7 @@
  *
  * @package Ubmod
  */
-class Ubmod_BaseRequest
+abstract class Ubmod_BaseRequest
 {
 
   /**
@@ -74,6 +74,20 @@ class Ubmod_BaseRequest
    * @var array
    */
   protected $postData = null;
+
+  /**
+   * Entity that we are querying.
+   *
+   * @var string
+   */
+  protected $entity = null;
+
+  /**
+   * The action to perform on the entity.
+   *
+   * @var string
+   */
+  protected $action = null;
 
   /**
    * Authenticated user.
@@ -231,5 +245,40 @@ class Ubmod_BaseRequest
       error_log("Authenticated as {$this->user}");
     }
   }
+
+  /**
+   * Return the entity name.
+   *
+   * @return string
+   */
+  public function getEntity()
+  {
+    if ($this->entity === null) {
+      $this->parseUri();
+    }
+
+    return $this->entity;
+  }
+
+  /**
+   * Return the action name.
+   *
+   * @return string
+   */
+  public function getAction()
+  {
+    if ($this->action === null) {
+      $this->parseUri();
+    }
+
+    return $this->action;
+  }
+
+  /**
+   * Parse the API URL to extract the entity and action.
+   *
+   * This function must set $this->entity and $this->action.
+   */
+  abstract protected function parseUri();
 }
 

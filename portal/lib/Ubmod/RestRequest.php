@@ -94,20 +94,6 @@ class Ubmod_RestRequest extends Ubmod_BaseRequest
   private $_returnFormat = null;
 
   /**
-   * Entity that we are querying
-   *
-   * @var string
-   */
-  private $_entity = null;
-
-  /**
-   * The action to perform on the entity
-   *
-   * @var string
-   */
-  private $_action = null;
-
-  /**
    * API query handler object
    *
    * @var mixed
@@ -193,23 +179,23 @@ class Ubmod_RestRequest extends Ubmod_BaseRequest
    * Parse the API URL to extract the data return format, type of query,
    * entity to query, optional entity component, and optional query
    * options.
+   *
+   * @see Ubmod_BaseRequest
    */
-  private function parseUri()
+  protected function parseUri()
   {
-    // Trim any preceeding or trailing slashes from the API URL before
-    // breaking it apart.
-
     $splitPath = $this->getPathSegments();
-    $numParts = count($splitPath);
-    if ($numParts !== 3) {
+
+    if (count($splitPath) !== 3) {
       $msg = "Invalid Url '{$this->path}'";
       throw new Exception($msg);
     }
+
     list($returnFormat, $entity, $action) = $splitPath;
 
     $this->_returnFormat = $returnFormat;
-    $this->_entity = $entity;
-    $this->_action = $action;
+    $this->entity = $entity;
+    $this->action = $action;
 
     if ($this->getData !== null) {
       $this->_displayHelp = array_key_exists('help', $this->getData)
@@ -238,7 +224,7 @@ class Ubmod_RestRequest extends Ubmod_BaseRequest
    */
   private function loadHandler()
   {
-    $handlerClassName = 'Ubmod_Handler_' . ucfirst($this->_entity);
+    $handlerClassName = 'Ubmod_Handler_' . ucfirst($this->entity);
     $handlerClassFile = $handlerClassName . '.php';
 
     if (!class_exists($handlerClassName)) {
@@ -261,20 +247,20 @@ class Ubmod_RestRequest extends Ubmod_BaseRequest
     }
 
     if ($this->_displayHelp) {
-      $helpMethod = $this->_action . 'Help';
+      $helpMethod = $this->action . 'Help';
       if (method_exists($this->_handler, $helpMethod)) {
         $this->_response = $this->_handler->$helpMethod();
       } else {
         $this->_response = Ubmod_RestResponse::factory(array(
-          'message' => "No help available for action '{$this->_action}'",
+          'message' => "No help available for action '{$this->action}'",
         ));
       }
       return $this->_response;
     }
 
-    $actionMethod = $this->_action . 'Action';
+    $actionMethod = $this->action . 'Action';
     if (!method_exists($this->_handler, $actionMethod)) {
-      $msg = "Undefined action '{$this->_action}'";
+      $msg = "Undefined action '{$this->action}'";
       throw new Exception($msg);
     }
 
