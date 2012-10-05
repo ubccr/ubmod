@@ -41,12 +41,32 @@ class Ubmod_FrontController
 {
 
   /**
+   * The current request.
+   *
+   * @var Ubmod_Request
+   */
+  private $_request = null;
+
+  /**
    * Private constructor.
    *
    * @return void
    */
   private function __construct()
   {
+    $requestUrl  = $_SERVER['REQUEST_URI'];
+    $pathInfo    = $_GET['path_info'];
+    $queryString = $_SERVER['QUERY_STRING'];
+    $getData     = $_GET;
+    $postData    = $_POST;
+
+    $this->_request = Ubmod_Request::factory(
+      $requestUrl,
+      $pathInfo,
+      $queryString,
+      $getData,
+      $postData
+    );
   }
 
   /**
@@ -60,29 +80,16 @@ class Ubmod_FrontController
   }
 
   /**
-   * Process request.
+   * Process the current request.
    *
    * @return void
    */
   public function process()
   {
-    $requestUrl  = $_SERVER['REQUEST_URI'];
-    $pathInfo    = $_GET['path_info'];
-    $queryString = $_SERVER['QUERY_STRING'];
-    $getData     = $_GET;
-    $postData    = $_POST;
-
-    $request = Ubmod_Request::factory(
-      $requestUrl,
-      $pathInfo,
-      $queryString,
-      $getData,
-      $postData
-    );
-
-    $controller = $this->getController($request);
-    $action     = $this->getAction($request);
-    $view       = $this->getView($request);
+    $request    = $this->_request;
+    $controller = $this->getController();
+    $action     = $this->getAction();
+    $view       = $this->getView();
 
     try {
       $controller->$action();
@@ -92,8 +99,6 @@ class Ubmod_FrontController
       if ($request->isXmlHttpRequest()) {
         echo $content;
       } else {
-        $controller = $request->getEntity();
-        $action     = $request->getAction();
         $this->renderLayout($content, $controller, $action);
       }
     } catch (Exception $e) {
@@ -123,26 +128,28 @@ class Ubmod_FrontController
    * Render the layout template.
    *
    * @param string $content The page content
-   * @param string $controller The name of the controller segment
-   * @param string $action The name of the action
    *
    * @return void
    */
-  private function renderLayout($content, $controller, $action)
+  private function renderLayout($content)
   {
     global $BASE_URL;
+
+    $request    = $this->_request;
+    $controller = $request->getEntity();
+    $action     = $request->getAction();
+
     require TEMPLATE_DIR . '/layouts/default.php';
   }
 
   /**
-   * Create a controller for a given request.
-   *
-   * @param Ubmod_Request $request
+   * Create a controller for the current request.
    *
    * @return Ubmod_Controller
    */
-  private function getController(Ubmod_Request $request)
+  private function getController()
   {
+    $request = $this->_request;
     $segment = $request->getEntity();
     $class = 'Ubmod_Controller_' . $this->convertPathSegment($segment);
     try {
@@ -154,15 +161,13 @@ class Ubmod_FrontController
   }
 
   /**
-   * Returns the name of action for a given request.
-   *
-   * @param Ubmod_Request $request
+   * Returns the name of action for the current request.
    *
    * @return string
    */
-  private function getAction(Ubmod_Request $request)
+  private function getAction()
   {
-    $segment = $request->getAction();
+    $segment = $this->_request->getAction();
 
     return 'execute' . $this->convertPathSegment($segment);
   }
@@ -188,14 +193,13 @@ class Ubmod_FrontController
   }
 
   /**
-   * Returns the view file for the given request.
-   *
-   * @param Ubmod_Request $request
+   * Returns the view file for the current request.
    *
    * @return string
    */
-  private function getView(Ubmod_Request $request)
+  private function getView()
   {
+    $request    = $this->_request;
     $controller = $request->getEntity();
     $action     = $request->getAction();
 
