@@ -299,7 +299,7 @@ abstract class Ubmod_BaseRequest
     // Check if debugging is enabled.
     $debug = isset($authOptions->debug) && $authOptions->debug;
 
-    if ($this->user === null) {
+    if ($this->getUser() === null) {
       if ($debug) {
         $msg = "Attempt to authorize a user that hasn't been authenticated.";
         error_log($msg);
@@ -335,7 +335,7 @@ abstract class Ubmod_BaseRequest
 
     // If no user is set, assume that authentication is not being used
     // and allow everything.
-    if ($this->user === null) {
+    if ($this->getUser() === null) {
       return true;
     }
 
@@ -449,8 +449,13 @@ abstract class Ubmod_BaseRequest
    */
   public function getGroup()
   {
-    if ($this->group === null && $this->user !== null) {
-      $userId = Ubmod_Model_User::getUserId($this->user);
+    if ($this->group === null) {
+      $user = $this->getUser();
+      if ($user === null) {
+        return null;
+      }
+
+      $userId = Ubmod_Model_User::getUserId($user);
       $this->group = Ubmod_Model_User::getCurrentGroup($userId);
     }
 
