@@ -470,9 +470,21 @@ abstract class Ubmod_BaseRequest
   protected function getRole()
   {
     if ($this->role === null) {
+      $user = $this->getUser();
+      if ($user === null) {
+        return null;
+      }
 
-      # TODO: Determine role from user.
       $this->role = '__default__';
+
+      $userRoles = json_decode(file_get_contents(USER_ROLES_FILE), true);
+
+      foreach ($userRoles as $role => $users) {
+        if (in_array($user, $users)) {
+          $this->role = $role;
+          break;
+        }
+      }
     }
 
     return $this->role;

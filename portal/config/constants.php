@@ -59,6 +59,11 @@ define('ACL_ROLES_FILE', CONFIG_DIR . '/acl-roles.json');
 define('ROLES_CONFIG_FILE', CONFIG_DIR . '/roles.json');
 
 /**
+ * User role mapping file path.
+ */
+define('USER_ROLES_FILE', CONFIG_DIR . '/user-roles.json');
+
+/**
  * Data warehouse configuration file path.
  */
 define('DW_CONFIG_FILE', CONFIG_DIR . '/datawarehouse.json');
