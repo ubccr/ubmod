@@ -262,12 +262,7 @@ abstract class Ubmod_BaseRequest
     // Check if debugging is enabled.
     $debug = isset($authOptions->debug) && $authOptions->debug;
 
-    if (!isset($authOptions->key)) {
-      $msg = '"key" missing from authentication configuration';
-      throw new Exception($msg);
-    }
-
-    $key = $authOptions->key;
+    $key = isset($authOptions->key) ? $authOptions->key : 'REMOTE_USER';
 
     if (!isset($_SERVER[$key])) {
       if ($debug) {
