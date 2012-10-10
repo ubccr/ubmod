@@ -105,7 +105,7 @@ class Ubmod_DbService
         'host'     => $dbOptions->host,
         'dbname'   => $dbOptions->dbname,
         'user'     => $dbOptions->user,
-        'password' => $dbOptions->password
+        'password' => $dbOptions->password,
       );
 
       if (isset($dbOptions->port)) {
