@@ -255,6 +255,10 @@ abstract class Ubmod_BaseRequest
 
     $authOptions = $options->authentication;
 
+    if (!isset($authOptions->enabled) || !$authOptions->enabled) {
+      return;
+    }
+
     // Check if debugging is enabled.
     $debug = isset($authOptions->debug) && $authOptions->debug;
 
@@ -295,6 +299,10 @@ abstract class Ubmod_BaseRequest
     }
 
     $authOptions = $options->authorization;
+
+    if (!isset($authOptions->enabled) || !$authOptions->enabled) {
+      return;
+    }
 
     // Check if debugging is enabled.
     $debug = isset($authOptions->debug) && $authOptions->debug;
