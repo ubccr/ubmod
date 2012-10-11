@@ -83,9 +83,9 @@ class Ubmod_Handler_Job extends Ubmod_BaseHandler
     switch ($params->getModel()) {
     case 'user':
       if (!$request->isAllowed('user', 'query-all')) {
-        $user = $request->getUser();
-        $userId = Ubmod_Model_User::getUserId($user);
-        $params->setUserId($userId);
+        $group = $request->getGroup();
+        $groupId = Ubmod_Model_Group::getGroupId($group);
+        $params->setGroupId($groupId);
       }
       break;
     case 'group':
