@@ -52,9 +52,27 @@
         }
     },
     {
-        "name": "tag-pages",
+        "name": "tag-management-page",
         "allow": {
-            "tag": ["menu", "index", "keys", "details"],
+            "tag-management": ["menu"],
+            "tag": [
+                "index",
+                "activity",
+                "tree",
+                "createTree",
+                "updateTree",
+                "deleteTree",
+                "details"
+            ],
+            "user": ["tags", "addTag", "updateTags"],
+            "job": ["activity"]
+        }
+    },
+    {
+        "name": "tag-reports-page",
+        "allow": {
+            "tag-reports": ["menu"],
+            "tag": ["index", "keys", "details"],
             "job": ["activity"]
         }
     },

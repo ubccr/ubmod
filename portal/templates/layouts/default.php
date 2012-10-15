@@ -30,7 +30,7 @@
           <ul id="menu-list">
             <?php foreach ($menu as $item): ?>
               <?php if ($request->isAllowed($item['resource'], 'menu')): ?>
-                <li<?php if ($controller == $item['resource']) { echo ' class="menu-active"'; } ?>><a href="<?php echo $BASE_URL . $item['url'] ?>"><?php echo $item['name'] ?></a></li>
+                <li<?php if ($controller == $item['controller'] && $action == $item['action']) { echo ' class="menu-active"'; } ?>><a href="<?php echo $BASE_URL . '/' . $item['controller'] . '/' . $item['action'] ?>"><?php echo $item['name'] ?></a></li>
               <?php endif; ?>
             <?php endforeach; ?>
           </ul>

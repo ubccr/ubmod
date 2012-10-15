@@ -53,6 +53,18 @@
         ]
     },
     {
+        "name": "tag-management",
+        "privileges": [
+            "menu"
+        ]
+    },
+    {
+        "name": "tag-reports",
+        "privileges": [
+            "menu"
+        ]
+    },
+    {
         "name": "tag",
         "privileges": [
             "menu",

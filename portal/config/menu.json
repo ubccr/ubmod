@@ -1,47 +1,56 @@
 [
     {
         "name": "Dashboard",
-        "url": "/dashboard",
+        "controller": "dashboard",
+        "action": "index",
         "resource": "dashboard"
     },
     {
         "name": "Wait Time",
-        "url": "/wait-time",
+        "controller": "wait-time",
+        "action": "index",
         "resource": "wait-time"
     },
     {
         "name": "Wall Time",
-        "url": "/wall-time",
+        "controller": "wall-time",
+        "action": "index",
         "resource": "wall-time"
     },
     {
         "name": "User Detail",
-        "url": "/user",
+        "controller": "user",
+        "action": "index",
         "resource": "user"
     },
     {
         "name": "Group Detail",
-        "url": "/group",
+        "controller": "group",
+        "action": "index",
         "resource": "group"
     },
     {
         "name": "Queue Detail",
-        "url": "/queue",
+        "controller": "queue",
+        "action": "index",
         "resource": "queue"
     },
     {
         "name": "Tag Management",
-        "url": "/tag",
-        "resource": "tag"
+        "controller": "tag",
+        "action": "index",
+        "resource": "tag-management"
     },
     {
         "name": "Tag Reports",
-        "url": "/tag/keys",
-        "resource": "tag"
+        "controller": "tag",
+        "action": "keys",
+        "resource": "tag-reports"
     },
     {
         "name": "About UBMoD",
-        "url": "/about",
+        "controller": "about",
+        "action": "index",
         "resource": "about"
     }
 ]
