@@ -198,6 +198,9 @@ class Ubmod_Model_User
       INSERT INTO br_user_to_tag SET
         dim_user_id = :dim_user_id,
         dim_tag_id  = :dim_tag_id
+      ON DUPLICATE KEY UPDATE
+        dim_user_id = VALUES(dim_user_id),
+        dim_tag_id  = VALUES(dim_tag_id)
     ";
 
     $dbh = Ubmod_DbService::dbh();
