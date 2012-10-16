@@ -372,12 +372,7 @@ abstract class Ubmod_BaseRequest
     if ($this->acl === null) {
       $acl = new Zend_Acl();
 
-      try {
-        $resources = json_decode(file_get_contents(ACL_RESOURCES_FILE), true);
-      } catch (Exception $e) {
-        $msg = "Error: " . $e->getMessage();
-        throw new Exception($msg);
-      }
+      $resources = $this->decodeJsonFile(ACL_RESOURCES_FILE);
 
       foreach ($resources as $resource) {
         $privileges
@@ -388,22 +383,10 @@ abstract class Ubmod_BaseRequest
         $acl->add(new Zend_Acl_Resource($resource['name'], $privileges));
       }
 
-      try {
-        $roles = json_decode(file_get_contents(ACL_ROLES_FILE), true);
-      } catch (Exception $e) {
-        $msg = "Error: " . $e->getMessage();
-        throw new Exception($msg);
-      }
-
+      $roles = $this->decodeJsonFile(ACL_ROLES_FILE);
       $this->addRolesToAcl($acl, $roles);
 
-      try {
-        $roles = json_decode(file_get_contents(ROLES_CONFIG_FILE), true);
-      } catch (Exception $e) {
-        $msg = "Error: " . $e->getMessage();
-        throw new Exception($msg);
-      }
-
+      $roles = $this->decodeJsonFile(ROLES_CONFIG_FILE);
       $this->addRolesToAcl($acl, $roles);
 
       $this->acl = $acl;
@@ -531,7 +514,7 @@ abstract class Ubmod_BaseRequest
 
       $this->role = '__default__';
 
-      $userRoles = json_decode(file_get_contents(USER_ROLES_FILE), true);
+      $userRoles = $this->decodeJsonFile(USER_ROLES_FILE);
 
       foreach ($userRoles as $role => $users) {
         if (in_array($user, $users)) {
@@ -562,6 +545,31 @@ abstract class Ubmod_BaseRequest
   public function getAction()
   {
     return $this->action;
+  }
+
+  /**
+   * Decode JSON contained in a file.
+   *
+   * @param string $file Path to a file containing JSON data.
+   * @param bool $assoc When true, convert objects to arrays.
+   *
+   * @return mixed
+   */
+  private function decodeJsonFile($file, $assoc = true)
+  {
+    $json = file_get_contents($file);
+    if ($json === false) {
+      $msg = "Failed to read data from '$file'";
+      throw new Exception($msg);
+    }
+
+    $data = json_decode($json, $assoc);
+    if ($data === null) {
+      $msg = "Failed to decode data from '$file'";
+      throw new Exception($msg);
+    }
+
+    return $data;
   }
 
   /**

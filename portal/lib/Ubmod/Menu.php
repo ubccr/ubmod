@@ -80,14 +80,14 @@ class Ubmod_Menu implements Iterator
       $menuFile = MENU_CONFIG_FILE;
 
       $menuJson = file_get_contents($menuFile);
-      if ($menuJson === FALSE) {
-        $msg = "Failed to read data from $menuFile";
+      if ($menuJson === false) {
+        $msg = "Failed to read data from '$menuFile'";
         throw new Exception($msg);
       }
 
       $menuData = json_decode($menuJson, true);
       if ($menuData === null) {
-        $msg = "Failed to decode data from $menuFile";
+        $msg = "Failed to decode data from '$menuFile'";
         throw new Exception($msg);
       }
 
