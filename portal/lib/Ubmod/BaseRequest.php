@@ -334,6 +334,11 @@ abstract class Ubmod_BaseRequest
     }
 
     if (!$this->isAllowed($entity, $action)) {
+      if ($debug) {
+        $msg = "Authorization denied for '$entity/$action'";
+        error_log($msg);
+      }
+
       header('HTTP/1.0 401 Unauthorized');
       exit;
     }
