@@ -117,9 +117,13 @@ class Ubmod_FrontController
   private function renderView($view, $controller)
   {
     global $BASE_URL;
+
     foreach ($controller->getData() as $key => $value) {
       $$key = $value;
     }
+
+    $request = $this->_request;
+
     ob_start();
     require $view;
     return ob_get_clean();
