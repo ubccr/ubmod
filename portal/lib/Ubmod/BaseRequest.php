@@ -97,11 +97,25 @@ abstract class Ubmod_BaseRequest
   protected $user = null;
 
   /**
+   * Authenticated user primary key.
+   *
+   * @var int
+   */
+  protected $userId = null;
+
+  /**
    * Authenticated user's group.
    *
    * @var string
    */
   protected $group = null;
+
+  /**
+   * Authenticated user's group primary key.
+   *
+   * @var int
+   */
+  protected $groupId = null;
 
   /**
    * Authenticated user's role.
@@ -446,6 +460,25 @@ abstract class Ubmod_BaseRequest
   }
 
   /**
+   * Return the user primary key.
+   *
+   * @return int
+   */
+  public function getUserId()
+  {
+    if ($this->userId === null) {
+      $user = $this->getUser();
+      if ($user === null) {
+        return null;
+      }
+
+      $this->userId = Ubmod_Model_User::getUserId($user);
+    }
+
+    return $this->userId;
+  }
+
+  /**
    * Return the user's group name.
    *
    * @return string
@@ -453,16 +486,34 @@ abstract class Ubmod_BaseRequest
   public function getGroup()
   {
     if ($this->group === null) {
-      $user = $this->getUser();
-      if ($user === null) {
+      $userId = $this->getUserId();
+      if ($userId === null) {
         return null;
       }
 
-      $userId = Ubmod_Model_User::getUserId($user);
       $this->group = Ubmod_Model_User::getCurrentGroup($userId);
     }
 
     return $this->group;
+  }
+
+  /**
+   * Return the user's group primary key.
+   *
+   * @return int
+   */
+  public function getGroupId()
+  {
+    if ($this->groupId === null) {
+      $group = $this->getGroup();
+      if ($group === null) {
+        return null;
+      }
+
+      $this->groupId = Ubmod_Model_Group::getGroupId($group);
+    }
+
+    return $this->groupId;
   }
 
   /**
