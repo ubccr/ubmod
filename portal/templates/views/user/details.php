@@ -1,5 +1,17 @@
 <div style="padding:10px;">
   <?php if ($user): ?>
+    <script type="text/javascript">
+        Ext.onReady(function () {
+            var params = <?php echo $params ?>;
+
+            Ubmod.app.extendPanelHeight();
+
+            <?php if ($interval['multi_month']): ?>
+                Ubmod.app.loadChart('<?php echo $userId ?>-stacked-area',
+                    'user', 'stackedArea', params);
+            <?php endif; ?>
+        });
+    </script>
     <div style="padding-top:5px;" class="labelHeading">
       User: <span class="labelHeader"><?php echo $user['name'] ?></span> &nbsp;&nbsp;
     </div>
@@ -30,6 +42,9 @@
           <td style="font-weight:bold;"><?php echo $user['avg_nodes'] ?></td>
         </tr>
       </table>
+      <?php if ($interval['multi_month']): ?>
+        <div style="margin-top:10px;"><img id="<?php echo $userId ?>-stacked-area" src="<?php echo $BASE_URL ?>/images/loading.gif" /></div>
+      <?php endif; ?>
     </div>
   <?php else: ?>
     No job data found for user in given time period.

@@ -28,7 +28,7 @@
  *
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2011
+ * @copyright Center for Computational Research, University at Buffalo, 2012
  * @package Ubmod
  */
 
@@ -58,6 +58,14 @@ class Ubmod_Controller_User extends Ubmod_BaseController
   public function executeDetails()
   {
     $params = Ubmod_Model_QueryParams::factory($this->getPostData());
+
+    $this->params   = json_encode($this->getPostData());
+    $this->interval = Ubmod_Model_TimeInterval::getByParams($params);
     $this->user  = Ubmod_Model_Job::getEntity('user', $params);
+
+    // Used for img element id
+    $this->userId = 'user-'
+      . preg_replace('/\W+/', '', $this->user['name']) . rand();
   }
 }
+
