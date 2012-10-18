@@ -1431,28 +1431,32 @@ class Ubmod_Model_Chart
   /**
    * Output the image map data for a pie chart.
    *
+   * @param array $params Pie chart parameters.
+   *
    * @see renderPieChart
    */
-  public static function outputPieChartImageMap($params)
+  public static function outputPieChartImageMap(array $params)
   {
     if (isset($params['id'])) {
       self::outputChartMap($params['id']);
     } else {
-      throw new Exception('Chart map id not found in paramters');
+      throw new Exception('Chart map id not found in parameters');
     }
   }
 
   /**
    * Output the image map data for a bar chart.
    *
+   * @param array $params Bar chart parameters.
+   *
    * @see renderBarChart
    */
-  public static function outputBarChartImageMap($params)
+  public static function outputBarChartImageMap(array $params)
   {
     if (isset($params['id'])) {
       self::outputChartMap($params['id']);
     } else {
-      throw new Exception('Chart map id not found in paramters');
+      throw new Exception('Chart map id not found in parameters');
     }
   }
 
@@ -1501,7 +1505,7 @@ class Ubmod_Model_Chart
    *
    * @param string $id The data identifier.
    *
-   * @param mixed The data to stored in the cache.
+   * @return mixed The data to stored in the cache.
    */
   public static function cacheGet($id)
   {

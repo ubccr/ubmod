@@ -329,9 +329,9 @@ class Ubmod_Model_Tag
   }
 
   /**
-   * Updates the tree structure of the tags in the database.
+   * Updates the tree structure of a tag in the database.
    *
-   * @param array $tree A flat array of tree nodes.
+   * @param array $node A single tree node.
    *
    * @return array The updated node.
    */

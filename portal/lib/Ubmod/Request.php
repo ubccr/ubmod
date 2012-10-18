@@ -41,7 +41,13 @@ class Ubmod_Request extends Ubmod_BaseRequest
 {
 
   /**
-   * @see Ubmod_BaseRequest
+   * Construct a request.
+   *
+   * @param string $requestUri The request URL.
+   * @param string $pathInfo The request path info.
+   * @param string $queryString The request query string.
+   * @param array $getData The request GET data.
+   * @param array $postData The request POST data.
    */
   protected function __construct(
     $requestUri,
