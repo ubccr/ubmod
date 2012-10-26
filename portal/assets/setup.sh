@@ -1,9 +1,9 @@
 #!/bin/sh
 ASSET_DIR=$(dirname $0)
 
-EXT_VERSION="4.1.1"
+EXT_VERSION="4.1.1a"
 EXT_ARCHIVE="ext-$EXT_VERSION-gpl.zip"
-EXT_DIR="extjs-$EXT_VERSION"
+EXT_DIR="ext-$EXT_VERSION"
 
 ZF_VERSION="1.12.0-minimal"
 ZF_ARCHIVE="ZendFramework-$ZF_VERSION.tar.gz"
