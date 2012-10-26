@@ -47,28 +47,6 @@ Ext.onReady(function () {
   for period
   from: <?php echo $interval['start'] ?> to: <?php echo $interval['end'] ?>
 </div>
-<div>
-  <table>
-    <tr>
-      <td colspan="2" style="font-size:x-small;">Plot format:
-        <a id="swap-link" class="editLink" href="#">Bar</a></td>
-    </tr>
-    <tr>
-      <td style="vertical-align:top;"><img id="user-pie" class="pie" src="<?php echo $BASE_URL ?>/images/loading.gif" /><img id="user-bar" class="bar" style="display:none;" src="<?php echo $BASE_URL ?>/images/loading.gif" /></td>
-    </tr>
-    <tr>
-      <td style="vertical-align:top;"><img id="group-pie" class="pie" src="<?php echo $BASE_URL ?>/images/loading.gif" /><img id="group-bar" class="bar" style="display:none;" src="<?php echo $BASE_URL ?>/images/loading.gif" /></td>
-    </tr>
-    <?php if ($interval['multi_month']): ?>
-      <tr>
-        <td style="vertical-align:top;"><img id="user-stacked-area" src="<?php echo $BASE_URL ?>/images/loading.gif" /></td>
-      </tr>
-      <tr>
-        <td style="vertical-align:top;"><img id="group-stacked-area" src="<?php echo $BASE_URL ?>/images/loading.gif" /></td>
-      </tr>
-    <?php endif; ?>
-  </table>
-</div>
 <div style="padding:5px; margin-bottom:20px; margin-top:10px;">
   <div class="chart-desc" style="font-weight:bold;">
     Overall Statistics
@@ -94,6 +72,28 @@ Ext.onReady(function () {
       <th>Avg. Exec Time (h): </th>
       <td style="font-weight:bold;"><?php echo $activity['avg_exect'] ?></td>
     </tr>
+  </table>
+</div>
+<div>
+  <table>
+    <tr>
+      <td colspan="2" style="font-size:x-small;">Plot format:
+        <a id="swap-link" class="editLink" href="#">Bar</a></td>
+    </tr>
+    <tr>
+      <td style="vertical-align:top;"><img id="user-pie" class="pie" src="<?php echo $BASE_URL ?>/images/loading.gif" /><img id="user-bar" class="bar" style="display:none;" src="<?php echo $BASE_URL ?>/images/loading.gif" /></td>
+    </tr>
+    <tr>
+      <td style="vertical-align:top;"><img id="group-pie" class="pie" src="<?php echo $BASE_URL ?>/images/loading.gif" /><img id="group-bar" class="bar" style="display:none;" src="<?php echo $BASE_URL ?>/images/loading.gif" /></td>
+    </tr>
+    <?php if ($interval['multi_month']): ?>
+      <tr>
+        <td style="vertical-align:top;"><img id="user-stacked-area" src="<?php echo $BASE_URL ?>/images/loading.gif" /></td>
+      </tr>
+      <tr>
+        <td style="vertical-align:top;"><img id="group-stacked-area" src="<?php echo $BASE_URL ?>/images/loading.gif" /></td>
+      </tr>
+    <?php endif; ?>
   </table>
 </div>
 <div class="chart-desc">
