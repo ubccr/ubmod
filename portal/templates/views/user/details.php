@@ -16,6 +16,9 @@
       User: <span class="labelHeader"><?php echo $user['name'] ?></span> &nbsp;&nbsp;
     </div>
     <div style="padding:5px; margin-bottom:20px; margin-top:10px;">
+      <div class="chart-desc" style="font-weight:bold;">
+        User Statistics
+      </div>
       <table class="dtable">
         <tr>
           <th>Name: </th>

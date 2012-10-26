@@ -91,6 +91,7 @@ a {
 }
 
 .dtable {
+    width: 700px;
     border-collapse: collapse;
 }
 
@@ -195,7 +196,7 @@ ul#nav li.activelink a, ul#nav li.activelink a:hover {
     text-align: center;
     font-size: 14px;
     font-style: italic;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     width: 700px;
 }
 
