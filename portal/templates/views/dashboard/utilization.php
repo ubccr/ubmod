@@ -10,7 +10,9 @@ Ext.onReady(function () {
     pie.each(function (el) { el.setVisibilityMode(Ext.Element.DISPLAY); });
     bar.each(function (el) { el.setVisibilityMode(Ext.Element.DISPLAY); });
 
-    link.on('click', function () {
+    link.on('click', function (e) {
+        e.preventDefault();
+
         if (currentType === 'bar') {
             bar.each(function (el) { el.hide(); });
             pie.each(function (el) { el.show(); });
