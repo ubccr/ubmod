@@ -54,23 +54,23 @@ Ext.onReady(function () {
 </div>
 <table class="dtable">
   <tr>
-    <th>Users: </th>
+    <th>Users:</th>
     <td style="font-weight:bold;"><?php echo $activity['user_count'] ?></td>
-    <th>Total Jobs: </th>
+    <th>Total Jobs:</th>
     <td style="font-weight:bold;"><?php echo number_format($activity['jobs']) ?></td>
-    <th>Avg. Wall Time (d): </th>
+    <th>Avg. Wall Time (d):</th>
     <td style="font-weight:bold;"><?php echo $activity['avg_wallt'] ?></td>
-    <th>Avg. Wait Time (h): </th>
+    <th>Avg. Wait Time (h):</th>
     <td style="font-weight:bold;"><?php echo $activity['avg_wait'] ?></td>
   </tr>
   <tr>
-    <th>Groups: </th>
+    <th>Groups:</th>
     <td style="font-weight:bold;"><?php echo $activity['group_count'] ?></td>
-    <th>Avg. Job Size (CPUs): </th>
+    <th>Avg. Job Size (CPUs):</th>
     <td style="font-weight:bold;"><?php echo $activity['avg_cpus'] ?></td>
-    <th>Avg. Job Size (Nodes): </th>
+    <th>Avg. Job Size (Nodes):</th>
     <td style="font-weight:bold;"><?php echo $activity['avg_nodes'] ?></td>
-    <th>Avg. Exec Time (h): </th>
+    <th>Avg. Exec Time (h):</th>
     <td style="font-weight:bold;"><?php echo $activity['avg_exect'] ?></td>
   </tr>
 </table>

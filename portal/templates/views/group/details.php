@@ -56,23 +56,23 @@
       </div>
       <table class="dtable">
         <tr>
-          <th>Users: </th>
+          <th>Users:</th>
           <td style="font-weight:bold;"><?php echo $group['user_count'] ?></td>
-          <th>Total Jobs: </th>
+          <th>Total Jobs:</th>
           <td style="font-weight:bold;"><?php echo number_format($group['jobs']) ?></td>
-          <th>Avg. Wall (d): </th>
+          <th>Avg. Wall Time (d):</th>
           <td style="font-weight:bold;"><?php echo $group['avg_wallt'] ?></td>
-          <th>Avg. Wait (h): </th>
+          <th>Avg. Wait Time (h):</th>
           <td style="font-weight:bold;"><?php echo $group['avg_wait'] ?></td>
         </tr>
         <tr>
-          <th>Avg. Mem (MB): </th>
+          <th>Avg. Mem (MB):</th>
           <td style="font-weight:bold;"><?php echo number_format($group['avg_mem'], 1) ?></td>
-          <th>Avg. Job Size (CPUs): </th>
+          <th>Avg. Job Size (CPUs):</th>
           <td style="font-weight:bold;"><?php echo $group['avg_cpus'] ?></td>
-          <th>Avg. Job Size (Nodes): </th>
+          <th>Avg. Job Size (Nodes):</th>
           <td style="font-weight:bold;"><?php echo $group['avg_nodes'] ?></td>
-          <th>Avg. Exec (h): </th>
+          <th>Avg. Exec Time (h):</th>
           <td style="font-weight:bold;"><?php echo $group['avg_exect'] ?></td>
         </tr>
       </table>

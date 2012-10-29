@@ -21,27 +21,27 @@
       </div>
       <table class="dtable">
         <tr>
-          <th>Name: </th>
+          <th>Name:</th>
           <td style="font-weight:bold;"><?php echo $user['display_name'] ?></td>
-          <th>Total Jobs: </th>
+          <th>Total Jobs:</th>
           <td style="font-weight:bold;"><?php echo number_format($user['jobs']) ?></td>
-          <th>Avg. Mem (MB): </th>
+          <th>Avg. Mem (MB):</th>
           <td style="font-weight:bold;"><?php echo number_format($user['avg_mem'], 1) ?></td>
-          <th>Avg. Exec (h): </th>
+          <th>Avg. Exec Time (h):</th>
           <td style="font-weight:bold;"><?php echo $user['avg_exect'] ?></td>
-          <th>Avg. Wait (h): </th>
+          <th>Avg. Wait Time (h):</th>
           <td style="font-weight:bold;"><?php echo $user['avg_wait'] ?></td>
         </tr>
         <tr>
-          <th>Group: </th>
+          <th>Group:</th>
           <td style="font-weight:bold;"><?php echo $user['group'] ?></td>
-          <th>Total Wall (d): </th>
+          <th>Total Wall Time (d):</th>
           <td style="font-weight:bold;"><?php echo number_format($user['wallt']) ?></td>
-          <th>Avg. Wall (d): </th>
+          <th>Avg. Wall Time (d):</th>
           <td style="font-weight:bold;"><?php echo $user['avg_wallt'] ?></td>
-          <th>Avg. Job Size (CPUs): </th>
+          <th>Avg. Job Size (CPUs):</th>
           <td style="font-weight:bold;"><?php echo $user['avg_cpus'] ?></td>
-          <th>Avg. Job Size (Nodes): </th>
+          <th>Avg. Job Size (Nodes):</th>
           <td style="font-weight:bold;"><?php echo $user['avg_nodes'] ?></td>
         </tr>
       </table>
