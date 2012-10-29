@@ -79,8 +79,8 @@
       <div style="font-size:x-small;">
         Plot format: <a id="<?php echo $groupId ?>-swap-link" class="editLink" href="#">Bar</a>
       </div>
-      <div style="margin-top:10px;" class="pie"><img id="<?php echo $groupId ?>-pie" src="<?php echo $BASE_URL ?>/images/loading.gif" /></div>
-      <div style="margin-top:10px;" class="bar"><img id="<?php echo $groupId ?>-bar" src="<?php echo $BASE_URL ?>/images/loading.gif" /></div>
+      <div class="pie" style="margin-top:10px;"><img id="<?php echo $groupId ?>-pie" src="<?php echo $BASE_URL ?>/images/loading.gif" /></div>
+      <div class="bar" style="margin-top:10px; display:none;"><img id="<?php echo $groupId ?>-bar" src="<?php echo $BASE_URL ?>/images/loading.gif" /></div>
       <?php if ($interval['multi_month']): ?>
         <div style="margin-top:10px;"><img id="<?php echo $groupId ?>-stacked-area" src="<?php echo $BASE_URL ?>/images/loading.gif" /></div>
       <?php endif; ?>
