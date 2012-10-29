@@ -93,6 +93,7 @@ a {
 .dtable {
     width: 700px;
     border-collapse: collapse;
+    margin-bottom: 10px;
 }
 
 .dtable td {
@@ -123,6 +124,7 @@ a {
     border: 1px solid #ccc;
     font-weight: bold;
     padding: 5px;
+    margin-bottom: 10px;
 }
 
 #date-display {

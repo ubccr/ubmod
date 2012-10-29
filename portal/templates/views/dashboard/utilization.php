@@ -49,33 +49,31 @@ Ext.onReady(function () {
   for period
   from: <?php echo $interval['start'] ?> to: <?php echo $interval['end'] ?>
 </div>
-<div style="padding:5px; margin-bottom:20px; margin-top:10px;">
-  <div class="chart-desc" style="font-weight:bold;">
-    Overall Statistics
-  </div>
-  <table class="dtable">
-    <tr>
-      <th>Users: </th>
-      <td style="font-weight:bold;"><?php echo $activity['user_count'] ?></td>
-      <th>Total Jobs: </th>
-      <td style="font-weight:bold;"><?php echo number_format($activity['jobs']) ?></td>
-      <th>Avg. Wall Time (d): </th>
-      <td style="font-weight:bold;"><?php echo $activity['avg_wallt'] ?></td>
-      <th>Avg. Wait Time (h): </th>
-      <td style="font-weight:bold;"><?php echo $activity['avg_wait'] ?></td>
-    </tr>
-    <tr>
-      <th>Groups: </th>
-      <td style="font-weight:bold;"><?php echo $activity['group_count'] ?></td>
-      <th>Avg. Job Size (CPUs): </th>
-      <td style="font-weight:bold;"><?php echo $activity['avg_cpus'] ?></td>
-      <th>Avg. Job Size (Nodes): </th>
-      <td style="font-weight:bold;"><?php echo $activity['avg_nodes'] ?></td>
-      <th>Avg. Exec Time (h): </th>
-      <td style="font-weight:bold;"><?php echo $activity['avg_exect'] ?></td>
-    </tr>
-  </table>
+<div class="chart-desc" style="font-weight:bold;">
+  Overall Statistics
 </div>
+<table class="dtable">
+  <tr>
+    <th>Users: </th>
+    <td style="font-weight:bold;"><?php echo $activity['user_count'] ?></td>
+    <th>Total Jobs: </th>
+    <td style="font-weight:bold;"><?php echo number_format($activity['jobs']) ?></td>
+    <th>Avg. Wall Time (d): </th>
+    <td style="font-weight:bold;"><?php echo $activity['avg_wallt'] ?></td>
+    <th>Avg. Wait Time (h): </th>
+    <td style="font-weight:bold;"><?php echo $activity['avg_wait'] ?></td>
+  </tr>
+  <tr>
+    <th>Groups: </th>
+    <td style="font-weight:bold;"><?php echo $activity['group_count'] ?></td>
+    <th>Avg. Job Size (CPUs): </th>
+    <td style="font-weight:bold;"><?php echo $activity['avg_cpus'] ?></td>
+    <th>Avg. Job Size (Nodes): </th>
+    <td style="font-weight:bold;"><?php echo $activity['avg_nodes'] ?></td>
+    <th>Avg. Exec Time (h): </th>
+    <td style="font-weight:bold;"><?php echo $activity['avg_exect'] ?></td>
+  </tr>
+</table>
 <div>
   <table>
     <tr>
