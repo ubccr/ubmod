@@ -72,8 +72,16 @@ enabled = true
     <a href="http://www.php.net/manual/en/features.http-auth.php">HTTP authentication with PHP</a>
     and the
     <a href="http://www.php.net/manual/en/reserved.variables.server.php">$_SERVER superglobal</a>
-    documentation. Specifically, UBMoD uses REMOTE_USER as defined by the
+    documentation. By default, UBMoD uses REMOTE_USER as defined by the
     <a href="http://www.faqs.org/rfcs/rfc3875">CGI/1.1 specification</a>.</p>
+    <p>If you use an authentication system that doesn't set REMOTE_USER, but
+    does set another header that is passed to PHP, that can be changed by
+    setting the "key" setting:</p>
+<pre>
+[authentication]
+enabled = true
+key = CUSTOM_HEADER
+</pre>
     <div class="heading">Authorization</div>
     <p>In addition to authentication, UBMoD has support for limiting access to
     specific users. This is accomplished by defining multiple roles and
