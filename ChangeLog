@@ -3,6 +3,14 @@ UBMoD - ChangeLog
 ========================================================================
 
 -
+    - Changed statistics table headings and style
+    - Added the ability to toggle between pie and bar charts on group
+      detail pages
+    - Fixed page scrolling that possibly occurred when toggling pie and
+      bar charts
+    - Moved overall statistics to top of the dashboard
+    - Added monthly wall time chart to user detail page
+    - Added authentication and authorization features
     - Added drill-down capability to tag report charts
     - Added chart tooltips
     - Added chart loading image
@@ -16,7 +24,8 @@ UBMoD - ChangeLog
     - Added data export feature to queue table
     - Added support for exporting data in the XLS format
     - Switched to non-debug Ext JS
-    - Upgraded to Ext JS 4.1.1
+    - Upgraded to Ext JS 4.1.1a
+    - Upgraded to Zend Framework 1.12.0
     - Fixed HTTP response headers
     - Internal refactoring:
         - Refactored REST framework
