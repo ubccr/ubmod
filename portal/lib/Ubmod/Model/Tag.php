@@ -267,7 +267,7 @@ class Ubmod_Model_Tag
     $parentId = null;
     $path = '/';
 
-    if (is_numeric($node['parentId'])) {
+    if (isset($node['parentId']) && is_numeric($node['parentId'])) {
       $parentId = $node['parentId'];
 
       $parent = self::getTagById($parentId);
