@@ -201,8 +201,9 @@ about-page
     for authenticated users that aren't associated with any other role.  If
     you don't assign every user a role, it is suggested to create a restrictive
     default role that allow access </p>
-    <p>Example with restrictive default role and admin role that allows
-    everything:</p>
+    <p>Example with restrictive default role that uses the user dashboard,
+    principal investigator role that uses the group dashboard and admin role
+    that allows everything:</p>
 <pre>
 [
     {
@@ -221,6 +222,25 @@ about-page
         "deny": {
             "dashboard": ["utilization"],
             "user": ["menu", "index", "query-all"]
+        }
+    },
+    {
+        "name": "principal-investigator",
+        "parents": [
+            "general",
+            "dashboard-page",
+            "wait-time-page",
+            "wall-time-page",
+            "user-detail-page",
+            "queue-detail-page",
+            "about-page"
+        ],
+        "allow": {
+            "group": ["details"]
+        },
+        "deny": {
+            "dashboard": ["utilization"],
+            "user": ["query-all"]
         }
     },
     {
