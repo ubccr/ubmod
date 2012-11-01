@@ -461,7 +461,8 @@ class Ubmod_DataWarehouse_QueryBuilder
       $userIds = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
 
       if (count($userIds) > 0) {
-        $clauses[] = 'dim_user_id IN (' . implode(', ', $userIds) . ')';
+        $clauses[]
+          = 'dim_user.dim_user_id IN (' . implode(', ', $userIds) . ')';
       }
 
       if (count($clauses) > 0) {
@@ -513,7 +514,8 @@ class Ubmod_DataWarehouse_QueryBuilder
       $userIds = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
 
       if (count($userIds) > 0) {
-        $clauses[] = 'dim_user_id IN (' . implode(', ', $userIds) . ')';
+        $clauses[]
+          = 'dim_user.dim_user_id IN (' . implode(', ', $userIds) . ')';
       }
 
       if (count($clauses) > 0) {
