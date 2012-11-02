@@ -49,15 +49,15 @@ rm -rf $RPM_BUILD_ROOT
 %doc /usr/share/doc/%{name}-%{version}/ddl
 %config %dir /etc/ubmod
 %config(noreplace) /etc/httpd/conf.d/ubmod.conf
-%config(noreplace) /etc/ubmod/acl-resources.json
-%config(noreplace) /etc/ubmod/acl-roles.json
-%config(noreplace) /etc/ubmod/settings.ini
 %config(noreplace) /etc/ubmod/palette.csv
 %config(noreplace) /etc/ubmod/roles.json
+%config(noreplace) /etc/ubmod/settings.ini
 %config(noreplace) /etc/ubmod/user-roles.json
-%config /etc/ubmod/datawarehouse.json
+%config /etc/ubmod/acl-resources.json
+%config /etc/ubmod/acl-roles.json
 %config /etc/ubmod/bootstrap.php
 %config /etc/ubmod/constants.php
+%config /etc/ubmod/datawarehouse.json
 /usr/bin/ubmod-shredder
 /usr/share/ubmod
 
