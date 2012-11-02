@@ -283,7 +283,7 @@ abstract class Ubmod_BaseRequest
         error_log("'$key' not found in \$_SERVER");
       }
 
-      header('HTTP/1.0 401 Unauthorized');
+      $this->renderAccessDenied();
       exit;
     }
 
@@ -339,7 +339,7 @@ abstract class Ubmod_BaseRequest
         error_log($msg);
       }
 
-      header('HTTP/1.0 401 Unauthorized');
+      $this->renderAccessDenied();
       exit;
     }
   }
@@ -575,6 +575,17 @@ abstract class Ubmod_BaseRequest
     }
 
     return $data;
+  }
+
+  /**
+   * Render access denied template and return 401
+   *
+   * @return void
+   */
+  private function renderAccessDenied()
+  {
+      header('HTTP/1.0 401 Unauthorized');
+      require TEMPLATE_DIR . '/layouts/access-denied.php';
   }
 
   /**
