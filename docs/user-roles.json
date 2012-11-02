@@ -3,6 +3,12 @@
         "admin1",
         "admin2",
         "admin3"
+    ],
+    "principal-investigator": [
+        "pi1",
+        "pi2",
+        "pi3",
+        "pi4"
     ]
 }
 
