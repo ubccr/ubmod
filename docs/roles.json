@@ -18,6 +18,25 @@
         }
     },
     {
+        "name": "principal-investigator",
+        "parents": [
+            "general",
+            "dashboard-page",
+            "wait-time-page",
+            "wall-time-page",
+            "user-detail-page",
+            "queue-detail-page",
+            "about-page"
+        ],
+        "allow": {
+            "group": ["details"]
+        },
+        "deny": {
+            "dashboard": ["utilization"],
+            "user": ["query-all"]
+        }
+    },
+    {
         "name": "admin",
         "allow": null
     }
