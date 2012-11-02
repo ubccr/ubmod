@@ -52,12 +52,12 @@ $ mysql -u ubmoduser -p ubmod &lt; ./ddl/ubmod.sql
 </pre>
 
     <div class="subhead">Create the UBMoD config file</div>
-    <ul><li>Create the files portal/config/settings.ini and
-      shredder/config/settings.ini with your site specific settings. An
-      example can be found in the docs directory of the UBMoD distribution.
-      These files both contain the same information. Two files are needed so
-      that the portal and shredder can be moved and used separately if
-      necessary.</li></ul>
+    <ul><li>Create the files <code>portal/config/settings.ini</code> and
+      <code>shredder/config/settings.ini</code> with your site specific
+      settings. An example can be found in the docs directory of the UBMoD
+      distribution.  These files both contain the same information. Two files
+      are needed so that the portal and shredder can be moved and used
+      separately if necessary.</li></ul>
 <pre>
 [database]
 host = localhost
@@ -81,7 +81,7 @@ password = password
       and port number where necessary. An example with comments (ubmod.conf)
       can be found in the docs directory of the UBMoD distribution.</li>
       <li>Copy the following into your Apache configuration file.
-      Replace /path/to/ubmod with the appropriate path.</li></ul>
+      Replace <code>/path/to/ubmod</code> with the appropriate path.</li></ul>
 <pre>
 Listen 8080
 &lt;VirtualHost *:8080&gt;
