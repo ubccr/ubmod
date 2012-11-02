@@ -157,7 +157,7 @@ sub substitutions {
         # Directories in constants.php file.
         'BASE_DIR . "/lib"'    => qq['$dirs->{phplib}'],
         'BASE_DIR . "/config"' => qq['$dirs->{conf}'],
-        'define("BASE_DIR", dirname(dirname(__FILE__)))' =>
+        "define('BASE_DIR', dirname(dirname(__FILE__)))" =>
             qq[define('BASE_DIR', '$dirs->{data}')],
 
         # Directories used in index.php files.
