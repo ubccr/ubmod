@@ -131,6 +131,8 @@ sub templates {
     return {
         'docs/ubmod.conf'             => "$dirs->{httpd}/ubmod.conf",
         'docs/settings.ini'           => "$dirs->{conf}/settings.ini",
+        'docs/roles.json'             => "$dirs->{conf}/roles.json",
+        'docs/user-roles.json'        => "$dirs->{conf}/user-roles.json",
         'portal/config/constants.php' => "$dirs->{conf}/constants.php",
         'shredder/bin/ubmod-shredder' => "$dirs->{bin}/ubmod-shredder",
         'portal/html/index.php'       => "$dirs->{html}/index.php",
