@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>UBMoD - Tag Guide</title>
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-2972782-2']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+</head>
+<body>
+  <div id="header">
+    <div style="float:right; margin-top:10px;">
+      <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=207003&amp;type=2" width="125" height="37" style="border:0;" alt="SourceForge.net Logo" /></a>
+    </div>
+    <div>
+      <a href="index.html"><img src="images/logo.png" style="border:none;" alt="UBMoD"/></a>
+    </div>
+  </div>
+  <div id="page">
+    <div class="heading">Tag Guide</div>
+    <p>UBMoD has a feature that allows users and jobs to be associated with
+    tags. These tags may then be used to filter the data that is used in the
+    charts and tables in the UBMoD portal. It is also possible to use tags to
+    generate charts and tables with groupings defined by tags.</p>
+    <div class="subhead">User Tags</div>
+    <p>Users can be associated with tags using the "Tag Management" page.
+    Select the desired users by clicking the checkbox in the left hand column.
+    Enter the name of the tag into the "Tag" input (it will display a dropdown
+    of matching tags after you have entered a few characters). Finally, click
+    the "Add Tag to Selected Users" button to add the tag. Double-clicking the
+    user's row will open a tab where it is possible to remove tags from the
+    user.</p>
+    <div class="subhead">Job Tags</div>
+    <p>The docs/examples directory has some examples of job tags These scripts
+    would need to be run directly before the shredder update command. Using
+    job tags requires updating the records' "tags" field in the event table.
+    The tags field is a JSON encoded list of tag strings (e.g.
+    ["tag1","tag2","project=abc123"]). The examples are intended to show
+    possible ways to create more reports from the data that isn't currently
+    exposed through the web interface.</p>
+    <div class="subhead">Filtering by a Tag</div>
+    <p>Any tag can be used to filter the data used by the UBMoD portal. Select
+    a tag in the Tag dropdown in the top toolbar and the current page will
+    refresh only using the data associated with that tag.  Click the "Clear
+    Tag" button to remove the tag filter.</p>
+    <p>Note: The tag filter does not apply to "Tag Reports"</p>
+    <div class="subhead">Tag Activity</div>
+    <p>The "Tag Activity" tab on the "Tag Management" page displays a list of
+    all the tags that have been created in UBMoD and displays a table of the
+    data associated with that tag.  Double-clicking the tag opens another tab
+    with more detailed information regarding that tag.</p>
+    <div class="subhead">Key/Value Tags and Tag Reports</div>
+    <p>To generate tag reports, create multiple tags in a key=value format
+    (e.g. Dept=Chemistry, Dept=Physics) the key will then be available in the
+    dropdown on the "Tag Reports" page. The charts on that page display all the
+    data for the selected tag key grouped by the tag values.</p>
+    <p>Note: Non-mutually exclusive values for a given key will result in pie
+    charts that count the same data more than once. (e.g. if a user has been
+    tagged with both Dept=Chemistry and Dept=Physics then the pie slices for
+    Chemistry and Physics with both include overlapping data which may make it
+    appear that more resources were used than actually were.)</p>
+  </div>
+  <div class="footer">
+    <a href="http://www.ccr.buffalo.edu"><img style="border:none;" src="images/ccr_logo.png" alt="Center for Computational Research"/></a>
+  </div>
+</body>
+</html>
+

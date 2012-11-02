@@ -1,0 +1,291 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>UBMoD - Authentication and Authorization</title>
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-2972782-2']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+</head>
+<body>
+  <div id="header">
+    <div style="float:right; margin-top:10px;">
+      <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=207003&amp;type=2" width="125" height="37" style="border:0;" alt="SourceForge.net Logo" /></a>
+    </div>
+    <div>
+      <a href="index.html"><img src="images/logo.png" style="border:none;" alt="UBMoD"/></a>
+    </div>
+  </div>
+  <div id="page">
+    <div class="heading">Authentication and Authorization</div>
+    <p>This document will attempt to outline the authentication and
+    authorization features currently available.
+    <strong>UBMoD 2.0 (0.2.4)</strong> is the first version to integrate
+    authentication and authorization features. <strong>Note: These features
+    are not yet finalized and future versions may not be backward compatibile.
+    </strong></p>
+    <div class="heading">Authentication</div>
+    <p>UBMoD does not provide any method for authenticating users (usernames
+    and passwords are not stored in UBMoD), but can integrate with external
+    authentication systems. Any of the Apache authentication modules should
+    work with UBMoD.</p>
+    <p><strong>Implementation note:</strong> Refer to the
+    <a href="http://httpd.apache.org/docs/2.2/howto/auth.html">Apache authentication and authorization</a>
+    documentation for instructions on setting up authentication.</p>
+    <p>The first step is to enable authentication system in UBMoD. Once
+    enabled, you will no longer be able to access the UBMoD portal without
+    being authenticated.</p>
+    <p>Add this section to <code>settings.ini</code>:</p>
+<pre>
+[authentication]
+enabled = true
+</pre>
+    <p>After enabling authentication in UBMoD, you must enable an Apache
+    authentication module to provide the authentication mechanism required by
+    UBMoD</p>
+    <p>For example, to use basic file based authentication (mod_auth_basic and
+    mod_authn_file):</p>
+<pre>
+&lt;VirtualHost *&gt;
+    ...
+
+    &lt;Directory /usr/share/ubmod/html&gt;
+        AuthType basic
+        AuthName "UBMoD"
+        AuthBasicProvider file
+        AuthUserFile /etc/htpasswdfile
+        Require valid-user
+
+        ...
+    &lt;/Directory&gt;
+&lt;/VirtualHost&gt;
+</pre>
+    <p><strong>Implementation note:</strong> Refer to
+    <a href="http://www.php.net/manual/en/features.http-auth.php">HTTP authentication with PHP</a>
+    and the
+    <a href="http://www.php.net/manual/en/reserved.variables.server.php">$_SERVER superglobal</a>
+    documentation. By default, UBMoD uses REMOTE_USER as defined by the
+    <a href="http://www.faqs.org/rfcs/rfc3875">CGI/1.1 specification</a>.</p>
+    <p>If you use an authentication system that doesn't set REMOTE_USER, but
+    does set another header that is passed to PHP, that can be changed by
+    setting the "key" setting:</p>
+<pre>
+[authentication]
+enabled = true
+key = CUSTOM_HEADER
+</pre>
+    <div class="heading">Authorization</div>
+    <p>In addition to authentication, UBMoD has support for limiting access to
+    specific users. This is accomplished by defining multiple roles and
+    assigning a role to specific users. A default role may also be defined for
+    users that haven't been assigned to a specific role.</p>
+    <p>Before configuring authorization make sure that authentication is
+    working properly. The authorization feature cannot be used without
+    the authentication feature.</p>
+<pre>
+[authorization]
+enabled = true
+</pre>
+    <div class="subhead">Resources and Actions</div>
+    <p>Each role provides access to a set of resources and actions that can
+    be performed on those resources.  Most of the resources and actions
+    correspond directly to URLs with a few exceptions list in the next
+    section.  The complete list of resources are defined in
+    <code>acl-resources.json</code>. All the resources and actions have not
+    been documented outside of the portal code, so it is best to make use of
+    the pre-defined roles that are described later in this documentation.</p>
+    <div class="subhead">Non-URL Based Resources and Actions</div>
+    <p>In addition to the resources and actions that correspond directly to
+    portal URLs, there are also other features that can be controlled with
+    the authorization system.  Each page listed in the menu has a "menu"
+    action. Denying access to the "menu" action of the "queue" resource will
+    result in the absence of this menu item, but it won't prevent access to
+    the queue page if accessed directly.  The "group" and "user" resources
+    both have an action named "query-all". Denying access to these action
+    will limit the users and groups to those that have the same name as the
+    authenticated user's username and group, respectively.</p>
+    <div class="subhead">Alternate Dashboards</div>
+    <p>In addition to the standard dashboard, there are two other dashboards
+    that only display group and user level information. To use the group
+    dashboard for a given role, deny the "dashboard" "utilization" action (See
+    the custom role section below).  To use the user dashboard, deny access to
+    the "group" "details" action as well.</p>
+    <div class="subhead">Pre-Defined Roles</div>
+    <p>There are several roles defined by UBMoD that can be inherited from in
+    custom roles. These roles are defined in a file named
+    <code>acl-roles.json</code>. This file should not be changed. These roles
+    correspond to each section of the UBMoD portal along with a
+    <code>general</code> role that grants access to privileges that are needed
+    by all users. These roles are not meant to be assigned directly to users,
+    but can be combined to create custom roles.</p>
+<pre>
+general
+dashboard-page
+wait-time-page
+wall-time-page
+user-detail-page
+group-detail-page
+queue-detail-page
+tag-management-page
+tag-reports-page
+about-page
+</pre>
+    <div class="subhead">Custom Roles</div>
+    <p>Custom roles are defined in <code>roles.json</code>. Each role consists
+    of a name with optional sections for parent roles, and resources that each
+    role is allowed or denied access to.</p>
+    <p><strong>Implementation note:</strong> All JSON files must be properly
+    formatted. All strings must be enclosed in double-quotes and no trailing
+    commas are allowed. Refer to
+    <a href="http://www.json.org/">Introducing JSON</a> for more details.</p>
+    <p>Example of <code>roles.json</code> format:</p>
+<pre>
+[
+    {
+        "name": "role-name-1",
+        "parents": [
+            "parent-role-1",
+            "parent-role-2"
+        ],
+        "allow": {
+            "resource-name-1": [
+                "action-name-1",
+                "action-name-2"
+            ],
+            "resource-name-2": null
+        },
+        "deny": {
+            "resource-name-2": [
+                "action-name-1"
+            ]
+        }
+    }
+]
+</pre>
+    <p>The file consists of an array of role objects.  Each role object has a
+    name along with an optional array of parent roles, an optional object
+    defining allowed resources and actions and an optional object defining
+    denied resources and actions.</p>
+    <p>The parent roles can be any role that is in the default role set listed
+    above or a role that is defined in this file. This list should include the
+    "general" role unless access to those resources is made available by
+    another rule.</p>
+    <p>The "allow" and "deny" objects can use any of the following three
+    formats where <code>null</code> is used as a wildcard.</p>
+    <p>Allow everything:</p>
+<pre>
+"allow": null
+</pre>
+    <p>Allow all actions for a resource:</p>
+<pre>
+"allow": {
+    "resource-name": null
+}
+</pre>
+    <p>Allow specific actions for a resource:</p>
+<pre>
+"allow": {
+    "resource-name": ["action-name"]
+}
+</pre>
+    <div class="subhead">Default Role</div>
+    <p>If a role exists with the name <code>__default__</code> it will be used
+    for authenticated users that aren't associated with any other role.  If
+    you don't assign every user a role, it is suggested to create a restrictive
+    default role that allow access </p>
+    <p>Example with restrictive default role that uses the user dashboard,
+    principal investigator role that uses the group dashboard and admin role
+    that allows everything:</p>
+<pre>
+[
+    {
+        "name": "__default__",
+        "parents": [
+            "general",
+            "dashboard-page",
+            "wait-time-page",
+            "wall-time-page",
+            "queue-detail-page",
+            "about-page"
+        ],
+        "allow": {
+            "user": null
+        },
+        "deny": {
+            "dashboard": ["utilization"],
+            "user": ["menu", "index", "query-all"]
+        }
+    },
+    {
+        "name": "principal-investigator",
+        "parents": [
+            "general",
+            "dashboard-page",
+            "wait-time-page",
+            "wall-time-page",
+            "user-detail-page",
+            "queue-detail-page",
+            "about-page"
+        ],
+        "allow": {
+            "group": ["details"]
+        },
+        "deny": {
+            "dashboard": ["utilization"],
+            "user": ["query-all"]
+        }
+    },
+    {
+        "name": "admin",
+        "allow": null
+    }
+]
+</pre>
+    <p><strong>Implementation note:</strong> Refer to the Zend
+    Framework
+    <a href="http://framework.zend.com/manual/1.12/en/zend.acl.html">Zend_Acl</a>
+    documentation for precedence rules.</p>
+    <div class="subhead">User Roles Assignment</div>
+    <p>Users are assigned to roles in the <code>user-roles.json</code> file.
+    Each user should be assigned only one role. If a user is assigned to more
+    than one role, the behavior is undefined.
+    </p>
+<pre>
+{
+    "role-name-1": [
+        "username-1",
+        "username-2",
+        "username-3"
+    ],
+    "role-name-2": [
+        "username-4",
+        "username-5",
+        "username-6"
+    ]
+}
+</pre>
+    <p>This example assigns the <code>admin</code> role to three users.</p>
+<pre>
+{
+    "admin": [
+        "admin-username-1",
+        "admin-username-2",
+        "admin-username-3"
+    ]
+}
+</pre>
+  </div>
+  <div class="footer">
+    <a href="http://www.ccr.buffalo.edu"><img style="border:none;" src="images/ccr_logo.png" alt="Center for Computational Research"/></a>
+  </div>
+</body>
+</html>
+

@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>UBMoD - Database Schema Docs</title>
+  <meta name="description" content="UBMoD is an open source data warehouse and web portal for mining statistical data from resource managers (such as TORQUE) commonly found in high-performance computing environments." />
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-2972782-2']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+</head>
+<body>
+  <div id="header">
+    <div style="float:right; margin-top:10px;">
+      <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=207003&amp;type=2" width="125" height="37" style="border:0;" alt="SourceForge.net Logo" /></a>
+    </div>
+    <div>
+      <a href="index.html"><img src="images/logo.png" style="border:none;" alt="UBMoD"/></a>
+    </div>
+  </div>
+  <div id="page">
+    <div class="heading">Database Schema</div>
+    <p>The UBMoD database contains separate tables for data from PBS/TORQUE
+    and SGE. When log files are shredded the data is inserted into the
+    corresponding table and then copied to another table that stores only
+    the common subset of data used by the supported resource managers.</p>
+
+    <div class="heading">Event Tables</div>
+    <ul>
+      <li><a href="db-schema-pbs-event.html">PBS/TORQUE Event Table</a></li>
+      <li><a href="db-schema-sge-event.html">SGE Event Table</a></li>
+      <li><a href="db-schema-event.html">Generic Event Table</a></li>
+    </ul>
+  </div>
+  <div class="footer">
+    <a href="http://www.ccr.buffalo.edu"><img style="border:none;" src="images/ccr_logo.png" alt="Center for Computational Research"/></a>
+  </div>
+</body>
+</html>
+
