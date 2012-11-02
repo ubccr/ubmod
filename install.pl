@@ -129,9 +129,9 @@ sub templates {
     my ($dirs) = @_;
 
     return {
-        'docs/ubmod.conf'             => "$dirs->{httpd}/ubmod.conf",
-        'docs/settings.ini'           => "$dirs->{conf}/settings.ini",
         'docs/roles.json'             => "$dirs->{conf}/roles.json",
+        'docs/settings.ini'           => "$dirs->{conf}/settings.ini",
+        'docs/ubmod.conf'             => "$dirs->{httpd}/ubmod.conf",
         'docs/user-roles.json'        => "$dirs->{conf}/user-roles.json",
         'portal/config/constants.php' => "$dirs->{conf}/constants.php",
         'shredder/bin/ubmod-shredder' => "$dirs->{bin}/ubmod-shredder",
@@ -170,26 +170,27 @@ sub file_map {
     my ($dirs) = @_;
 
     return {
-        'portal/config/bootstrap.php' => "$dirs->{conf}/bootstrap.php",
-        'portal/config/palette.csv'   => "$dirs->{conf}/palette.csv",
         'portal/config/acl-resources.json' =>
             "$dirs->{conf}/acl-resources.json",
         'portal/config/acl-roles.json' => "$dirs->{conf}/acl-roles.json",
+        'portal/config/bootstrap.php'  => "$dirs->{conf}/bootstrap.php",
         'portal/config/datawarehouse.json' =>
             "$dirs->{conf}/datawarehouse.json",
-        'portal/html'      => $dirs->{html},
-        'portal/templates' => $dirs->{templates},
-        'portal/lib'       => $dirs->{phplib},
-        'shredder/lib'     => $dirs->{perllib},
-        AUTHORS            => "$dirs->{doc}/AUTHORS",
-        ChangeLog          => "$dirs->{doc}/ChangeLog",
-        INSTALL            => "$dirs->{doc}/INSTALL",
-        LICENSE            => "$dirs->{doc}/LICENSE",
-        NOTICE             => "$dirs->{doc}/NOTICE",
-        TODO               => "$dirs->{doc}/TODO",
-        README             => "$dirs->{doc}/README",
-        ddl                => "$dirs->{doc}/ddl",
-        docs               => "$dirs->{doc}/docs",
+        'portal/config/menu.json'   => "$dirs->{conf}/menu.json",
+        'portal/config/palette.csv' => "$dirs->{conf}/palette.csv",
+        'portal/html'               => $dirs->{html},
+        'portal/templates'          => $dirs->{templates},
+        'portal/lib'                => $dirs->{phplib},
+        'shredder/lib'              => $dirs->{perllib},
+        AUTHORS                     => "$dirs->{doc}/AUTHORS",
+        ChangeLog                   => "$dirs->{doc}/ChangeLog",
+        INSTALL                     => "$dirs->{doc}/INSTALL",
+        LICENSE                     => "$dirs->{doc}/LICENSE",
+        NOTICE                      => "$dirs->{doc}/NOTICE",
+        TODO                        => "$dirs->{doc}/TODO",
+        README                      => "$dirs->{doc}/README",
+        ddl                         => "$dirs->{doc}/ddl",
+        docs                        => "$dirs->{doc}/docs",
     };
 }
 

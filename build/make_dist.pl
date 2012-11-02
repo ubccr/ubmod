@@ -42,9 +42,11 @@ sub ignored {
 
     my @files = map {"^$dir/$_\$"} qw(
         build
-        shredder/config/settings\.ini
         portal/assets
+        portal/config/roles\.json
         portal/config/settings\.ini
+        portal/config/user-roles\.json
+        shredder/config/settings\.ini
         ubmod-.*\.tar.gz
     );
 
