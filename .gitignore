@@ -1,6 +1,8 @@
 /portal/config/settings.ini
 /portal/config/roles.json
 /portal/config/user-roles.json
+/portal/html/js/ext-all.js
+/portal/html/resources
 /portal/lib/OLE*
 /portal/lib/Spreadsheet
 /portal/lib/Zend
