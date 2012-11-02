@@ -48,6 +48,7 @@ tar xvf $OLE_ARCHIVE
 rm -rf ../lib/OLE*
 cp -rf $OLE_DIR/OLE* ../lib
 rm -rf $OLE_DIR package.xml
+chmod -x ../lib/OLE.php
 find ../lib/OLE -type f | xargs chmod -x
 
 tar xvf $EXCEL_WRITER_ARCHIVE
