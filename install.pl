@@ -155,8 +155,8 @@ sub substitutions {
         '/usr/share/ubmod/html' => $dirs->{html},
 
         # Directories in constants.php file.
-        'BASE_DIR . "/lib"'    => qq['$dirs->{phplib}'],
-        'BASE_DIR . "/config"' => qq['$dirs->{conf}'],
+        "BASE_DIR . '/lib'"    => qq['$dirs->{phplib}'],
+        "BASE_DIR . '/config'" => qq['$dirs->{conf}'],
         "define('BASE_DIR', dirname(dirname(__FILE__)))" =>
             qq[define('BASE_DIR', '$dirs->{data}')],
 
