@@ -1,0 +1,9 @@
+/portal/config/settings.ini
+/portal/config/roles.json
+/portal/config/user-roles.json
+/portal/lib/OLE*
+/portal/lib/Spreadsheet
+/portal/lib/Zend
+/portal/lib/pChart
+/shredder/config/settings.ini
+
