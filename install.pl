@@ -28,7 +28,7 @@ sub main {
     my ($options) = @_;
 
     my $name    = 'ubmod';
-    my $version = '0.2.3';
+    my $version = '0.2.4';
 
     my %dirs = (
         src  => $FindBin::Bin,
@@ -170,6 +170,9 @@ sub file_map {
     return {
         'portal/config/bootstrap.php' => "$dirs->{conf}/bootstrap.php",
         'portal/config/palette.csv'   => "$dirs->{conf}/palette.csv",
+        'portal/config/acl-resources.json' =>
+            "$dirs->{conf}/acl-resources.json",
+        'portal/config/acl-roles.json' => "$dirs->{conf}/acl-roles.json",
         'portal/config/datawarehouse.json' =>
             "$dirs->{conf}/datawarehouse.json",
         'portal/html'      => $dirs->{html},

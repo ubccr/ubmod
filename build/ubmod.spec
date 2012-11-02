@@ -1,5 +1,5 @@
 Name:      ubmod
-Version:   0.2.3
+Version:   0.2.4
 Release:   1%{?dist}
 Summary:   Data warehouse and web portal for mining statistical data from resource managers
 URL:       http://ubmod.sourceforge.net
@@ -49,15 +49,49 @@ rm -rf $RPM_BUILD_ROOT
 %doc /usr/share/doc/%{name}-%{version}/ddl
 %config %dir /etc/ubmod
 %config(noreplace) /etc/httpd/conf.d/ubmod.conf
+%config(noreplace) /etc/ubmod/acl-resources.json
+%config(noreplace) /etc/ubmod/acl-roles.json
 %config(noreplace) /etc/ubmod/settings.ini
 %config(noreplace) /etc/ubmod/palette.csv
 %config /etc/ubmod/datawarehouse.json
 %config /etc/ubmod/bootstrap.php
 %config /etc/ubmod/constants.php
+%config /etc/ubmod/roles.json
+%config /etc/ubmod/user-roles.json
 /usr/bin/ubmod-shredder
 /usr/share/ubmod
 
 %changelog
+* Fri Nov 2 2012 Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu> 0.2.4-1
+- Changed statistics table headings and style
+- Added the ability to toggle between pie and bar charts on group
+  detail pages
+- Fixed page scrolling that possibly occurred when toggling pie and
+  bar charts
+- Moved overall statistics to top of the dashboard
+- Added monthly wall time chart to user detail page
+- Added authentication and authorization features
+- Added drill-down capability to tag report charts
+- Added chart tooltips
+- Added chart loading image
+- Changed group details page, panel now expands when a group detail
+  tab is opened
+- Changed stacked area charts to display fewer labels on the x-axis
+  for long time periods
+- Changed search behavior, now recognizing '*' as a wildcard
+- Changed keys on dimension tables to unique keys
+- Changed tag dimension to use bridge tables
+- Added data export feature to queue table
+- Added support for exporting data in the XLS format
+- Switched to non-debug Ext JS
+- Upgraded to Ext JS 4.1.1a
+- Upgraded to Zend Framework 1.12.0
+- Fixed HTTP response headers
+- Internal refactoring:
+  - Refactored REST framework
+  - Changed code style
+  - Changed several protected variables to private
+  - Refactored grid sorting
 * Fri Apr 6 2012 Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu> 0.2.3-1
 - Added unique key to sge_event table; this allows re-shredding the
   same log file without duplicate data being inserted into the

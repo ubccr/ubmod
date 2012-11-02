@@ -2,7 +2,7 @@
 UBMoD - ChangeLog
 ========================================================================
 
--
+- 2012-11-02 v0.2.4
     - Changed statistics table headings and style
     - Added the ability to toggle between pie and bar charts on group
       detail pages
