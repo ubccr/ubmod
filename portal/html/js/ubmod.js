@@ -1620,7 +1620,7 @@ Ext.Loader.onReady(function () {
 
             this.tag = config.tag;
 
-            Ext.apply(config, { title: this.tag.get('tag') });
+            Ext.apply(config, { title: this.tag.get('name') });
 
             this.callParent([config]);
         },
@@ -1630,7 +1630,7 @@ Ext.Loader.onReady(function () {
 
             partial = Ubmod.app.createPartial({
                 url: Ubmod.baseUrl + '/tag/details',
-                params: { tag: this.tag.get('tag') }
+                params: { tag: this.tag.get('name') }
             });
 
             this.items = [partial];
