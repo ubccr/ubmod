@@ -394,7 +394,7 @@ sub _select_distinct_from_event {
 }
 
 sub _select_users_current_group {
-    my ( $self ) = @_;
+    my ($self) = @_;
 
     # The combination of SUBSTRING_INDEX and GROUP_CONCAT used below
     # selects the last group for each user when the groups are order
