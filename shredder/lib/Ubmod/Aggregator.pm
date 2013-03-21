@@ -562,9 +562,9 @@ sub _insert_dates {
         my $r = $sth->execute(
             $current->ymd,   $current->week_number,
             $current->month, $current->quarter,
-            $current->year,  $non_neg && $days < 7,
-            $non_neg && $days < 30, $non_neg && $days < 90,
-            $non_neg && $days < 365,
+            $current->year,  $non_neg && $days < 7 ? 1 : 0,
+            $non_neg && $days < 30 ? 1 : 0, $non_neg && $days < 90 ? 1 : 0,
+            $non_neg && $days < 365 ? 1 : 0,
         );
         if ( !$r ) {
             $self->{logger}->fatal( $sth->errstr() );
