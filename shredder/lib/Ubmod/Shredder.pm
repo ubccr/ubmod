@@ -131,6 +131,8 @@ sub shred_fh {
 
     my $count = 0;
     while ( defined( my $line = readline($fh) ) ) {
+        chomp $line;
+
         my $event = eval { $self->shred_line($line); };
         if ($@) {
             $self->logger->fatal($@);
