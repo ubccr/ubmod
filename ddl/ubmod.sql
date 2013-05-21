@@ -158,6 +158,27 @@ CREATE TABLE `sge_event` (
   UNIQUE KEY (`hostname`,`job_number`,`task_number`,`failed`)
 ) ENGINE=MyISAM;
 
+DROP TABLE IF EXISTS `slurm_event`;
+CREATE TABLE `slurm_event` (
+  `slurm_event_id` bigint unsigned AUTO_INCREMENT NOT NULL,
+  `jobid`          int unsigned NOT NULL,
+  `jobname`        tinytext NOT NULL,
+  `cluster`        tinytext NOT NULL,
+  `partition`      tinytext NOT NULL,
+  `user`           tinytext NOT NULL,
+  `group`          tinytext NOT NULL,
+  `account`        tinytext NOT NULL,
+  `submit`         datetime NOT NULL,
+  `eligible`       datetime NOT NULL,
+  `start`          datetime NOT NULL,
+  `end`            datetime NOT NULL,
+  `exitcode`       tinytext NOT NULL,
+  `nnodes`         int unsigned NOT NULL,
+  `ncpus`          int unsigned NOT NULL,
+  `nodelist`       text NOT NULL,
+  PRIMARY KEY (`slurm_event_id`)
+) ENGINE=MyISAM;
+
 --
 -- Generic events
 --
@@ -175,15 +196,15 @@ CREATE TABLE `event` (
   `user`                      varchar(255) NOT NULL,
   `group`                     varchar(255) NOT NULL,
   `tags`                      varchar(255) NOT NULL default '[]',
-  `account`                   varchar(255),
-  `project`                   varchar(255),
+  `account`                   varchar(255) NOT NULL default 'Unknown',
+  `project`                   varchar(255) NOT NULL default 'Unknown',
   `start_time`                datetime NOT NULL,
   `end_time`                  datetime NOT NULL,
   `submission_time`           datetime NOT NULL,
   `wallt`                     bigint unsigned NOT NULL,
-  `cput`                      bigint unsigned NOT NULL,
-  `mem`                       bigint unsigned NOT NULL,
-  `vmem`                      bigint unsigned NOT NULL,
+  `cput`                      bigint unsigned,
+  `mem`                       bigint unsigned,
+  `vmem`                      bigint unsigned,
   `wait`                      bigint unsigned NOT NULL,
   `exect`                     bigint unsigned NOT NULL,
   `nodes`                     int unsigned NOT NULL,
