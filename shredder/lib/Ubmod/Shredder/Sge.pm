@@ -283,16 +283,11 @@ Ubmod::Shredder::Sge - Parse Sun Grid Engine format accounting logs
 
 Version: $Id$
 
-=head1 SYNOPSIS
-
-    my $shredder = Ubmod::Shredder::Sge->new();
-    my $event    = $shredder->shred($line);
-
 =head1 DESCRIPTION
 
 This module parses Sun Grid Engine accounting log files.
 
-See C<Ubmod::BaseShredder>.
+See C<Ubmod::Shredder>.
 
 =head1 AUTHOR
 
