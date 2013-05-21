@@ -2,7 +2,7 @@ package Ubmod::Shredder::Sge;
 use strict;
 use warnings;
 
-use base qw(Ubmod::BaseShredder);
+use base qw(Ubmod::Shredder);
 
 # Entries in the accouting log file
 my @entry_names = qw(
@@ -129,7 +129,7 @@ my %map = (
         'GREATEST(COALESCE(slots, 1), COALESCE(resource_list_num_proc, 1))',
 );
 
-sub shred {
+sub shred_line {
     my ( $self, $line ) = @_;
 
     # Ignore comments
@@ -154,8 +154,6 @@ sub shred {
     return \%event;
 }
 
-sub get_event_table { return 'sge_event'; }
-
 sub get_insert_query {
     my ( $self, $event ) = @_;
 
@@ -167,20 +165,13 @@ sub get_insert_query {
     return ( $sql, @values );
 }
 
+sub get_transform_map { return \%map; }
+
 sub get_transform_query {
     my ($self) = @_;
 
-    my @columns = map {qq[`$_`]} keys %map;
-    my $columns     = join( ',', @columns );
-    my $select_expr = join( ',', values %map );
-
-    my $sql = qq{
-        INSERT INTO event ( $columns )
-        SELECT $select_expr
-        FROM sge_event
-        WHERE start_time != 0
-        GROUP BY job_number, task_number
-    };
+    my $sql = $self->SUPER::get_transform_query()
+        . " WHERE start_time != 0 GROUP BY job_number, task_number";
 
     return $sql;
 }

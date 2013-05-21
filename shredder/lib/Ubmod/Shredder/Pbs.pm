@@ -2,7 +2,7 @@ package Ubmod::Shredder::Pbs;
 use strict;
 use warnings;
 
-use base qw(Ubmod::BaseShredder);
+use base qw(Ubmod::Shredder);
 
 my $pattern = qr|
     ^
@@ -102,7 +102,7 @@ my %map = (
     cpus            => 'resources_used_cpus',
 );
 
-sub shred {
+sub shred_line {
     my ( $self, $line ) = @_;
 
     my ( $date, $type, $job_id, $params );
@@ -159,21 +159,12 @@ sub shred {
     return $event;
 }
 
-sub get_event_table { return 'pbs_event'; }
+sub get_transform_map { return \%map; }
 
 sub get_transform_query {
     my ($self) = @_;
 
-    my @columns = map {qq[`$_`]} keys %map;
-    my $columns     = join( ',', @columns );
-    my $select_expr = join( ',', values %map );
-
-    my $sql = qq{
-        INSERT INTO event ( $columns )
-        SELECT $select_expr
-        FROM pbs_event
-        WHERE type = 'E'
-    };
+    my $sql = $self->SUPER::get_transform_query() . " WHERE type = 'E'";
 
     return $sql;
 }

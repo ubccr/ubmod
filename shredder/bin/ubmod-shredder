@@ -9,13 +9,10 @@ use Pod::Usage;
 use File::Spec;
 use Config::Tiny;
 use DateTime;
-use Ubmod::Aggregator;
 use Ubmod::Logger;
-
-# Global variables
-my $Dbh;
-my $Logger;
-my $Format;
+use Ubmod::Database;
+use Ubmod::Shredder;
+use Ubmod::Aggregator;
 
 # Using case-sensitive options because -H and -h are distinct.
 Getopt::Long::Configure('no_ignore_case');
@@ -46,62 +43,57 @@ sub main {
         pod2usage( -exitval => 0, -verbose => 2 );
     }
 
-    $Logger = Ubmod::Logger->new( $options->{verbose} );
+    my $logger = Ubmod::Logger->new( $options->{verbose} );
 
-    my $config = Config::Tiny->read("$FindBin::Bin/../config/settings.ini");
-    db_connect( $config->{database} );
+    my $dbh = Ubmod::Database->get_dbh();
 
     if ( $options->{shred} ) {
 
         if ( !$options->{format} ) {
-            $Logger->fatal("No input format specified.");
+            $logger->fatal("No input format specified.");
             exit 1;
         }
         elsif ( $options->{format} !~ /^\w+$/ ) {
-            $Logger->fatal("Invalid input format specified.");
+            $logger->fatal("Invalid input format specified.");
             exit 1;
         }
 
-        $Format = lc $options->{format};
-        my $shredder_class = 'Ubmod::Shredder::' . ucfirst $Format;
-
-        if ( !eval("require $shredder_class") ) {
-            $Logger->fatal("Unknown input format specified.");
-            exit 1;
-        }
-
-        my $shredder = $shredder_class->new( logger => $Logger );
+        my $shredder = Ubmod::Shredder->factory(
+            format => $options->{format},
+            logger => $logger,
+            dbh    => $dbh,
+        );
 
         $shredder->set_host( $options->{host} ) if defined $options->{host};
 
-        $Logger->info("Shredding.");
+        $logger->info("Shredding.");
 
         my $count;
         if ( $options->{dir} ) {
-            $count = process_directory( $shredder, $options->{dir} );
+            $count = $shredder->shred_directory( $options->{dir} );
         }
         elsif ( $options->{file} ) {
-            $count = process_file( $shredder, $options->{file} );
+            $count = $shredder->shred_file( $options->{file} );
         }
         elsif ( $options->{stdio} ) {
-            $Logger->info("Processing standard input.");
-            $count = process_fh( $shredder, *STDIN );
+            $logger->info("Processing standard input.");
+            $count = $shredder->shred_fh( *STDIN );
         }
         else {
-            $Logger->fatal("No input source specified.");
+            $logger->fatal("No input source specified.");
             pod2usage( -exitval => 1, -verbose => 1 );
         }
 
-        $Logger->info("Total shredded: $count");
-        $Logger->info("Done shredding!");
+        $logger->info("Total shredded: $count");
+        $logger->info("Done shredding!");
 
-        transform_data($shredder);
+        $shredder->transform_data();
     }
 
     if ( $options->{update} ) {
-        $Logger->info("Updating aggregate tables.");
+        $logger->info("Updating aggregate tables.");
 
-        my %agg_opts = ( dbh => $Dbh, logger => $Logger );
+        my %agg_opts = ( logger => $logger, dbh => $dbh );
 
         if ( defined $options->{end_date} ) {
             if ( $options->{end_date} =~ /^(\d{4})-(\d{1,2})-(\d{1,2})$/ ) {
@@ -109,13 +101,13 @@ sub main {
                     DateTime->new( year => $1, month => $2, day => $3 );
                 };
                 if ( !$date ) {
-                    $Logger->fatal("Invalid date: '$options->{end_date}'");
+                    $logger->fatal("Invalid date: '$options->{end_date}'");
                     exit 1;
                 }
                 $agg_opts{end_date} = $date;
             }
             else {
-                $Logger->fatal("Invalid date format: '$options->{end_date}'");
+                $logger->fatal("Invalid date format: '$options->{end_date}'");
                 exit 1;
             }
         }
@@ -124,230 +116,17 @@ sub main {
 
         eval { $aggregator->aggregate(); };
         if ($@) {
-            $Logger->fatal("Failed to update aggregate tables: $@");
+            $logger->fatal("Failed to update aggregate tables: $@");
             exit 1;
         }
 
-        $Logger->info("Done updating aggregate tables!");
+        $logger->info("Done updating aggregate tables!");
     }
 
     if ( !$options->{update} && !$options->{shred} ) {
-        $Logger->fatal('No shredding or updating option was specified');
+        $logger->fatal('No shredding or updating option was specified');
         pod2usage( -exitval => 1, -verbose => 1 );
     }
-}
-
-sub process_directory {
-    my ( $shredder, $dir ) = @_;
-
-    $Logger->info( "Processing files for host: " . $shredder->host() )
-        if $shredder->has_host();
-    $Logger->info("Processing directory: $dir");
-
-    if ( !-d $dir ) {
-        $Logger->fatal("Cannot access '$dir': No such directory");
-        exit 1;
-    }
-
-    my @files;
-    if ( my $date = get_event_max_date( $shredder->host() ) ) {
-        $Logger->info("Shredding files dated after $date.");
-        @files = @{ get_file_names( $dir, $date ) };
-    }
-    else {
-        $Logger->info('Empty database, shredding all files.');
-        @files = @{ get_file_names($dir) };
-    }
-
-    # Prepend directory path
-    @files = map { File::Spec->catfile( $dir, $_ ) } @files;
-
-    return process_files( $shredder, \@files );
-}
-
-sub process_files {
-    my ( $shredder, $files ) = @_;
-
-    my $record_count = 0;
-    my $file_count   = 0;
-
-    for my $file (@$files) {
-        if ( !-e $file ) {
-            $Logger->warn("File not found '$file'.");
-            next;
-        }
-        if ( !-f $file ) {
-            $Logger->warn("Skipping non-file '$file'.");
-            next;
-        }
-        if ( !-r $file ) {
-            $Logger->warn("Skipping unreadable file '$file'.");
-            next;
-        }
-
-        $record_count += process_file( $shredder, $file );
-        $file_count++;
-    }
-
-    $Logger->info("Shredded $file_count files.");
-
-    return $record_count;
-}
-
-sub process_file {
-    my ( $shredder, $file ) = @_;
-
-    $Logger->info("Processing file: $file");
-
-    if ( !-f $file ) {
-        $Logger->fatal("Cannot access '$file': No such file");
-        exit 1;
-    }
-
-    my $fh;
-    if ( !open $fh, '<', $file ) {
-        $Logger->fatal("Could not open file '$file': $!");
-        exit 1;
-    }
-
-    return process_fh( $shredder, $fh );
-}
-
-sub process_fh {
-    my ( $shredder, $fh ) = @_;
-
-    my $count = 0;
-    while ( defined( my $line = readline($fh) ) ) {
-        my $event = eval { $shredder->shred($line); };
-        if ($@) {
-            $Logger->fatal($@);
-            next;
-        }
-
-        # Skip empty events
-        next unless %$event;
-
-        my ( $sql, @values ) = $shredder->get_insert_query($event);
-
-        my $sth = $Dbh->prepare($sql);
-        $sth->execute(@values);
-
-        $count++;
-    }
-
-    $Logger->info("Shredded $count records.");
-
-    return $count;
-}
-
-sub db_connect {
-    my ($args) = @_;
-
-    for my $arg (qw( host dbname user password )) {
-        if ( !defined $args->{$arg} ) {
-            $Logger->fatal("Missing database config option: '$arg'");
-        }
-    }
-
-    my $dsn = "DBI:mysql:database=$args->{dbname};host=$args->{host}";
-
-    if ( defined $args->{port} ) {
-        $dsn .= ";port=$args->{port}";
-    }
-
-    $Dbh = eval {
-        DBI->connect( $dsn, $args->{user}, $args->{password},
-            { PrintError => 0, RaiseError => 1, AutoCommit => 1 } );
-    };
-    if ($@) {
-        $Logger->fatal("Failed to connect to database: $@");
-        exit 1;
-    }
-}
-
-sub get_event_max_date {
-    my ($host) = @_;
-
-    my $sql = q{
-        SELECT DATE_FORMAT( MAX(date_key), '%Y-%m-%d' )
-        FROM event
-    };
-
-    $sql .= " WHERE cluster = " . $Dbh->quote($host) if defined $host;
-
-    return $Dbh->selectrow_arrayref($sql)->[0];
-}
-
-sub get_file_names {
-    my ( $dir, $date ) = @_;
-
-    my $today = DateTime->now( time_zone => 'local' );
-    $today->set(
-        hour   => 0,
-        minute => 0,
-        second => 0,
-    );
-
-    if ( !defined $date ) {
-
-        # If no date is specified return all files in the directory
-        # excluding the file for today.
-
-        my $dh;
-        if ( !opendir $dh, $dir ) {
-            $Logger->fatal("Could not open dir '$dir': $!");
-            exit 1;
-        }
-        my @files = sort readdir($dh);
-
-        # Skip hidden files
-        @files = grep { !/^\./ } @files;
-
-        # Remove file for today
-        my $today_file = $today->strftime('%Y%m%d');
-        @files = grep { $_ ne $today_file } @files;
-
-        return \@files;
-    }
-    elsif ( $date =~ /^(\d{4})-(\d{2})-(\d{2})$/ ) {
-
-        # If a date is specified return all files in the directory dated
-        # after that date and before today.
-
-        my $current = DateTime->new(
-            year  => $1,
-            month => $2,
-            day   => $3,
-        );
-        $current->add( days => 1 );
-
-        my @files;
-
-        while ( DateTime->compare( $current, $today ) < 0 ) {
-            push @files, $current->strftime('%Y%m%d');
-            $current->add( days => 1 );
-        }
-
-        # Remove nonexistent files
-        @files = grep { -f File::Spec->catfile( $dir, $_ ) } @files;
-
-        return \@files;
-    }
-    else {
-        $Logger->fatal("Invalid date format: '$date'");
-        exit 1;
-    }
-}
-
-sub transform_data {
-    my ($shredder) = @_;
-
-    # XXX move this somewhere else or limit the events that are
-    # transformed by the query below
-    $Dbh->do(q{ TRUNCATE event });
-
-    my $sql = $shredder->get_transform_query();
-    return $Dbh->do($sql);
 }
 
 __END__

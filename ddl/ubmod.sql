@@ -165,6 +165,7 @@ CREATE TABLE `sge_event` (
 DROP TABLE IF EXISTS `event`;
 CREATE TABLE `event` (
   `event_id`                  bigint unsigned AUTO_INCREMENT NOT NULL,
+  `source_format`             varchar(255),
   `date_key`                  datetime NOT NULL,
   `job_id`                    int unsigned NOT NULL,
   `job_array_index`           int unsigned,
