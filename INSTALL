@@ -98,8 +98,7 @@ Set up the web application
       <Directory /path/to/ubmod/html>
         RewriteEngine On
         RewriteRule ^api/rest/(.*)$ api/rest/index.php?path_info=$1 [L,QSA]
-        RewriteCond $1 !^(favicon\.ico|robots\.txt)$
-        RewriteCond $1 !^(css|images|js|resources)/
+        RewriteCond %{REQUEST_FILENAME} !-f
         RewriteRule ^(.*)$ index.php?path_info=$1 [L,QSA]
       </Directory>
     </VirtualHost>
