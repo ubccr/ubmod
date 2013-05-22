@@ -66,7 +66,7 @@ sub shred_directory {
     confess "Cannot access '$dir': No such directory" unless -d $dir;
 
     my @files;
-    if ( my $date = $self->get_event_max_date( $self->host() ) ) {
+    if ( my $date = $self->get_event_max_date() ) {
         $self->logger->info("Shredding files dated after $date.");
         @files = @{ $self->get_file_names( $dir, $date ) };
     }
@@ -205,14 +205,16 @@ sub get_transform_query {
 }
 
 sub get_event_max_date {
-    my ( $self, $host ) = @_;
+    my ($self) = @_;
 
     my $sql = q{
         SELECT DATE_FORMAT( MAX(date_key), '%Y-%m-%d' )
         FROM event
     };
 
-    $sql .= " WHERE cluster = " . $self->dbh->quote($host) if defined $host;
+    if ( $self->has_host() ) {
+        $sql .= " WHERE cluster = " . $self->dbh->quote( $self->host() );
+    }
 
     return $self->dbh->selectrow_arrayref($sql)->[0];
 }
