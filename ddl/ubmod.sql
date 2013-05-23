@@ -40,7 +40,6 @@ CREATE TABLE `pbs_event` (
   `job_array_index`           int unsigned,
   `host`                      varchar(255) NOT NULL,
   `queue`                     varchar(255),
-  `type`                      char(1) NOT NULL,
   `user`                      varchar(255),
   `group`                     varchar(255),
   `ctime`                     int,
@@ -74,8 +73,7 @@ CREATE TABLE `pbs_event` (
   `resource_list_nodect`      int unsigned,
   `resource_list_mem`         bigint unsigned,
   `resource_list_pmem`        bigint unsigned,
-  PRIMARY KEY (`pbs_event_id`),
-  KEY (`type`)
+  PRIMARY KEY (`pbs_event_id`)
 ) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `sge_event`;

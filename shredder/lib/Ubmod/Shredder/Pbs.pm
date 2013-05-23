@@ -26,7 +26,6 @@ my @columns = qw(
     job_array_index
     host
     queue
-    type
     user
     group
     ctime
@@ -114,11 +113,13 @@ sub shred_line {
         die "Malformed PBS acct line: $line";
     }
 
+    # Ignore all non "end" events.
+    return {} unless $type eq 'E';
+
     $date =~ s#^(\d{2})/(\d{2})/(\d{4})#$3-$1-$2#;
 
     my $event = {
         date_key => $date,
-        type     => $type,
     };
 
     $self->_set_job_id_and_host( $event, $job_id );
@@ -138,36 +139,28 @@ sub shred_line {
         $key = lc $key;
 
         if ( $key eq 'exec_host' ) {
-            $self->_set_exec_host( $event, $value );
+            $self->_set_exec_host( \%event, $value );
         }
         elsif ( defined( $formats{$key} ) ) {
             my $parser = '_parse_' . $formats{$key};
-            $event->{$key} = $self->$parser($value);
+            $event{$key} = $self->$parser($value);
         }
         else {
-            $event->{$key} = $value;
+            $event{$key} = $value;
         }
     }
 
-    for my $key ( keys %$event ) {
+    for my $key ( keys %event ) {
         if ( !exists $columns{$key} ) {
             $self->logger->warn("Ignoring unknown attribute '$key'");
-            delete $event->{$key};
+            delete $event{$key};
         }
     }
 
-    return $event;
+    return \%event;
 }
 
 sub get_transform_map { return \%map; }
-
-sub get_transform_query {
-    my ($self) = @_;
-
-    my $sql = $self->SUPER::get_transform_query() . " WHERE type = 'E'";
-
-    return $sql;
-}
 
 sub _parse_time {
     my ( $self, $time ) = @_;
