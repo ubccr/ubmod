@@ -135,7 +135,10 @@ sub templates {
         'docs/user-roles.json'        => "$dirs->{conf}/user-roles.json",
         'portal/config/constants.php' => "$dirs->{conf}/constants.php",
         'shredder/bin/ubmod-shredder' => "$dirs->{bin}/ubmod-shredder",
-        'portal/html/index.php'       => "$dirs->{html}/index.php",
+        'shredder/bin/ubmod-slurm-helper' =>
+            "$dirs->{bin}/ubmod-slurm-helper",
+        'shredder/lib/Ubmod/Config.pm' => "$dirs->{perllib}/Ubmod/Config.pm",
+        'portal/html/index.php' => "$dirs->{html}/index.php",
         'portal/html/api/rest/index.php' =>
             "$dirs->{html}/api/rest/index.php",
     };
