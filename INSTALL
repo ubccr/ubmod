@@ -29,7 +29,7 @@ command:
                   php-gd perl perl-DBI perl-DBD-MySQL perl-Config-Tiny \
                   perl-DateTime
 
-and on Debain based systems with this command:
+and on Debian based systems with this command:
 
     # apt-get install apache2 mysql-server mysql-client \
                       libapache2-mod-php5 php5 php5-mysql php5-gd perl \
