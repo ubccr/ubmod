@@ -73,7 +73,8 @@ CREATE TABLE `pbs_event` (
   `resource_list_nodect`      int unsigned,
   `resource_list_mem`         bigint unsigned,
   `resource_list_pmem`        bigint unsigned,
-  PRIMARY KEY (`pbs_event_id`)
+  PRIMARY KEY (`pbs_event_id`),
+  UNIQUE KEY (`host`,`job_id`,`job_array_index`,`ctime`)
 ) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `sge_event`;
@@ -174,7 +175,8 @@ CREATE TABLE `slurm_event` (
   `nnodes`         int unsigned NOT NULL,
   `ncpus`          int unsigned NOT NULL,
   `nodelist`       text NOT NULL,
-  PRIMARY KEY (`slurm_event_id`)
+  PRIMARY KEY (`slurm_event_id`),
+  UNIQUE KEY (`cluster`(20),`jobid`,`submit`)
 ) ENGINE=MyISAM;
 
 --
