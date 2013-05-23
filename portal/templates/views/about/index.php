@@ -9,8 +9,9 @@
   <p>UBMoD (UB Metrics on Demand) is an open source data warehouse and web
   portal for mining statistical data from resource managers
   (<a href="http://www.clusterresources.com/pages/products/torque-resource-manager.php">TORQUE</a>,
-  <a href="http://www.openpbs.org">OpenPBS</a> and
-  <a href="http://gridscheduler.sourceforge.net">SGE</a>)
+  <a href="http://www.openpbs.org">OpenPBS</a>,
+  <a href="http://gridscheduler.sourceforge.net">SGE</a> and
+  <a href="http://slurm.schedmd.com/">Slurm</a>)
   commonly found in high-performance computing environments. It has been
   developed by the
   <a href="http://www.ccr.buffalo.edu">Center for Computational Research</a>
