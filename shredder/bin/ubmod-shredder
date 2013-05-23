@@ -143,6 +143,11 @@ Version: $Id$
 
 B<ubmod-shredder> [B<-v>] [B<-u>] [B<-s>] [B<-H> I<host>] [B<-f> I<format>] [B<-i> I<file>|B<-d> I<dir>]
 
+=head1 DESCRIPTION
+
+This script can be used to parse and aggregate accounting data for use
+with the UBMoD portal.
+
 =head1 OPTIONS
 
 =head2 GENERAL OPTIONS
@@ -209,11 +214,6 @@ Explicitly set the end date used for aggregation time intervals. The
 date must be in YYYY-MM-DD format. Defaults to yesterday.
 
 =back
-
-=head1 DESCRIPTION
-
-This script can be used to parse and aggregate accounting data for use
-with the UBMoD portal.
 
 =head1 EXAMPLES
 
