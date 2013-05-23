@@ -1,0 +1,229 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+use Getopt::Long;
+use Pod::Usage;
+use DateTime;
+use File::Temp qw(tempfile);
+use Ubmod::Logger;
+use Ubmod::Database;
+use Ubmod::Aggregator;
+use Ubmod::Shredder;
+
+# Using case-sensitive options because -H and -h are distinct.
+Getopt::Long::Configure('no_ignore_case');
+
+my %options;
+
+GetOptions(
+    'help|h'         => \$options{help},
+    'verbose|v'      => \$options{verbose},
+    'host|H=s'       => \$options{host},
+    'start-time|s=s' => \$options{start_time},
+    'end-time|e=s'   => \$options{end_time},
+) or exit 1;
+
+main( \%options );
+
+exit;
+
+sub main {
+    my ($options) = @_;
+
+    pod2usage( -exitval => 0, -verbose => 2 ) if $options->{help};
+
+    my $logger = Ubmod::Logger->new( $options->{verbose} );
+    my $dbh    = Ubmod::Database->get_dbh();
+
+    my $shredder = Ubmod::Shredder->factory(
+        format => 'slurm',
+        logger => $logger,
+        dbh    => $dbh,
+    );
+
+    my $config = Ubmod::Config->get_config();
+    $shredder->set_host( $options->{host} ) if defined $options->{host};
+
+    my $sacct
+        = defined $config->{slurm}{sacct} ? $config->{slurm}{sacct} : 'sacct';
+
+    my @args = @{ get_sacct_cmd_args( $shredder,
+            @$options{qw(start_time end_time)} ) };
+
+    my ( undef, $log_file ) = tempfile(
+        'sacct-log-XXXX',
+        TMPDIR => 1,
+        OPEN   => 0,
+    );
+
+    my ( undef, $error_file ) = tempfile(
+        'sacct-error-XXXX',
+        TMPDIR => 1,
+        OPEN   => 0,
+    );
+
+    my $cmd = join ' ', $sacct, @args, "1>$log_file", "2>$error_file";
+    $logger->info("Executing command: $cmd");
+    qx($cmd);
+
+    if ( !-z $error_file ) {
+        open my ($fh), '<', $error_file;
+        my $error = do { local $/; <$fh> };
+        $logger->fatal("Error while executing sacct: $error");
+        exit 1;
+    }
+
+    my $count = $shredder->shred_file($log_file);
+
+    $logger->info("Total shredded: $count");
+    $logger->info("Done shredding!");
+
+    $shredder->transform_data();
+}
+
+sub get_sacct_cmd_args {
+    my ( $shredder, $start_time, $end_time ) = @_;
+
+    my @args = qw(
+        --allusers
+        --parsable2
+        --noheader
+        --allocations
+    );
+
+    if ( $shredder->has_host() ) {
+        push @args, '--clusters', $shredder->host();
+    }
+    else {
+        push @args, '--allclusters';
+    }
+
+    my $format = join ',', @{ $shredder->get_field_names() };
+    push @args, '--format', $format;
+
+    my $states = join ',', @{ $shredder->get_states() };
+    push @args, '--state', $states;
+
+    if ( defined $start_time ) {
+        push @args, '--starttime', $start_time;
+    }
+    else {
+        my $max_date = $shredder->get_event_max_date();
+        my $start;
+        if ( defined $max_date && $max_date =~ /^(\d{4})-(\d{2})-(\d{2})$/ ) {
+            $start = DateTime->new(
+                year  => $1,
+                month => $2,
+                day   => $3,
+            );
+            $start->add( days => 1 );
+        }
+        else {
+            $start = DateTime->from_epoch( epoch => 0 );
+        }
+        push @args, '--starttime', $start->iso8601();
+    }
+
+    if ( defined $end_time ) {
+        push @args, '--endtime', $end_time;
+    }
+    else {
+        my $end = DateTime->now( time_zone => 'local' );
+        $end->set( hour => 0, minute => 0, second => 0 );
+        push @args, '--endtime', $end->iso8601();
+    }
+
+    return \@args;
+}
+
+__END__
+
+=head1 NAME
+
+ubmod-slurm-helper - UBMoD Slurm helper script
+
+=head1 VERSION
+
+Version: $Id$
+
+=head1 SYNOPSIS
+
+B<ubmod-slurm-helper> [B<-v>] [B<-H> I<host>]
+
+=head1 DESCRIPTION
+
+This script can be used to shred data from Slurm's sacct command.
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<-h>, B<--help>
+
+Display this text and exit.
+
+=item B<-v>, B<--verbose>
+
+Increase verbosity.
+
+=item B<-H>, B<--host> I<hostname>
+
+Shred accounting data for only the specified cluster.  This value will
+be passed to the C<sacct> C<--clusters> option.  If this option is not
+specified all clusters will be shredded using the C<sacct>
+C<--allclusters> option.  You should consistently always or never use
+this option if you are not explicitely specifying a time range since
+the cluster name is used to determine the date range.  Unlike the
+C<sacct> command, only one cluster should be specified.
+
+=item B<-e>, B<--start-time> I<datetime>
+
+Specify the start date and time to shred from C<acct>.  The datetime
+must be in a format accepted by the C<sacct> C<--starttime> option.
+Defaults to the epoch if no data has been shredded from Slurm (or the
+hostname that has been specified) or 00:00:00 of the date after the
+date of the most recently found data.
+
+=item B<-e>, B<--end-time> I<datetime>
+
+Specify the end date and time to shred from C<acct>.  The datetime must
+be in a format accepted by the C<sacct> C<--endtime> option.  Defaults
+to 00:00:00 of the current day.
+
+=back
+
+=head1 EXAMPLES
+
+  ubmod-slurm-helper -v -H mycluster
+
+  ubmod-slurm-helper -h
+
+=head1 AUTHOR
+
+Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
+
+=head1 COPYRIGHT AND LICENSE
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The Original Code is UBMoD.
+
+The Initial Developer of the Original Code is Research Foundation of State
+University of New York, on behalf of University at Buffalo.
+
+Portions created by the Initial Developer are Copyright (C) 2007 Research
+Foundation of State University of New York, on behalf of University at
+Buffalo.  All Rights Reserved.
+
+=cut
+
