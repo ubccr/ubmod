@@ -80,7 +80,7 @@ my %formats = (
 my %map = (
     date_key        => 'DATE(FROM_UNIXTIME(end))',
     job_id          => 'job_id',
-    job_array_index => 'job_array_index',
+    job_array_index => 'NULLIF(job_array_index, -1)',
     job_name        => 'jobname',
     cluster         => 'LOWER(host)',
     queue           => 'LOWER(queue)',
@@ -225,7 +225,7 @@ sub _set_job_id_and_host {
 
     $event->{host}            = $host;
     $event->{job_id}          = $job_id;
-    $event->{job_array_index} = $index;
+    $event->{job_array_index} = $index if defined $index;
 }
 
 sub _set_exec_host {

@@ -36,7 +36,7 @@ DROP TABLE IF EXISTS `pbs_event`;
 CREATE TABLE `pbs_event` (
   `pbs_event_id`              bigint unsigned AUTO_INCREMENT NOT NULL,
   `job_id`                    int unsigned NOT NULL,
-  `job_array_index`           int unsigned,
+  `job_array_index`           int NOT NULL DEFAULT -1,
   `host`                      varchar(255) NOT NULL,
   `queue`                     varchar(255),
   `user`                      varchar(255),
