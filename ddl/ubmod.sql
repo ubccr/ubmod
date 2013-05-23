@@ -185,7 +185,7 @@ CREATE TABLE `slurm_event` (
 DROP TABLE IF EXISTS `event`;
 CREATE TABLE `event` (
   `event_id`                  bigint unsigned AUTO_INCREMENT NOT NULL,
-  `source_format`             varchar(255),
+  `source_format`             varchar(255) NOT NULL,
   `date_key`                  date NOT NULL,
   `job_id`                    int unsigned NOT NULL,
   `job_array_index`           int unsigned,
@@ -208,7 +208,8 @@ CREATE TABLE `event` (
   `exect`                     bigint unsigned NOT NULL,
   `nodes`                     int unsigned NOT NULL,
   `cpus`                      int unsigned NOT NULL,
-  PRIMARY KEY (`event_id`)
+  PRIMARY KEY (`event_id`),
+  KEY (`source_format`,`cluster`)
 ) ENGINE=MyISAM;
 
 --

@@ -210,13 +210,16 @@ sub get_event_max_date {
     my $sql = q{
         SELECT DATE_FORMAT( MAX(date_key), '%Y-%m-%d' )
         FROM event
+        WHERE source_format = ?
     };
+    my @bind_values = ( $self->format() );
 
     if ( $self->has_host() ) {
-        $sql .= " WHERE cluster = " . $self->dbh->quote( $self->host() );
+        $sql .= ' AND cluster = ?';
+        push @bind_values, $self->host();
     }
 
-    return $self->dbh->selectrow_arrayref($sql)->[0];
+    return $self->dbh->selectrow_arrayref( $sql, undef, @bind_values )->[0];
 }
 
 sub get_file_names {
