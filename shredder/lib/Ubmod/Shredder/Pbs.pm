@@ -21,7 +21,6 @@ my $pattern = qr|
 
 # All the columns in the pbs_event table, excluding the primary key
 my @columns = qw(
-    date_key
     job_id
     job_array_index
     host
@@ -79,7 +78,7 @@ my %formats = (
 
 # Mapping from generic event table to PBS specific event table
 my %map = (
-    date_key        => 'date_key',
+    date_key        => 'DATE(FROM_UNIXTIME(end))',
     job_id          => 'job_id',
     job_array_index => 'job_array_index',
     job_name        => 'jobname',
@@ -118,13 +117,11 @@ sub shred_line {
 
     $date =~ s#^(\d{2})/(\d{2})/(\d{4})#$3-$1-$2#;
 
-    my $event = {
-        date_key => $date,
-    };
+    my %event;
 
-    $self->_set_job_id_and_host( $event, $job_id );
+    $self->_set_job_id_and_host( \%event, $job_id );
 
-    $event->{host} = $self->host() if $self->has_host();
+    $event{host} = $self->host() if $self->has_host();
 
     my @parts = split /\s+/, $params;
 

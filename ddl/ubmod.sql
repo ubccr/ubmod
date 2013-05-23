@@ -35,7 +35,6 @@
 DROP TABLE IF EXISTS `pbs_event`;
 CREATE TABLE `pbs_event` (
   `pbs_event_id`              bigint unsigned AUTO_INCREMENT NOT NULL,
-  `date_key`                  datetime,
   `job_id`                    int unsigned NOT NULL,
   `job_array_index`           int unsigned,
   `host`                      varchar(255) NOT NULL,
@@ -187,7 +186,7 @@ DROP TABLE IF EXISTS `event`;
 CREATE TABLE `event` (
   `event_id`                  bigint unsigned AUTO_INCREMENT NOT NULL,
   `source_format`             varchar(255),
-  `date_key`                  datetime NOT NULL,
+  `date_key`                  date NOT NULL,
   `job_id`                    int unsigned NOT NULL,
   `job_array_index`           int unsigned,
   `job_name`                  varchar(255),
@@ -541,13 +540,13 @@ BEGIN
     `event`.`nodes`,
     `event`.`cpus`
   FROM `event`
-  JOIN `dim_date`    ON DATE(`event`.`date_key`) = `dim_date`.`date`
-  JOIN `dim_cluster` ON `event`.`cluster`        = `dim_cluster`.`name`
-  JOIN `dim_queue`   ON `event`.`queue`          = `dim_queue`.`name`
-  JOIN `dim_user`    ON `event`.`user`           = `dim_user`.`name`
-  JOIN `dim_group`   ON `event`.`group`          = `dim_group`.`name`
-  JOIN `dim_tags`    ON `event`.`tags`           = `dim_tags`.`tags`
-  JOIN `dim_cpus`    ON `event`.`cpus`           = `dim_cpus`.`cpu_count`;
+  JOIN `dim_date`    ON `event`.`date_key` = `dim_date`.`date`
+  JOIN `dim_cluster` ON `event`.`cluster`  = `dim_cluster`.`name`
+  JOIN `dim_queue`   ON `event`.`queue`    = `dim_queue`.`name`
+  JOIN `dim_user`    ON `event`.`user`     = `dim_user`.`name`
+  JOIN `dim_group`   ON `event`.`group`    = `dim_group`.`name`
+  JOIN `dim_tags`    ON `event`.`tags`     = `dim_tags`.`tags`
+  JOIN `dim_cpus`    ON `event`.`cpus`     = `dim_cpus`.`cpu_count`;
 END//
 
 --
