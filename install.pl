@@ -129,16 +129,16 @@ sub templates {
     my ($dirs) = @_;
 
     return {
-        'docs/roles.json'             => "$dirs->{conf}/roles.json",
-        'docs/settings.ini'           => "$dirs->{conf}/settings.ini",
-        'docs/ubmod.conf'             => "$dirs->{httpd}/ubmod.conf",
-        'docs/user-roles.json'        => "$dirs->{conf}/user-roles.json",
-        'portal/config/constants.php' => "$dirs->{conf}/constants.php",
-        'shredder/bin/ubmod-shredder' => "$dirs->{bin}/ubmod-shredder",
+        'docs/examples/roles.json'      => "$dirs->{conf}/roles.json",
+        'docs/examples/settings.ini'    => "$dirs->{conf}/settings.ini",
+        'docs/examples/ubmod.conf'      => "$dirs->{httpd}/ubmod.conf",
+        'docs/examples/user-roles.json' => "$dirs->{conf}/user-roles.json",
+        'portal/config/constants.php'   => "$dirs->{conf}/constants.php",
+        'shredder/bin/ubmod-shredder'   => "$dirs->{bin}/ubmod-shredder",
         'shredder/bin/ubmod-slurm-helper' =>
             "$dirs->{bin}/ubmod-slurm-helper",
         'shredder/lib/Ubmod/Config.pm' => "$dirs->{perllib}/Ubmod/Config.pm",
-        'portal/html/index.php' => "$dirs->{html}/index.php",
+        'portal/html/index.php'        => "$dirs->{html}/index.php",
         'portal/html/api/rest/index.php' =>
             "$dirs->{html}/api/rest/index.php",
     };
