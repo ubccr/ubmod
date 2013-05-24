@@ -180,7 +180,7 @@ C<sacct> command, only one cluster should be specified.
 
 =item B<-e>, B<--start-time> I<datetime>
 
-Specify the start date and time to shred from C<acct>.  The datetime
+Specify the start date and time to shred from C<sacct>.  The datetime
 must be in a format accepted by the C<sacct> C<--starttime> option.
 Defaults to the epoch if no data has been shredded from Slurm (or the
 hostname that has been specified) or 00:00:00 of the date after the
@@ -188,7 +188,7 @@ date of the most recently found data.
 
 =item B<-e>, B<--end-time> I<datetime>
 
-Specify the end date and time to shred from C<acct>.  The datetime must
+Specify the end date and time to shred from C<sacct>.  The datetime must
 be in a format accepted by the C<sacct> C<--endtime> option.  Defaults
 to 00:00:00 of the current day.
 
