@@ -34,7 +34,7 @@
 
 DROP TABLE IF EXISTS `pbs_event`;
 CREATE TABLE `pbs_event` (
-  `pbs_event_id`              bigint unsigned AUTO_INCREMENT NOT NULL,
+  `pbs_event_id`              bigint unsigned NOT NULL AUTO_INCREMENT,
   `job_id`                    int unsigned NOT NULL,
   `job_array_index`           int NOT NULL DEFAULT -1,
   `host`                      varchar(255) NOT NULL,
@@ -78,7 +78,7 @@ CREATE TABLE `pbs_event` (
 
 DROP TABLE IF EXISTS `sge_event`;
 CREATE TABLE `sge_event` (
-  `sge_event_id`                   bigint unsigned AUTO_INCREMENT NOT NULL,
+  `sge_event_id`                   bigint unsigned NOT NULL AUTO_INCREMENT,
   `cluster`                        varchar(255),
   `qname`                          varchar(255),
   `hostname`                       varchar(255) NOT NULL,
@@ -158,7 +158,7 @@ CREATE TABLE `sge_event` (
 
 DROP TABLE IF EXISTS `slurm_event`;
 CREATE TABLE `slurm_event` (
-  `slurm_event_id` bigint unsigned AUTO_INCREMENT NOT NULL,
+  `slurm_event_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `jobid`          int unsigned NOT NULL,
   `jobname`        tinytext NOT NULL,
   `cluster`        tinytext NOT NULL,
@@ -184,7 +184,7 @@ CREATE TABLE `slurm_event` (
 
 DROP TABLE IF EXISTS `event`;
 CREATE TABLE `event` (
-  `event_id`                  bigint unsigned AUTO_INCREMENT NOT NULL,
+  `event_id`                  bigint unsigned NOT NULL AUTO_INCREMENT,
   `source_format`             ENUM('pbs','sge','slurm') NOT NULL,
   `date_key`                  date NOT NULL,
   `job_id`                    int unsigned NOT NULL,
