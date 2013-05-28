@@ -1,6 +1,7 @@
 package Ubmod::Config;
 use strict;
 use warnings;
+use Carp;
 use FindBin;
 use Config::Tiny;
 
@@ -10,6 +11,10 @@ my $config_file = "$FindBin::Bin/../config/settings.ini";
 sub get_config {
     if ( !defined $config ) {
         $config = Config::Tiny->read($config_file);
+
+        confess "Failed to read config file '$config_file': "
+            . Config::Tiny->errstr()
+            unless defined $config;
     }
 
     return $config;
