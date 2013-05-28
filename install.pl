@@ -28,7 +28,7 @@ sub main {
     my ($options) = @_;
 
     my $name    = 'ubmod';
-    my $version = '0.2.4';
+    my $version = '0.2.5';
 
     my %dirs = (
         src  => $FindBin::Bin,
