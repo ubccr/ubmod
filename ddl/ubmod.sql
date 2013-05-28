@@ -73,7 +73,7 @@ CREATE TABLE `pbs_event` (
   `resource_list_mem`         bigint unsigned,
   `resource_list_pmem`        bigint unsigned,
   PRIMARY KEY (`pbs_event_id`),
-  UNIQUE KEY (`host`,`job_id`,`job_array_index`,`ctime`)
+  UNIQUE KEY `job` (`host`,`job_id`,`job_array_index`,`ctime`)
 ) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `sge_event`;
@@ -153,7 +153,7 @@ CREATE TABLE `sge_event` (
   `resource_list_num_proc`         int,
   `resource_list_mem_free`         bigint,
   PRIMARY KEY (`sge_event_id`),
-  UNIQUE KEY (`hostname`,`job_number`,`task_number`,`failed`)
+  UNIQUE KEY `job` (`hostname`,`job_number`,`task_number`,`failed`)
 ) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS `slurm_event`;
@@ -175,7 +175,7 @@ CREATE TABLE `slurm_event` (
   `ncpus`          int unsigned NOT NULL,
   `nodelist`       text NOT NULL,
   PRIMARY KEY (`slurm_event_id`),
-  UNIQUE KEY (`cluster`(20),`jobid`,`submit`)
+  UNIQUE KEY `job` (`cluster`(20),`jobid`,`submit`)
 ) ENGINE=MyISAM;
 
 --
@@ -209,7 +209,7 @@ CREATE TABLE `event` (
   `nodes`                     int unsigned NOT NULL,
   `cpus`                      int unsigned NOT NULL,
   PRIMARY KEY (`event_id`),
-  KEY (`source_format`,`cluster`)
+  KEY `source` (`source_format`,`cluster`)
 ) ENGINE=MyISAM;
 
 --
