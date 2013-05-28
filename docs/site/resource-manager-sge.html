@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>UBMoD - SGE Resource Manager</title>
+  <title>UBMoD - SGE Notes</title>
   <meta name="description" content="UBMoD is an open source data warehouse and web portal for mining statistical data from resource managers (such as TORQUE) commonly found in high-performance computing environments." />
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
   <script type="text/javascript">
@@ -26,7 +26,10 @@
     </div>
   </div>
   <div id="page">
-    <div class="heading">SGE Resource Manager</div>
+    <div class="heading">SGE Notes</div>
+    <p>UBMoD has included support for SGE since version 0.2.4.  Most UBMoD
+    features are supported with SGE, see below for exceptions.</p>
+    <div class="subhead">Nodes and CPUs</div>
     <p>SGE does not report the nodes used by a given job in the accounting
     log.  For accurate node counts the accounting_summary must be set to FALSE
     in sge_pe.  If accounting_summary is set to TRUE it will appear that all
@@ -36,15 +39,17 @@
     as the number of CPUs.  If you configure "num_procs" as a consumable
     resource, the greater of the two values will be used as the number of
     CPUs.</p>
+    <div class="subhead">Log Files</div>
     <p>If your logs are not rotated (you re-shred the same log file every time
-    you update the UBMoD database), when UBMoD inserts the duplicate data,
-    the unique key constraint on the sge_event table will prevent the
-    insertion of this data, but will instead update the primary key.  This
-    will prevent duplicate data from being entered into the database, even
-    though the entire log file will still be parsed.</p>
+    you update the UBMoD database), when UBMoD inserts duplicate data, the
+    unique key constraint on the sge_event table will prevent the insertion of
+    this data, but will instead update the primary key.  This will prevent
+    duplicate data from being entered into the database, even though the
+    entire log file will still be parsed.</p>
     <p>If you use the logchecker.sh script included with SGE, an example of
     how to customize the script to use UBMoD is included in
     logchecker.sh.patch.</p>
+    <div class="subhead">Unsupported Shredder Features</div>
     <p>The ubmod-shredder -d/--dir option was designed to work with the
     accounting log naming convention used by PBS/TORQUE.  If you are not
     using the same convention (files are named YYYYMMDD corresponding to the

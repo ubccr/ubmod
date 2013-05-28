@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>UBMoD - Slurm Resource Manager Docs</title>
+  <title>UBMoD - Slurm Notes</title>
   <meta name="description" content="UBMoD is an open source data warehouse and web portal for mining statistical data from resource managers (such as TORQUE) commonly found in high-performance computing environments." />
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
   <script type="text/javascript">
@@ -26,9 +26,53 @@
     </div>
   </div>
   <div id="page">
-    <div class="heading">Slurm Resource Manager</div>
-    <p>
-    </p>
+    <div class="heading">Slurm Notes</div>
+    <p>UBMoD has included support for Slurm since version 0.2.5.  Most UBMoD
+    features are supported with Slurm, see below for exceptions.</p>
+    <div class="subhead">Memory Statistics</div>
+    <p>UBMoD uses cumulative (allocation) data from Slurm's <code>sacct</code>
+    command, which does not provide memory usage.
+    <div class="subhead">Helper Script</div>
+    <p>UBMoD includes a helper script to pull data from Slurm's
+    <code>sacct</code> into UBMoD's shredder system.</p>
+    <pre>$ ubmod-slurm-helper -H mycluster</pre>
+    <p>The helper script doesn't update the aggregate tables, so that
+    must be done as well.</p>
+    <pre>$ ubmod-shredder -u</pre>
+    <p>If your <code>sacct</code> executable isn't in the path of the user
+    that will be running the <code>ubmod-slurm-helper</code> command, you can
+    specify the path by adding the following to your <code>settings.ini</code>
+    file.</p>
+<pre>
+[slurm]
+sacct = /path/to/sacct
+</pre>
+    <p>Use this command to display the help text for the Slurm helper
+    script</p>
+<pre>$ ubmod-slurm-helper -h</pre>
+    <div class="subhead">Input Format</div>
+    <p>If you'd prefer to not use the helper script, you can export data from
+    Slurm into a file manually using the <code>sacct</code> command and then
+    shred that file.  The format must be the same as below.  The
+    <code>--parsable2</code>, <code>--noheader</code> and
+    <code>--allocations</code> are all also required.  If you don't want to
+    import data from all clusters, the <code>--allclusters</code> option can
+    be replaced with <code>--clusters</code> and the list of clusters.  It may
+    also be possible to use other options that limit the output.</p>
+<pre>
+$ sacct --allusers --parsable2 --noheader --allocations --allclusters \
+        --format jobid,cluster,partition,account,group,user,submit,eligible,start,end,exitcode,nnodes,ncpus,nodelist,jobname \
+        --state CANCELLED,COMPLETED,FAILED,NODE_FAIL,PREEMPTED,TIMEOUT \
+        --starttime 2013-01-01T00:00:00 --endtime 2013-01-02T00:00:00 \
+        &gt;/tmp/slurm.log
+
+$ ubmod-shredder -s -f slurm -i /tmp/slurm.log
+</pre>
+    <div class="subhead">Unsupported Shredder Features</div>
+    <p>The ubmod-shredder -d/--dir option was designed to work with the
+    accounting log naming convention used by PBS/TORQUE.  If you are not
+    using the same convention (files are named YYYYMMDD corresponding to the
+    current date), do not use this option.</p>
   </div>
   <div class="footer">
     <a href="http://www.ccr.buffalo.edu"><img style="border:none;" src="images/ccr_logo.png" alt="Center for Computational Research"/></a>
