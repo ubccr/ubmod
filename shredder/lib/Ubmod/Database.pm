@@ -26,7 +26,7 @@ sub connect {
 
     for my $arg (qw( host dbname user password )) {
         if ( !defined $args->{$arg} ) {
-            croak "Missing database config option: '$arg'";
+            confess "Missing database config option: '$arg'";
         }
     }
 
@@ -41,7 +41,7 @@ sub connect {
             { PrintError => 0, RaiseError => 1, AutoCommit => 1 } );
     };
     if ($@) {
-        croak "Failed to connect to database: $@";
+        confess "Failed to connect to database: $@";
     }
 
     return $dbh;
