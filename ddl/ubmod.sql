@@ -185,7 +185,7 @@ CREATE TABLE `slurm_event` (
 DROP TABLE IF EXISTS `event`;
 CREATE TABLE `event` (
   `event_id`                  bigint unsigned AUTO_INCREMENT NOT NULL,
-  `source_format`             varchar(255) NOT NULL,
+  `source_format`             ENUM('pbs','sge','slurm') NOT NULL,
   `date_key`                  date NOT NULL,
   `job_id`                    int unsigned NOT NULL,
   `job_array_index`           int unsigned,
