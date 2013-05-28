@@ -3,7 +3,16 @@ UBMoD - ChangeLog
 ========================================================================
 
 -
+    - Added support for Slurm (using data from sacct)
+    - Added unique keys to resource manager specific event tables to
+      prevent shredding of duplicate jobs
     - Fixed tag detail panels on tag management page
+    - Fixed issue with MySQL strict mode during aggregation
+    - Simplified apache config examples
+    - Documentation updates
+    - Internal refactoring:
+        - Refactored shredder classes
+
 - 2012-11-02 v0.2.4
     - Changed statistics table headings and style
     - Added the ability to toggle between pie and bar charts on group
