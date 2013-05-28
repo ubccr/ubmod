@@ -37,8 +37,6 @@ elsif ($input ne 'y') {
     exit 1;
 }
 
-
-
 my $pbs_count = get_count( $dbh, 'pbs_event' );
 my $sge_count = get_count( $dbh, 'sge_event' );
 
@@ -58,6 +56,8 @@ elsif ( $pbs_count > 0 ) {
 elsif ( $sge_count > 0 ) {
     $format = 'sge';
 }
+
+print "Starting upgrade.\n\n";
 
 my @stmts = (
     q{ALTER TABLE `event` ADD COLUMN `source_format` ENUM('pbs','sge','slurm') NOT NULL AFTER `event_id`},
@@ -110,6 +110,8 @@ for my $sql (@stmts) {
     print "$sql\n";
     $dbh->do($sql);
 }
+
+print "\nUpgrade complete.\n\n";
 
 exit;
 
