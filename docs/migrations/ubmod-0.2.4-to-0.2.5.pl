@@ -4,13 +4,16 @@ use warnings;
 use Config::Tiny;
 use DBI;
 
-# Installed using RPM.
-#my $settings_ini = '/etc/ubmod/settings.ini';
+# Set this variable to the path of your settings.ini file.
+my $config_file = '/etc/ubmod/settings.ini';
 
-my $settings_ini
-    = '/home/jtpalmer/src/ccr/ubmod-dev/shredder/config/settings.ini';
+confirm_or_exit(
+    "Is your settings.ini file located at '$config_file'? (y/n): ");
 
-my $config = Config::Tiny->read($settings_ini);
+die "File '$config_file' not found"    unless -f $config_file;
+die "File '$config_file' not readable" unless -r $config_file;
+
+my $config = Config::Tiny->read($config_file);
 
 my $dbh = db_connect( $config->{database} );
 
@@ -26,16 +29,7 @@ Back up all UBMoD data before continuing.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 EOF
 
-print "Are you sure you want to continue (y/n): ";
-my $input = readline(STDIN);
-chomp($input);
-if ( $input eq 'n' ) {
-    exit;
-}
-elsif ( $input ne 'y' ) {
-    print "Unrecognized response '$input'\n";
-    exit 1;
-}
+confirm_or_exit("Are you sure you want to continue (y/n): ");
 
 my $pbs_count = get_count( $dbh, 'pbs_event' );
 my $sge_count = get_count( $dbh, 'sge_event' );
@@ -146,5 +140,24 @@ sub get_count {
     my ($count) = $dbh->selectrow_array($sql);
 
     return $count;
+}
+
+sub confirm_or_exit {
+    my ($msg) = @_;
+
+    print $msg;
+
+    my $input = lc readline(STDIN);
+
+    chomp($input);
+
+    if ( $input eq 'n' ) {
+        print "Exiting\n";
+        exit;
+    }
+    elsif ( $input ne 'y' ) {
+        print "Unrecognized response '$input'\n";
+        exit 1;
+    }
 }
 
