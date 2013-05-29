@@ -29,10 +29,10 @@ EOF
 print "Are you sure you want to continue (y/n): ";
 my $input = readline(STDIN);
 chomp($input);
-if ($input eq 'n') {
+if ( $input eq 'n' ) {
     exit;
 }
-elsif ($input ne 'y') {
+elsif ( $input ne 'y' ) {
     print "Unrecognized response '$input'\n";
     exit 1;
 }
