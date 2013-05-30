@@ -98,6 +98,55 @@ my @stmts = (
           UNIQUE KEY `job` (`cluster`(20),`jobid`,`submit`)
         ) ENGINE=MyISAM
     },
+    q{DROP PROCEDURE IF EXISTS UpdateJobFacts},
+    q{
+        CREATE PROCEDURE UpdateJobFacts()
+        BEGIN
+          TRUNCATE `fact_job`;
+
+          INSERT INTO `fact_job` (
+            `dim_date_id`,
+            `dim_cluster_id`,
+            `dim_queue_id`,
+            `dim_user_id`,
+            `dim_group_id`,
+            `dim_tags_id`,
+            `dim_cpus_id`,
+            `wallt`,
+            `cput`,
+            `mem`,
+            `vmem`,
+            `wait`,
+            `exect`,
+            `nodes`,
+            `cpus`
+          )
+          SELECT
+            `dim_date`.`dim_date_id`,
+            `dim_cluster`.`dim_cluster_id`,
+            `dim_queue`.`dim_queue_id`,
+            `dim_user`.`dim_user_id`,
+            `dim_group`.`dim_group_id`,
+            `dim_tags`.`dim_tags_id`,
+            `dim_cpus`.`dim_cpus_id`,
+            `event`.`wallt`,
+            `event`.`cput`,
+            `event`.`mem`,
+            `event`.`vmem`,
+            `event`.`wait`,
+            `event`.`exect`,
+            `event`.`nodes`,
+            `event`.`cpus`
+          FROM `event`
+          JOIN `dim_date`    ON `event`.`date_key` = `dim_date`.`date`
+          JOIN `dim_cluster` ON `event`.`cluster`  = `dim_cluster`.`name`
+          JOIN `dim_queue`   ON `event`.`queue`    = `dim_queue`.`name`
+          JOIN `dim_user`    ON `event`.`user`     = `dim_user`.`name`
+          JOIN `dim_group`   ON `event`.`group`    = `dim_group`.`name`
+          JOIN `dim_tags`    ON `event`.`tags`     = `dim_tags`.`tags`
+          JOIN `dim_cpus`    ON `event`.`cpus`     = `dim_cpus`.`cpu_count`;
+        END
+    }
 );
 
 for my $sql (@stmts) {
