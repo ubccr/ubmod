@@ -60,6 +60,7 @@ rm -rf $RPM_BUILD_ROOT
 %config /etc/ubmod/datawarehouse.json
 %config /etc/ubmod/menu.json
 /usr/bin/ubmod-shredder
+/usr/bin/ubmod-slurm-helper
 /usr/share/ubmod
 
 %changelog
