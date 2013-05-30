@@ -10,10 +10,14 @@ my $config_file = '/etc/ubmod/settings.ini';
 confirm_or_exit(
     "Is your settings.ini file located at '$config_file'? (y/n): ");
 
-die "File '$config_file' not found"    unless -f $config_file;
-die "File '$config_file' not readable" unless -r $config_file;
+die "File '$config_file' not found\n"    unless -f $config_file;
+die "File '$config_file' not readable\n" unless -r $config_file;
 
 my $config = Config::Tiny->read($config_file);
+
+die "Failed to read config file '$config_file': "
+    . Config::Tiny->errstr() . "\n"
+    unless defined $config;
 
 my $dbh = db_connect( $config->{database} );
 
