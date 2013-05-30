@@ -1,5 +1,5 @@
 Name:      ubmod
-Version:   0.2.4
+Version:   0.2.5
 Release:   1%{?dist}
 Summary:   Data warehouse and web portal for mining statistical data from resource managers
 URL:       http://ubmod.sourceforge.net
