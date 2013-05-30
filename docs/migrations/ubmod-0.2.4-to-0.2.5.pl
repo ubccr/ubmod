@@ -55,7 +55,7 @@ elsif ( $sge_count > 0 ) {
     $format = 'sge';
 }
 
-print "Starting upgrade.\n\n";
+print "Starting database migration.\n\n";
 
 my @stmts = (
     q{ALTER TABLE `event` ADD COLUMN `source_format` ENUM('pbs','sge','slurm') NOT NULL AFTER `event_id`},
@@ -158,7 +158,7 @@ for my $sql (@stmts) {
     $dbh->do($sql);
 }
 
-print "\nUpgrade complete.\n\n";
+print "\nDatabase migration complete.\n\n";
 
 exit;
 
