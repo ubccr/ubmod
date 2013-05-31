@@ -79,6 +79,10 @@ Load in accounting log data
     $ ./shredder/bin/ubmod-shredder -v -s -H your.host.org -f sge \
                         -i /var/lib/gridengine/default/common/accounting
 
+* For Slurm:
+
+    $ ./shredder/bin/ubmod-slurm-helper -v -H your.host.org
+
 Aggregate accounting log data
 
     $ ./shredder/bin/ubmod-shredder -v -u

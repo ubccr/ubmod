@@ -67,6 +67,8 @@ password = password
     <pre>$ ubmod-shredder -v -s -H your.host.org -f pbs -d /var/spool/pbs/server_priv/accounting</pre>
     <ul><li>For SGE:</li></ul>
     <pre>$ ubmod-shredder -v -s -H your.host.org -f sge -i /var/lib/gridengine/default/common/accounting</pre>
+    <ul><li>For Slurm:</li></ul>
+    <pre>$ ./shredder/bin/ubmod-slurm-helper -v -H your.host.org</p>
 
     <div class="subhead">Aggregate accounting log data</div>
     <pre>$ ubmod-shredder -v -u</pre>
