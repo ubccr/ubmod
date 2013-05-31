@@ -31,7 +31,8 @@
     features are supported with Slurm, see below for exceptions.</p>
     <div class="subhead">Memory Statistics</div>
     <p>UBMoD uses cumulative (allocation) data from Slurm's <code>sacct</code>
-    command, which does not provide memory usage.
+    command, which does not provide memory usage.  This will result in all
+    memory usage statistics being displayed as zero</p>
     <div class="subhead">Helper Script</div>
     <p>UBMoD includes a helper script to pull data from Slurm's
     <code>sacct</code> into UBMoD's shredder system.</p>
