@@ -41,12 +41,6 @@
         <td class="ex">1001</td>
       </tr>
       <tr>
-        <td class="col">date_key</td>
-        <td>datetime</td>
-        <td>Date and time in which the event was recorded</td>
-        <td class="ex">2008-12-10 14:18:32</td>
-      </tr>
-      <tr>
         <td class="col">job_id</td>
         <td>int unsigned not null</td>
         <td>job identifier used by the resource manager</td>
@@ -54,7 +48,7 @@
       </tr>
       <tr>
         <td class="col">job_array_index</td>
-        <td>int unsigned not null</td>
+        <td>int not null</td>
         <td></td>
         <td class="ex">123</td>
       </tr>
@@ -69,12 +63,6 @@
         <td>varchar(255)</td>
         <td>The name of the queue in which the job executed</td>
         <td class="ex">debug</td>
-      </tr>
-      <tr>
-        <td class="col">type</td>
-        <td>char(1) not null</td>
-        <td>Single character indicating the type of record. The only type currently used in UBMoD is 'E' for job ended. All other types are stored by the shredder but ignored by the application. Examples:  E = Job ended (terminated execution) A = Job was aborted B = Beginning of reservation period D = job was deleted Q = job entered queue R = job was rerun S = job started</td>
-        <td class="ex">E</td>
       </tr>
       <tr>
         <td class="col">user</td>
