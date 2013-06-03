@@ -35,10 +35,11 @@
     memory usage statistics being displayed as zero.</p>
     <div class="subhead">Helper Script</div>
     <p>UBMoD includes a helper script to pull data from Slurm's
-    <code>sacct</code> into UBMoD's shredder system.</p>
+    <code>sacct</code> into UBMoD's shredder system.  This script can be used
+    in place of the shredder to import data.  e.g.:</p>
     <pre>$ ubmod-slurm-helper -H mycluster</pre>
     <p>The helper script doesn't update the aggregate tables, so that
-    must be done as well.</p>
+    must be done after the data has been shredded:</p>
     <pre>$ ubmod-shredder -u</pre>
     <p>If your <code>sacct</code> executable isn't in the path of the user
     that will be running the <code>ubmod-slurm-helper</code> command, you can
@@ -49,7 +50,7 @@
 sacct = /path/to/sacct
 </pre>
     <p>Use this command to display the help text for the Slurm helper
-    script</p>
+    script:</p>
     <pre>$ ubmod-slurm-helper -h</pre>
     <div class="subhead">Input Format</div>
     <p>If you'd prefer to not use the helper script, you can export data from
