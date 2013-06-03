@@ -28,7 +28,8 @@
   <div id="page">
     <div class="heading">Upgrade Guide</div>
     <p>This document will attempt to outline the process for upgrading UBMoD
-    to the current release.  Please back up all your data</p>
+    to the current release.  Please back up all your data.  Be sure to read
+    and understand all instructions before beginning the upgrade process.</p>
     <div class="subhead">Supported Upgrades</div>
     <p>UBMoD only supports upgrading from 0.2.4 to 0.2.5.  If you need to
     upgrade from another version, you will need to perform a new installation
@@ -37,22 +38,26 @@
     <ol>
       <li>Back up UBMoD data.</li>
       <li>Confirm current version of UBMoD.</li>
-      <li>Upgrade files.</li>
+      <li>Upgrade UBMoD files.</li>
       <li>Perform database migration.</li>
-      <li>Check portal to confirm upgrade.</li>
+      <li>Check UBMoD portal to confirm upgrade.</li>
     </ol>
     <div class="subhead">Back Up UBMoD Data</div>
     <p>To back up your UBMoD data, create a dump of the UBMoD database:</p>
     <pre>$ mysqldump -u username -ppassword ubmod &gt; ubmod-backup.sql</pre>
     <p>If you  have made any modifications to the UBMoD source code, you will
     need to copy those as well.</p>
+    <div class="subhead">Confirm Current Version of UBMoD</div>
+    <p>The version of UBMoD is displayed on the "About UBMoD" page.  Check to
+    make sure the version of UBMoD you are currently running is supported by
+    this upgrade process.</p>
     <div class="subhead">Upgrade UBMoD Files</div>
     <p>If you installed the UBMoD RPM distribution, perform the upgrade using
     the <code>rpm</code> package manager:</p>
     <pre># rpm -Uvh ubmod-0.2.x-1.el6.noarch.rpm</pre>
     <p>If you installed the UBMoD source distribution, repeat the same process
     you used during the initial installation.</p>
-    <div class="subhead">Database Migration</div>
+    <div class="subhead">Perform Database Migration</div>
     <p>There is a subdirectory in the <code>docs</code> directory named
     <code>migrations</code> that contains scritps for migrating the UBMoD
     database.  If you installed the RPM package, this directory will be
@@ -73,6 +78,10 @@ you did not install UBMoD using the RPM file.
 $ chmod +x /tmp/ubmod-0.2.x-to-0.2.y.pl
 $ /tmp/ubmod-0.2.x-to-0.2.y.pl
 </pre>
+    <div class="subhead">Check UBMoD Portal to Confirm Upgrade</div>
+    <p>At this point you should be able to view the UBMoD portal in your web
+    browser with the same data available as before the upgrade.  The "About
+    UBMoD" page should also display the new version number.</p>
   </div>
   <div class="footer">
     <a href="http://www.ccr.buffalo.edu"><img style="border:none;" src="images/ccr_logo.png" alt="Center for Computational Research"/></a>
