@@ -13,9 +13,9 @@ UBMoD - ChangeLog
     - Fixed issue with MySQL strict mode during aggregation
     - Simplified apache config examples
     - Updated documentation:
-      - Added upgrade guide
-      - Added more resource manager specific documentation
-      - Moved license files to a separate directory
+        - Added upgrade guide
+        - Added more resource manager specific documentation
+        - Moved license files to a separate directory
     - Internal refactoring:
         - Refactored shredder classes
 
