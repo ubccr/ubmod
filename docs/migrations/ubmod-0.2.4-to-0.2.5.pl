@@ -7,6 +7,9 @@ use DBI;
 # Set this variable to the path of your settings.ini file.
 my $config_file = '/etc/ubmod/settings.ini';
 
+# Disable output buffering.
+$|++;
+
 confirm_or_exit(
     "Is your settings.ini file located at '$config_file'? (y/n): ");
 
