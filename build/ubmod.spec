@@ -64,6 +64,21 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/ubmod
 
 %changelog
+- Added support for Slurm (using data from sacct)
+- Added unique keys to resource manager specific event tables to
+  prevent shredding of duplicate jobs
+- Changed column types of some event table columns
+- Changed PBS shredding process, no longer storing data for events
+  that aren't used to determine job statistics
+- Fixed tag detail panels on tag management page
+- Fixed issue with MySQL strict mode during aggregation
+- Simplified apache config examples
+- Updated documentation:
+  - Added upgrade guide
+  - Added more resource manager specific documentation
+  - Moved license files to a separate directory
+- Internal refactoring:
+  - Refactored shredder classes
 * Fri Nov 2 2012 Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu> 0.2.4-1
 - Changed statistics table headings and style
 - Added the ability to toggle between pie and bar charts on group
