@@ -154,11 +154,11 @@ END
 );
 
 for my $sql (@stmts) {
-    print "$sql\n";
+    print '.';
     $dbh->do($sql);
 }
 
-print "\nDatabase migration complete.\n\n";
+print "\n\nDatabase migration complete.\n\n";
 
 exit;
 
