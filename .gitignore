@@ -8,5 +8,6 @@
 /portal/lib/Zend
 /portal/lib/pChart
 /shredder/config/settings.ini
+/ubmod-*.rpm
 /ubmod-*.tar.gz
 
