@@ -27,8 +27,9 @@
   </div>
   <div id="page">
     <div class="heading">SGE Notes</div>
-    <p>UBMoD has included support for SGE since version 0.2.4.  Most UBMoD
+    <p>UBMoD has included support for SGE since version 0.2.0.  Most UBMoD
     features are supported with SGE, see below for exceptions.</p>
+
     <div class="subhead">Nodes and CPUs</div>
     <p>SGE does not report the nodes used by a given job in the accounting
     log.  For accurate node counts the accounting_summary must be set to FALSE
@@ -39,6 +40,7 @@
     as the number of CPUs.  If you configure "num_procs" as a consumable
     resource, the greater of the two values will be used as the number of
     CPUs.</p>
+
     <div class="subhead">Log Files</div>
     <p>If your logs are not rotated (you re-shred the same log file every time
     you update the UBMoD database), when UBMoD inserts duplicate data, the
@@ -49,6 +51,7 @@
     <p>If you use the logchecker.sh script included with SGE, an example of
     how to customize the script to use UBMoD is included in
     logchecker.sh.patch.</p>
+
     <div class="subhead">Unsupported Shredder Features</div>
     <p>The ubmod-shredder -d/--dir option was designed to work with the
     accounting log naming convention used by PBS/TORQUE.  If you are not
