@@ -29,14 +29,20 @@
     <div class="heading">Slurm Notes</div>
     <p>UBMoD has included support for Slurm since version 0.2.5.  Most UBMoD
     features are supported with Slurm, see below for exceptions.</p>
+
     <div class="subhead">Memory Statistics</div>
     <p>UBMoD uses cumulative (allocation) data from Slurm's <code>sacct</code>
     command, which does not provide memory usage.  This will result in all
     memory usage statistics being displayed as zero.</p>
+
     <div class="subhead">Helper Script</div>
     <p>UBMoD includes a helper script to pull data from Slurm's
     <code>sacct</code> into UBMoD's shredder system.  This script can be used
-    in place of the shredder to import data.  e.g.:</p>
+    in place of the shredder to import data.  To shred data for all Slurm
+    clusters, use this command:</p>
+    <pre>$ ubmod-slurm-helper</pre>
+    <p>If you have multiple Slurm clusters, but only want to shred data for
+    one of them, then use this command:</p>
     <pre>$ ubmod-slurm-helper -H mycluster</pre>
     <p>The helper script doesn't update the aggregate tables, so that
     must be done after the data has been shredded:</p>
@@ -52,12 +58,13 @@ sacct = /path/to/sacct
     <p>Use this command to display the help text for the Slurm helper
     script:</p>
     <pre>$ ubmod-slurm-helper -h</pre>
+
     <div class="subhead">Input Format</div>
     <p>If you'd prefer to not use the helper script, you can export data from
     Slurm into a file manually using the <code>sacct</code> command and then
-    shred that file.  The format must be the same as below.  The
+    shred that file.  The format must be the same as below.  Also, the
     <code>--parsable2</code>, <code>--noheader</code> and
-    <code>--allocations</code> are all also required.  If you don't want to
+    <code>--allocations</code> are all required.  If you don't want to
     import data from all clusters, the <code>--allclusters</code> option can
     be replaced with <code>--clusters</code> and the list of clusters.  It may
     also be possible to use other options that limit the output.</p>
@@ -70,6 +77,7 @@ $ sacct --allusers --parsable2 --noheader --allocations --allclusters \
 
 $ ubmod-shredder -s -f slurm -i /tmp/slurm.log
 </pre>
+
     <div class="subhead">Unsupported Shredder Features</div>
     <p>The ubmod-shredder -d/--dir option was designed to work with the
     accounting log naming convention used by PBS/TORQUE.  If you are not
