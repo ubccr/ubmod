@@ -41,8 +41,10 @@
     in place of the shredder to import data.  To shred data for all Slurm
     clusters, use this command:</p>
     <pre>$ ubmod-slurm-helper</pre>
-    <p>If you have multiple Slurm clusters, but only want to shred data for
-    one of them, then use this command:</p>
+    <p>If you have multiple Slurm clusters, but only want to shred data from
+    one of them, then use this command with the name of a single cluster that
+    would be used with <code>sacct</code>'s <code>--clusters</code>
+    option:</p>
     <pre>$ ubmod-slurm-helper -H mycluster</pre>
     <p>The helper script doesn't update the aggregate tables, so that
     must be done after the data has been shredded:</p>
