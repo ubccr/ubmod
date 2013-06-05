@@ -37,31 +37,21 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc %dir /usr/share/doc/%{name}-%{version}
-%doc /usr/share/doc/%{name}-%{version}/AUTHORS
-%doc /usr/share/doc/%{name}-%{version}/ChangeLog
-%doc /usr/share/doc/%{name}-%{version}/INSTALL
-%doc /usr/share/doc/%{name}-%{version}/LICENSE
-%doc /usr/share/doc/%{name}-%{version}/NOTICE
-%doc /usr/share/doc/%{name}-%{version}/TODO
-%doc /usr/share/doc/%{name}-%{version}/README
-%doc /usr/share/doc/%{name}-%{version}/docs
-%doc /usr/share/doc/%{name}-%{version}/ddl
-%config %dir /etc/ubmod
-%config(noreplace) /etc/httpd/conf.d/ubmod.conf
-%config(noreplace) /etc/ubmod/palette.csv
-%config(noreplace) /etc/ubmod/roles.json
-%config(noreplace) /etc/ubmod/settings.ini
-%config(noreplace) /etc/ubmod/user-roles.json
-%config /etc/ubmod/acl-resources.json
-%config /etc/ubmod/acl-roles.json
-%config /etc/ubmod/bootstrap.php
-%config /etc/ubmod/constants.php
-%config /etc/ubmod/datawarehouse.json
-%config /etc/ubmod/menu.json
-/usr/bin/ubmod-shredder
-/usr/bin/ubmod-slurm-helper
-/usr/share/ubmod
+%{_bindir}/*
+%{_datadir}/%{name}/
+%{_docdir}/%{name}-%{version}/
+%config %dir %{_sysconfdir}/%{name}
+%config(noreplace) %{_sysconfdir}/httpd/conf.d/ubmod.conf
+%config(noreplace) %{_sysconfdir}/ubmod/palette.csv
+%config(noreplace) %{_sysconfdir}/ubmod/roles.json
+%config(noreplace) %{_sysconfdir}/ubmod/settings.ini
+%config(noreplace) %{_sysconfdir}/ubmod/user-roles.json
+%config %{_sysconfdir}/ubmod/acl-resources.json
+%config %{_sysconfdir}/ubmod/acl-roles.json
+%config %{_sysconfdir}/ubmod/bootstrap.php
+%config %{_sysconfdir}/ubmod/constants.php
+%config %{_sysconfdir}/ubmod/datawarehouse.json
+%config %{_sysconfdir}/ubmod/menu.json
 
 %changelog
 - Added support for Slurm (using data from sacct)
