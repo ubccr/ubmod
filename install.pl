@@ -190,7 +190,6 @@ sub file_map {
         INSTALL                     => "$dirs->{doc}/INSTALL",
         LICENSE                     => "$dirs->{doc}/LICENSE",
         NOTICE                      => "$dirs->{doc}/NOTICE",
-        TODO                        => "$dirs->{doc}/TODO",
         README                      => "$dirs->{doc}/README",
         ddl                         => "$dirs->{doc}/ddl",
         docs                        => "$dirs->{doc}/docs",
