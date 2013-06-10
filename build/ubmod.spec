@@ -54,6 +54,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
 
 %changelog
+* Mon Jun 10 2013 Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu> 0.2.5-1
 - Added support for Slurm (using data from sacct)
 - Added unique keys to resource manager specific event tables to
   prevent shredding of duplicate jobs

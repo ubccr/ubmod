@@ -2,7 +2,7 @@
 UBMoD - ChangeLog
 ========================================================================
 
--
+- 2013-06-10 v0.2.5
     - Added support for Slurm (using data from sacct)
     - Added unique keys to resource manager specific event tables to
       prevent shredding of duplicate jobs
