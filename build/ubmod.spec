@@ -37,21 +37,21 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%{_bindir}/*
+%{_bindir}/%{name}-*
 %{_datadir}/%{name}/
 %{_docdir}/%{name}-%{version}/
-%config %dir %{_sysconfdir}/%{name}
-%config(noreplace) %{_sysconfdir}/httpd/conf.d/ubmod.conf
-%config(noreplace) %{_sysconfdir}/ubmod/palette.csv
-%config(noreplace) %{_sysconfdir}/ubmod/roles.json
-%config(noreplace) %{_sysconfdir}/ubmod/settings.ini
-%config(noreplace) %{_sysconfdir}/ubmod/user-roles.json
-%config %{_sysconfdir}/ubmod/acl-resources.json
-%config %{_sysconfdir}/ubmod/acl-roles.json
-%config %{_sysconfdir}/ubmod/bootstrap.php
-%config %{_sysconfdir}/ubmod/constants.php
-%config %{_sysconfdir}/ubmod/datawarehouse.json
-%config %{_sysconfdir}/ubmod/menu.json
+%dir %{_sysconfdir}/%{name}
+%config(noreplace) %{_sysconfdir}/%{name}/palette.csv
+%config(noreplace) %{_sysconfdir}/%{name}/roles.json
+%config(noreplace) %{_sysconfdir}/%{name}/settings.ini
+%config(noreplace) %{_sysconfdir}/%{name}/user-roles.json
+%config %{_sysconfdir}/%{name}/acl-resources.json
+%config %{_sysconfdir}/%{name}/acl-roles.json
+%config %{_sysconfdir}/%{name}/bootstrap.php
+%config %{_sysconfdir}/%{name}/constants.php
+%config %{_sysconfdir}/%{name}/datawarehouse.json
+%config %{_sysconfdir}/%{name}/menu.json
+%config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
 
 %changelog
 - Added support for Slurm (using data from sacct)
