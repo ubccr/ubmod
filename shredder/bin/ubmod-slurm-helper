@@ -9,7 +9,6 @@ use DateTime;
 use File::Temp qw(tempfile);
 use Ubmod::Logger;
 use Ubmod::Database;
-use Ubmod::Aggregator;
 use Ubmod::Shredder;
 
 # Using case-sensitive options because -H and -h are distinct.
