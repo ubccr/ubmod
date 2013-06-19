@@ -177,7 +177,7 @@ this option if you are not explicitely specifying a time range since
 the cluster name is used to determine the date range.  Unlike the
 C<sacct> command, only one cluster should be specified.
 
-=item B<-e>, B<--start-time> I<datetime>
+=item B<-s>, B<--start-time> I<datetime>
 
 Specify the start date and time to shred from C<sacct>.  The datetime
 must be in a format accepted by the C<sacct> C<--starttime> option.
