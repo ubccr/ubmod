@@ -25,7 +25,7 @@
 /**
  * @author Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu>
  * @version $Id$
- * @copyright Center for Computational Research, University at Buffalo, 2012
+ * @copyright Center for Computational Research, University at Buffalo, 2013
  */
 Ext.Loader.onReady(function () {
 
@@ -1188,7 +1188,13 @@ Ext.Loader.onReady(function () {
             // Tag hierarchy
 
             tagTreePanel = Ext.create('Ubmod.widget.TagTreePanel', {
-                title: 'Tag Hierarchy'
+                title: 'Tag Hierarchy',
+                listeners: {
+                    tagchanged: function () {
+                        userTagGrid.store.load();
+                        tagStatsGrid.store.load();
+                    }
+                }
             });
 
             // Listeners
@@ -1356,6 +1362,8 @@ Ext.Loader.onReady(function () {
                 }
             });
 
+            this.addEvents('tagchanged');
+
             this.callParent([config]);
         },
 
@@ -1511,8 +1519,15 @@ Ext.Loader.onReady(function () {
         },
 
         save: function () {
-            this.store.sync();
+            this.store.sync({
+                success: function () {
+                    this.fireEvent('tagchanged');
+                },
+                scope: this
+            });
+
             this.disableSaveButton();
+
             // TODO: Reload tag store.
         },
 
