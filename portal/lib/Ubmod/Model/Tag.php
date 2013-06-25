@@ -350,9 +350,14 @@ class Ubmod_Model_Tag
     $sql = "
       UPDATE dim_tag SET
         parent_id = :parent_id,
-        path      = :path
+        path      = :path,
+        name      = :name,
+        `key`     = :key,
+        value     = :value
       WHERE dim_tag_id = :dim_tag_id
     ";
+
+    list($node['key'], $node['value']) = self::splitTag($node['name']);
 
     $dbh = Ubmod_DbService::dbh();
     $stmt = $dbh->prepare($sql);
@@ -360,6 +365,9 @@ class Ubmod_Model_Tag
       ':parent_id'  => $parentId,
       ':path'       => $path,
       ':dim_tag_id' => $node['tag_id'],
+      ':name'       => $node['name'],
+      ':key'        => $node['key'],
+      ':value'      => $node['value'],
     ));
     if (!$r) {
       $err = $stmt->errorInfo();
