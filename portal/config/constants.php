@@ -11,7 +11,7 @@
 /**
  * Ubmod version string.
  */
-define('UBMOD_VERSION', '0.2.5');
+define('UBMOD_VERSION', '0.2.6');
 
 /**
  * Ubmod application base directory.
