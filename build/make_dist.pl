@@ -48,6 +48,7 @@ sub ignored {
         portal/config/user-roles\.json
         shredder/config/settings\.ini
         ubmod-.*\.tar.gz
+        ubmod-.*\.rpm
     );
 
     return \@files;
