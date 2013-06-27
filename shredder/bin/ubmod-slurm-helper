@@ -173,7 +173,7 @@ Shred accounting data for only the specified cluster.  This value will
 be passed to the C<sacct> C<--clusters> option.  If this option is not
 specified all clusters will be shredded using the C<sacct>
 C<--allclusters> option.  You should consistently always or never use
-this option if you are not explicitely specifying a time range since
+this option if you are not explicitly specifying a time range since
 the cluster name is used to determine the date range.  Unlike the
 C<sacct> command, only one cluster should be specified.
 
