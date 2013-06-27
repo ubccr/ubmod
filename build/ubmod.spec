@@ -54,6 +54,9 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
 
 %changelog
+* Thu Jun 27 2013 Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu> 0.2.6-1
+- Fixed tag name editing
+- Fixed ubmod-slurm-helper help text (Contributed by Alan Orth)
 * Mon Jun 10 2013 Jeffrey T. Palmer <jtpalmer@ccr.buffalo.edu> 0.2.5-1
 - Added support for Slurm (using data from sacct)
 - Added unique keys to resource manager specific event tables to

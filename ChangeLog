@@ -2,9 +2,9 @@
 UBMoD - ChangeLog
 ========================================================================
 
--
-    - Fixed ubmod-slurm-helper help text (Contributed by Alan Orth)
+- 2013-06-27 v0.2.6
     - Fixed tag name editing
+    - Fixed ubmod-slurm-helper help text (Contributed by Alan Orth)
 
 - 2013-06-10 v0.2.5
     - Added support for Slurm (using data from sacct)
