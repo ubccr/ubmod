@@ -14,7 +14,7 @@ BuildArch: noarch
 Requires:  httpd
 Requires:  mysql-server >= 5.1 mysql >= 5.1
 Requires:  php >= 5.3 php-cli
-Requires:  php-mysql php-gd php-pdo
+Requires:  php-mysql php-gd php-pdo php-pear
 Requires:  perl >= 5.10.1
 Requires:  perl-Config-Tiny perl-DateTime perl-DBI perl-DBD-MySQL
 
