@@ -26,14 +26,14 @@ These can be installed on Red Hat based systems with the following
 command:
 
     # yum install httpd mysql-server mysql php php-mysql php-pdo \
-                  php-gd perl perl-DBI perl-DBD-MySQL perl-Config-Tiny \
-                  perl-DateTime
+                  php-gd php-pear perl perl-DBI perl-DBD-MySQL \
+                  perl-Config-Tiny perl-DateTime
 
 and on Debian based systems with this command:
 
     # apt-get install apache2 mysql-server mysql-client \
-                      libapache2-mod-php5 php5 php5-mysql php5-gd perl \
-                      libdbi-perl libdbd-mysql-perl \
+                      libapache2-mod-php5 php5 php5-mysql php5-gd \
+                      php-pear perl libdbi-perl libdbd-mysql-perl \
                       libconfig-tiny-perl libdatetime-perl
 
 Download UBMoD
