@@ -320,7 +320,7 @@ Ext.Loader.onReady(function () {
                 this.set('endDate',   end);
 
                 // These events are only fired for non-custom date
-                // ranges beacuse the parameters for custom date ranges
+                // ranges because the parameters for custom date ranges
                 // aren't considered changed until new dates have been
                 // set.
                 this.fireEvent('restparamschanged');
