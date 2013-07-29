@@ -105,7 +105,7 @@ my %attribute_formats = (
 
 # Mapping from generic event table to SGE specific event table
 my %map = (
-    date_key        => 'FROM_UNIXTIME(MAX(end_time))',
+    date_key        => 'DATE(FROM_UNIXTIME(MAX(end_time)))',
     job_id          => 'job_number',
     job_array_index => 'task_number',
     job_name        => 'job_name',

@@ -324,8 +324,8 @@ sub _select_min_and_max_dates {
 
     my $sql = q{
         SELECT
-            DATE(MIN(`date_key`)),
-            DATE(MAX(`date_key`))
+            MIN(`date_key`),
+            MAX(`date_key`)
         FROM `event`
     };
 
