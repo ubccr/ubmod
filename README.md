@@ -1,10 +1,10 @@
 **NOTE**: UBMoD is no longer actively developed and we encourage you to
-download Open XDMoD as a replacement for UBMoD.  Open XDMoD has been
-developed to provide detailed information on resource utilization and
-performance for academic and industrial HPC centers.  More information
-is available here:
+download [Open XDMoD][open-xdmod] as a replacement for UBMoD.
+Open XDMoD has been developed to provide detailed information on
+resource utilization and performance for academic and industrial HPC
+centers.
 
-    http://xdmod.sourceforge.net/
+[open-xdmod]: http://xdmod.sourceforge.net/
 
 UBMoD - Metrics on Demand
 =========================
@@ -21,17 +21,17 @@ please keep the "Powered By UBMoD" logo with a link back to CCR
 (http://www.ccr.buffalo.edu).
 
 Additional documentation is available in HTML format in the docs/site/
-directory and online at:
+directory and [online][ubmod-docs] at:
 
-    http://ubmod.sourceforge.net/
+[ubmod-docs]: http://ubmod.sourceforge.net/
 
 Install
 -------
 
 The easiest way to install UBMoD is to grab a copy of the pre-built
-release (ubmod-x.x.x.tar.gz) from sourceforge at:
+release (ubmod-x.x.x.tar.gz) from [sourceforge][ubmod-download].
 
-    http://sourceforge.net/projects/ubmod/files/ubmod/
+[ubmod-download]: http://sourceforge.net/projects/ubmod/files/ubmod/
 
 See the INSTALL file for directions.  RPM files are also available.
 
