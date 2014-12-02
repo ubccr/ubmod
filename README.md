@@ -21,7 +21,7 @@ please keep the "Powered By UBMoD" logo with a link back to CCR
 (http://www.ccr.buffalo.edu).
 
 Additional documentation is available in HTML format in the docs/site/
-directory and [online][ubmod-docs] at:
+directory and [online][ubmod-docs].
 
 [ubmod-docs]: http://ubmod.sourceforge.net/
 
